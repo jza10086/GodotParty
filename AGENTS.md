@@ -88,6 +88,10 @@
 
 - Do not add excessive tests during small iterations.
 - Test after a complete module or playable loop is assembled.
+- Before automated Godot checks, run `godot --version` and require the project's intended engine version.
+- Use the console editor binary with `--headless --path <project> --import` for non-interactive project import and resource parsing.
+- Run standalone GDScript checks with `--headless --path <project> --script res://path/to/test.gd`; add `--check-only` when only parsing is intended.
+- Treat the process exit code plus `SCRIPT ERROR`, `ERROR`, and parser output as the result. Do not assume silence means success.
 - Use Godot editor multi-instance features for human local multiplayer acceptance.
 - For UI, feel, physics, timing, and multiplayer experience, prioritize manual editor testing.
 - Add focused automated tests for pure logic, configuration, serialization, networking protocol boundaries, and serious regressions when useful.
