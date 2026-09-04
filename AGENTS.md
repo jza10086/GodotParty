@@ -6,6 +6,13 @@
 - Do not introduce enterprise architecture, speculative abstractions, or framework layers without a current need.
 - Prefer clear, direct code. Extract shared code only after stable duplication or a concrete reuse case appears.
 
+## Editing and permissions
+
+- Make safe edits that are clearly within the requested task without repeatedly asking for confirmation.
+- If an edit or command is blocked by filesystem, sandbox, account, or operating-system permissions, stop the blocked operation and report the exact blocker to the user for guidance.
+- Do not cycle through multiple privileged workarounds or repeated approval requests after a permission failure.
+- Platform-required approval dialogs still apply and must not be bypassed.
+
 ## Language and typing
 
 - Use GDScript by default.
