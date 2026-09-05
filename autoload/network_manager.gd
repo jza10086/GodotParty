@@ -126,10 +126,10 @@ func request_start_game() -> void:
 	game_session.set_starting_game()
 	if _peer != null:
 		_peer.refuse_new_connections = true
-	var seed: int = randi_range(1, 2147483647)
+	var random_seed_value: int = randi_range(1, 2147483647)
 	var payload: Dictionary[StringName, Variant] = game_session.create_game_snapshot(
 		LobbyProtocol.PLACEHOLDER_GAME_ID,
-		seed
+		random_seed_value
 	)
 	_apply_session_snapshot.rpc(payload)
 

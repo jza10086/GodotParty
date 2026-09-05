@@ -104,8 +104,8 @@ func create_snapshot() -> Dictionary[StringName, Variant]:
 	return _build_snapshot(phase, current_game_id, random_seed)
 
 
-func create_game_snapshot(game_id: String, seed: int) -> Dictionary[StringName, Variant]:
-	return _build_snapshot(Phase.PLACEHOLDER_GAME, game_id, seed)
+func create_game_snapshot(game_id: String, random_seed_value: int) -> Dictionary[StringName, Variant]:
+	return _build_snapshot(Phase.PLACEHOLDER_GAME, game_id, random_seed_value)
 
 
 ## Replaces state atomically after validating the complete authoritative snapshot.
@@ -191,7 +191,7 @@ func replace_from_snapshot(payload: Dictionary) -> Error:
 func _build_snapshot(
 		snapshot_phase: int,
 		game_id: String,
-		seed: int
+		random_seed_value: int
 ) -> Dictionary[StringName, Variant]:
 	var player_payloads: Array[Dictionary] = []
 	var players: Array[SessionPlayer] = get_sorted_players()
@@ -205,7 +205,7 @@ func _build_snapshot(
 	snapshot[LobbyProtocol.KEY_PHASE] = snapshot_phase
 	snapshot[LobbyProtocol.KEY_PLAYERS] = player_payloads
 	snapshot[LobbyProtocol.KEY_GAME_ID] = game_id
-	snapshot[LobbyProtocol.KEY_RANDOM_SEED] = seed
+	snapshot[LobbyProtocol.KEY_RANDOM_SEED] = random_seed_value
 	return snapshot
 
 

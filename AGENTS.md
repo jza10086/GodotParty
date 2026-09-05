@@ -13,6 +13,15 @@
 - Do not cycle through multiple privileged workarounds or repeated approval requests after a permission failure.
 - Platform-required approval dialogs still apply and must not be bypassed.
 
+## Godot editor tooling
+
+- When the Godot editor and Godot MCP Toolkit are available, prefer its structured scene, node, resource, script, project-setting, and input-map tools over manual text or shell edits.
+- Delete `.gd`, `.tscn`, and `.tres`/`.res` files with `script_delete`, `scene_delete`, and `resource_delete` respectively so their `.uid` companions are removed in the same operation. Use `file_delete` only for file types not covered by those typed tools.
+- After an external file edit, call targeted `editor_refresh` with the affected `res://` paths, then `editor_wait_for_idle` before relying on editor state, global classes, scene data, or LSP results.
+- Load on-demand MCP groups with `discover_tools` only when needed and reset unused groups after the task to keep tool context small.
+- Keep `godot-project-tooling` as the canonical cold-start path for exact engine-version checks, complete headless imports, standalone GDScript checks, and version-control metadata audits when no live editor connection is required.
+- Third-party code under `addons/` is exempt from this project's GDScript naming and typing style rules. Do not rewrite vendored plugins merely to match project-authored code style.
+
 ## Language and typing
 
 - Use GDScript by default.
