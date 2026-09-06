@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://bdbvycxu8b11a"]
 
-[ext_resource type="Script" path="res://game/lobby/lobby.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://ba2gl0ates8ku" path="res://game/lobby/lobby.gd" id="1_script"]
 
-[node name="Lobby" type="Control" node_paths=PackedStringArray("role_label", "players_container", "ready_button", "start_button", "leave_button", "status_label")]
+[node name="Lobby" type="Control" unique_id=1066838708 node_paths=PackedStringArray("role_label", "players_container", "ready_button", "start_button", "leave_button", "status_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,17 +17,17 @@ start_button = NodePath("Center/Panel/Margin/Content/Actions/StartButton")
 leave_button = NodePath("Center/Panel/Margin/Content/Actions/LeaveButton")
 status_label = NodePath("Center/Panel/Margin/Content/StatusLabel")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=1296033382]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.04, 0.07, 0.12, 1)
 mouse_filter = 2
+color = Color(0.04, 0.07, 0.12, 1)
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="CenterContainer" parent="." unique_id=598391943]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,59 +35,59 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="Center"]
+[node name="Panel" type="PanelContainer" parent="Center" unique_id=310117775]
 custom_minimum_size = Vector2(1000, 760)
 layout_mode = 2
 
-[node name="Margin" type="MarginContainer" parent="Center/Panel"]
+[node name="Margin" type="MarginContainer" parent="Center/Panel" unique_id=353126750]
 layout_mode = 2
 theme_override_constants/margin_left = 64
 theme_override_constants/margin_top = 48
 theme_override_constants/margin_right = 64
 theme_override_constants/margin_bottom = 48
 
-[node name="Content" type="VBoxContainer" parent="Center/Panel/Margin"]
+[node name="Content" type="VBoxContainer" parent="Center/Panel/Margin" unique_id=1956730420]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Header" type="HBoxContainer" parent="Center/Panel/Margin/Content"]
+[node name="Header" type="HBoxContainer" parent="Center/Panel/Margin/Content" unique_id=131378332]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="Center/Panel/Margin/Content/Header"]
+[node name="Title" type="Label" parent="Center/Panel/Margin/Content/Header" unique_id=1536801262]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 44
 text = "在线大厅"
 
-[node name="RoleLabel" type="Label" parent="Center/Panel/Margin/Content/Header"]
+[node name="RoleLabel" type="Label" parent="Center/Panel/Margin/Content/Header" unique_id=1641925388]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.55, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 24
 text = "身份：客户端"
 vertical_alignment = 1
 
-[node name="PlayerCountTitle" type="Label" parent="Center/Panel/Margin/Content"]
+[node name="PlayerCountTitle" type="Label" parent="Center/Panel/Margin/Content" unique_id=1039655454]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "玩家列表（最多 8 人）"
 
-[node name="PlayerPanel" type="PanelContainer" parent="Center/Panel/Margin/Content"]
+[node name="PlayerPanel" type="PanelContainer" parent="Center/Panel/Margin/Content" unique_id=339528545]
 custom_minimum_size = Vector2(0, 390)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="PlayerMargin" type="MarginContainer" parent="Center/Panel/Margin/Content/PlayerPanel"]
+[node name="PlayerMargin" type="MarginContainer" parent="Center/Panel/Margin/Content/PlayerPanel" unique_id=1337164026]
 layout_mode = 2
 theme_override_constants/margin_left = 28
 theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 28
 theme_override_constants/margin_bottom = 24
 
-[node name="Players" type="VBoxContainer" parent="Center/Panel/Margin/Content/PlayerPanel/PlayerMargin"]
+[node name="Players" type="VBoxContainer" parent="Center/Panel/Margin/Content/PlayerPanel/PlayerMargin" unique_id=2046903422]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="StatusLabel" type="Label" parent="Center/Panel/Margin/Content"]
+[node name="StatusLabel" type="Label" parent="Center/Panel/Margin/Content" unique_id=2079956766]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.8, 0.42, 1)
@@ -96,24 +96,24 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="Actions" type="HBoxContainer" parent="Center/Panel/Margin/Content"]
+[node name="Actions" type="HBoxContainer" parent="Center/Panel/Margin/Content" unique_id=2065752634]
 layout_mode = 2
 theme_override_constants/separation = 18
 alignment = 1
 
-[node name="ReadyButton" type="Button" parent="Center/Panel/Margin/Content/Actions"]
+[node name="ReadyButton" type="Button" parent="Center/Panel/Margin/Content/Actions" unique_id=176472211]
 custom_minimum_size = Vector2(220, 58)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "准备"
 
-[node name="StartButton" type="Button" parent="Center/Panel/Margin/Content/Actions"]
+[node name="StartButton" type="Button" parent="Center/Panel/Margin/Content/Actions" unique_id=2025423731]
 custom_minimum_size = Vector2(220, 58)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "开始游戏"
 
-[node name="LeaveButton" type="Button" parent="Center/Panel/Margin/Content/Actions"]
+[node name="LeaveButton" type="Button" parent="Center/Panel/Margin/Content/Actions" unique_id=1196267032]
 custom_minimum_size = Vector2(220, 58)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
