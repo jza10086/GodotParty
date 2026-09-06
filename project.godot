@@ -34,6 +34,10 @@ window/stretch/aspect="expand"
 
 enabled=PackedStringArray("res://addons/godot_mcp_toolkit/plugin.cfg")
 
+[gui]
+
+theme/custom="res://assets/themes/default_ui_theme.tres"
+
 [mcp_toolkit]
 
 status="No .mcp.json found — use Project > Tools > MCP Toolkit > Write .mcp.json to create one."
