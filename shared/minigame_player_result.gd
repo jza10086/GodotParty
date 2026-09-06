@@ -2,12 +2,12 @@
 class_name MinigamePlayerResult
 extends RefCounted
 
-const MAX_SAFE_HIT_COUNT: int = 1000000
+const MAX_SAFE_SCORE: int = 1000000
 const MAX_SAFE_ELAPSED_MS: int = 3600000
 
 const KEY_PEER_ID: StringName = &"peer_id"
 const KEY_DISPLAY_NAME: StringName = &"display_name"
-const KEY_HIT_COUNT: StringName = &"hit_count"
+const KEY_SCORE: StringName = &"score"
 const KEY_ELAPSED_MS: StringName = &"elapsed_ms"
 const KEY_IS_COMPLETE: StringName = &"is_complete"
 const KEY_IS_WITHDRAWN: StringName = &"is_withdrawn"
@@ -15,7 +15,7 @@ const KEY_RANK: StringName = &"rank"
 
 var peer_id: int = 0
 var display_name: String = ""
-var hit_count: int = 0
+var score: int = 0
 var elapsed_ms: int = 0
 var is_complete: bool = false
 var is_withdrawn: bool = false
@@ -25,7 +25,7 @@ var rank: int = 0
 func _init(
 		initial_peer_id: int = 0,
 		initial_display_name: String = "",
-		initial_hit_count: int = 0,
+		initial_score: int = 0,
 		initial_elapsed_ms: int = 0,
 		initial_is_complete: bool = false,
 		initial_is_withdrawn: bool = false,
@@ -33,7 +33,7 @@ func _init(
 ) -> void:
 	peer_id = initial_peer_id
 	display_name = initial_display_name
-	hit_count = initial_hit_count
+	score = initial_score
 	elapsed_ms = initial_elapsed_ms
 	is_complete = initial_is_complete
 	is_withdrawn = initial_is_withdrawn
@@ -44,7 +44,7 @@ func duplicate_result() -> MinigamePlayerResult:
 	return MinigamePlayerResult.new(
 		peer_id,
 		display_name,
-		hit_count,
+		score,
 		elapsed_ms,
 		is_complete,
 		is_withdrawn,
@@ -56,7 +56,7 @@ func to_payload() -> Dictionary[StringName, Variant]:
 	var payload: Dictionary[StringName, Variant] = {}
 	payload[KEY_PEER_ID] = peer_id
 	payload[KEY_DISPLAY_NAME] = display_name
-	payload[KEY_HIT_COUNT] = hit_count
+	payload[KEY_SCORE] = score
 	payload[KEY_ELAPSED_MS] = elapsed_ms
 	payload[KEY_IS_COMPLETE] = is_complete
 	payload[KEY_IS_WITHDRAWN] = is_withdrawn
@@ -69,7 +69,7 @@ static func from_payload(payload: Dictionary) -> MinigamePlayerResult:
 	var required_keys: Array[StringName] = [
 		KEY_PEER_ID,
 		KEY_DISPLAY_NAME,
-		KEY_HIT_COUNT,
+		KEY_SCORE,
 		KEY_ELAPSED_MS,
 		KEY_IS_COMPLETE,
 		KEY_IS_WITHDRAWN,
@@ -81,7 +81,7 @@ static func from_payload(payload: Dictionary) -> MinigamePlayerResult:
 
 	var raw_peer_id: Variant = payload[KEY_PEER_ID]
 	var raw_display_name: Variant = payload[KEY_DISPLAY_NAME]
-	var raw_hit_count: Variant = payload[KEY_HIT_COUNT]
+	var raw_score: Variant = payload[KEY_SCORE]
 	var raw_elapsed_ms: Variant = payload[KEY_ELAPSED_MS]
 	var raw_is_complete: Variant = payload[KEY_IS_COMPLETE]
 	var raw_is_withdrawn: Variant = payload[KEY_IS_WITHDRAWN]
@@ -90,7 +90,7 @@ static func from_payload(payload: Dictionary) -> MinigamePlayerResult:
 		return null
 	if typeof(raw_display_name) != TYPE_STRING:
 		return null
-	if typeof(raw_hit_count) != TYPE_INT or typeof(raw_elapsed_ms) != TYPE_INT:
+	if typeof(raw_score) != TYPE_INT or typeof(raw_elapsed_ms) != TYPE_INT:
 		return null
 	if typeof(raw_is_complete) != TYPE_BOOL or typeof(raw_is_withdrawn) != TYPE_BOOL:
 		return null
@@ -99,7 +99,7 @@ static func from_payload(payload: Dictionary) -> MinigamePlayerResult:
 
 	var parsed_peer_id: int = int(raw_peer_id)
 	var parsed_display_name: String = String(raw_display_name)
-	var parsed_hit_count: int = int(raw_hit_count)
+	var parsed_score: int = int(raw_score)
 	var parsed_elapsed_ms: int = int(raw_elapsed_ms)
 	var parsed_rank: int = int(raw_rank)
 	if parsed_peer_id <= 0:
@@ -108,7 +108,7 @@ static func from_payload(payload: Dictionary) -> MinigamePlayerResult:
 		return null
 	if SessionPlayer.validate_display_name(parsed_display_name) != OK:
 		return null
-	if parsed_hit_count < 0 or parsed_hit_count > MAX_SAFE_HIT_COUNT:
+	if parsed_score < 0 or parsed_score > MAX_SAFE_SCORE:
 		return null
 	if parsed_elapsed_ms < 0 or parsed_elapsed_ms > MAX_SAFE_ELAPSED_MS:
 		return null
@@ -120,7 +120,7 @@ static func from_payload(payload: Dictionary) -> MinigamePlayerResult:
 	return MinigamePlayerResult.new(
 		parsed_peer_id,
 		parsed_display_name,
-		parsed_hit_count,
+		parsed_score,
 		parsed_elapsed_ms,
 		bool(raw_is_complete),
 		bool(raw_is_withdrawn),
@@ -136,8 +136,8 @@ static func is_before(left: MinigamePlayerResult, right: MinigamePlayerResult) -
 		return left.is_complete
 	if left.is_complete and left.elapsed_ms != right.elapsed_ms:
 		return left.elapsed_ms < right.elapsed_ms
-	if not left.is_complete and left.hit_count != right.hit_count:
-		return left.hit_count > right.hit_count
+	if not left.is_complete and left.score != right.score:
+		return left.score > right.score
 	if left.elapsed_ms != right.elapsed_ms:
 		return left.elapsed_ms < right.elapsed_ms
 	return left.peer_id < right.peer_id

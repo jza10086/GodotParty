@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://ba2gl0ates8ku" path="res://game/lobby/lobby.gd" id="1_script"]
 
-[node name="Lobby" type="Control" unique_id=1066838708 node_paths=PackedStringArray("role_label", "players_container", "ready_button", "start_button", "leave_button", "status_label")]
+[node name="Lobby" type="Control" unique_id=1066838708 node_paths=PackedStringArray("role_label", "players_container", "ready_button", "start_button", "leave_button", "status_label", "rounds_spin_box", "intermission_spin_box", "order_option", "repeat_option", "games_container", "rules_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -16,6 +16,12 @@ ready_button = NodePath("Center/Panel/Margin/Content/Actions/ReadyButton")
 start_button = NodePath("Center/Panel/Margin/Content/Actions/StartButton")
 leave_button = NodePath("Center/Panel/Margin/Content/Actions/LeaveButton")
 status_label = NodePath("Center/Panel/Margin/Content/StatusLabel")
+rounds_spin_box = NodePath("Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid/RoundsSpinBox")
+intermission_spin_box = NodePath("Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid/IntermissionSpinBox")
+order_option = NodePath("Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid/OrderOption")
+repeat_option = NodePath("Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid/RepeatOption")
+games_container = NodePath("Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/GameColumn/Games")
+rules_label = NodePath("Center/Panel/Margin/Content/RulesLabel")
 
 [node name="Background" type="ColorRect" parent="." unique_id=1296033382]
 layout_mode = 1
@@ -36,7 +42,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="Center" unique_id=310117775]
-custom_minimum_size = Vector2(1000, 760)
+custom_minimum_size = Vector2(1280, 940)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="Center/Panel" unique_id=353126750]
@@ -72,7 +78,7 @@ theme_override_font_sizes/font_size = 24
 text = "玩家列表（最多 8 人）"
 
 [node name="PlayerPanel" type="PanelContainer" parent="Center/Panel/Margin/Content" unique_id=339528545]
-custom_minimum_size = Vector2(0, 390)
+custom_minimum_size = Vector2(0, 220)
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -86,6 +92,91 @@ theme_override_constants/margin_bottom = 24
 [node name="Players" type="VBoxContainer" parent="Center/Panel/Margin/Content/PlayerPanel/PlayerMargin" unique_id=2046903422]
 layout_mode = 2
 theme_override_constants/separation = 14
+
+[node name="ConfigPanel" type="PanelContainer" parent="Center/Panel/Margin/Content" unique_id=1085168801]
+custom_minimum_size = Vector2(0, 235)
+layout_mode = 2
+
+[node name="ConfigMargin" type="MarginContainer" parent="Center/Panel/Margin/Content/ConfigPanel" unique_id=1312186212]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+
+[node name="ConfigLayout" type="HBoxContainer" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin" unique_id=1652451721]
+layout_mode = 2
+theme_override_constants/separation = 50
+
+[node name="RulesGrid" type="GridContainer" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout" unique_id=194669271]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 22
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="RoundsLabel" type="Label" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid" unique_id=754923424]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "总局数"
+
+[node name="RoundsSpinBox" type="SpinBox" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid" unique_id=52801392]
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+min_value = 1.0
+max_value = 99.0
+value = 5.0
+
+[node name="IntermissionLabel" type="Label" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid" unique_id=1277090093]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "局间等待（秒）"
+
+[node name="IntermissionSpinBox" type="SpinBox" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid" unique_id=1403638167]
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+min_value = 1.0
+max_value = 60.0
+value = 5.0
+
+[node name="OrderLabel" type="Label" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid" unique_id=1248823976]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "小游戏顺序"
+
+[node name="OrderOption" type="OptionButton" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid" unique_id=1506552046]
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+
+[node name="RepeatLabel" type="Label" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid" unique_id=1543958034]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "重复策略"
+
+[node name="RepeatOption" type="OptionButton" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/RulesGrid" unique_id=1083870170]
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+
+[node name="GameColumn" type="VBoxContainer" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout" unique_id=459663163]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/GameColumn" unique_id=552424020]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "参与的小游戏"
+
+[node name="Games" type="VBoxContainer" parent="Center/Panel/Margin/Content/ConfigPanel/ConfigMargin/ConfigLayout/GameColumn" unique_id=824004573]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RulesLabel" type="Label" parent="Center/Panel/Margin/Content" unique_id=1831782890]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.78, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "5 局 · 5 秒局间等待 · 随机顺序 · 不连续重复"
+horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="Center/Panel/Margin/Content" unique_id=2079956766]
 custom_minimum_size = Vector2(0, 64)

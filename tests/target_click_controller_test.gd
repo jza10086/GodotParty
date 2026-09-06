@@ -47,13 +47,6 @@ func _run() -> void:
 	controller.begin_play()
 	await process_frame
 
-	var results_overlay: CenterContainer = controller.get_node(
-		"ResultsCenter"
-	) as CenterContainer
-	_expect(
-		not results_overlay.visible,
-		"The full-screen results overlay must be hidden during play."
-	)
 	var target_button: Button = controller.get_node(
 		"Margin/Layout/Body/Arena/TargetArea/TargetButton"
 	) as Button
@@ -108,7 +101,7 @@ func _run() -> void:
 	var client_result: MinigamePlayerResult = _find_result(2)
 	_expect(client_result != null, "Client progress should be published.")
 	if client_result != null:
-		_expect(client_result.hit_count == 10, "Ten accepted hits should be recorded.")
+		_expect(client_result.score == 10, "Ten accepted hits should be recorded.")
 		_expect(client_result.is_complete, "The tenth hit should complete the player.")
 		_expect(client_result.elapsed_ms == 1000, "Completion time should use the final valid hit.")
 	_expect(

@@ -2,7 +2,7 @@
 class_name LobbyProtocol
 extends RefCounted
 
-const PROTOCOL_VERSION: int = 2
+const PROTOCOL_VERSION: int = 3
 const SERVER_PEER_ID: int = 1
 const DEFAULT_ADDRESS: String = "127.0.0.1"
 const DEFAULT_PORT: int = 7000
@@ -12,8 +12,8 @@ const MAX_PLAYERS: int = 8
 const MAX_REMOTE_CLIENTS: int = MAX_PLAYERS - 1
 const MAX_ACTION_ID_LENGTH: int = 64
 const MAX_ACTION_PAYLOAD_FIELDS: int = 16
-const RESULT_GRACE_SECONDS: float = 0.5
 const TARGET_CLICK_GAME_ID: StringName = &"target_click"
+const TARGET_RACE_GAME_ID: StringName = &"target_race"
 const TARGET_HIT_ACTION: StringName = &"target_hit"
 
 const KEY_PROTOCOL_VERSION: StringName = &"protocol_version"
@@ -24,6 +24,11 @@ const KEY_GAME_ID: StringName = &"game_id"
 const KEY_RANDOM_SEED: StringName = &"random_seed"
 const KEY_ROUND_ID: StringName = &"round_id"
 const KEY_RESULTS: StringName = &"results"
+const KEY_PLAYLIST_CONFIG: StringName = &"playlist_config"
+const KEY_PLAYLIST_GAMES: StringName = &"playlist_games"
+const KEY_CURRENT_ROUND_INDEX: StringName = &"current_round_index"
+const KEY_STANDINGS: StringName = &"standings"
+const KEY_INTERMISSION_PAUSED: StringName = &"intermission_paused"
 const KEY_HIT_INDEX: StringName = &"hit_index"
 const KEY_ELAPSED_MS: StringName = &"elapsed_ms"
 

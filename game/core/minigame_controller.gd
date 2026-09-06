@@ -7,8 +7,8 @@ signal authoritative_progress_updated(
 	results: Array[MinigamePlayerResult],
 	finish_requested: bool
 )
-signal replay_requested()
-signal return_to_lobby_requested()
+signal local_realtime_input_requested(sequence: int, payload: Dictionary)
+signal authoritative_realtime_state_updated(state_sequence: int, payload: Dictionary)
 signal leave_session_requested()
 
 var active_round_id: int = 0
@@ -72,6 +72,23 @@ func handle_authoritative_action(
 
 func handle_authoritative_time_expired() -> void:
 	pass
+
+
+## Accepts one validated client input envelope on the host instance.
+func handle_authoritative_realtime_input(
+		_peer_id: int,
+		_sequence: int,
+		_payload: Dictionary
+) -> Error:
+	return ERR_UNAVAILABLE
+
+
+## Applies one host state snapshot on every instance, including the host.
+func apply_authoritative_realtime_state(
+		_state_sequence: int,
+		_payload: Dictionary
+) -> Error:
+	return ERR_UNAVAILABLE
 
 
 func _duplicate_results(

@@ -1,17 +1,17 @@
 [gd_resource type="Resource" script_class="MinigameDefinition" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://shared/minigame_definition.gd" id="1_definition"]
-[ext_resource type="PackedScene" path="res://game/minigames/target_click/target_click.tscn" id="2_scene"]
+[ext_resource type="PackedScene" path="res://game/minigames/target_race/target_race.tscn" id="2_scene"]
 
 [resource]
 script = ExtResource("1_definition")
-game_id = &"target_click"
-display_name = "目标点击赛"
+game_id = &"target_race"
+display_name = "目标争夺赛"
 scene = ExtResource("2_scene")
 tags = Array[StringName]([&"minigame"])
-sync_policy = 1
-ranking_mode = 0
+sync_policy = 2
+ranking_mode = 1
 load_timeout_seconds = 15.0
 countdown_seconds = 3.0
-time_limit_seconds = 20.0
+time_limit_seconds = 30.0
 result_grace_seconds = 0.5

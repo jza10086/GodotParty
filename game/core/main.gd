@@ -4,13 +4,18 @@ extends Node
 @export var screen_root: Node
 @export var start_menu_scene: PackedScene
 @export var lobby_scene: PackedScene
+@export var playlist_results_scene: PackedScene
 @export var minigame_definitions: Array[MinigameDefinition] = []
 
 var _active_controller: MinigameController = null
+var _active_results_screen: PlaylistResultsScreen = null
 
 
 func _ready() -> void:
 	_assert_required_references()
+	var input_error: Error = InputConfigLoader.ensure_global_movement_actions()
+	if input_error != OK:
+		push_warning("Could not load movement input settings: %s" % error_string(input_error))
 	var registration_error: Error = NetworkManager.register_minigames(
 		minigame_definitions
 	)
@@ -25,9 +30,17 @@ func _ready() -> void:
 	NetworkManager.round_countdown_started.connect(_on_round_countdown_started)
 	NetworkManager.round_play_started.connect(_on_round_play_started)
 	NetworkManager.round_progress_changed.connect(_on_round_progress_changed)
-	NetworkManager.round_results_ready.connect(_on_round_results_ready)
 	NetworkManager.lobby_returned.connect(_on_lobby_returned)
+	NetworkManager.intermission_started.connect(_on_intermission_started)
+	NetworkManager.intermission_pause_changed.connect(_on_intermission_pause_changed)
+	NetworkManager.session_results_ready.connect(_on_session_results_ready)
 	NetworkManager.minigame_action_received.connect(_on_minigame_action_received)
+	NetworkManager.minigame_realtime_input_received.connect(
+		_on_minigame_realtime_input_received
+	)
+	NetworkManager.minigame_realtime_state_received.connect(
+		_on_minigame_realtime_state_received
+	)
 	NetworkManager.round_time_expired.connect(_on_round_time_expired)
 	_show_start_menu()
 
@@ -64,7 +77,6 @@ func _on_round_loading_started(
 			"本机没有游戏定义"
 		)
 		return
-
 	var instance: Node = definition.scene.instantiate()
 	if not instance is MinigameController:
 		instance.queue_free()
@@ -75,7 +87,6 @@ func _on_round_loading_started(
 			"小游戏根节点没有继承 MinigameController"
 		)
 		return
-
 	_replace_screen_instance(instance)
 	_active_controller = instance as MinigameController
 	_connect_active_controller()
@@ -93,43 +104,59 @@ func _on_round_loading_started(
 			error_string(prepare_error)
 		)
 		return
-
 	await get_tree().process_frame
-	if GameSession.phase != GameSessionState.Phase.LOADING_GAME:
-		return
-	if GameSession.round_id != round_id:
-		return
-	NetworkManager.report_local_game_loaded(round_id, game_id, true, "")
+	if (
+		GameSession.phase == GameSessionState.Phase.LOADING_GAME
+		and GameSession.round_id == round_id
+	):
+		NetworkManager.report_local_game_loaded(round_id, game_id, true, "")
 
 
 func _on_round_countdown_started(round_id: int, duration_seconds: float) -> void:
-	if not _is_active_round(round_id):
-		return
-	_active_controller.begin_countdown(duration_seconds)
+	if _is_active_round(round_id):
+		_active_controller.begin_countdown(duration_seconds)
 
 
 func _on_round_play_started(round_id: int) -> void:
-	if not _is_active_round(round_id):
-		return
-	_active_controller.begin_play()
+	if _is_active_round(round_id):
+		_active_controller.begin_play()
 
 
 func _on_round_progress_changed(
 		round_id: int,
 		results: Array[MinigamePlayerResult]
 ) -> void:
-	if not _is_active_round(round_id):
-		return
-	_active_controller.apply_authoritative_results(results)
+	if _is_active_round(round_id):
+		_active_controller.apply_authoritative_results(results)
 
 
-func _on_round_results_ready(
-		round_id: int,
-		results: Array[MinigamePlayerResult]
+func _on_intermission_started(
+		_round_id: int,
+		duration_seconds: float,
+		next_game_id: StringName
 ) -> void:
-	if not _is_active_round(round_id):
-		return
-	_active_controller.show_final_results(results)
+	var instance: PlaylistResultsScreen = (
+		playlist_results_scene.instantiate() as PlaylistResultsScreen
+	)
+	assert(instance != null, "Playlist results scene requires PlaylistResultsScreen.")
+	_replace_screen_instance(instance)
+	_active_results_screen = instance
+	_active_results_screen.setup_intermission(duration_seconds, next_game_id)
+
+
+func _on_intermission_pause_changed(_round_id: int, _paused: bool) -> void:
+	if _active_results_screen != null:
+		_active_results_screen.refresh_from_session()
+
+
+func _on_session_results_ready(_standings: Array[PartyStanding]) -> void:
+	var instance: PlaylistResultsScreen = (
+		playlist_results_scene.instantiate() as PlaylistResultsScreen
+	)
+	assert(instance != null, "Playlist results scene requires PlaylistResultsScreen.")
+	_replace_screen_instance(instance)
+	_active_results_screen = instance
+	_active_results_screen.setup_session_results()
 
 
 func _on_minigame_action_received(
@@ -152,41 +179,86 @@ func _on_minigame_action_received(
 		)
 
 
-func _on_round_time_expired(round_id: int) -> void:
+func _on_minigame_realtime_input_received(
+		peer_id: int,
+		round_id: int,
+		sequence: int,
+		payload: Dictionary
+) -> void:
 	if not GameSession.local_is_host or not _is_active_round(round_id):
 		return
-	_active_controller.handle_authoritative_time_expired()
+	var input_error: Error = _active_controller.handle_authoritative_realtime_input(
+		peer_id,
+		sequence,
+		payload
+	)
+	if input_error != OK and input_error != ERR_ALREADY_EXISTS:
+		push_warning(
+			"Ignored realtime input from peer %d: %s"
+			% [peer_id, error_string(input_error)]
+		)
+
+
+func _on_minigame_realtime_state_received(
+		round_id: int,
+		state_sequence: int,
+		payload: Dictionary
+) -> void:
+	if not _is_active_round(round_id):
+		return
+	var state_error: Error = _active_controller.apply_authoritative_realtime_state(
+		state_sequence,
+		payload
+	)
+	if state_error != OK:
+		push_warning("Ignored invalid realtime state: %s" % error_string(state_error))
+
+
+func _on_round_time_expired(round_id: int) -> void:
+	if GameSession.local_is_host and _is_active_round(round_id):
+		_active_controller.handle_authoritative_time_expired()
 
 
 func _on_local_action_requested(action_id: StringName, payload: Dictionary) -> void:
-	if _active_controller == null:
-		return
-	NetworkManager.submit_minigame_action(
-		_active_controller.active_round_id,
-		action_id,
-		payload
-	)
+	if _active_controller != null:
+		NetworkManager.submit_minigame_action(
+			_active_controller.active_round_id,
+			action_id,
+			payload
+		)
+
+
+func _on_local_realtime_input_requested(sequence: int, payload: Dictionary) -> void:
+	if _active_controller != null:
+		NetworkManager.submit_minigame_realtime_input(
+			_active_controller.active_round_id,
+			sequence,
+			payload
+		)
+
+
+func _on_authoritative_realtime_state_updated(
+		state_sequence: int,
+		payload: Dictionary
+) -> void:
+	if _active_controller != null:
+		NetworkManager.publish_minigame_realtime_state(
+			_active_controller.active_round_id,
+			state_sequence,
+			payload
+		)
 
 
 func _on_authoritative_progress_updated(
 		results: Array[MinigamePlayerResult],
-	finish_requested: bool
+		finish_requested: bool
 ) -> void:
-	if _active_controller == null:
-		return
-	NetworkManager.publish_minigame_progress(
-		_active_controller.active_round_id,
-		results,
-		finish_requested
-	)
-
-
-func _on_replay_requested() -> void:
-	NetworkManager.request_replay_round()
-
-
-func _on_return_to_lobby_requested() -> void:
-	NetworkManager.request_return_to_lobby()
+	if _active_controller != null:
+		NetworkManager.publish_minigame_progress(
+			_active_controller.active_round_id,
+			results,
+			finish_requested
+		)
 
 
 func _on_leave_session_requested() -> void:
@@ -210,10 +282,8 @@ func _replace_screen_instance(instance: Node) -> void:
 	if _active_controller != null:
 		_active_controller.cleanup_round()
 		_active_controller = null
-	var existing_children: Array[Node] = []
+	_active_results_screen = null
 	for child: Node in screen_root.get_children():
-		existing_children.append(child)
-	for child: Node in existing_children:
 		screen_root.remove_child(child)
 		child.queue_free()
 	screen_root.add_child(instance)
@@ -225,9 +295,11 @@ func _connect_active_controller() -> void:
 	_active_controller.authoritative_progress_updated.connect(
 		_on_authoritative_progress_updated
 	)
-	_active_controller.replay_requested.connect(_on_replay_requested)
-	_active_controller.return_to_lobby_requested.connect(
-		_on_return_to_lobby_requested
+	_active_controller.local_realtime_input_requested.connect(
+		_on_local_realtime_input_requested
+	)
+	_active_controller.authoritative_realtime_state_updated.connect(
+		_on_authoritative_realtime_state_updated
 	)
 	_active_controller.leave_session_requested.connect(_on_leave_session_requested)
 
@@ -243,4 +315,5 @@ func _assert_required_references() -> void:
 	assert(screen_root != null, "Main requires an exported screen_root.")
 	assert(start_menu_scene != null, "Main requires an exported start_menu_scene.")
 	assert(lobby_scene != null, "Main requires an exported lobby_scene.")
+	assert(playlist_results_scene != null, "Main requires playlist_results_scene.")
 	assert(not minigame_definitions.is_empty(), "Main requires a minigame definition.")
