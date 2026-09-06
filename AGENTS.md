@@ -37,6 +37,12 @@
 - Give `class_name` only to shared components, custom resources, core data types, and types that need editor-wide creation. Do not register every scene script globally.
 - Organize files primarily by feature. Keep a feature's scene, script, and dedicated resources near each other.
 
+## External assets
+
+- Record every externally downloaded art, font, music, sound, or other asset in `res://docs/credits.md`.
+- Follow the existing concise credits format: `类别：资产名称 来源 URL`.
+- Keep required license files alongside the corresponding asset when redistribution terms require it.
+
 ## Scenes, dependencies, and architecture
 
 - Prefer scene composition and small focused components over deep inheritance.
@@ -96,6 +102,8 @@
 ## Testing and completion
 
 - Do not add excessive tests during small iterations.
+- Use the minimum validation proportional to the change. Simple edits do not require smoke tests, full-project checks, file hashes, or exhaustive boundary-case analysis.
+- Reserve broader imports, smoke tests, and multiplayer checks for complete modules, risky changes, or regressions that specifically need them.
 - Test after a complete module or playable loop is assembled.
 - Before automated Godot checks, run `godot --version` and require the project's intended engine version.
 - Use the console editor binary with `--headless --path <project> --import` for non-interactive project import and resource parsing.
