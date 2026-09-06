@@ -1,8 +1,8 @@
-## Stable lobby protocol constants and boundary validation shared by networking and tests.
+## Stable session protocol constants and boundary validation shared by networking and tests.
 class_name LobbyProtocol
 extends RefCounted
 
-const PROTOCOL_VERSION: int = 1
+const PROTOCOL_VERSION: int = 2
 const SERVER_PEER_ID: int = 1
 const DEFAULT_ADDRESS: String = "127.0.0.1"
 const DEFAULT_PORT: int = 7000
@@ -10,7 +10,11 @@ const MIN_PORT: int = 1024
 const MAX_PORT: int = 65535
 const MAX_PLAYERS: int = 8
 const MAX_REMOTE_CLIENTS: int = MAX_PLAYERS - 1
-const PLACEHOLDER_GAME_ID: String = "placeholder"
+const MAX_ACTION_ID_LENGTH: int = 64
+const MAX_ACTION_PAYLOAD_FIELDS: int = 16
+const RESULT_GRACE_SECONDS: float = 0.5
+const TARGET_CLICK_GAME_ID: StringName = &"target_click"
+const TARGET_HIT_ACTION: StringName = &"target_hit"
 
 const KEY_PROTOCOL_VERSION: StringName = &"protocol_version"
 const KEY_DISPLAY_NAME: StringName = &"display_name"
@@ -18,6 +22,10 @@ const KEY_PHASE: StringName = &"phase"
 const KEY_PLAYERS: StringName = &"players"
 const KEY_GAME_ID: StringName = &"game_id"
 const KEY_RANDOM_SEED: StringName = &"random_seed"
+const KEY_ROUND_ID: StringName = &"round_id"
+const KEY_RESULTS: StringName = &"results"
+const KEY_HIT_INDEX: StringName = &"hit_index"
+const KEY_ELAPSED_MS: StringName = &"elapsed_ms"
 
 
 static func validate_port(port: int) -> Error:
@@ -37,7 +45,14 @@ static func validate_address(address: String) -> Error:
 		if codepoint < 32 or codepoint == 127:
 			return ERR_INVALID_DATA
 		index += 1
+	return OK
 
+
+static func validate_action_envelope(action_id: StringName, payload: Dictionary) -> Error:
+	if action_id.is_empty() or String(action_id).length() > MAX_ACTION_ID_LENGTH:
+		return ERR_INVALID_PARAMETER
+	if payload.size() > MAX_ACTION_PAYLOAD_FIELDS:
+		return ERR_INVALID_DATA
 	return OK
 
 

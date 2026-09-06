@@ -1,21 +1,16 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://game/core/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://game/lobby/start_menu.tscn" id="2_start"]
 [ext_resource type="PackedScene" path="res://game/lobby/lobby.tscn" id="3_lobby"]
-[ext_resource type="PackedScene" path="res://game/placeholder/placeholder_game.tscn" id="4_game"]
+[ext_resource type="Script" path="res://shared/minigame_definition.gd" id="4_definition_script"]
+[ext_resource type="Resource" path="res://game/minigames/target_click/target_click_definition.tres" id="5_target_definition"]
 
 [node name="Main" type="Node" node_paths=PackedStringArray("screen_root")]
 script = ExtResource("1_main")
 screen_root = NodePath("ScreenRoot")
 start_menu_scene = ExtResource("2_start")
 lobby_scene = ExtResource("3_lobby")
-placeholder_game_scene = ExtResource("4_game")
+minigame_definitions = Array[ExtResource("4_definition_script")]([ExtResource("5_target_definition")])
 
-[node name="ScreenRoot" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="ScreenRoot" type="Node" parent="."]

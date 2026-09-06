@@ -38,7 +38,7 @@ func _on_ready_pressed() -> void:
 
 
 func _on_start_pressed() -> void:
-	NetworkManager.request_start_game()
+	NetworkManager.request_start_game(LobbyProtocol.TARGET_CLICK_GAME_ID)
 
 
 func _on_leave_pressed() -> void:
@@ -58,9 +58,7 @@ func _refresh(players: Array[SessionPlayer]) -> void:
 		ready_button.disabled = GameSession.phase != GameSessionState.Phase.LOBBY
 
 	start_button.disabled = not GameSession.can_host_start()
-	if GameSession.phase == GameSessionState.Phase.STARTING_GAME:
-		status_label.text = "正在启动游戏……"
-	elif players.size() < 2:
+	if players.size() < 2:
 		status_label.text = "至少需要 2 名玩家才能开始。"
 	elif GameSession.can_host_start():
 		status_label.text = "所有玩家已准备，可以开始。"
