@@ -4,6 +4,8 @@ extends SceneTree
 var _failures: Array[String] = []
 var _latest_results: Array[MinigamePlayerResult] = []
 var _finish_requested: bool = false
+var _local_action_count: int = 0
+var _leave_signal_count: int = 0
 
 
 func _init() -> void:
@@ -31,6 +33,8 @@ func _run() -> void:
 	root.add_child(controller)
 	await process_frame
 	controller.authoritative_progress_updated.connect(_on_progress_updated)
+	controller.local_action_requested.connect(_on_local_action_requested)
+	controller.leave_session_requested.connect(_on_leave_session_requested)
 
 	var players: Array[SessionPlayer] = [
 		SessionPlayer.new(1, "Host", true, true),
@@ -41,6 +45,31 @@ func _run() -> void:
 		"A valid round should prepare."
 	)
 	controller.begin_play()
+	await process_frame
+
+	var results_overlay: CenterContainer = controller.get_node(
+		"ResultsCenter"
+	) as CenterContainer
+	_expect(
+		not results_overlay.visible,
+		"The full-screen results overlay must be hidden during play."
+	)
+	var target_button: Button = controller.get_node(
+		"Margin/Layout/Body/Arena/TargetArea/TargetButton"
+	) as Button
+	await _click_control(target_button)
+	_expect(
+		_local_action_count == 1,
+		"A real viewport click should reach the gameplay target."
+	)
+	var leave_button: Button = controller.get_node(
+		"Margin/Layout/Header/LeaveButton"
+	) as Button
+	await _click_control(leave_button)
+	_expect(
+		_leave_signal_count == 1,
+		"A real viewport click should reach the leave-session button."
+	)
 
 	_expect(
 		_submit_hit(controller, 2, 0, 100) == OK,
@@ -117,6 +146,35 @@ func _on_progress_updated(
 	for result: MinigamePlayerResult in results:
 		_latest_results.append(result.duplicate_result())
 	_finish_requested = finish_requested
+
+
+func _on_local_action_requested(
+		_action_id: StringName,
+		_payload: Dictionary
+) -> void:
+	_local_action_count += 1
+
+
+func _on_leave_session_requested() -> void:
+	_leave_signal_count += 1
+
+
+func _click_control(control: Control) -> void:
+	var click_position: Vector2 = control.get_global_rect().get_center()
+	var press_event: InputEventMouseButton = InputEventMouseButton.new()
+	press_event.button_index = MOUSE_BUTTON_LEFT
+	press_event.position = click_position
+	press_event.global_position = click_position
+	press_event.pressed = true
+	root.push_input(press_event, true)
+	await process_frame
+	var release_event: InputEventMouseButton = InputEventMouseButton.new()
+	release_event.button_index = MOUSE_BUTTON_LEFT
+	release_event.position = click_position
+	release_event.global_position = click_position
+	release_event.pressed = false
+	root.push_input(release_event, true)
+	await process_frame
 
 
 func _find_result(peer_id: int) -> MinigamePlayerResult:

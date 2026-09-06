@@ -23,6 +23,7 @@ enum LocalState {
 @export var target_button: Button
 @export var scoreboard_container: VBoxContainer
 @export var countdown_label: Label
+@export var results_overlay: CenterContainer
 @export var results_panel: PanelContainer
 @export var results_container: VBoxContainer
 @export var replay_button: Button
@@ -48,7 +49,7 @@ func _ready() -> void:
 	leave_button.pressed.connect(leave_session_requested.emit)
 	target_button.visible = false
 	countdown_label.visible = false
-	results_panel.visible = false
+	results_overlay.visible = false
 	set_process(true)
 
 
@@ -117,7 +118,7 @@ func prepare_round(
 	status_label.text = "所有玩家加载完成后开始倒计时。"
 	target_button.visible = false
 	countdown_label.visible = false
-	results_panel.visible = false
+	results_overlay.visible = false
 	replay_button.visible = GameSession.local_is_host
 	return_button.visible = GameSession.local_is_host
 	_refresh_scoreboard(_get_host_results())
@@ -142,7 +143,7 @@ func begin_play() -> void:
 	phase_label.text = "进行中"
 	status_label.text = "依次点击出现的 10 个目标。"
 	countdown_label.visible = false
-	results_panel.visible = false
+	results_overlay.visible = false
 	target_button.visible = true
 	_place_current_target()
 
@@ -163,7 +164,7 @@ func show_final_results(results: Array[MinigamePlayerResult]) -> void:
 	status_label.text = "房主可以再来一局或返回大厅。"
 	target_button.visible = false
 	countdown_label.visible = false
-	results_panel.visible = true
+	results_overlay.visible = true
 	replay_button.visible = GameSession.local_is_host
 	return_button.visible = GameSession.local_is_host
 	_build_final_results(results)
@@ -381,6 +382,7 @@ func _assert_required_references() -> void:
 	assert(target_button != null, "TargetClick requires target_button.")
 	assert(scoreboard_container != null, "TargetClick requires scoreboard_container.")
 	assert(countdown_label != null, "TargetClick requires countdown_label.")
+	assert(results_overlay != null, "TargetClick requires results_overlay.")
 	assert(results_panel != null, "TargetClick requires results_panel.")
 	assert(results_container != null, "TargetClick requires results_container.")
 	assert(replay_button != null, "TargetClick requires replay_button.")

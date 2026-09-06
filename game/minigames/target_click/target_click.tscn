@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://game/minigames/target_click/target_click.gd" id="1_script"]
 
-[node name="TargetClick" type="Control" node_paths=PackedStringArray("phase_label", "timer_label", "status_label", "target_area", "target_button", "scoreboard_container", "countdown_label", "results_panel", "results_container", "replay_button", "return_button", "leave_button")]
+[node name="TargetClick" type="Control" node_paths=PackedStringArray("phase_label", "timer_label", "status_label", "target_area", "target_button", "scoreboard_container", "countdown_label", "results_overlay", "results_panel", "results_container", "replay_button", "return_button", "leave_button")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,6 +17,7 @@ target_area = NodePath("Margin/Layout/Body/Arena/TargetArea")
 target_button = NodePath("Margin/Layout/Body/Arena/TargetArea/TargetButton")
 scoreboard_container = NodePath("Margin/Layout/Body/ScorePanel/ScoreMargin/ScoreContent/Scoreboard")
 countdown_label = NodePath("CountdownLabel")
+results_overlay = NodePath("ResultsCenter")
 results_panel = NodePath("ResultsCenter/ResultsPanel")
 results_container = NodePath("ResultsCenter/ResultsPanel/ResultsMargin/ResultsContent/Results")
 replay_button = NodePath("ResultsCenter/ResultsPanel/ResultsMargin/ResultsContent/Actions/ReplayButton")
