@@ -1,0 +1,106 @@
+[gd_scene format=3 uid="uid://dinmeinl1ntj5"]
+
+[ext_resource type="Script" uid="uid://bfgyyr3vyl7e2" path="res://game/lobby/advanced_network_settings.gd" id="1_script"]
+
+[node name="AdvancedNetworkSettings" type="Control" unique_id=995616110 node_paths=PackedStringArray("address_list", "refresh_button", "clear_selection_button", "close_button", "status_label")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+address_list = NodePath("Center/Panel/Margin/Content/AddressScroll/AddressList")
+refresh_button = NodePath("Center/Panel/Margin/Content/Actions/RefreshButton")
+clear_selection_button = NodePath("Center/Panel/Margin/Content/Actions/ClearSelectionButton")
+close_button = NodePath("Center/Panel/Margin/Content/Actions/CloseButton")
+status_label = NodePath("Center/Panel/Margin/Content/StatusLabel")
+
+[node name="DimBackground" type="ColorRect" parent="." unique_id=977178813]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.015, 0.025, 0.05, 0.94)
+
+[node name="Center" type="CenterContainer" parent="." unique_id=724320199]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Center" unique_id=596082565]
+custom_minimum_size = Vector2(1120, 780)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Center/Panel" unique_id=581777964]
+layout_mode = 2
+theme_override_constants/margin_left = 52
+theme_override_constants/margin_top = 42
+theme_override_constants/margin_right = 52
+theme_override_constants/margin_bottom = 42
+
+[node name="Content" type="VBoxContainer" parent="Center/Panel/Margin" unique_id=985251695]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Center/Panel/Margin/Content" unique_id=208917504]
+layout_mode = 2
+theme_override_font_sizes/font_size = 38
+text = "高级网络设置"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="Center/Panel/Margin/Content" unique_id=1000816067]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.75, 0.9, 1)
+theme_override_font_sizes/font_size = 19
+text = "勾选一个具体地址后，房主只监听该适配器；不勾选时使用主界面的 IP 模式。ENet 单个连接只能选择一个具体监听地址。"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="AddressScroll" type="ScrollContainer" parent="Center/Panel/Margin/Content" unique_id=821217360]
+custom_minimum_size = Vector2(0, 470)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="AddressList" type="VBoxContainer" parent="Center/Panel/Margin/Content/AddressScroll" unique_id=1121924824]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="StatusLabel" type="Label" parent="Center/Panel/Margin/Content" unique_id=494364235]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.8, 0.42, 1)
+theme_override_font_sizes/font_size = 19
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Actions" type="HBoxContainer" parent="Center/Panel/Margin/Content" unique_id=137421854]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="RefreshButton" type="Button" parent="Center/Panel/Margin/Content/Actions" unique_id=1629435941]
+custom_minimum_size = Vector2(220, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "刷新适配器"
+
+[node name="ClearSelectionButton" type="Button" parent="Center/Panel/Margin/Content/Actions" unique_id=1944869745]
+custom_minimum_size = Vector2(240, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "取消指定适配器"
+
+[node name="CloseButton" type="Button" parent="Center/Panel/Margin/Content/Actions" unique_id=1777230952]
+custom_minimum_size = Vector2(220, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "返回"

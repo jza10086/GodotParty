@@ -37,6 +37,7 @@ enabled=PackedStringArray("res://addons/godot_mcp_toolkit/plugin.cfg")
 [gui]
 
 theme/custom="res://assets/themes/default_ui_theme.tres"
+theme/custom_font="uid://csr4mqen5fogh"
 
 [mcp_toolkit]
 

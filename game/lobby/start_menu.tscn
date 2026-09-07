@@ -1,8 +1,9 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://b0dnjx8xjj1rd"]
 
-[ext_resource type="Script" path="res://game/lobby/start_menu.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://blsodlikpo025" path="res://game/lobby/start_menu.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://dinmeinl1ntj5" path="res://game/lobby/advanced_network_settings.tscn" id="2_btoxo"]
 
-[node name="StartMenu" type="Control" node_paths=PackedStringArray("display_name_input", "address_input", "port_input", "host_button", "join_button", "status_label")]
+[node name="StartMenu" type="Control" unique_id=250960127 node_paths=PackedStringArray("display_name_input", "address_input", "port_input", "ip_mode_option", "advanced_settings_button", "public_ipv4_label", "public_ipv6_label", "copy_public_ipv4_button", "copy_public_ipv6_button", "refresh_public_addresses_button", "host_button", "join_button", "cancel_button", "status_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -10,24 +11,33 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
-display_name_input = NodePath("Center/Panel/Margin/Content/DisplayNameInput")
-address_input = NodePath("Center/Panel/Margin/Content/AddressInput")
-port_input = NodePath("Center/Panel/Margin/Content/PortInput")
+display_name_input = NodePath("Center/Panel/Margin/Content/Columns/ConnectionColumn/DisplayNameInput")
+address_input = NodePath("Center/Panel/Margin/Content/Columns/ConnectionColumn/AddressInput")
+port_input = NodePath("Center/Panel/Margin/Content/Columns/ConnectionColumn/PortInput")
+ip_mode_option = NodePath("Center/Panel/Margin/Content/Columns/HostColumn/IpModeOption")
+advanced_settings_button = NodePath("Center/Panel/Margin/Content/Columns/HostColumn/AdvancedSettingsButton")
+advanced_settings_scene = ExtResource("2_btoxo")
+public_ipv4_label = NodePath("Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel/PublicMargin/PublicRows/Ipv4Row/PublicIpv4Label")
+public_ipv6_label = NodePath("Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel/PublicMargin/PublicRows/Ipv6Row/PublicIpv6Label")
+copy_public_ipv4_button = NodePath("Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel/PublicMargin/PublicRows/Ipv4Row/CopyPublicIpv4Button")
+copy_public_ipv6_button = NodePath("Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel/PublicMargin/PublicRows/Ipv6Row/CopyPublicIpv6Button")
+refresh_public_addresses_button = NodePath("Center/Panel/Margin/Content/Columns/HostColumn/RefreshPublicAddressesButton")
 host_button = NodePath("Center/Panel/Margin/Content/Actions/HostButton")
 join_button = NodePath("Center/Panel/Margin/Content/Actions/JoinButton")
+cancel_button = NodePath("Center/Panel/Margin/Content/Actions/CancelButton")
 status_label = NodePath("Center/Panel/Margin/Content/StatusLabel")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=193081726]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.035, 0.055, 0.105, 1)
 mouse_filter = 2
+color = Color(0.035, 0.055, 0.105, 1)
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="CenterContainer" parent="." unique_id=445906561]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,95 +45,214 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="Center"]
-custom_minimum_size = Vector2(760, 680)
+[node name="Panel" type="PanelContainer" parent="Center" unique_id=1707970034]
+custom_minimum_size = Vector2(1280, 860)
 layout_mode = 2
 
-[node name="Margin" type="MarginContainer" parent="Center/Panel"]
+[node name="Margin" type="MarginContainer" parent="Center/Panel" unique_id=427850857]
 layout_mode = 2
 theme_override_constants/margin_left = 64
-theme_override_constants/margin_top = 52
+theme_override_constants/margin_top = 42
 theme_override_constants/margin_right = 64
-theme_override_constants/margin_bottom = 52
+theme_override_constants/margin_bottom = 42
 
-[node name="Content" type="VBoxContainer" parent="Center/Panel/Margin"]
+[node name="Content" type="VBoxContainer" parent="Center/Panel/Margin" unique_id=1671744374]
 layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="Title" type="Label" parent="Center/Panel/Margin/Content"]
+[node name="Title" type="Label" parent="Center/Panel/Margin/Content" unique_id=621014363]
 layout_mode = 2
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 48
 text = "Godot Party"
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="Center/Panel/Margin/Content"]
+[node name="Subtitle" type="Label" parent="Center/Panel/Margin/Content" unique_id=388891878]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.75, 0.9, 1)
-theme_override_font_sizes/font_size = 24
-text = "本机在线大厅原型"
+theme_override_font_sizes/font_size = 22
+text = "IPv4 / IPv6 直连大厅"
 horizontal_alignment = 1
 
-[node name="DisplayNameLabel" type="Label" parent="Center/Panel/Margin/Content"]
+[node name="Columns" type="HBoxContainer" parent="Center/Panel/Margin/Content" unique_id=380717711]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+size_flags_vertical = 3
+theme_override_constants/separation = 48
+
+[node name="ConnectionColumn" type="VBoxContainer" parent="Center/Panel/Margin/Content/Columns" unique_id=1377804742]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Center/Panel/Margin/Content/Columns/ConnectionColumn" unique_id=806574453]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "玩家与加入信息"
+
+[node name="DisplayNameLabel" type="Label" parent="Center/Panel/Margin/Content/Columns/ConnectionColumn" unique_id=2095665548]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
 text = "昵称"
 
-[node name="DisplayNameInput" type="LineEdit" parent="Center/Panel/Margin/Content"]
+[node name="DisplayNameInput" type="LineEdit" parent="Center/Panel/Margin/Content/Columns/ConnectionColumn" unique_id=1299098962]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 21
 placeholder_text = "1–20 个字符"
 max_length = 20
 
-[node name="AddressLabel" type="Label" parent="Center/Panel/Margin/Content"]
+[node name="AddressLabel" type="Label" parent="Center/Panel/Margin/Content/Columns/ConnectionColumn" unique_id=1196556575]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "房主地址"
+theme_override_font_sizes/font_size = 20
+text = "房主地址（IPv4、IPv6 或域名）"
 
-[node name="AddressInput" type="LineEdit" parent="Center/Panel/Margin/Content"]
+[node name="AddressInput" type="LineEdit" parent="Center/Panel/Margin/Content/Columns/ConnectionColumn" unique_id=694376245]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 21
 text = "127.0.0.1"
-placeholder_text = "127.0.0.1"
+placeholder_text = "127.0.0.1 或 ::1"
 
-[node name="PortLabel" type="Label" parent="Center/Panel/Margin/Content"]
+[node name="PortLabel" type="Label" parent="Center/Panel/Margin/Content/Columns/ConnectionColumn" unique_id=74147006]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 20
 text = "端口"
 
-[node name="PortInput" type="SpinBox" parent="Center/Panel/Margin/Content"]
+[node name="PortInput" type="SpinBox" parent="Center/Panel/Margin/Content/Columns/ConnectionColumn" unique_id=889022367]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
 min_value = 1024.0
 max_value = 65535.0
 value = 7000.0
 rounded = true
 
-[node name="Actions" type="HBoxContainer" parent="Center/Panel/Margin/Content"]
+[node name="JoinHint" type="Label" parent="Center/Panel/Margin/Content/Columns/ConnectionColumn" unique_id=1389277267]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.6, 0.7, 0.82, 1)
+theme_override_font_sizes/font_size = 18
+text = "端口为UDP，请在路由器和本机防火墙设置上开放端口"
+autowrap_mode = 2
+
+[node name="HostColumn" type="VBoxContainer" parent="Center/Panel/Margin/Content/Columns" unique_id=548144475]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Center/Panel/Margin/Content/Columns/HostColumn" unique_id=463340411]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "房主网络与分享"
+
+[node name="IpModeLabel" type="Label" parent="Center/Panel/Margin/Content/Columns/HostColumn" unique_id=329905665]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "监听模式"
+
+[node name="IpModeOption" type="OptionButton" parent="Center/Panel/Margin/Content/Columns/HostColumn" unique_id=600101034]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+
+[node name="AdvancedSettingsButton" type="Button" parent="Center/Panel/Margin/Content/Columns/HostColumn" unique_id=591284557]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "高级网络设置"
+
+[node name="PublicTitle" type="Label" parent="Center/Panel/Margin/Content/Columns/HostColumn" unique_id=84437874]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "本机公网分享地址"
+
+[node name="PublicPanel" type="PanelContainer" parent="Center/Panel/Margin/Content/Columns/HostColumn" unique_id=1181763295]
+layout_mode = 2
+
+[node name="PublicMargin" type="MarginContainer" parent="Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel" unique_id=126055125]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="PublicRows" type="VBoxContainer" parent="Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel/PublicMargin" unique_id=890459474]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Ipv4Row" type="HBoxContainer" parent="Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel/PublicMargin/PublicRows" unique_id=1236680925]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PublicIpv4Label" type="Label" parent="Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel/PublicMargin/PublicRows/Ipv4Row" unique_id=1405213168]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "公网 IPv4：等待查询"
+
+[node name="CopyPublicIpv4Button" type="Button" parent="Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel/PublicMargin/PublicRows/Ipv4Row" unique_id=2051660973]
+layout_mode = 2
+disabled = true
+text = "复制"
+
+[node name="Ipv6Row" type="HBoxContainer" parent="Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel/PublicMargin/PublicRows" unique_id=1288559412]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PublicIpv6Label" type="Label" parent="Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel/PublicMargin/PublicRows/Ipv6Row" unique_id=231718792]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "公网 IPv6：等待查询"
+
+[node name="CopyPublicIpv6Button" type="Button" parent="Center/Panel/Margin/Content/Columns/HostColumn/PublicPanel/PublicMargin/PublicRows/Ipv6Row" unique_id=3052852]
+layout_mode = 2
+disabled = true
+text = "复制"
+
+[node name="RefreshPublicAddressesButton" type="Button" parent="Center/Panel/Margin/Content/Columns/HostColumn" unique_id=1519508879]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "刷新公网地址"
+
+[node name="PublicHint" type="Label" parent="Center/Panel/Margin/Content/Columns/HostColumn" unique_id=1257238131]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "公网地址由 ipify.org 获取，不保证能用。"
+autowrap_mode = 2
+
+[node name="Actions" type="HBoxContainer" parent="Center/Panel/Margin/Content" unique_id=595673829]
 layout_mode = 2
 theme_override_constants/separation = 18
 alignment = 1
 
-[node name="HostButton" type="Button" parent="Center/Panel/Margin/Content/Actions"]
-custom_minimum_size = Vector2(240, 60)
+[node name="HostButton" type="Button" parent="Center/Panel/Margin/Content/Actions" unique_id=1948734020]
+custom_minimum_size = Vector2(240, 58)
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 23
 text = "创建大厅"
 
-[node name="JoinButton" type="Button" parent="Center/Panel/Margin/Content/Actions"]
-custom_minimum_size = Vector2(240, 60)
+[node name="JoinButton" type="Button" parent="Center/Panel/Margin/Content/Actions" unique_id=1445607680]
+custom_minimum_size = Vector2(240, 58)
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 23
 text = "加入大厅"
 
-[node name="StatusLabel" type="Label" parent="Center/Panel/Margin/Content"]
-custom_minimum_size = Vector2(0, 72)
+[node name="CancelButton" type="Button" parent="Center/Panel/Margin/Content/Actions" unique_id=1971277114]
+visible = false
+custom_minimum_size = Vector2(240, 58)
+layout_mode = 2
+theme_override_font_sizes/font_size = 23
+text = "取消连接"
+
+[node name="StatusLabel" type="Label" parent="Center/Panel/Margin/Content" unique_id=710853021]
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.8, 0.42, 1)
-theme_override_font_sizes/font_size = 20
-text = "创建大厅，或通过 127.0.0.1 加入本机房主。"
+theme_override_font_sizes/font_size = 19
+text = "创建大厅，或输入房主地址加入。"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2

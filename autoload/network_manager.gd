@@ -4,6 +4,8 @@ extends Node
 
 signal connection_state_changed(state: int)
 signal connection_failed(reason: String)
+signal connection_cancelled(reason: String)
+signal public_addresses_changed()
 signal lobby_joined()
 signal session_left(reason: String)
 signal round_loading_started(round_id: int, game_id: StringName, random_seed: int)
@@ -43,8 +45,20 @@ enum ConnectionState {
 	CONNECTED,
 }
 
+const CONNECTION_TIMEOUT_SECONDS: float = 10.0
+const PUBLIC_ADDRESS_TIMEOUT_SECONDS: float = 6.0
+const PUBLIC_IPV4_URL: String = "https://api.ipify.org"
+const PUBLIC_IPV6_URL: String = "https://api6.ipify.org"
+
 var connection_state: int = ConnectionState.OFFLINE
 var last_status_message: String = ""
+var current_bind_address: String = LobbyProtocol.DEFAULT_BIND_ADDRESS
+var current_port: int = 0
+var current_remote_address: String = ""
+var public_ipv4_address: String = ""
+var public_ipv6_address: String = ""
+var public_ipv4_query_finished: bool = false
+var public_ipv6_query_finished: bool = false
 var game_session: GameSessionState = null
 
 var _peer: ENetMultiplayerPeer = null
@@ -56,6 +70,9 @@ var _loaded_peer_ids: Dictionary[int, bool] = {}
 var _last_applied_phase: int = GameSessionState.Phase.OFFLINE
 var _last_applied_round_id: int = 0
 var _last_intermission_paused: bool = false
+var _connection_attempt_id: int = 0
+var _public_ipv4_request: HTTPRequest = null
+var _public_ipv6_request: HTTPRequest = null
 
 
 func _ready() -> void:
@@ -67,6 +84,7 @@ func _ready() -> void:
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
+	_setup_public_address_requests()
 
 
 func register_minigames(definitions: Array[MinigameDefinition]) -> Error:
@@ -100,26 +118,48 @@ func get_minigame_definitions() -> Array[MinigameDefinition]:
 
 
 ## Starts a host-authoritative ENet lobby. The server occupies peer slot 1.
-func host_session(display_name: String, port: int) -> Error:
+func host_session(
+		display_name: String,
+		port: int,
+		bind_address: String = LobbyProtocol.DEFAULT_BIND_ADDRESS
+) -> Error:
 	if connection_state != ConnectionState.OFFLINE:
 		return ERR_ALREADY_IN_USE
+	last_status_message = ""
 	var normalized_name: String = SessionPlayer.normalize_display_name(display_name)
+	var normalized_bind: String = LobbyProtocol.normalize_connection_address(bind_address)
 	var validation_error: Error = SessionPlayer.validate_display_name(normalized_name)
 	if validation_error != OK:
 		return validation_error
 	validation_error = LobbyProtocol.validate_port(port)
 	if validation_error != OK:
 		return validation_error
+	validation_error = LobbyProtocol.validate_bind_address(normalized_bind)
+	if validation_error != OK:
+		last_status_message = "监听地址格式或 IPv6 范围不受支持。"
+		return validation_error
+	if not _is_available_local_bind(normalized_bind):
+		last_status_message = "指定监听地址不属于本机当前可用网卡。"
+		return ERR_DOES_NOT_EXIST
+
 	var next_peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
+	next_peer.set_bind_ip(normalized_bind)
 	_set_connection_state(ConnectionState.STARTING_HOST)
-	var create_error: Error = next_peer.create_server(port, LobbyProtocol.MAX_REMOTE_CLIENTS)
+	var create_error: Error = next_peer.create_server(
+		port,
+		LobbyProtocol.MAX_REMOTE_CLIENTS
+	)
 	if create_error != OK:
+		last_status_message = "无法创建大厅：UDP 端口可能已被占用，或监听地址无法绑定。"
 		_reset_connection()
 		return create_error
 	_peer = next_peer
 	multiplayer.multiplayer_peer = _peer
 	_local_display_name = normalized_name
 	_has_joined_lobby = true
+	current_bind_address = normalized_bind
+	current_port = port
+	current_remote_address = ""
 	game_session.begin_session(LobbyProtocol.SERVER_PEER_ID, true)
 	game_session.upsert_player(
 		SessionPlayer.new(LobbyProtocol.SERVER_PEER_ID, normalized_name, true, true)
@@ -129,7 +169,9 @@ func host_session(display_name: String, port: int) -> Error:
 	game_session.set_playlist_config(default_config)
 	_last_applied_phase = GameSessionState.Phase.LOBBY
 	_last_applied_round_id = 0
-	last_status_message = "已创建大厅，等待其他玩家加入。"
+	last_status_message = (
+		"大厅已创建。ENet 使用 UDP；首次运行时请允许 Windows 私有网络访问。"
+	)
 	_set_connection_state(ConnectionState.HOSTING)
 	lobby_joined.emit()
 	return OK
@@ -139,13 +181,17 @@ func host_session(display_name: String, port: int) -> Error:
 func join_session(display_name: String, address: String, port: int) -> Error:
 	if connection_state != ConnectionState.OFFLINE:
 		return ERR_ALREADY_IN_USE
+	last_status_message = ""
 	var normalized_name: String = SessionPlayer.normalize_display_name(display_name)
-	var normalized_address: String = address.strip_edges()
+	var normalized_address: String = LobbyProtocol.normalize_connection_address(
+		address
+	)
 	var validation_error: Error = SessionPlayer.validate_display_name(normalized_name)
 	if validation_error != OK:
 		return validation_error
 	validation_error = LobbyProtocol.validate_address(normalized_address)
 	if validation_error != OK:
+		last_status_message = "地址格式或 IPv6 范围不受支持。"
 		return validation_error
 	validation_error = LobbyProtocol.validate_port(port)
 	if validation_error != OK:
@@ -153,14 +199,152 @@ func join_session(display_name: String, address: String, port: int) -> Error:
 	var next_peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 	var create_error: Error = next_peer.create_client(normalized_address, port)
 	if create_error != OK:
+		last_status_message = "无法创建连接，请检查地址与端口。"
 		return create_error
 	_peer = next_peer
 	multiplayer.multiplayer_peer = _peer
 	_local_display_name = normalized_name
 	_has_joined_lobby = false
-	last_status_message = "正在连接 %s:%d……" % [normalized_address, port]
+	current_bind_address = LobbyProtocol.DEFAULT_BIND_ADDRESS
+	current_port = port
+	current_remote_address = normalized_address
+	last_status_message = "正在连接 %s……" % LobbyProtocol.format_endpoint(
+		normalized_address,
+		port
+	)
+	_connection_attempt_id += 1
+	var attempt_id: int = _connection_attempt_id
 	_set_connection_state(ConnectionState.CONNECTING)
+	get_tree().create_timer(CONNECTION_TIMEOUT_SECONDS).timeout.connect(
+		_on_connection_timeout.bind(attempt_id)
+	)
 	return OK
+
+
+func cancel_connection() -> void:
+	if connection_state != ConnectionState.CONNECTING:
+		return
+	_reset_connection()
+	last_status_message = "已取消连接。"
+	connection_cancelled.emit(last_status_message)
+
+
+## Returns supported local interface addresses for display and exact binding.
+func get_local_connection_addresses() -> Array[LocalNetworkAddress]:
+	var result: Array[LocalNetworkAddress] = []
+	var seen_addresses: Dictionary[String, bool] = {}
+	for interface_data: Dictionary in IP.get_local_interfaces():
+		var interface_name: String = String(interface_data.get("name", ""))
+		var friendly_name: String = String(interface_data.get("friendly", ""))
+		var raw_addresses: Variant = interface_data.get("addresses", [])
+		for raw_address: Variant in raw_addresses:
+			var address: String = LobbyProtocol.normalize_connection_address(
+				String(raw_address)
+			)
+			if seen_addresses.has(address):
+				continue
+			var ip_type: int = IP.TYPE_NONE
+			var is_loopback: bool = false
+			if LobbyProtocol.is_supported_ipv6_address(address):
+				ip_type = IP.TYPE_IPV6
+				is_loopback = address.to_lower() == "::1"
+			elif LobbyProtocol.is_supported_ipv4_address(address):
+				ip_type = IP.TYPE_IPV4
+				is_loopback = address.begins_with("127.")
+			else:
+				continue
+			seen_addresses[address] = true
+			result.append(
+				LocalNetworkAddress.new(
+					interface_name,
+					friendly_name,
+					address,
+					ip_type,
+					is_loopback
+				)
+			)
+	result.sort_custom(_sort_local_addresses)
+	return result
+
+
+## Queries externally observed IPv4 and IPv6 addresses without affecting ENet.
+func refresh_public_addresses() -> void:
+	public_ipv4_address = ""
+	public_ipv6_address = ""
+	public_ipv4_query_finished = false
+	public_ipv6_query_finished = false
+	public_addresses_changed.emit()
+	_public_ipv4_request.cancel_request()
+	_public_ipv6_request.cancel_request()
+	var ipv4_error: Error = _public_ipv4_request.request(PUBLIC_IPV4_URL)
+	if ipv4_error != OK:
+		public_ipv4_query_finished = true
+	var ipv6_error: Error = _public_ipv6_request.request(PUBLIC_IPV6_URL)
+	if ipv6_error != OK:
+		public_ipv6_query_finished = true
+	if ipv4_error != OK or ipv6_error != OK:
+		public_addresses_changed.emit()
+
+
+func _setup_public_address_requests() -> void:
+	_public_ipv4_request = HTTPRequest.new()
+	_public_ipv4_request.name = "PublicIpv4Request"
+	_public_ipv4_request.timeout = PUBLIC_ADDRESS_TIMEOUT_SECONDS
+	_public_ipv4_request.body_size_limit = 128
+	add_child(_public_ipv4_request)
+	_public_ipv4_request.request_completed.connect(
+		_on_public_ipv4_request_completed
+	)
+
+	_public_ipv6_request = HTTPRequest.new()
+	_public_ipv6_request.name = "PublicIpv6Request"
+	_public_ipv6_request.timeout = PUBLIC_ADDRESS_TIMEOUT_SECONDS
+	_public_ipv6_request.body_size_limit = 128
+	add_child(_public_ipv6_request)
+	_public_ipv6_request.request_completed.connect(
+		_on_public_ipv6_request_completed
+	)
+
+
+func _on_public_ipv4_request_completed(
+		result: int,
+		response_code: int,
+		_headers: PackedStringArray,
+		body: PackedByteArray
+) -> void:
+	var address: String = _parse_public_address(result, response_code, body)
+	if LobbyProtocol.is_public_ipv4_address(address):
+		public_ipv4_address = address
+	public_ipv4_query_finished = true
+	public_addresses_changed.emit()
+
+
+func _on_public_ipv6_request_completed(
+		result: int,
+		response_code: int,
+		_headers: PackedStringArray,
+		body: PackedByteArray
+) -> void:
+	var address: String = _parse_public_address(result, response_code, body)
+	if LobbyProtocol.is_public_ipv6_address(address):
+		public_ipv6_address = address
+	public_ipv6_query_finished = true
+	public_addresses_changed.emit()
+
+
+static func _parse_public_address(
+		result: int,
+		response_code: int,
+		body: PackedByteArray
+) -> String:
+	if (
+		result != HTTPRequest.RESULT_SUCCESS
+		or response_code != 200
+		or body.size() > 128
+	):
+		return ""
+	var address: String = body.get_string_from_utf8().strip_edges()
+	return address if address.is_valid_ip_address() else ""
 
 
 func leave_session() -> void:
@@ -433,6 +617,17 @@ func _on_peer_disconnected(peer_id: int) -> void:
 	_broadcast_snapshot()
 
 
+func _on_connection_timeout(attempt_id: int) -> void:
+	if (
+		connection_state != ConnectionState.CONNECTING
+		or attempt_id != _connection_attempt_id
+	):
+		return
+	_fail_and_reset(
+		"连接超时：房主无响应，或 UDP 流量被防火墙、路由器拦截。"
+	)
+
+
 func _on_connected_to_server() -> void:
 	if connection_state != ConnectionState.CONNECTING:
 		return
@@ -448,7 +643,11 @@ func _on_connected_to_server() -> void:
 
 
 func _on_connection_failed() -> void:
-	_fail_and_reset("无法连接到房主，请检查地址、端口和房主状态。")
+	if connection_state != ConnectionState.CONNECTING:
+		return
+	_fail_and_reset(
+		"无法连接到房主：请检查地址、端口、房主状态和 UDP 防火墙设置。"
+	)
 
 
 func _on_server_disconnected() -> void:
@@ -859,6 +1058,30 @@ func _current_definition_name() -> String:
 	return definition.display_name if definition != null else String(game_session.current_game_id)
 
 
+func _is_available_local_bind(bind_address: String) -> bool:
+	if (
+		bind_address == LobbyProtocol.DEFAULT_BIND_ADDRESS
+		or bind_address == LobbyProtocol.IPV4_ANY_ADDRESS
+		or bind_address == LobbyProtocol.IPV6_ANY_ADDRESS
+	):
+		return true
+	for local_address: LocalNetworkAddress in get_local_connection_addresses():
+		if local_address.address.to_lower() == bind_address.to_lower():
+			return true
+	return false
+
+
+static func _sort_local_addresses(
+		left: LocalNetworkAddress,
+		right: LocalNetworkAddress
+) -> bool:
+	if left.is_loopback != right.is_loopback:
+		return not left.is_loopback
+	if left.ip_type != right.ip_type:
+		return left.ip_type < right.ip_type
+	return left.address.naturalnocasecmp_to(right.address) < 0
+
+
 func _fail_and_reset(reason: String) -> void:
 	_reset_connection()
 	last_status_message = reason
@@ -866,12 +1089,16 @@ func _fail_and_reset(reason: String) -> void:
 
 
 func _reset_connection() -> void:
+	_connection_attempt_id += 1
 	if _peer != null:
 		_peer.close()
 	_peer = null
 	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	_local_display_name = ""
 	_has_joined_lobby = false
+	current_bind_address = LobbyProtocol.DEFAULT_BIND_ADDRESS
+	current_port = 0
+	current_remote_address = ""
 	_loaded_peer_ids.clear()
 	_last_applied_phase = GameSessionState.Phase.OFFLINE
 	_last_applied_round_id = 0

@@ -2,6 +2,7 @@
 extends Control
 
 @export var role_label: Label
+@export var connection_info_container: VBoxContainer
 @export var players_container: VBoxContainer
 @export var ready_button: Button
 @export var start_button: Button
@@ -23,6 +24,7 @@ func _ready() -> void:
 	GameSession.players_changed.connect(_on_players_changed)
 	GameSession.phase_changed.connect(_on_phase_changed)
 	GameSession.playlist_changed.connect(_on_playlist_changed)
+	NetworkManager.public_addresses_changed.connect(_refresh_connection_info)
 	ready_button.pressed.connect(_on_ready_pressed)
 	start_button.pressed.connect(NetworkManager.request_start_playlist)
 	leave_button.pressed.connect(NetworkManager.leave_session)
@@ -35,6 +37,7 @@ func _ready() -> void:
 	ready_button.visible = not GameSession.local_is_host
 	start_button.visible = GameSession.local_is_host
 	role_label.text = "身份：房主" if GameSession.local_is_host else "身份：客户端"
+	_refresh_connection_info()
 	_refresh(GameSession.get_sorted_players())
 
 
@@ -217,6 +220,116 @@ func _available_game_ids() -> Array[StringName]:
 	return game_ids
 
 
+func _refresh_connection_info() -> void:
+	for child: Node in connection_info_container.get_children():
+		connection_info_container.remove_child(child)
+		child.queue_free()
+	if GameSession.local_is_host:
+		var bind_label: Label = Label.new()
+		bind_label.text = "监听模式：%s" % _get_bind_mode_display_name()
+		connection_info_container.add_child(bind_label)
+		connection_info_container.add_child(
+			_create_share_value_row(
+				"端口",
+				str(NetworkManager.current_port)
+			)
+		)
+		_add_public_address_row(
+			"公网 IPv4",
+			NetworkManager.public_ipv4_address,
+			NetworkManager.public_ipv4_query_finished
+		)
+		_add_public_address_row(
+			"公网 IPv6",
+			NetworkManager.public_ipv6_address,
+			NetworkManager.public_ipv6_query_finished
+		)
+		var selected_address: LocalNetworkAddress = _get_selected_local_address()
+		if selected_address != null:
+			var address_family: String = (
+				"IPv6" if selected_address.ip_type == IP.TYPE_IPV6 else "IPv4"
+			)
+			connection_info_container.add_child(
+				_create_share_value_row(
+					"指定适配器 %s" % address_family,
+					selected_address.address
+				)
+			)
+		return
+	var remote_label: Label = Label.new()
+	remote_label.text = "已连接房主：%s（UDP）" % LobbyProtocol.format_endpoint(
+		NetworkManager.current_remote_address,
+		NetworkManager.current_port
+	)
+	connection_info_container.add_child(remote_label)
+
+
+func _add_public_address_row(
+		label_text: String,
+		address: String,
+		query_finished: bool
+) -> void:
+	if not address.is_empty():
+		connection_info_container.add_child(
+			_create_share_value_row(label_text, address)
+		)
+		return
+	var unavailable_label: Label = Label.new()
+	unavailable_label.text = "%s：%s" % [
+		label_text,
+		"当前不可用" if query_finished else "查询中……",
+	]
+	connection_info_container.add_child(unavailable_label)
+
+
+func _get_bind_mode_display_name() -> String:
+	match NetworkManager.current_bind_address:
+		LobbyProtocol.DEFAULT_BIND_ADDRESS:
+			return "IPv4 + IPv6"
+		LobbyProtocol.IPV4_ANY_ADDRESS:
+			return "仅 IPv4"
+		LobbyProtocol.IPV6_ANY_ADDRESS:
+			return "仅 IPv6"
+		_:
+			return "特定适配器"
+
+
+func _get_selected_local_address() -> LocalNetworkAddress:
+	var bind_address: String = NetworkManager.current_bind_address
+	if (
+		bind_address == LobbyProtocol.DEFAULT_BIND_ADDRESS
+		or bind_address == LobbyProtocol.IPV4_ANY_ADDRESS
+		or bind_address == LobbyProtocol.IPV6_ANY_ADDRESS
+	):
+		return null
+	for local_address: LocalNetworkAddress in NetworkManager.get_local_connection_addresses():
+		if local_address.address.to_lower() == bind_address.to_lower():
+			return local_address
+	return null
+
+
+func _create_share_value_row(
+		label_text: String,
+		value: String
+) -> HBoxContainer:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	var label: Label = Label.new()
+	label.text = "%s：%s" % [label_text, value]
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var copy_button: Button = Button.new()
+	copy_button.text = "复制"
+	copy_button.pressed.connect(_on_copy_share_value.bind(value))
+	row.add_child(label)
+	row.add_child(copy_button)
+	return row
+
+
+func _on_copy_share_value(value: String) -> void:
+	DisplayServer.clipboard_set(value)
+	status_label.text = "已复制：%s" % value
+
+
 func _create_player_row(player: SessionPlayer) -> HBoxContainer:
 	var row: HBoxContainer = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 24)
@@ -242,6 +355,10 @@ func _clear_player_rows() -> void:
 
 func _assert_required_references() -> void:
 	assert(role_label != null, "Lobby requires role_label.")
+	assert(
+		connection_info_container != null,
+		"Lobby requires connection_info_container."
+	)
 	assert(players_container != null, "Lobby requires players_container.")
 	assert(ready_button != null, "Lobby requires ready_button.")
 	assert(start_button != null, "Lobby requires start_button.")
