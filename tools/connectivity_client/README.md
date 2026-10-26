@@ -31,7 +31,7 @@ PC 主界面的「连接测试」提供相同的主动探测功能。`project/pr
 仓库根目录 `.github/workflows/build-connectivity-ios.yml` 支持手动构建；向 `main` 推送客户端或此工作流的修改也会自动构建，其他游戏文件的修改不会触发：
 
 1. 将此工作流以及整个 `tools/connectivity_client/` 提交到 GitHub 仓库默认分支。也可以仅把这两部分保留原目录结构上传到独立仓库，不需要上传游戏内容。
-2. 在 Actions 中选择 **Build connectivity client for SideStore → Run workflow**。Godot 版本默认 `4.7.2`，与本次本机版本一致；项目手动升级后再调整此输入。工作流下载同版本编辑器和 iOS 模板，只在 macOS runner 中编译。
+2. 在 Actions 中选择 **Build connectivity client for SideStore → Run workflow**。Godot 版本默认 `4.7.2`，与本次本机版本一致；项目手动升级后再调整此输入。工作流下载同版本编辑器和 iOS 模板，在 macOS 15 runner 上明确使用 Xcode 26.3；默认 Xcode 16.4 的 SDK 缺少此模板引用的符号。
 3. 成功后下载 **GodotParty-Connectivity-iOS-SideStore** artifact，解压取得 `.ipa`、`INSTALL.txt` 和 `build-info.json`。另有构建日志 artifact。工作流不会创建 Release，也不需要 Apple 密码、付费证书或任何仓库 Secrets。
 4. 首次在 iPad/iPhone 安装 SideStore：按其官方说明，用 Windows + USB + iloader 安装，完成信任开发者、开发者模式、LocalDevVPN 和 Apple 账号设置。然后在 SideStore 导入 `.ipa`，由设备自己的账号重新签名安装。
 5. 免费账号通常每 7 天需要刷新签名，最多同时启用 3 个应用（包含 SideStore）。安装/刷新需要按 SideStore 要求开启 LocalDevVPN；实际测试前建议关闭它，避免额外 VPN 配置影响排查。
