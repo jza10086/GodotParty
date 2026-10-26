@@ -8,7 +8,7 @@
 4. 每次探测最多等 3 秒，正常情况下每秒一次。成功必须匹配完整回复；停止时尚未完成的探测计为取消。TCP 每次建立新连接，RTT 包括连接时间，不能直接等同于 UDP RTT 或 ICMP ping。
 5. 可复制统计结果。进入后台自动停止，返回前台需手动开始；Android 返回键停止当前测试。
 
-界面采用竖屏滚动布局、大按钮、系统字体、可见区域及软键盘避让。无需保存设置或申请存储权限。Windows 上可直接在 Godot 编辑器运行同一工程；尚未生成 Windows 包。
+界面采用竖屏滚动布局、大按钮、可见区域及软键盘避让。内置 Noto Sans CJK SC 字体，并关闭系统字体回退，避免设备字体加载失败导致整个界面无文字。字体复用主项目已有资源，许可证位于 `project/fonts/FONT-LICENSE.txt`。无需保存设置或申请存储权限。Windows 上可直接在 Godot 编辑器运行同一工程；尚未生成 Windows 包。
 
 ## Android 导出准备
 
@@ -54,6 +54,6 @@ gh run watch RUN_ID --repo jza10086/GodotParty --exit-status
 gh run download RUN_ID --repo jza10086/GodotParty --name GodotParty-Connectivity-iOS-SideStore --dir tmp/ios-download
 ```
 
-云端检查会确认构建退出状态、Godot 错误日志、IPA 的 Payload 结构、真机 ARM64、iPhone/iPad 设备类型和本地网络用途说明。它不代表真机安装成功或真实网络验收；SideStore 安装、中文字体、横竖屏/键盘、权限与 UDP/TCP 收发仍需 iPhone/iPad 实测。
+云端检查会实际实例化客户端，确认默认字体是内置 FontFile、系统回退已关闭、源码文字全部有字形，并检查中文、英文、IPv4/IPv6 文本的非零排版尺寸；还会确认构建退出状态、Godot 错误日志、IPA 的 Payload 结构、真机 ARM64、iPhone/iPad 设备类型和本地网络用途说明。它不代表真机绘制或真实网络验收；SideStore 安装、文字显示、横竖屏/键盘、权限与 UDP/TCP 收发仍需 iPhone/iPad 实测。
 
 参考：[Godot iOS 导出](https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_ios.html)、[SideStore 安装要求](https://docs.sidestore.io/docs/installation/prerequisites)、[SideStore 安装步骤](https://docs.sidestore.io/docs/installation/install)、[SideStore 免费账号限制](https://docs.sidestore.io/docs/faq)。

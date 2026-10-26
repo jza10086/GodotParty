@@ -3,6 +3,7 @@ extends Control
 
 const Protocol = preload("res://probe_protocol.gd")
 const Probe = preload("res://probe_client.gd")
+const UI_FONT: FontFile = preload("res://fonts/noto_sans_sc.otf")
 var _probe: Node
 var _transport: OptionButton
 var _address: LineEdit
@@ -16,8 +17,9 @@ var _margin: MarginContainer
 var _elapsed: float = 0.0
 
 func _ready() -> void:
-	var font: SystemFont = SystemFont.new()
-	font.font_names = PackedStringArray(["PingFang SC", "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", "sans-serif"])
+	# Bundle the font: system font lookup can return unusable faces on mobile devices.
+	var font: FontFile = UI_FONT.duplicate() as FontFile
+	font.allow_system_fallback = false
 	theme = Theme.new()
 	theme.default_font = font
 	theme.default_font_size = 28

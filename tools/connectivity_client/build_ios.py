@@ -54,6 +54,8 @@ def main():
     xcode_dir = output / "xcode"
     xcode_dir.mkdir()
     run([args.godot, "--headless", "--path", project, "--editor", "--import"], logs, "import", godot=True)
+    run([args.godot, "--headless", "--path", project, "--script",
+         source.parent / "check_font.gd"], logs, "bundled-font", godot=True)
     run([args.godot, "--headless", "--path", project, "--export-release", "iOS SideStore",
          xcode_dir / "ConnectivityProbe.zip"], logs, "export", godot=True)
     # With export_project_only, Godot writes the Xcode project beside this path.
@@ -86,6 +88,8 @@ def main():
     payload.mkdir()
     app = payload / apps[0].name
     shutil.copytree(apps[0], app, symlinks=True)
+    # Keep redistribution notices accessible alongside the signed application too.
+    shutil.copyfile(source / "fonts/FONT-LICENSE.txt", app / "FONT-LICENSE.txt")
     # Ad-hoc signatures have no developer identity or provisioning profile.
     # SideStore replaces these with the device owner's personal signing identity.
     frameworks = sorted(app.rglob("*.framework"), key=lambda p: len(p.parts), reverse=True)
@@ -101,6 +105,7 @@ def main():
     manifest = {"godot": version, "xcode": xcode, "build": args.build_number,
                 "device_family": ["iPhone", "iPad"], "architecture": arch,
                 "minimum_os": info.get("MinimumOSVersion"), "ipa_bytes": ipa.stat().st_size,
+                "font": "Bundled Noto Sans CJK SC; system fallback disabled; glyph check passed",
                 "signing": "Ad-hoc only. Import into SideStore to sign and install.",
                 "device_validation": "Not performed by this build."}
     (output / "build-info.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
