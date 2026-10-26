@@ -1,0 +1,84 @@
+name: Build connectivity client for SideStore
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/connectivity_client/**'
+      - '.github/workflows/build-connectivity-ios.yml'
+  workflow_dispatch:
+    inputs:
+      godot_version:
+        description: Godot release version (must match project and export templates)
+        default: '4.7.2'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: connectivity-ios-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            tools/connectivity_client
+      - name: Install matching Godot editor and iOS template
+        env:
+          GODOT_VERSION: ${{ inputs.godot_version || '4.7.2' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, pathlib, re, urllib.request, zipfile
+          version = os.environ['GODOT_VERSION']
+          if not re.fullmatch(r'4\.\d+(?:\.\d+)?', version):
+              raise SystemExit('Use a stable Godot 4 release number, e.g. 4.7.2')
+          root = pathlib.Path('tmp/ios-toolchain').resolve()
+          root.mkdir(parents=True)
+          base = f'https://github.com/godotengine/godot-builds/releases/download/{version}-stable/'
+          editor = f'Godot_v{version}-stable_macos.universal.zip'
+          templates = f'Godot_v{version}-stable_export_templates.tpz'
+          for name in (editor, templates):
+              print('Downloading', name, flush=True)
+              urllib.request.urlretrieve(base + name, root / name)
+          with zipfile.ZipFile(root / templates) as archive:
+              target = pathlib.Path.home() / 'Library/Application Support/Godot/export_templates' / f'{version}.stable'
+              target.mkdir(parents=True, exist_ok=True)
+              (target / 'ios.zip').write_bytes(archive.read('templates/ios.zip'))
+          with open(os.environ['GITHUB_ENV'], 'a') as env:
+              env.write(f'GODOT={root}/Godot.app/Contents/MacOS/Godot\n')
+          PY
+          ditto -x -k "$PWD/tmp/ios-toolchain/Godot_v${GODOT_VERSION}-stable_macos.universal.zip" "$PWD/tmp/ios-toolchain"
+      - name: Build device IPA without an Apple developer certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/connectivity_client/build_ios.py \
+            --godot "$GODOT" --output "$PWD/tmp/ios-build" \
+            --build-number "$GITHUB_RUN_NUMBER"
+      - name: Upload IPA and installation instructions
+        uses: actions/upload-artifact@v4
+        with:
+          name: GodotParty-Connectivity-iOS-SideStore
+          path: |
+            tmp/ios-build/*.ipa
+            tmp/ios-build/INSTALL.txt
+            tmp/ios-build/build-info.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: connectivity-ios-build-logs
+          path: tmp/ios-build/logs/
+          if-no-files-found: ignore
+          retention-days: 7

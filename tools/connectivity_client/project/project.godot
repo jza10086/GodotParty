@@ -1,0 +1,24 @@
+; Standalone mobile probe. Open this project, not the parent game's project.
+config_version=5
+
+[application]
+config/name="GodotParty 连通性测试"
+config/icon="res://icon.svg"
+config/quit_on_go_back=false
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+
+[display]
+window/size/viewport_width=720
+window/size/viewport_height=1280
+window/size/window_width_override=450
+window/size/window_height_override=800
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=1
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
+environment/defaults/default_clear_color=Color(0.09, 0.14, 0.18, 1)
