@@ -128,8 +128,10 @@ func validate_manifest(manifest: Dictionary) -> String:
 		if not contract is Dictionary or typeof(contract.get("api_major")) != TYPE_INT or typeof(contract.get("api_minor")) != TYPE_INT:
 			return "Invalid protocol contract"
 	if manifest["kind"] == "minigame":
-		if not manifest.get("adapters") is Array or manifest["adapters"].is_empty():
-			return "Minigame requires protocol adapters"
+		if not manifest.get("playable", true) is bool or not manifest.get("adapters") is Array:
+			return "Invalid minigame availability or adapters"
+		if manifest.get("playable", true) == manifest.adapters.is_empty():
+			return "Playable minigames require adapters; disabled prototypes must declare none"
 		var ids: Dictionary = {}
 		for adapter: Variant in manifest["adapters"]:
 			if not adapter is Dictionary or not _protocol_reference(adapter.get("protocol")):

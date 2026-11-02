@@ -1,6 +1,8 @@
 extends Control
 ## Shared standard-round transport/UI for the five original arcade games.
 ## Subclasses own gameplay, snapshots and ranking. No rewards or parent state live here.
+const Pages = preload("res://games/protocols/godot_party_default_protocol/round_pages.gd")
+var pages: Pages
 var api: PartyAPI
 var request: Dictionary = {}
 var settings: Dictionary = {}
@@ -41,7 +43,10 @@ func _ready() -> void:
 		api.fail("unsupported_mode", "只支持普通局")
 		return
 	build_game()
-	api.mark_ready()
+	pages = Pages.new()
+	var ready_error: Error = pages.prepare(self, api, request, _start_gameplay)
+	if ready_error != OK:
+		api.fail("load_failed", error_string(ready_error))
 
 func label(parent: Node, text: String, font_size: int = 24) -> Label:
 	var result: Label = preload("res://core/ui/ambient_reveal/components/display/label.tscn").instantiate()
@@ -69,6 +74,9 @@ func player_color(id: String) -> Color:
 	return Color(api.get_appearance(id).get("color", "#ffffff"))
 
 func party_start() -> void:
+	pages.transport_started()
+
+func _start_gameplay() -> void:
 	running = true
 	start_game()
 	if api.is_host():
@@ -155,7 +163,7 @@ func finish_rows(rows: Array, columns: Array = [], reason: String = "completed")
 		return
 	running = false
 	var result: Dictionary = {"request_id": request.request_id, "reason": reason, "rankings": rows, "columns": columns if not columns.is_empty() else [{"key": "score", "title": "积分", "format": "integer"}]}
-	var error: Error = api.finish(result)
+	var error: Error = pages.present(result)
 	if error != OK:
 		api.fail("result_rejected", error_string(error))
 

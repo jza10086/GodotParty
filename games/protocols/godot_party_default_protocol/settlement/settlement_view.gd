@@ -4,6 +4,7 @@ extends Control
 
 const LABEL: PackedScene = preload("res://core/ui/ambient_reveal/components/display/label.tscn")
 var _presentation: Dictionary = {}
+var _columns: Array = []
 var _names: Dictionary = {}
 var _seconds: float = -1.0
 var _initialized: bool = false
@@ -16,10 +17,10 @@ var _compact: bool = false
 @onready var _rows: VBoxContainer = %Rows
 @onready var _countdown: Label = %Countdown
 
-## Safe before insertion. Names come from the supplied player snapshot, scores only from
-## metrics.score. Missing values remain absent; no total, placement bonus or reward is invented.
+## Public columns come from the game result. Missing metrics are shown as a dash.
 func configure(presentation: Dictionary, players: Array[Dictionary]) -> void:
 	_presentation = presentation.duplicate(true)
+	_columns = _presentation.get("columns", [{"key": "score", "title": "本轮分数", "format": "integer"}])
 	_names.clear()
 	for player: Dictionary in players:
 		var id: Variant = player.get("player_id")
@@ -46,6 +47,15 @@ func _ready() -> void:
 func _render() -> void:
 	_title.text = str(_presentation.get("title", "本轮结算")).trim_prefix("GodotPartyDefault · ")
 	_title.tooltip_text = _title.text
+	for node: Node in %Heading.get_children():
+		if node.has_meta("metric"):
+			%Heading.remove_child(node)
+			node.queue_free()
+	%ScoreHeading.hide()
+	for index: int in _columns.size():
+		var label: Label = _label(%Heading, "Metric%d" % index, _columns[index].title)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		label.set_meta("metric", true)
 	for child: Node in _rows.get_children():
 		_rows.remove_child(child)
 		child.queue_free()
@@ -81,10 +91,13 @@ func _add_row(row: Dictionary) -> void:
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	name_label.tooltip_text = name_label.text
-	var score_label: Label = _label(line, "Score", _score_text(row))
-	score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	score_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	score_label.tooltip_text = score_label.text
+	for index: int in _columns.size():
+		var column: Dictionary = _columns[index]
+		var label: Label = _label(line, "Metric%d" % index, _metric(row.get("metrics", {}).get(column.key), column.format))
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		label.tooltip_text = label.text
+		label.set_meta("metric", true)
 
 func _rank(row: Dictionary) -> int:
 	var value: Variant = row.get("rank", 0)
@@ -92,16 +105,14 @@ func _rank(row: Dictionary) -> int:
 		return maxi(0, int(value))
 	return 0
 
-func _score_text(row: Dictionary) -> String:
-	var metrics: Variant = row.get("metrics", {})
-	if not metrics is Dictionary:
+func _metric(value: Variant, format: String) -> String:
+	if value == null:
 		return "—"
-	var value: Variant = metrics.get("score")
-	if value is String:
-		return value if not value.is_empty() else "—"
-	if value is int or (value is float and is_finite(value)):
-		return str(value)
-	return "—"
+	match format:
+		"integer": return str(int(value))
+		"decimal": return "%.2f" % float(value)
+		"time": return "%02d:%05.2f" % [int(value) / 60000, fmod(float(value) / 1000.0, 60.0)]
+	return str(value)
 
 func _label(parent: Node, node_name: String, text: String) -> Label:
 	var label: Label = LABEL.instantiate() as Label
@@ -126,16 +137,21 @@ func _resize_layout() -> void:
 	_title.add_theme_font_size_override("font_size", 34 if _compact else 46)
 	_countdown.add_theme_font_size_override("font_size", 18 if _compact else 21)
 	var rank_width: float = 72.0 if _compact else 96.0
-	var score_width: float = 174.0 if _compact else 220.0
+	var score_width: float = minf(180.0, _card.custom_minimum_size.x * 0.52 / maxi(1, _columns.size()))
 	%RankHeading.custom_minimum_size.x = rank_width
-	%ScoreHeading.custom_minimum_size.x = score_width
+
 	%Heading.add_theme_constant_override("separation", 20 if _compact else 28)
 	for label: Label in %Heading.get_children():
+		if label.has_meta("metric"):
+			label.custom_minimum_size.x = score_width
+			label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			label.tooltip_text = label.text
 		label.add_theme_font_size_override("font_size", 18 if _compact else 21)
 	for line: HBoxContainer in _rows.get_children():
 		line.custom_minimum_size.y = 44 if _compact else 64
 		line.add_theme_constant_override("separation", 20 if _compact else 28)
 		line.get_node("Rank").custom_minimum_size.x = rank_width
-		line.get_node("Score").custom_minimum_size.x = score_width
 		for label: Label in line.get_children():
+			if label.has_meta("metric"):
+				label.custom_minimum_size.x = score_width
 			label.add_theme_font_size_override("font_size", 23 if _compact else 29)

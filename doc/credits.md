@@ -67,3 +67,11 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 阿瓦隆操作音效：Kenney，Interface Sounds（CC0，click_001.ogg 用于选择，pluck_001.ogg 用于确认） https://kenney.nl/assets/interface-sounds
 阿瓦隆远征成功音效：Kenney，Music Jingles（CC0，原文件 jingles_PIZZA01.ogg） https://opengameart.org/content/85-short-music-jingles
 阿瓦隆远征失败音效：Till Behrend，Glass Break（TinyWorlds 经作者许可发布，CC0，原文件 glass_breaking.wav） https://opengameart.org/content/glass-break
+
+模型：IRON RANGE 坦克与训练目标，Quaternius Animated Tanks Pack https://quaternius.com/packs/animatedtanks.html
+模型：山脊竞速，Kenney Car Kit https://kenney.nl/assets/car-kit
+模型：山脊竞速，Kenney Racing Kit https://kenney.nl/assets/racing-kit
+模型：山脊竞速，Kenney Nature Kit https://kenney.nl/assets/nature-kit
+模型：静海交锋原型，Kenney Watercraft Kit https://kenney.nl/assets/watercraft-kit
+字体：山脊竞速、拾光拼图、铁鹰防线、静海交锋与纸牌会客厅的 Noto CJK 子集 https://github.com/notofonts/noto-cjk
+字体：小小炮火原型，DejaVu https://dejavu-fonts.github.io/

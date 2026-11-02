@@ -42,3 +42,43 @@
 	path = games/minigame/direction_password
 	url = https://github.com/jza10086/MemoryGame.git
 	branch = main
+[submodule "games/minigame/godot_party_default_jigsaw_puzzle"]
+	path = games/minigame/godot_party_default_jigsaw_puzzle
+	url = https://github.com/jza10086/JigsawPuzzle.git
+	branch = main
+[submodule "games/minigame/godot_party_default_lighthouse_isles"]
+	path = games/minigame/godot_party_default_lighthouse_isles
+	url = https://github.com/jza10086/3DPlatformer.git
+	branch = main
+[submodule "games/minigame/godot_party_default_tank_range"]
+	path = games/minigame/godot_party_default_tank_range
+	url = https://github.com/jza10086/3DTankBattle.git
+	branch = main
+[submodule "games/minigame/godot_party_default_car_racing"]
+	path = games/minigame/godot_party_default_car_racing
+	url = https://github.com/jza10086/CarRacing.git
+	branch = main
+[submodule "games/minigame/godot_party_default_flight"]
+	path = games/minigame/godot_party_default_flight
+	url = https://github.com/jza10086/FlightGame.git
+	branch = main
+[submodule "games/minigame/godot_party_default_russian_block"]
+	path = games/minigame/godot_party_default_russian_block
+	url = https://github.com/jza10086/RussianBlock.git
+	branch = main
+[submodule "games/minigame/godot_party_default_tank_battle"]
+	path = games/minigame/godot_party_default_tank_battle
+	url = https://github.com/jza10086/TankBattle.git
+	branch = main
+[submodule "games/minigame/godot_party_default_battleship_chess"]
+	path = games/minigame/godot_party_default_battleship_chess
+	url = https://github.com/jza10086/BattleshipChess.git
+	branch = main
+[submodule "games/minigame/godot_party_default_artillery_game"]
+	path = games/minigame/godot_party_default_artillery_game
+	url = https://github.com/jza10086/ArtilleryGame.git
+	branch = main
+[submodule "games/minigame/godot_party_default_card_game"]
+	path = games/minigame/godot_party_default_card_game
+	url = https://github.com/jza10086/GodotCardGame.git
+	branch = main

@@ -54,6 +54,8 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 }
 ```
 
+已登记但尚不能从框架开局的原型须声明 `playable: false` 和空的 `adapters` 数组，并提供包内状态场景作为 entry。目录仍可读取这些包，大游戏无法选择它们。可玩包默认 `playable: true`，至少声明一个真正支持的适配器。
+
 没有适配脚本时，setup 的 config 就是原协议请求，finish 的字典就是协议结果。
 协议、大游戏和小游戏均须声明 `player_counts`；配置依赖的限制与交集规则见 [可开局人数](player_counts.md)。
 需要转换时，接入条目提供 entry，指向实现 make_config(request)、map_result(raw_result, request) 的脚本。

@@ -91,7 +91,7 @@ resource 正常结果必须含全体参与者 resource_result，每人 `{coins, 
 
 ../examples/ 包含普通局、资源局请求/结果及超额非法结果。旧协议与资料测试已归档到 tmp/test/archive/，不再作为运行入口或当前验收依据。当前轮换与大厅定向检查在 tmp/test/playlist_room/；资源系统本轮未修改。
 
-当前正式轮换仅使用 standard 阿瓦隆局；资源契约和纯清算实现保留，尚未接入正式主游戏经济循环。
+当前正式轮换使用 standard 普通局；资源契约和纯清算实现保留，尚未接入正式主游戏经济循环。
 
 ## 共享画质（本地偏好）
 
@@ -164,4 +164,4 @@ Millionaire 当前仍是独立 F6 视觉原型：读取同一资料槽的协议�
 - helper不调用`finish()`或发奖。拥有者自行选择提交前展示，或在父游戏持有已提交结果后展示；必须保证节点在展示期间仍存活。同一轮使用唯一token，消息校验session/scope/token/revision和真实发送者，退出时调用`stop()`。
 - 纯view可单独使用：加载view提供`configure`/`set_state`与`ready_requested`；结算view提供`configure(presentation, players)`与`set_countdown`，不拥有网络或计时。
 
-空白模板是接入示例：自己持有加载和结算页面；在线参赛者各按一次结束按钮，房主按收到有效点击的顺序生成并广播排名，所有端自动看完结算后才`finish()`一次。页面使用已有主菜单背景/主题/面板，不引入外部资产。其他小游戏与正式轮换保持原实现。
+空白模板是接入示例：自己持有加载和结算页面；在线参赛者各按一次结束按钮，房主按收到有效点击的顺序生成并广播排名，所有端自动看完结算后才`finish()`一次。页面使用已有主菜单背景/主题/面板，不引入外部资产。正式游戏可以复用公开组件 `round_pages`。在初始化完成后调用 `prepare(game, api, request, start_play)`，在 party_start 调用 transport_started()。房主将游戏原结果交给 present(result)，公共页面按 columns 展示 rankings 中的指标，完整结果仅由房主提交。单人包可以直接使用 `solo_round`，为 gameplay 指定发出 completed(metrics) 的场景，为 columns 声明成绩列，并在清单中声明单人。
