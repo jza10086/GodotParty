@@ -1,0 +1,50 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r1"]
+
+[node name="GameCard" instance=ExtResource("r1")]
+theme_type_variation = &"PoolCard"
+toggle_mode = true
+custom_minimum_size = Vector2(210,202)
+size_flags_horizontal = 3
+
+[node name="Contents" parent="." type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -12.0
+offset_top = 14.0
+offset_bottom = -12.0
+mouse_filter = 2
+
+[node name="Cover" parent="Contents" type="TextureRect"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0,125)
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Caption" parent="Contents" type="Label"]
+unique_name_in_owner = true
+text = "小游戏"
+autowrap_mode = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+size_flags_vertical = 3
+max_lines_visible = 2
+text_overrun_behavior = 3
+mouse_filter = 2
+
+[node name="Check" parent="." instance=ExtResource("r1")]
+unique_name_in_owner = true
+text = ""
+toggle_mode = true
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -48.0
+offset_right = -6.0
+offset_top = 6.0
+offset_bottom = 48.0
+custom_minimum_size = Vector2(42,42)
+theme_type_variation = &"PoolCheck"
+tooltip_text = "加入 / 移出小游戏池"

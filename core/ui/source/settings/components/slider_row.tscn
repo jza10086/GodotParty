@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Theme" path="res://core/ui/source/ui/theme/party_theme.tres" id="shared_theme"]
+
+[ext_resource type="Script" path="res://core/ui/source/ui/theme/theme_spin_box.gd" id="spin_theme"]
+
+
+[node name="Row" type="HBoxContainer"]
+theme = ExtResource("shared_theme")
+custom_minimum_size = Vector2(0, 96)
+mouse_filter = 1
+theme_override_constants/separation = 24
+
+[node name="Label" type="Label" parent="."]
+theme_type_variation = "PartyLabelSetting"
+text = "设置名称"
+custom_minimum_size = Vector2(378, 64)
+size_flags_horizontal = 1
+size_flags_vertical = 4
+mouse_filter = 2
+vertical_alignment = 1
+
+[node name="Value" type="HSlider" parent="."]
+custom_minimum_size = Vector2(0, 64)
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 1
+scrollable = false
+
+[node name="Number" type="SpinBox" parent="."]
+script = ExtResource("spin_theme")
+theme_type_variation = "PartySpinBoxSetting"
+custom_minimum_size = Vector2(226, 64)
+size_flags_horizontal = 1
+size_flags_vertical = 4
+mouse_filter = 1
+select_all_on_focus = true

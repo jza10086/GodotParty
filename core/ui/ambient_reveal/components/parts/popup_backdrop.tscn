@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="ShaderMaterial" path="res://core/ui/ambient_reveal/theme/materials/panel.tres" id="material"]
+[ext_resource type="Script" path="res://core/ui/ambient_reveal/components/popup_backdrop.gd" id="script"]
+
+[node name="Backdrop" type="CanvasLayer"]
+layer = -1
+script = ExtResource("script")
+
+[node name="Surface" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+material = ExtResource("material")

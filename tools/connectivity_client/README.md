@@ -1,6 +1,6 @@
 # 极简连通性测试客户端
 
-用系统 Godot 打开 `project/project.godot`，运行主场景即可使用。它是独立工程，父目录的 `.gdignore` 让正式游戏不会导入或打包此工具。没有游戏内容、原生插件或配置持久化，也可以通过 Android 预设导出独立 APK。
+在主仓根目录运行 `python tools/connectivity_client/build_ios.py --prepare-project tmp/test/connectivity_client_run`，用系统 Godot 打开生成的 `tmp/test/connectivity_client_run/project.godot`。准备命令使用一个新的输出目录。它是独立工程，父目录的 `.gdignore` 让正式游戏不会导入或打包此工具。没有游戏内容、原生插件或配置持久化，也可以通过 Android 预设导出独立 APK。
 
 1. 在 GodotParty 主界面打开「监听测试」，选择 UDP 或 TCP、地址族及端口，开始监听。UDP 还需选择本机监听 / 回包 IP。
 2. 选择实际联网网卡的 IPv4 或 IPv6，复制客户端链接。回环地址只供本机使用，链路本地 IPv6 暂不支持。

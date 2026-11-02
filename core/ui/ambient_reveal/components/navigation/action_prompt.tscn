@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://core/ui/ambient_reveal/components/navigation/action_prompt.gd" id="logic"]
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[ext_resource type="StyleBox" path="res://core/ui/ambient_reveal/theme/materials/prompt_face.tres" id="face"]
+
+[node name="ActionPrompt" type="HBoxContainer"]
+script = ExtResource("logic")
+theme = ExtResource("theme")
+mouse_filter = 2
+theme_override_constants/separation = 9
+
+[node name="Key" type="Label" parent="."]
+custom_minimum_size = Vector2(38, 38)
+size_flags_vertical = 4
+theme_override_styles/normal = ExtResource("face")
+theme_override_colors/font_color = Color(0.63, 0.87, 0.58, 1)
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Symbol" type="TextureRect" parent="."]
+visible = false
+mouse_filter = 2
+stretch_mode = 3
+
+[node name="Action" type="Label" parent="."]
+text = "确认"
+vertical_alignment = 1

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bjy1w41d0bhky"]
+
+[ext_resource type="Script" path="res://tmp/test/framework_lab/games/maingame/godot_party_default_framework_lab/game.gd" id="1_pl5kl"]
+
+[node name="FrameworkLab" type="Node" unique_id=1095288131]
+script = ExtResource("1_pl5kl")

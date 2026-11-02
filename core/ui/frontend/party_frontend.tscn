@@ -1,0 +1,129 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://core/ui/frontend/party_frontend.gd" id="1"]
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/home_page.tscn" id="scene_home"]
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/modal_layer.tscn" id="scene_modal"]
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/rooms_page.tscn" id="scene_rooms"]
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
+
+[node name="PartyUI" type="Control" unique_id=1811586604]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("theme")
+script = ExtResource("1")
+
+[node name="Home" parent="." unique_id=1287724236 instance=ExtResource("scene_home")]
+anchors_preset = 0
+
+[node name="Rooms" parent="." unique_id=1488218460 instance=ExtResource("scene_rooms")]
+visible = false
+anchors_preset = 0
+
+[node name="Lobby" type="Control" parent="." unique_id=981358819]
+visible = false
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
+[node name="Modal" parent="." unique_id=54842109 instance=ExtResource("scene_modal")]
+visible = false
+anchors_preset = 0
+
+[node name="Toast" parent="." unique_id=1899311329 instance=ExtResource("ar_panel")]
+visible = false
+layout_mode = 0
+offset_left = 610.0
+offset_top = 148.0
+offset_right = 1310.0
+offset_bottom = 210.0
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="Toast" unique_id=986847010]
+layout_mode = 0
+offset_left = 12.0
+offset_right = 688.0
+offset_bottom = 62.0
+text = "演示结束！返回大厅再来一局。"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Guide" type="Control" parent="." unique_id=1240779585]
+visible = false
+z_index = 5
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
+[node name="X96" type="ColorRect" parent="Guide" unique_id=771956903]
+layout_mode = 0
+offset_left = 96.0
+offset_right = 97.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(0.05, 0.09, 0.15, 0.32)
+
+[node name="X528" type="ColorRect" parent="Guide" unique_id=982931251]
+layout_mode = 0
+offset_left = 528.0
+offset_right = 529.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(0.05, 0.09, 0.15, 0.32)
+
+[node name="X1824" type="ColorRect" parent="Guide" unique_id=1014826982]
+layout_mode = 0
+offset_left = 1824.0
+offset_right = 1825.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(0.05, 0.09, 0.15, 0.32)
+
+[node name="Y204" type="ColorRect" parent="Guide" unique_id=1478871267]
+layout_mode = 0
+offset_top = 204.0
+offset_right = 1920.0
+offset_bottom = 205.0
+mouse_filter = 2
+color = Color(0.05, 0.09, 0.15, 0.32)
+
+[node name="Y400" type="ColorRect" parent="Guide" unique_id=120908426]
+layout_mode = 0
+offset_top = 400.0
+offset_right = 1920.0
+offset_bottom = 401.0
+mouse_filter = 2
+color = Color(0.05, 0.09, 0.15, 0.32)
+
+[node name="Y852" type="ColorRect" parent="Guide" unique_id=820821546]
+layout_mode = 0
+offset_top = 852.0
+offset_right = 1920.0
+offset_bottom = 853.0
+mouse_filter = 2
+color = Color(0.05, 0.09, 0.15, 0.32)
+
+[node name="Y902" type="ColorRect" parent="Guide" unique_id=1511800680]
+layout_mode = 0
+offset_top = 902.0
+offset_right = 1920.0
+offset_bottom = 903.0
+mouse_filter = 2
+color = Color(0.05, 0.09, 0.15, 0.32)
+
+[node name="Measure" type="Label" parent="Guide" unique_id=1550427151]
+layout_mode = 0
+offset_left = 620.0
+offset_top = 40.0
+offset_right = 1820.0
+offset_bottom = 84.0
+theme_override_font_sizes/font_size = 17
+text = "1920 × 1080  |  MENU 432  |  DISPLAY 1920 × 1080"

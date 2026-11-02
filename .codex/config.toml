@@ -1,13 +1,11 @@
 [mcp_servers.godot-mcp-toolkit]
-command = "cmd"
-args = ["/c", "godot-mcp-server"]
+command = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+args = ["-NoProfile", "-ExecutionPolicy", "RemoteSigned", "-File", "F:\\GodotProjects\\GodotTools\\editor_launcher\\launch.ps1", "-Project", "godot_party", "-Mode", "McpServer"]
 startup_timeout_sec = 20
 tool_timeout_sec = 120
 required = false
 default_tools_approval_mode = "auto"
 
-[mcp_servers.godot-mcp-toolkit.env]
-GODOT_MCP_CONFIG_VERSION = "1"
 
 # Keep potentially verbose structured reads bounded. Prefer targeted scene,
 # console, and diagnostic queries before raising these limits.

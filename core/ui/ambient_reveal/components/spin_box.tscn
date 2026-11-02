@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/parts/input_surface.tscn" id="surface"]
+
+[node name="SpinBox" type="SpinBox"]
+theme = ExtResource("theme")
+custom_minimum_size = Vector2(130, 0)
+
+[node name="Surface" parent="." instance=ExtResource("surface")]

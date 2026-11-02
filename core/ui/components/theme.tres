@@ -1,0 +1,112 @@
+[gd_resource type="Theme" format=3 uid="uid://cgbtytpanmdsr"]
+
+[ext_resource type="FontFile" uid="uid://c17eysy48py6j" path="res://core/ui/components/assets/NotoSansSC-UI.otf" id="2"]
+
+[sub_resource type="StyleBoxFlat" id="muted"]
+bg_color = Color(0.84, 0.84, 0.81, 1)
+
+[sub_resource type="StyleBoxFlat" id="focus"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.48, 0.48, 0.46, 1)
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="hover"]
+bg_color = Color(0.73, 0.73, 0.7, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.1, 0.1, 0.1, 1)
+
+[sub_resource type="StyleBoxFlat" id="card"]
+bg_color = Color(0.965, 0.965, 0.945, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.25, 0.25, 0.24, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_abf1d"]
+content_margin_left = 42.0
+content_margin_top = 14.0
+content_margin_right = 42.0
+content_margin_bottom = 14.0
+bg_color = Color(0.73, 0.73, 0.7, 1)
+
+[sub_resource type="StyleBoxFlat" id="tab_active"]
+content_margin_left = 42.0
+content_margin_top = 14.0
+content_margin_right = 42.0
+content_margin_bottom = 14.0
+bg_color = Color(0.14, 0.14, 0.14, 1)
+
+[sub_resource type="StyleBoxFlat" id="tab_inactive"]
+content_margin_left = 42.0
+content_margin_top = 14.0
+content_margin_right = 42.0
+content_margin_bottom = 14.0
+bg_color = Color(0.84, 0.84, 0.81, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pib4w"]
+content_margin_left = 42.0
+content_margin_top = 14.0
+content_margin_right = 42.0
+content_margin_bottom = 14.0
+bg_color = Color(0.73, 0.73, 0.7, 1)
+
+[resource]
+default_font = ExtResource("2")
+default_font_size = 24
+Button/colors/font_color = Color(0.16, 0.16, 0.16, 1)
+Button/colors/font_disabled_color = Color(0.4, 0.4, 0.38, 1)
+Button/colors/font_focus_color = Color(0.16, 0.16, 0.16, 1)
+Button/colors/font_hover_color = Color(0.1, 0.1, 0.1, 1)
+Button/colors/font_hover_pressed_color = Color(0.1, 0.1, 0.1, 1)
+Button/colors/font_pressed_color = Color(0.1, 0.1, 0.1, 1)
+Button/styles/disabled = SubResource("muted")
+Button/styles/focus = SubResource("focus")
+Button/styles/hover = SubResource("hover")
+Button/styles/normal = SubResource("card")
+Button/styles/pressed = SubResource("hover")
+CheckButton/colors/font_focus_color = Color(0.16, 0.16, 0.16, 1)
+CheckButton/colors/font_hover_color = Color(0.16, 0.16, 0.16, 1)
+CheckButton/colors/font_pressed_color = Color(0.16, 0.16, 0.16, 1)
+Label/colors/font_color = Color(0.16, 0.16, 0.16, 1)
+Label/colors/font_outline_color = Color(0, 0, 0, 0)
+LineEdit/colors/font_color = Color(0.16, 0.16, 0.16, 1)
+LineEdit/constants/minimum_character_width = 6
+LineEdit/styles/focus = SubResource("focus")
+LineEdit/styles/normal = SubResource("card")
+OptionButton/colors/font_color = Color(0.16, 0.16, 0.16, 1)
+OptionButton/colors/font_focus_color = Color(0.16, 0.16, 0.16, 1)
+OptionButton/colors/font_hover_color = Color(0.16, 0.16, 0.16, 1)
+OptionButton/colors/font_pressed_color = Color(0.16, 0.16, 0.16, 1)
+OptionButton/styles/hover = SubResource("card")
+OptionButton/styles/normal = SubResource("card")
+OptionButton/styles/pressed = SubResource("card")
+PanelContainer/styles/panel = SubResource("card")
+PopupMenu/colors/font_color = Color(0.16, 0.16, 0.16, 1)
+PopupMenu/colors/font_hover_color = Color(0.1, 0.1, 0.1, 1)
+PopupMenu/constants/v_separation = 18
+PopupMenu/styles/hover = SubResource("hover")
+PopupMenu/styles/panel = SubResource("card")
+TabBar/colors/font_hovered_color = Color(0.1, 0.1, 0.1, 1)
+TabBar/colors/font_selected_color = Color(0.96, 0.96, 0.94, 1)
+TabBar/colors/font_unselected_color = Color(0.16, 0.16, 0.16, 1)
+TabBar/styles/tab_hovered = SubResource("StyleBoxFlat_abf1d")
+TabBar/styles/tab_selected = SubResource("tab_active")
+TabBar/styles/tab_unselected = SubResource("tab_inactive")
+TabContainer/colors/font_hovered_color = Color(0.1, 0.1, 0.1, 1)
+TabContainer/colors/font_selected_color = Color(0.96, 0.96, 0.94, 1)
+TabContainer/colors/font_unselected_color = Color(0.16, 0.16, 0.16, 1)
+TabContainer/styles/panel = SubResource("card")
+TabContainer/styles/tab_hovered = SubResource("StyleBoxFlat_pib4w")
+TabContainer/styles/tab_selected = SubResource("tab_active")
+TabContainer/styles/tab_unselected = SubResource("tab_inactive")

@@ -1,0 +1,74 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient_theme"]
+[ext_resource type="Script" path="res://core/ui/ambient_reveal/pad_keyboard.gd" id="keyboard"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/keyboard/text_keys.tscn" id="text_keys"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/keyboard/number_keys.tscn" id="number_keys"]
+
+[sub_resource type="StyleBoxFlat" id="Panel"]
+bg_color = Color(0.075, 0.12, 0.17, 0.98)
+content_margin_left = 28.0
+content_margin_top = 22.0
+content_margin_right = 28.0
+content_margin_bottom = 22.0
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_left = 16
+corner_radius_bottom_right = 16
+
+[node name="PadKeyboard" type="ColorRect"]
+visible = false
+theme = ExtResource("ambient_theme")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.015, 0.035, 0.06, 0.68)
+script = ExtResource("keyboard")
+
+[node name="Center" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Panel" type="PanelContainer" parent="Center"]
+custom_minimum_size = Vector2(912, 0)
+theme_override_styles/panel = SubResource("Panel")
+
+[node name="Layout" type="VBoxContainer" parent="Center/Panel"]
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Center/Panel/Layout"]
+text = "屏幕键盘"
+theme_type_variation = &"SectionTitle"
+
+[node name="Single" type="LineEdit" parent="Center/Panel/Layout"]
+unique_name_in_owner = true
+focus_mode = 0
+mouse_filter = 2
+virtual_keyboard_enabled = false
+deselect_on_focus_loss_enabled = false
+caret_force_displayed = true
+
+[node name="Multi" type="TextEdit" parent="Center/Panel/Layout"]
+visible = false
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+focus_mode = 0
+mouse_filter = 2
+virtual_keyboard_enabled = false
+wrap_mode = 1
+
+[node name="Keys" type="VBoxContainer" parent="Center/Panel/Layout"]
+unique_name_in_owner = true
+
+[node name="TextKeys" parent="Center/Panel/Layout/Keys" instance=ExtResource("text_keys")]
+
+[node name="NumberKeys" parent="Center/Panel/Layout/Keys" instance=ExtResource("number_keys")]
+visible = false
+
+[node name="Hint" type="Label" parent="Center/Panel/Layout"]
+text = "方向键 / 左摇杆  选键     A  输入     B  取消"
+horizontal_alignment = 1
+autowrap_mode = 3
+theme_type_variation = &"MutedLabel"

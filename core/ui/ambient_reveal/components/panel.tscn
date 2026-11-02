@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[ext_resource type="ShaderMaterial" path="res://core/ui/ambient_reveal/theme/materials/panel.tres" id="surface"]
+
+[node name="Card" type="Panel"]
+theme = ExtResource("theme")
+theme_type_variation = &"PartyPanel"
+
+material = ExtResource("surface")

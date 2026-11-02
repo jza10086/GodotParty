@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+[node name="Label" type="Label"]
+theme = ExtResource("theme")
+text = "文本"

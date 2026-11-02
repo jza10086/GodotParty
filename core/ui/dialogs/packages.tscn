@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/party_dialog.tscn" id="r1"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="r2"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r3"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r4"]
+
+[node name="Packages" instance=ExtResource("r1")]
+
+
+[node name="Path" parent="Panel/Layout/Scroll/Content" instance=ExtResource("r2")]
+unique_name_in_owner = true
+placeholder_text = "已导出的 .pck 文件绝对路径（旁边须有 .pck.json）"
+
+[node name="Status" parent="Panel/Layout/Scroll/Content" type="Label"]
+unique_name_in_owner = true
+text = ""
+autowrap_mode = 3
+
+[node name="Install" parent="Panel/Layout/Scroll/Content" instance=ExtResource("r3")]
+unique_name_in_owner = true
+text = "安装 PCK 及描述文件"
+
+[node name="Sources" parent="Panel/Layout/Scroll/Content" type="HBoxContainer"]
+
+
+[node name="Package" parent="Panel/Layout/Scroll/Content/Sources" instance=ExtResource("r4")]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+
+[node name="Source" parent="Panel/Layout/Scroll/Content/Sources" instance=ExtResource("r4")]
+unique_name_in_owner = true
+

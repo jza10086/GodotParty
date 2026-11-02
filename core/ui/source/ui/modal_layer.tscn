@@ -1,0 +1,55 @@
+[gd_scene format=3]
+
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/dialogs/quit_dialog.tscn" id="scene_modal_confirm"]
+
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/dialogs/protocol_dialog.tscn" id="scene_modal_protocol"]
+
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/dialogs/advanced_dialog.tscn" id="scene_modal_advanced"]
+
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/dialogs/preset_dialog.tscn" id="scene_modal_preset"]
+
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/dialogs/create_room_dialog.tscn" id="scene_modal_create"]
+
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/dialogs/direct_join_dialog.tscn" id="scene_modal_direct"]
+
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/dialogs/profile_dialog.tscn" id="scene_modal_profile"]
+
+[node name="Modal" type="Control"]
+theme = ExtResource("theme")
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 0
+
+[node name="Scrim" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+
+color = Color(0.015, 0.025, 0.045, 0.76)
+
+[node name="Confirm" parent="." instance=ExtResource("scene_modal_confirm")]
+visible = false
+
+[node name="Protocol" parent="." instance=ExtResource("scene_modal_protocol")]
+visible = false
+
+[node name="Advanced" parent="." instance=ExtResource("scene_modal_advanced")]
+visible = false
+
+[node name="Preset" parent="." instance=ExtResource("scene_modal_preset")]
+visible = false
+
+[node name="Create" parent="." instance=ExtResource("scene_modal_create")]
+visible = false
+
+[node name="Direct" parent="." instance=ExtResource("scene_modal_direct")]
+visible = false
+
+[node name="Profile" parent="." instance=ExtResource("scene_modal_profile")]
+visible = false

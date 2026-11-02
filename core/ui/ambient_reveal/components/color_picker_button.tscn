@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[ext_resource type="Script" path="res://core/ui/ambient_reveal/components/menu_backdrop.gd" id="menu_backdrop"]
+
+[node name="ColorPickerButton" type="ColorPickerButton"]
+theme = ExtResource("theme")
+custom_minimum_size = Vector2(80, 40)
+
+[node name="MenuBackdrop" type="Node" parent="."]
+script = ExtResource("menu_backdrop")

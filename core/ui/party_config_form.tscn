@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://core/ui/party_config_form.gd" id="r1"]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+[node name="PartyConfigForm" type="VBoxContainer"]
+theme = ExtResource("theme")
+script = ExtResource("r1")
+
+[node name="Entries" parent="." type="VBoxContainer"]
+unique_name_in_owner = true
+
+
+[node name="Error" parent="." type="Label"]
+unique_name_in_owner = true
+text = ""
+autowrap_mode = 3
+visible = false

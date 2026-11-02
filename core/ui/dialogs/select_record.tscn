@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/party_dialog.tscn" id="r1"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r2"]
+
+[node name="SelectRecord" instance=ExtResource("r1")]
+
+
+[node name="Choices" parent="Panel/Layout/Scroll/Content" instance=ExtResource("r2")]
+unique_name_in_owner = true
+

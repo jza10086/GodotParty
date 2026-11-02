@@ -1,0 +1,50 @@
+[gd_resource type="Theme" format=3 uid="uid://biqas5pnlna5i"]
+
+[sub_resource type="StyleBoxEmpty" id="NoRing"]
+
+[sub_resource type="StyleBoxFlat" id="KeyRest"]
+bg_color = Color(0.17, 0.23, 0.3, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.57, 0.68, 0.49)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="KeyPressed"]
+bg_color = Color(0.15, 0.3, 0.43, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.72, 0.85, 0.96, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="KeyActive"]
+bg_color = Color(0.19, 0.37, 0.51, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.58, 0.78, 0.93, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[resource]
+KeyboardKey/base_type = &"Button"
+KeyboardKey/styles/focus = SubResource("NoRing")
+KeyboardKey/styles/hover = SubResource("KeyRest")
+KeyboardKey/styles/hover_pressed = SubResource("KeyPressed")
+KeyboardKey/styles/normal = SubResource("KeyRest")
+KeyboardKey/styles/pressed = SubResource("KeyPressed")
+KeyboardKeyActive/base_type = &"KeyboardKey"
+KeyboardKeyActive/styles/hover = SubResource("KeyActive")
+KeyboardKeyActive/styles/normal = SubResource("KeyActive")

@@ -1,0 +1,28 @@
+{
+  "request_id": "round-example-1",
+  "mode": "resource",
+  "resource_grant": {
+    "alice": {
+      "coins": 10,
+      "diamonds": 2,
+      "coin_limit": 80,
+      "diamond_limit": 2,
+      "collateral": [
+        {
+          "instance_id": "item-alice-1",
+          "definition_id": "main.lucky_token",
+          "coin_value": 30
+        }
+      ]
+    },
+    "bob": {
+      "coins": 0,
+      "diamonds": 0,
+      "coin_limit": 0,
+      "diamond_limit": 0,
+      "collateral": []
+    }
+  },
+  "item_offers": {},
+  "game_data": {}
+}

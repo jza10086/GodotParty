@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://dv03nprgvrxfb"]
+
+[ext_resource type="Script" uid="uid://b0e3whuytsfc" path="res://games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars/character_3d.gd" id="1_8f01a"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_njwmu"]
+
+[node name="GodotPartyDefaultCharacter3D" type="Node3D" unique_id=1908989138]
+script = ExtResource("1_8f01a")
+
+[node name="Body" type="MeshInstance3D" parent="." unique_id=1664402649]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_njwmu")

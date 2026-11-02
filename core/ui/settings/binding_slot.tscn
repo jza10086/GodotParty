@@ -1,0 +1,35 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://core/ui/settings/binding_slot.gd" id="script"]
+[ext_resource type="Script" path="res://core/ui/party_binding_button.gd" id="capture"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="ar_option_button"]
+
+[ext_resource type="Theme" path="res://core/ui/settings/field_theme.tres" id="field_theme"]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+[node name="BindingSlot" type="VBoxContainer"]
+theme = ExtResource("theme")
+size_flags_horizontal = 3
+script = ExtResource("script")
+[node name="Controls" type="HBoxContainer" parent="."]
+[node name="Kind" parent="Controls" instance=ExtResource("ar_option_button")]
+theme = ExtResource("field_theme")
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 48)
+[node name="Capture" parent="Controls" instance=ExtResource("ar_button")]
+theme = ExtResource("field_theme")
+unique_name_in_owner = true
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(140, 48)
+script = ExtResource("capture")
+[node name="Mouse" parent="Controls" instance=ExtResource("ar_option_button")]
+theme = ExtResource("field_theme")
+unique_name_in_owner = true
+size_flags_horizontal = 3
+[node name="Clear" parent="Controls" instance=ExtResource("ar_button")]
+theme = ExtResource("field_theme")
+unique_name_in_owner = true
+text = "清空"

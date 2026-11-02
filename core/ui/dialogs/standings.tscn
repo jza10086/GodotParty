@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/party_dialog.tscn" id="r1"]
+
+[node name="Standings" instance=ExtResource("r1")]
+
+
+[node name="Rows" parent="Panel/Layout/Scroll/Content" type="Label"]
+unique_name_in_owner = true
+text = "暂无排名"
+autowrap_mode = 3

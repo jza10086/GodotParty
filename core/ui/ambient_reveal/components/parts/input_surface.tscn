@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="ShaderMaterial" path="res://core/ui/ambient_reveal/theme/materials/input.tres" id="material"]
+[ext_resource type="Script" path="res://core/ui/ambient_reveal/components/control_feedback.gd" id="logic"]
+
+[node name="Surface" type="ColorRect"]
+color = Color(0.58, 0.78, 0.93, 0.025)
+show_behind_parent = true
+mouse_filter = 2
+material = ExtResource("material")
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("logic")

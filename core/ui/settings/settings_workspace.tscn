@@ -1,0 +1,202 @@
+[gd_scene format=3 uid="uid://dryfdtb8xs7r5"]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
+[ext_resource type="Script" uid="uid://lg835gj4y6vj" path="res://core/ui/settings/settings_workspace.gd" id="1_hcrb8"]
+
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
+
+[sub_resource type="StyleBoxFlat" id="TabOutline"]
+bg_color = Color(0.16, 0.30, 0.43, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="TabUncovered"]
+bg_color = Color(0.65, 0.75, 0.83, 0.8)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="TabPosition"]
+bg_color = Color(0.16, 0.30, 0.43, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="SettingsWorkspace" type="VBoxContainer" unique_id=26134058]
+theme = ExtResource("ambient")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 14
+script = ExtResource("1_hcrb8")
+
+[node name="Heading" type="Label" parent="." unique_id=1028441297]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "设置"
+
+[node name="Tools" type="HBoxContainer" parent="." unique_id=44119147]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Navigation" type="HBoxContainer" parent="." unique_id=688932322]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Previous" parent="Navigation" unique_id=1988657222 instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 56)
+layout_mode = 2
+text = "‹"
+
+[node name="TabScroll" type="ScrollContainer" parent="Navigation" unique_id=1235987066]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 0
+
+[node name="Tabs" type="HBoxContainer" parent="Navigation/TabScroll" unique_id=1923070698]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Next" parent="Navigation" unique_id=647945381 instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 56)
+layout_mode = 2
+text = "›"
+
+[node name="TrackMargin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 60
+theme_override_constants/margin_right = 60
+mouse_filter = 2
+
+[node name="TabTrack" type="Panel" parent="TrackMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 10)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("TabOutline")
+
+[node name="TabRemaining" type="Panel" parent="TrackMargin/TabTrack"]
+unique_name_in_owner = true
+visible = false
+mouse_filter = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("TabUncovered")
+
+[node name="TabThumb" type="Panel" parent="TrackMargin/TabTrack"]
+unique_name_in_owner = true
+mouse_filter = 2
+theme_override_styles/panel = SubResource("TabPosition")
+
+[node name="Columns" type="HBoxContainer" parent="." unique_id=1781007332]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 28
+
+[node name="List" type="ScrollContainer" parent="Columns" unique_id=2075480693]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+horizontal_scroll_mode = 0
+
+[node name="Forms" type="VBoxContainer" parent="Columns/List" unique_id=2104288638]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="Divider" type="VSeparator" parent="Columns" unique_id=1822692835]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HelpScroll" type="ScrollContainer" parent="Columns" unique_id=980142602]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_scroll_mode = 0
+
+[node name="Help" type="VBoxContainer" parent="Columns/HelpScroll" unique_id=645349749]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 20
+
+[node name="HelpTitle" type="Label" parent="Columns/HelpScroll/Help" unique_id=697332796]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "设置说明"
+autowrap_mode = 3
+
+[node name="HelpDivider" type="HSeparator" parent="Columns/HelpScroll/Help" unique_id=2023068501]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HelpDescription" type="Label" parent="Columns/HelpScroll/Help" unique_id=1631199388]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "悬停或聚焦设置项，查看说明。"
+autowrap_mode = 3
+
+[node name="HelpDetail" type="Label" parent="Columns/HelpScroll/Help" unique_id=1648661806]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 3
+
+[node name="FooterDivider" type="HSeparator" parent="." unique_id=489654200]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Status" type="Label" parent="." unique_id=1031623727]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+autowrap_mode = 3
+
+[node name="Actions" type="HBoxContainer" parent="." unique_id=470705506]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Reset" parent="Actions" unique_id=1342785849 instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 56)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "恢复默认设置"
+
+[node name="Spacer" type="Control" parent="Actions" unique_id=1136172513]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Back" parent="Actions" unique_id=606336982 instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 56)
+layout_mode = 2
+text = "返回"
+theme_override_font_sizes/font_size = 22

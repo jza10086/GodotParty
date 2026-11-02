@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://core/ui/ambient_reveal/theme/materials/control_reveal.gdshader" id="surface"]
+
+[resource]
+resource_local_to_scene = true
+shader = ExtResource("surface")
+shader_parameter/input_surface = true
+shader_parameter/radius = 12.0
+shader_parameter/hover_amount = 0.0
+shader_parameter/focus_amount = 0.0

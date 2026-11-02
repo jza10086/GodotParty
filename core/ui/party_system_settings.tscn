@@ -1,0 +1,102 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://core/ui/party_system_settings.gd" id="r1"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="r2"]
+[ext_resource type="PackedScene" path="res://core/ui/settings/settings_workspace.tscn" id="r3"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r4"]
+
+[node name="PartySystemSettings" type="Control"]
+script = ExtResource("r1")
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Background" parent="." instance=ExtResource("r2")]
+
+
+[node name="Workspace" parent="." instance=ExtResource("r3")]
+unique_name_in_owner = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40
+offset_right = -40
+offset_top = 28
+offset_bottom = -28
+
+[node name="PlaybackActions" parent="Workspace/Columns/List/Forms" type="HBoxContainer"]
+unique_name_in_owner = true
+theme_override_constants/separation = 14
+
+[node name="PreviewSound" parent="Workspace/Columns/List/Forms/PlaybackActions" instance=ExtResource("r4")]
+custom_minimum_size = Vector2(180, 56)
+theme_type_variation = &"SettingsAction"
+unique_name_in_owner = true
+text = "试听提示音"
+
+[node name="RefreshDevices" parent="Workspace/Columns/List/Forms/PlaybackActions" instance=ExtResource("r4")]
+custom_minimum_size = Vector2(180, 56)
+theme_type_variation = &"SettingsAction"
+unique_name_in_owner = true
+text = "刷新音频设备"
+tooltip_text = "同时刷新播放和录制设备列表"
+
+[node name="MicCheck" parent="Workspace/Columns/List/Forms" type="VBoxContainer"]
+unique_name_in_owner = true
+theme_override_constants/separation = 14
+
+[node name="MonitorTitle" parent="Workspace/Columns/List/Forms/MicCheck" type="Label"]
+text = "麦克风检测"
+
+[node name="MonitorGuide" parent="Workspace/Columns/List/Forms/MicCheck" type="Label"]
+text = "使用已应用的麦克风和输出设备。建议戴上耳机，避免扬声器回声。监听期间，你的声音只在本机播放。"
+autowrap_mode = 3
+
+[node name="MonitorToggle" parent="Workspace/Columns/List/Forms/MicCheck" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "开始监听"
+
+[node name="LevelTitle" parent="Workspace/Columns/List/Forms/MicCheck" type="Label"]
+text = "麦克风输入电平（−60 至 0 dB）"
+
+[node name="InputLevel" parent="Workspace/Columns/List/Forms/MicCheck" type="ProgressBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+min_value = -60.0
+max_value = 0.0
+value = -60.0
+show_percentage = false
+
+[node name="MonitorStatus" parent="Workspace/Columns/List/Forms/MicCheck" type="Label"]
+unique_name_in_owner = true
+text = "点击开始监听，然后对着麦克风说话。"
+autowrap_mode = 3
+
+[node name="Identity" parent="Workspace/Columns/List/Forms" type="VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+
+[node name="IdentityText" parent="Workspace/Columns/List/Forms/Identity" type="Label"]
+unique_name_in_owner = true
+text = "唯一辨识 ID"
+autowrap_mode = 3
+
+[node name="CopyIdentity" parent="Workspace/Columns/List/Forms/Identity" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "复制 ID"
+
+[node name="Packages" parent="Workspace/Columns/List/Forms" type="VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+
+[node name="Install" parent="Workspace/Columns/List/Forms/Packages" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "安装内容包 / 选择来源"
+
+[node name="Restore" parent="Workspace/Columns/List/Forms/Packages" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "恢复房主存档"
+
+[node name="Save" parent="Workspace/Actions" instance=ExtResource("r4")]
+custom_minimum_size = Vector2(180, 56)
+theme_type_variation = &"SettingsAction"
+unique_name_in_owner = true
+text = "应用并保存"

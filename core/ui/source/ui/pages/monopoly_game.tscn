@@ -1,0 +1,119 @@
+[gd_scene load_steps=10 format=3]
+[ext_resource type="Theme" path="res://core/ui/source/ui/theme/party_theme.tres" id="theme"]
+[ext_resource type="StyleBox" path="res://core/ui/source/ui/theme/monopoly_glass.tres" id="glass"]
+[ext_resource type="Script" path="res://core/ui/source/ui/pages/monopoly_game.gd" id="script"]
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/components/monopoly_wallet.tscn" id="wallet"]
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/components/monopoly_event_modal.tscn" id="event"]
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/components/monopoly_image_button.tscn" id="image_button"]
+[ext_resource type="Texture2D" path="res://core/ui/source/assets/ui/monopoly/backpack.svg" id="backpack"]
+[ext_resource type="StyleBox" path="res://core/ui/source/ui/theme/monopoly_option_normal.tres" id="hint"]
+[sub_resource type="StyleBoxFlat" id="hint_backing"]
+bg_color = Color(0.055, 0.105, 0.16, 0.78)
+content_margin_left = 12.0
+content_margin_right = 12.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+[node name="MonopolyHUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme = ExtResource("theme")
+script = ExtResource("script")
+[node name="Wallet" parent="." instance=ExtResource("wallet")]
+layout_mode = 1
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 424.0
+offset_bottom = 80.0
+[node name="Leaderboard" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -478.0
+offset_right = -24.0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+[node name="Body" type="PanelContainer" parent="Leaderboard"]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("glass")
+[node name="Margin" type="MarginContainer" parent="Leaderboard/Body"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_bottom = 12
+[node name="Rows" type="VBoxContainer" parent="Leaderboard/Body/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+[node name="Inventory" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -128.0
+offset_right = 128.0
+offset_bottom = -24.0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 18
+[node name="Toggle" parent="Inventory" instance=ExtResource("image_button")]
+layout_mode = 2
+texture_normal = ExtResource("backpack")
+tooltip_text = "展开背包"
+[node name="Body" type="PanelContainer" parent="Inventory"]
+visible = false
+layout_mode = 2
+custom_minimum_size = Vector2(760, 104)
+theme_override_styles/panel = ExtResource("glass")
+[node name="Margin" type="MarginContainer" parent="Inventory/Body"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_bottom = 12
+[node name="Scroll" type="ScrollContainer" parent="Inventory/Body/Margin"]
+layout_mode = 2
+horizontal_scroll_mode = 1
+vertical_scroll_mode = 0
+[node name="Items" type="HBoxContainer" parent="Inventory/Body/Margin/Scroll"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+[node name="Roll" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -264.0
+offset_right = -24.0
+offset_top = -194.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_constants/separation = 8
+[node name="Hint" type="Label" parent="Roll"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"PartyLabelMicro"
+theme_override_colors/font_color = Color(0.95, 0.98, 1, 1)
+theme_override_styles/normal = SubResource("hint_backing")
+text = "等待游戏状态"
+text_overrun_behavior = 3
+horizontal_alignment = 2
+[node name="Button" parent="Roll" instance=ExtResource("image_button")]
+layout_mode = 2
+custom_minimum_size = Vector2(112, 112)
+size_flags_horizontal = 8
+disabled = true
+tooltip_text = "掷骰子"
+[node name="EventModal" parent="." instance=ExtResource("event")]
+layout_mode = 1

@@ -1,0 +1,50 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
+[ext_resource type="Script" path="res://core/ui/party_preset_bar.gd" id="r1"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r2"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r3"]
+
+[node name="PartyPresetBar" type="VBoxContainer"]
+theme = ExtResource("ambient")
+script = ExtResource("r1")
+
+[node name="Actions" parent="." type="HFlowContainer"]
+
+
+[node name="Picker" parent="Actions" instance=ExtResource("r2")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220,0)
+
+[node name="LoadDraft" parent="Actions" instance=ExtResource("r3")]
+unique_name_in_owner = true
+text = "加载到草稿"
+
+[node name="SaveAs" parent="Actions" instance=ExtResource("r3")]
+unique_name_in_owner = true
+text = "另存为"
+
+[node name="Overwrite" parent="Actions" instance=ExtResource("r3")]
+unique_name_in_owner = true
+text = "覆盖"
+
+[node name="Rename" parent="Actions" instance=ExtResource("r3")]
+unique_name_in_owner = true
+text = "重命名"
+
+[node name="Delete" parent="Actions" instance=ExtResource("r3")]
+unique_name_in_owner = true
+text = "删除"
+
+[node name="Refresh" parent="Actions" instance=ExtResource("r3")]
+unique_name_in_owner = true
+text = "刷新"
+
+[node name="Folder" parent="Actions" instance=ExtResource("r3")]
+unique_name_in_owner = true
+text = "打开文件夹"
+
+[node name="Status" parent="." type="Label"]
+unique_name_in_owner = true
+text = ""
+autowrap_mode = 3

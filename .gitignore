@@ -1,23 +1,25 @@
-# Godot 4.2+ specific ignores
-~*.dll
-
-# Godot 4+ specific ignores
 .godot/
-.nomedia
-
-# Godot-specific ignores
-.import/
-export.cfg
-export_credentials.cfg
 *.tmp
 
-# Imported translations (automatically generated from CSV files)
-*.translation
+# Disposable local checks and captures.
+/tmp/
+/temp_game/
 
-# Mono-specific ignores
-.mono/
-data_*/
-mono_crash.*.json
+# Portable local configuration and saves; retain only the import exclusion marker.
+/data/*
+!/data/.gdignore
 
-# Generated Android export project
-/android/
+# Portable installation/configuration; development sources remain under games/.
+/protocols/*
+!/protocols/.gdignore
+/maingame/*
+!/maingame/.gdignore
+/minigame/*
+!/minigame/.gdignore
+/core/config/settings.json
+/core/config/settings.json.bak
+/core/config/settings.json.pending
+/core/config/party_sources.json
+/core/config/party_sources.json.bak
+/core/config/party_sources.json.pending
+/core/saves/

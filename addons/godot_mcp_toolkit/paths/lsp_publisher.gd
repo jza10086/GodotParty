@@ -27,7 +27,7 @@ extends RefCounted
 ## on the orchestrator (the dock binds it there) — this child reports a change via the
 ## injected status-changed handler so the orchestrator re-emits.
 ##
-## resolve_lsp_endpoint() stays a static EditorInterface reader (verbatim from the
+## resolve_lsp_endpoint() stays a static environment/EditorInterface reader (from the
 ## server, where plugin.gd + the registry callers call it statically): it passes the
 ## resolved host/port VALUES into RegistryClient.register / ensure_registered, so
 ## registry_client.gd stays editor-clean for the Mode-B runtime autoload (it never
@@ -65,7 +65,9 @@ var _bound_port_provider: Callable = Callable()
 ## The GDScript LSP endpoint THIS editor's setting points at (default
 ## 127.0.0.1:6005). A --lsp-port override is invisible here — the engine consumes
 ## it before OS.get_cmdline_args() and never writes it to the setting — so that
-## case rides GODOT_MCP_LSP_PORT on the server (see docs/multi-instance.md).
+## launchers must pass GODOT_MCP_LSP_PORT to both editor and server. A valid
+## environment port takes precedence over the editor setting; empty/invalid
+## values retain the editor setting (see docs/multi-instance.md).
 ## Static + editor-only (names EditorInterface); the registry callers pass the
 ## result into register()/ensure_registered() so registry_client.gd stays
 ## editor-clean for the Mode-B runtime autoload.
@@ -78,7 +80,21 @@ static func resolve_lsp_endpoint() -> Dictionary:
 			host = str(es.get_setting("network/language_server/remote_host"))
 		if es.has_setting("network/language_server/remote_port"):
 			port = int(es.get_setting("network/language_server/remote_port"))
+	port = _resolve_lsp_port(OS.get_environment("GODOT_MCP_LSP_PORT"), port)
 	return {"host": host, "port": port}
+
+
+## Resolve the launcher override without changing shared EditorSettings.
+static func _resolve_lsp_port(value: String, fallback: int) -> int:
+	var override_value: String = value.strip_edges()
+	if override_value.is_empty():
+		return fallback
+	if override_value.is_valid_int():
+		var override_port: int = override_value.to_int()
+		if override_port >= 1 and override_port <= 65535:
+			return override_port
+	push_warning("[MCPServer] Invalid GODOT_MCP_LSP_PORT; publishing the editor setting instead.")
+	return fallback
 
 
 ## Wire the orchestrator's lsp_status_changed re-emit. Call once at construction,

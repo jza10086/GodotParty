@@ -1,0 +1,16 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://core/ui/settings/setting_row.gd" id="script"]
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://core/ui/settings/switch_option.tscn" id="toggle"]
+
+[node name="Setting" type="VBoxContainer"]
+theme = ExtResource("theme")
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+script = ExtResource("script")
+[node name="Label" type="Label" parent="."]
+unique_name_in_owner = true
+text = "设置"
+[node name="Value" parent="." instance=ExtResource("toggle")]
+unique_name_in_owner = true
+size_flags_horizontal = 8

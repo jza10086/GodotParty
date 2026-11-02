@@ -1,0 +1,41 @@
+{
+  "request_id": "round-example-1",
+  "reason": "completed",
+  "rankings": [
+    {
+      "player_id": "alice",
+      "rank": 1,
+      "status": "completed",
+      "metrics": {
+        "points": 21
+      }
+    },
+    {
+      "player_id": "bob",
+      "rank": 2,
+      "status": "withdrawn",
+      "metrics": {
+        "points": 15
+      }
+    }
+  ],
+  "columns": [
+    {
+      "key": "points",
+      "title": "点数",
+      "format": "integer"
+    }
+  ],
+  "resource_result": {
+    "alice": {
+      "coins": 22,
+      "diamonds": 2
+    },
+    "bob": {
+      "coins": 0,
+      "diamonds": 0
+    }
+  },
+  "item_result": {},
+  "game_data": {}
+}

@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "core_api_major": 4,
+  "package_version": "1.0.0",
+  "player_counts": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "entry": "game.tscn",
+  "dependencies": {
+    "godot_party_default_protocol": "1.0.0"
+  },
+  "id": "godot_party_default_blank",
+  "name": "GodotPartyDefault · 空白模板",
+  "kind": "minigame",
+  "introduction": "无玩法的 standard 入口模板。房主结束后返回父游戏；不预置分数或奖励。",
+  "config_schema": "settings.gd",
+  "adapters": [
+    {
+      "id": "standard",
+      "protocol": {
+        "id": "godot_party_default_protocol",
+        "api_major": 1,
+        "min_api_minor": 0
+      },
+      "entry": "adapter.gd"
+    }
+  ]
+}

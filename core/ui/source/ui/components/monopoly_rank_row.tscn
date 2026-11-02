@@ -1,0 +1,73 @@
+[gd_scene load_steps=6 format=3]
+[ext_resource type="Theme" path="res://core/ui/source/ui/theme/party_theme.tres" id="theme"]
+[ext_resource type="StyleBox" path="res://core/ui/source/ui/theme/monopoly_glass.tres" id="glass"]
+[ext_resource type="Texture2D" path="res://core/ui/source/assets/ui/monopoly/gold.svg" id="gold"]
+[ext_resource type="Texture2D" path="res://core/ui/source/assets/ui/monopoly/diamond.svg" id="diamond"]
+[sub_resource type="StyleBoxEmpty" id="empty"]
+[node name="RankRow" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 54)
+theme = ExtResource("theme")
+theme_override_styles/panel = SubResource("empty")
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_right = 4
+[node name="Row" type="HBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="Rank" type="Label" parent="Margin/Row"]
+layout_mode = 2
+mouse_filter = 2
+custom_minimum_size = Vector2(30, 0)
+theme_type_variation = &"PartyLabelMicro"
+theme_override_colors/font_color = Color(0.72, 0.83, 0.94, 1)
+text = "01"
+[node name="Name" type="Label" parent="Margin/Row"]
+layout_mode = 2
+mouse_filter = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(100, 0)
+theme_type_variation = &"PartyLabelNote"
+theme_override_colors/font_color = Color(0.95, 0.98, 1, 1)
+text = "玩家"
+text_overrun_behavior = 3
+
+[node name="Money" type="HBoxContainer" parent="Margin/Row"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+[node name="Icon" type="TextureRect" parent="Margin/Row/Money"]
+layout_mode = 2
+custom_minimum_size = Vector2(28, 28)
+mouse_filter = 2
+texture = ExtResource("gold")
+expand_mode = 1
+stretch_mode = 5
+[node name="Value" type="Label" parent="Margin/Row/Money"]
+layout_mode = 2
+custom_minimum_size = Vector2(90, 0)
+mouse_filter = 2
+theme_type_variation = &"PartyLabelNote"
+theme_override_colors/font_color = Color(0.95, 0.98, 1, 1)
+text = "0"
+text_overrun_behavior = 3
+
+[node name="Diamonds" type="HBoxContainer" parent="Margin/Row"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+[node name="Icon" type="TextureRect" parent="Margin/Row/Diamonds"]
+layout_mode = 2
+custom_minimum_size = Vector2(28, 28)
+mouse_filter = 2
+texture = ExtResource("diamond")
+expand_mode = 1
+stretch_mode = 5
+[node name="Value" type="Label" parent="Margin/Row/Diamonds"]
+layout_mode = 2
+custom_minimum_size = Vector2(55, 0)
+mouse_filter = 2
+theme_type_variation = &"PartyLabelNote"
+theme_override_colors/font_color = Color(0.95, 0.98, 1, 1)
+text = "0"
+text_overrun_behavior = 3

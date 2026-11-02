@@ -1,0 +1,37 @@
+{
+  "manifest_version": 2,
+  "core_api_major": 4,
+  "package_version": "1.0.0",
+  "id": "settings_ui_test",
+  "name": "设置 UI 测试（临时）",
+  "introduction": "选择「本机设置」测试 JSON 保存、协议继承与覆盖。",
+  "kind": "minigame",
+  "entry": "game.tscn",
+  "player_counts": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "tags": [
+    "ui_test"
+  ],
+  "dependencies": {
+    "godot_party_default_protocol": "1.0.0"
+  },
+  "adapters": [
+    {
+      "id": "standard",
+      "protocol": {
+        "id": "godot_party_default_protocol",
+        "api_major": 1,
+        "min_api_minor": 0
+      }
+    }
+  ],
+  "config_schema": "settings.gd"
+}

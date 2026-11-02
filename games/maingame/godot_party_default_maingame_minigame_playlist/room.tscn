@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/lobby_page.tscn" id="base"]
+[ext_resource type="Script" path="res://games/maingame/godot_party_default_maingame_minigame_playlist/room.gd" id="script"]
+
+[node name="PlaylistRoom" instance=ExtResource("base")]
+script = ExtResource("script")

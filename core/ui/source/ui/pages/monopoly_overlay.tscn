@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/pages/monopoly_game.tscn" id="hud"]
+[node name="MonopolyOverlay" type="CanvasLayer"]
+layer = 20
+[node name="HUD" parent="." instance=ExtResource("hud")]

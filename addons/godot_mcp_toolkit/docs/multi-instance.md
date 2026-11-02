@@ -94,6 +94,13 @@ full isolation.
 
 ## GDScript LSP in two editors at once
 
+**GodotParty local fix:** when the editor process receives `GODOT_MCP_LSP_PORT`,
+the publisher now prefers a valid value (1–65535) over EditorSettings. Set it to
+match the editor's `--lsp-port` and the MCP server's override. Empty values retain
+the editor setting; invalid values warn and fall back. This affects registry
+metadata only, not the engine's actual listener. The upstream limitation described
+below still applies when the editor does not receive this environment variable.
+
 The `lsp_*` tools (diagnostics, symbols, hover, completion, definition,
 references) reach Godot's built-in **GDScript Language Server**, which binds a
 single **machine-wide** TCP port (default **6005**) — *not* per project. This is

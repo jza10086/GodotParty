@@ -1,0 +1,33 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://core/ui/settings/setting_row.gd" id="script"]
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://core/ui/settings/binding_slot.tscn" id="slot"]
+
+[node name="Setting" type="VBoxContainer"]
+theme = ExtResource("theme")
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+script = ExtResource("script")
+[node name="Label" type="Label" parent="."]
+unique_name_in_owner = true
+text = "设置"
+[node name="Slots" type="GridContainer" parent="."]
+columns = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 8
+[node name="PrimaryLabel" type="Label" parent="Slots"]
+unique_name_in_owner = true
+text = "主键"
+theme_override_font_sizes/font_size = 22
+vertical_alignment = 1
+size_flags_vertical = 4
+[node name="Slot0" parent="Slots" instance=ExtResource("slot")]
+unique_name_in_owner = true
+[node name="AlternateLabel" type="Label" parent="Slots"]
+unique_name_in_owner = true
+text = "备用"
+theme_override_font_sizes/font_size = 22
+vertical_alignment = 1
+size_flags_vertical = 4
+[node name="Slot1" parent="Slots" instance=ExtResource("slot")]
+unique_name_in_owner = true

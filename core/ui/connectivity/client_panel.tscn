@@ -1,0 +1,161 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
+[ext_resource type="Script" path="res://core/ui/connectivity/client_panel.gd" id="r1"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r2"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="r3"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r4"]
+[ext_resource type="Script" path="res://core/network/connectivity/probe_client.gd" id="r5"]
+[ext_resource type="Script" path="res://core/network/connectivity/outbound_probe.gd" id="r6"]
+
+[node name="ClientPanel" type="VBoxContainer"]
+theme = ExtResource("ambient")
+script = ExtResource("r1")
+theme_override_constants/separation = 16
+
+[node name="MainText1" parent="." type="Label"]
+unique_name_in_owner = true
+text = "主动连接目标设备进行探测。请先在另一台 PC 打开“监听测试”，使用相同协议和端口。"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="MainOptions" parent="." type="HBoxContainer"]
+theme_override_constants/separation = 12
+
+[node name="MainText5" parent="MainOptions" type="Label"]
+unique_name_in_owner = true
+text = "协议"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="Transport" parent="MainOptions" instance=ExtResource("r2")]
+unique_name_in_owner = true
+
+
+[node name="MainText10" parent="MainOptions" type="Label"]
+unique_name_in_owner = true
+text = "端口"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="Port" parent="MainOptions" instance=ExtResource("r3")]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(160,56)
+placeholder_text = "1–65535"
+text = "7777"
+
+[node name="MainText14" parent="." type="Label"]
+unique_name_in_owner = true
+text = "目标 IPv4 / IPv6 地址"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="Address" parent="." instance=ExtResource("r3")]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+placeholder_text = "192.168.1.10 或 2001:db8::1"
+text = ""
+
+[node name="MainActions" parent="." type="HBoxContainer"]
+theme_override_constants/separation = 12
+
+[node name="Paste" parent="MainActions" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "粘贴地址 / 链接"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="Start" parent="MainActions" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "开始测试"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="Stop" parent="MainActions" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "停止"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="Notice" parent="." type="Label"]
+unique_name_in_owner = true
+text = "通常每秒探测一次，单次最多等待 3 秒。TCP 每次重新连接，耗时包含建连时间。"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="Result" parent="." type="Label"]
+unique_name_in_owner = true
+text = "尚未开始"
+autowrap_mode = 3
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,150)
+
+[node name="Copy" parent="." instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "复制测试结果"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="MainText29" parent="." type="Label"]
+unique_name_in_owner = true
+text = "仅匹配的 GPTEST/1 回复计为成功；普通 UDP/TCP 服务不一定支持此协议。UDP 校验对方 IP、端口、序号和随机标识。此测试不加入游戏房间，关闭窗口会停止。"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="Probe" parent="." type="Node"]
+unique_name_in_owner = true
+script = ExtResource("r5")
+
+[node name="Divider" parent="." type="HSeparator"]
+
+
+[node name="OutboundText1" parent="." type="Label"]
+unique_name_in_owner = true
+text = "本机 IP 出站可用性检测"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="OutboundText2" parent="." type="Label"]
+unique_name_in_owner = true
+text = "分别使用 IPv4 / IPv6 连接 aliyun.com、www.baidu.com 的 TCP 443；任一目标成功即显示该地址族出站可用。"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="OutboundActions" parent="." type="HBoxContainer"]
+theme_override_constants/separation = 12
+
+[node name="OutboundStart" parent="OutboundActions" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "检测 IPv4 / IPv6 出站"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="OutboundStop" parent="OutboundActions" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "停止出站检测"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="OutboundCopy" parent="OutboundActions" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "复制出站结果"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="OutboundResult" parent="." type="Label"]
+unique_name_in_owner = true
+text = ""
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="OutboundText15" parent="." type="Label"]
+unique_name_in_owner = true
+text = "DNS 和每次建连最多各等待 4 秒。使用系统默认出站路由，不逐个绑定网卡；仅检测 TCP 出站，不代表 UDP 或入站直连可用。"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="Outbound" parent="." type="Node"]
+unique_name_in_owner = true
+script = ExtResource("r6")

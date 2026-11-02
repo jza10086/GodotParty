@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Theme" path="res://core/ui/source/ui/theme/party_theme.tres" id="shared_theme"]
+
+[ext_resource type="PackedScene" path="res://core/ui/source/settings/components/segmented_toggle.tscn" id="1"]
+
+[node name="Row" type="HBoxContainer"]
+theme = ExtResource("shared_theme")
+custom_minimum_size = Vector2(0, 96)
+mouse_filter = 1
+theme_override_constants/separation = 24
+
+[node name="Label" type="Label" parent="."]
+theme_type_variation = "PartyLabelSetting"
+text = "设置名称"
+custom_minimum_size = Vector2(378, 64)
+size_flags_horizontal = 1
+size_flags_vertical = 4
+mouse_filter = 2
+vertical_alignment = 1
+
+[node name="Value" parent="." instance=ExtResource("1")]

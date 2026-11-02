@@ -1,0 +1,264 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/components/navigation/keyboard/key_theme.tres" id="keys"]
+
+[node name="TextKeys" type="VBoxContainer"]
+theme = ExtResource("keys")
+theme_override_constants/separation = 8
+
+[node name="Row1" type="HBoxContainer" parent="."]
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="Key1" type="Button" parent="Row1"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "1"
+
+[node name="Key2" type="Button" parent="Row1"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "2"
+
+[node name="Key3" type="Button" parent="Row1"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "3"
+
+[node name="Key4" type="Button" parent="Row1"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "4"
+
+[node name="Key5" type="Button" parent="Row1"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "5"
+
+[node name="Key6" type="Button" parent="Row1"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "6"
+
+[node name="Key7" type="Button" parent="Row1"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "7"
+
+[node name="Key8" type="Button" parent="Row1"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "8"
+
+[node name="Key9" type="Button" parent="Row1"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "9"
+
+[node name="Key0" type="Button" parent="Row1"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "0"
+
+[node name="Backspace" type="Button" parent="Row1"]
+custom_minimum_size = Vector2(104, 56)
+theme_type_variation = &"KeyboardKey"
+text = "退格"
+
+[node name="Row2" type="HBoxContainer" parent="."]
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="KeyQ" type="Button" parent="Row2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "q"
+
+[node name="KeyW" type="Button" parent="Row2"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "w"
+
+[node name="KeyE" type="Button" parent="Row2"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "e"
+
+[node name="KeyR" type="Button" parent="Row2"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "r"
+
+[node name="KeyT" type="Button" parent="Row2"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "t"
+
+[node name="KeyY" type="Button" parent="Row2"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "y"
+
+[node name="KeyU" type="Button" parent="Row2"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "u"
+
+[node name="KeyI" type="Button" parent="Row2"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "i"
+
+[node name="KeyO" type="Button" parent="Row2"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "o"
+
+[node name="KeyP" type="Button" parent="Row2"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "p"
+
+[node name="Row3" type="HBoxContainer" parent="."]
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="KeyA" type="Button" parent="Row3"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "a"
+
+[node name="KeyS" type="Button" parent="Row3"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "s"
+
+[node name="KeyD" type="Button" parent="Row3"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "d"
+
+[node name="KeyF" type="Button" parent="Row3"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "f"
+
+[node name="KeyG" type="Button" parent="Row3"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "g"
+
+[node name="KeyH" type="Button" parent="Row3"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "h"
+
+[node name="KeyJ" type="Button" parent="Row3"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "j"
+
+[node name="KeyK" type="Button" parent="Row3"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "k"
+
+[node name="KeyL" type="Button" parent="Row3"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "l"
+
+[node name="Row4" type="HBoxContainer" parent="."]
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="Shift" type="Button" parent="Row4"]
+custom_minimum_size = Vector2(104, 56)
+theme_type_variation = &"KeyboardKey"
+text = "大小写"
+
+[node name="KeyZ" type="Button" parent="Row4"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "z"
+
+[node name="KeyX" type="Button" parent="Row4"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "x"
+
+[node name="KeyC" type="Button" parent="Row4"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "c"
+
+[node name="KeyV" type="Button" parent="Row4"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "v"
+
+[node name="KeyB" type="Button" parent="Row4"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "b"
+
+[node name="KeyN" type="Button" parent="Row4"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "n"
+
+[node name="KeyM" type="Button" parent="Row4"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "m"
+
+[node name="Comma" type="Button" parent="Row4"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = ","
+
+[node name="Period" type="Button" parent="Row4"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "."
+
+[node name="Minus" type="Button" parent="Row4"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "-"
+
+[node name="Row5" type="HBoxContainer" parent="."]
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="Cancel" type="Button" parent="Row5"]
+custom_minimum_size = Vector2(104, 56)
+theme_type_variation = &"KeyboardKey"
+text = "取消"
+
+[node name="Left" type="Button" parent="Row5"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "←"
+
+[node name="Space" type="Button" parent="Row5"]
+custom_minimum_size = Vector2(240, 56)
+theme_type_variation = &"KeyboardKey"
+text = "空格"
+
+[node name="Right" type="Button" parent="Row5"]
+custom_minimum_size = Vector2(62, 56)
+theme_type_variation = &"KeyboardKey"
+text = "→"
+
+[node name="Newline" type="Button" parent="Row5"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(104, 56)
+theme_type_variation = &"KeyboardKey"
+text = "换行"
+
+[node name="Done" type="Button" parent="Row5"]
+custom_minimum_size = Vector2(104, 56)
+theme_type_variation = &"KeyboardKey"
+text = "完成"

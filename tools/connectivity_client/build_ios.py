@@ -27,12 +27,22 @@ def run(command, log_directory, name, godot=False):
     return result.stdout
 
 
+def prepare_project(project):
+    source = Path(__file__).resolve().parent / "project"
+    shutil.copytree(source, project, ignore=shutil.ignore_patterns(".godot", "build", "*.apk", "*.aab", "*.ipa"))
+    shutil.copyfile(source.parent / "client_project.cfg", project / "project.godot")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", default="godot")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--build-number", default="1")
+    parser.add_argument("--prepare-project", type=Path, help="Create a runnable connectivity client in a new directory")
     args = parser.parse_args()
+    if args.prepare_project is not None:
+        prepare_project(args.prepare_project.resolve())
+        return
     if sys.platform != "darwin":
         parser.error("iOS compilation requires macOS + Xcode. Run the GitHub Actions workflow.")
     if not re.fullmatch(r"[1-9][0-9]*", args.build_number):
@@ -46,7 +56,7 @@ def main():
     version = run([args.godot, "--version"], logs, "godot-version").strip()
     xcode = run(["xcodebuild", "-version"], logs, "xcode-version").strip()
     project = output / "project"
-    shutil.copytree(source, project, ignore=shutil.ignore_patterns(".godot", "build", "*.apk", "*.aab", "*.ipa"))
+    prepare_project(project)
     presets = project / "export_presets.cfg"
     presets.write_text(re.sub(r'(?m)^application/version="[^"]*"$',
                              f'application/version="{args.build_number}"',
@@ -54,8 +64,6 @@ def main():
     xcode_dir = output / "xcode"
     xcode_dir.mkdir()
     run([args.godot, "--headless", "--path", project, "--editor", "--import"], logs, "import", godot=True)
-    run([args.godot, "--headless", "--path", project, "--script",
-         source.parent / "check_font.gd"], logs, "bundled-font", godot=True)
     run([args.godot, "--headless", "--path", project, "--export-release", "iOS SideStore",
          xcode_dir / "ConnectivityProbe.zip"], logs, "export", godot=True)
     # With export_project_only, Godot writes the Xcode project beside this path.

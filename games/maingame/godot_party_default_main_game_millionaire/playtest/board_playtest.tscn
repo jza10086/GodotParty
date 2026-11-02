@@ -1,0 +1,207 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://games/maingame/godot_party_default_main_game_millionaire/playtest/board_playtest.gd" id="1"]
+[ext_resource type="Script" path="res://games/maingame/godot_party_default_main_game_millionaire/editor/board_authoring.gd" id="2"]
+[ext_resource type="Script" path="res://games/maingame/godot_party_default_main_game_millionaire/editor/board_cell.gd" id="3"]
+[sub_resource type="Environment" id="Env"]
+background_mode = 1
+background_color = Color(0.38, 0.43, 0.52, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.8, 0.87, 1, 1)
+ambient_light_energy = 0.65
+reflected_light_source = 2
+tonemap_mode = 2
+[node name="MillionaireBoardPlaytest" type="Node3D" node_paths=PackedStringArray("camera", "seam_grid", "tile_labels")]
+script = ExtResource("1")
+camera = NodePath("Camera")
+seam_grid = NodePath("SeamGrid")
+tile_labels = NodePath("Numbers")
+[node name="World" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-55, -30, 0)
+light_energy = 1.3
+shadow_enabled = true
+directional_shadow_max_distance = 40.0
+[node name="Camera" type="Camera3D" parent="."]
+current = true
+[node name="SeamGrid" type="Node3D" parent="."]
+visible = false
+[node name="Numbers" type="Node3D" parent="."]
+visible = false
+[node name="Cells" type="Node3D" parent="."]
+script = ExtResource("2")
+
+[node name="C0_0" type="Node3D" parent="Cells"]
+position = Vector3(0, 0, 0)
+script = ExtResource("3")
+data = {"id": "T0_0", "kind": "event", "turn": 0}
+
+[node name="C0_1" type="Node3D" parent="Cells"]
+position = Vector3(0, 0, 1)
+script = ExtResource("3")
+data = {"id": "T0_1", "kind": "event", "turn": 0}
+
+[node name="C0_2" type="Node3D" parent="Cells"]
+position = Vector3(0, 0, 2)
+script = ExtResource("3")
+data = {"id": "T0_2", "kind": "event", "turn": 0}
+
+[node name="C0_3" type="Node3D" parent="Cells"]
+position = Vector3(0, 0, 3)
+script = ExtResource("3")
+data = {"id": "T0_3", "kind": "event", "turn": 0}
+
+[node name="C0_4" type="Node3D" parent="Cells"]
+position = Vector3(0, 0, 4)
+script = ExtResource("3")
+data = {"id": "T0_4", "kind": "event", "turn": 0}
+
+[node name="C0_5" type="Node3D" parent="Cells"]
+position = Vector3(0, 0, 5)
+script = ExtResource("3")
+data = {"id": "T0_5", "kind": "event", "turn": 0}
+
+[node name="C0_6" type="Node3D" parent="Cells"]
+position = Vector3(0, 0, 6)
+script = ExtResource("3")
+data = {"id": "T0_6", "kind": "event", "turn": 0}
+
+[node name="C1_0" type="Node3D" parent="Cells"]
+position = Vector3(1, 0, 0)
+script = ExtResource("3")
+data = {"id": "T1_0", "kind": "event", "turn": 0}
+
+[node name="C1_6" type="Node3D" parent="Cells"]
+position = Vector3(1, 0, 6)
+script = ExtResource("3")
+data = {"id": "T1_6", "kind": "property", "turn": 1}
+
+[node name="C2_0" type="Node3D" parent="Cells"]
+position = Vector3(2, 0, 0)
+script = ExtResource("3")
+data = {"id": "T2_0", "kind": "shop", "turn": 3}
+
+[node name="C2_6" type="Node3D" parent="Cells"]
+position = Vector3(2, 0, 6)
+script = ExtResource("3")
+data = {"id": "T2_6", "kind": "property", "turn": 1}
+
+[node name="C3_0" type="Node3D" parent="Cells"]
+position = Vector3(3, 0, 0)
+script = ExtResource("3")
+data = {"id": "T3_0", "kind": "event", "turn": 0}
+
+[node name="C3_6" type="Node3D" parent="Cells"]
+position = Vector3(3, 0, 6)
+script = ExtResource("3")
+data = {"id": "T3_6", "kind": "property", "turn": 1}
+
+[node name="C4_0" type="Node3D" parent="Cells"]
+position = Vector3(4, 0, 0)
+script = ExtResource("3")
+data = {"id": "T4_0", "kind": "junction", "turn": 2, "junction_mode": "split"}
+
+[node name="C4_1" type="Node3D" parent="Cells"]
+position = Vector3(4, 0, 1)
+script = ExtResource("3")
+data = {"id": "T4_1", "kind": "event", "turn": 0}
+
+[node name="C4_2" type="Node3D" parent="Cells"]
+position = Vector3(4, 0, 2)
+script = ExtResource("3")
+data = {"id": "T4_2", "kind": "event", "turn": 0}
+
+[node name="C4_3" type="Node3D" parent="Cells"]
+position = Vector3(4, 0, 3)
+script = ExtResource("3")
+data = {"id": "T4_3", "kind": "event", "turn": 0}
+
+[node name="C4_6" type="Node3D" parent="Cells"]
+position = Vector3(4, 0, 6)
+script = ExtResource("3")
+data = {"id": "T4_6", "kind": "property", "turn": 1}
+
+[node name="C5_0" type="Node3D" parent="Cells"]
+position = Vector3(5, 0, 0)
+script = ExtResource("3")
+data = {"id": "T5_0", "kind": "event", "turn": 0}
+
+[node name="C5_3" type="Node3D" parent="Cells"]
+position = Vector3(5, 0, 3)
+script = ExtResource("3")
+data = {"id": "T5_3", "kind": "event", "turn": 0}
+
+[node name="C5_6" type="Node3D" parent="Cells"]
+position = Vector3(5, 0, 6)
+script = ExtResource("3")
+data = {"id": "T5_6", "kind": "property", "turn": 1}
+
+[node name="C6_0" type="Node3D" parent="Cells"]
+position = Vector3(6, 0, 0)
+script = ExtResource("3")
+data = {"id": "T6_0", "kind": "diamond", "turn": 0}
+
+[node name="C6_3" type="Node3D" parent="Cells"]
+position = Vector3(6, 0, 3)
+script = ExtResource("3")
+data = {"id": "T6_3", "kind": "diamond", "turn": 0}
+
+[node name="C6_6" type="Node3D" parent="Cells"]
+position = Vector3(6, 0, 6)
+script = ExtResource("3")
+data = {"id": "T6_6", "kind": "property", "turn": 1}
+
+[node name="C7_0" type="Node3D" parent="Cells"]
+position = Vector3(7, 0, 0)
+script = ExtResource("3")
+data = {"id": "T7_0", "kind": "event", "turn": 0}
+
+[node name="C7_3" type="Node3D" parent="Cells"]
+position = Vector3(7, 0, 3)
+script = ExtResource("3")
+data = {"id": "T7_3", "kind": "event", "turn": 0}
+
+[node name="C7_6" type="Node3D" parent="Cells"]
+position = Vector3(7, 0, 6)
+script = ExtResource("3")
+data = {"id": "T7_6", "kind": "property", "turn": 1}
+
+[node name="C8_0" type="Node3D" parent="Cells"]
+position = Vector3(8, 0, 0)
+script = ExtResource("3")
+data = {"id": "T8_0", "kind": "event", "turn": 0}
+
+[node name="C8_1" type="Node3D" parent="Cells"]
+position = Vector3(8, 0, 1)
+script = ExtResource("3")
+data = {"id": "T8_1", "kind": "event", "turn": 0}
+
+[node name="C8_2" type="Node3D" parent="Cells"]
+position = Vector3(8, 0, 2)
+script = ExtResource("3")
+data = {"id": "T8_2", "kind": "event", "turn": 0}
+
+[node name="C8_3" type="Node3D" parent="Cells"]
+position = Vector3(8, 0, 3)
+script = ExtResource("3")
+data = {"id": "T8_3", "kind": "junction", "turn": 1, "junction_mode": "merge"}
+
+[node name="C8_4" type="Node3D" parent="Cells"]
+position = Vector3(8, 0, 4)
+script = ExtResource("3")
+data = {"id": "T8_4", "kind": "event", "turn": 0}
+
+[node name="C8_5" type="Node3D" parent="Cells"]
+position = Vector3(8, 0, 5)
+script = ExtResource("3")
+data = {"id": "T8_5", "kind": "event", "turn": 0}
+
+[node name="C8_6" type="Node3D" parent="Cells"]
+position = Vector3(8, 0, 6)
+script = ExtResource("3")
+data = {"id": "T8_6", "kind": "event", "turn": 0}
+
+[node name="Start" type="Node3D" parent="Cells"]
+position = Vector3(-1, 0, 1)
+script = ExtResource("3")
+data = {"id": "START", "kind": "start", "turn": 0}

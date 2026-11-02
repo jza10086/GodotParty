@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="PartyUIConfig" format=3]
+
+[ext_resource type="FontFile" path="res://core/ui/components/assets/NotoSansSC-UI.otf" id="1_6ylfq"]
+[ext_resource type="Script" path="res://core/ui/source/ui/theme/ui_config.gd" id="config"]
+
+[resource]
+script = ExtResource("config")

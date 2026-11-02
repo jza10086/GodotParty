@@ -1,0 +1,15 @@
+[gd_resource type="StyleBoxFlat" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://core/ui/source/ui/theme/theme_style.gd" id="style"]
+
+[resource]
+script = ExtResource("style")
+color_role = "focus"
+border_width_left = 4
+expand_margin_left = 6.0
+border_width_top = 4
+expand_margin_top = 6.0
+border_width_right = 4
+expand_margin_right = 6.0
+border_width_bottom = 4
+expand_margin_bottom = 6.0

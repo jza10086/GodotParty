@@ -1,0 +1,56 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+
+
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
+
+[node name="Confirm" type="Control"]
+theme = ExtResource("theme")
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
+[node name="Dialog" parent="." instance=ExtResource("ar_panel")]
+offset_left = 540.0
+offset_top = 270.0
+offset_right = 1380.0
+offset_bottom = 810.0
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="."]
+theme_override_font_sizes/font_size = 29
+offset_left = 600.0
+offset_top = 324.0
+offset_right = 1320.0
+offset_bottom = 394.0
+text = "要离开派对吗？"
+
+[node name="Body" type="Label" parent="."]
+offset_left = 600.0
+offset_top = 434.0
+offset_right = 1320.0
+offset_bottom = 504.0
+text = "关闭当前原型窗口。"
+
+[node name="Cancel" parent="." instance=ExtResource("ar_button")]
+theme_override_font_sizes/font_size = 26
+offset_left = 600.0
+offset_top = 700.0
+offset_right = 936.0
+offset_bottom = 772.0
+text = "继续留下"
+
+[node name="Quit" parent="." instance=ExtResource("ar_button")]
+theme_override_font_sizes/font_size = 26
+offset_left = 984.0
+offset_top = 700.0
+offset_right = 1320.0
+offset_bottom = 772.0
+text = "确认退出"

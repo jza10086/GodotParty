@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r1"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r2"]
+
+[node name="PlayerColor" type="HBoxContainer"]
+
+
+[node name="Player" parent="." type="Label"]
+unique_name_in_owner = true
+text = "玩家"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="Color" parent="." instance=ExtResource("r1")]
+unique_name_in_owner = true
+
+
+[node name="Assign" parent="." instance=ExtResource("r2")]
+unique_name_in_owner = true
+text = "强制分配"

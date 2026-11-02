@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://mefi6fx8er2w"]
+
+[ext_resource type="Script" uid="uid://2uu5gtndu61r" path="res://games/maingame/godot_party_default_maingame_minigame_playlist/game.gd" id="1_r1yca"]
+
+[node name="MinigamePlaylist" type="Node" unique_id=640059021]
+script = ExtResource("1_r1yca")

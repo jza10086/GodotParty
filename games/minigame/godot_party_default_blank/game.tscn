@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://5rqvg4l841py"]
+
+[ext_resource type="Script" uid="uid://ddi1pnh5n7frl" path="res://games/minigame/godot_party_default_blank/game.gd" id="1_vtvuq"]
+
+[node name="BlankGame" type="Control" unique_id=188628939]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vtvuq")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=1694754284]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 32
+
+[node name="Content" type="VBoxContainer" parent="Margin" unique_id=645900488]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="Margin/Content" unique_id=1777718129]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "GodotPartyDefault · 空白小游戏"
+
+[node name="Status" type="Label" parent="Margin/Content" unique_id=64335552]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "初始化，等待所有必要端就绪"
+
+[node name="Players" type="Label" parent="Margin/Content" unique_id=1743467604]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 24
+
+[node name="Finish" type="Button" parent="Margin/Content" unique_id=34098225]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+disabled = true
+text = "结束本局（房主）"

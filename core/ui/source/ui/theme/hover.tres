@@ -1,0 +1,11 @@
+[gd_resource type="StyleBoxFlat" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://core/ui/source/ui/theme/theme_style.gd" id="style"]
+
+[resource]
+script = ExtResource("style")
+color_role = "hover_surface"
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3

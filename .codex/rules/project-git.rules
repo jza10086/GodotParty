@@ -1,0 +1,16 @@
+# User-authorized local Git writes for this repository only.
+# Loaded by trusted project config layers in new Codex sessions.
+prefix_rule(
+    pattern = ["git", "-C", "F:/GodotProjects/GodotParty", ["add", "commit"]],
+    decision = "allow",
+    justification = "The user authorizes task-scoped staging and commits for GodotParty across sessions.",
+    match = [
+        "git -C F:/GodotProjects/GodotParty add -- README.md",
+        "git -C F:/GodotProjects/GodotParty commit -m Cleanup",
+    ],
+    not_match = [
+        "git -C F:/GodotProjects/GodotPartyGames add -- README.md",
+        "git -C F:/GodotProjects/GodotParty push",
+        "git -C F:/GodotProjects/GodotParty reset --hard",
+    ],
+)

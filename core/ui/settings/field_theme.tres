@@ -1,0 +1,11 @@
+[gd_resource type="Theme" format=3]
+
+[resource]
+Button/font_sizes/font_size = 26
+CheckButton/font_sizes/font_size = 26
+ColorPickerButton/font_sizes/font_size = 26
+LineEdit/font_sizes/font_size = 26
+OptionButton/font_sizes/font_size = 26
+PopupMenu/font_sizes/font_size = 26
+SpinBox/font_sizes/font_size = 26
+TextEdit/font_sizes/font_size = 26

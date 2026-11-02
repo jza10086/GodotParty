@@ -1,0 +1,154 @@
+[gd_scene format=3 uid="uid://c7csphin2ugba"]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="ar_option_button"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="ar_line_edit"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
+
+[node name="Create" type="Control" unique_id=1531944978]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+theme = ExtResource("theme")
+
+[node name="Dialog" parent="." unique_id=954355529 instance=ExtResource("ar_panel")]
+layout_mode = 0
+offset_left = 520.0
+offset_top = 176.0
+offset_right = 1400.0
+offset_bottom = 860.0
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="." unique_id=1538875656]
+layout_mode = 0
+offset_left = 580.0
+offset_top = 208.0
+offset_right = 1340.0
+offset_bottom = 272.0
+theme_override_font_sizes/font_size = 29
+text = "创建房间"
+
+[node name="Note" type="Label" parent="." unique_id=1123546002]
+layout_mode = 0
+offset_left = 580.0
+offset_top = 272.0
+offset_right = 1340.0
+offset_bottom = 308.0
+theme_override_font_sizes/font_size = 17
+text = "MOCK 示例游戏 · 尚未接入真实玩法"
+
+[node name="GameLabel" type="Label" parent="." unique_id=1356838584]
+layout_mode = 0
+offset_left = 580.0
+offset_top = 328.0
+offset_right = 760.0
+offset_bottom = 386.0
+text = "主游戏"
+
+[node name="Game" parent="." unique_id=1902318569 instance=ExtResource("ar_option_button")]
+layout_mode = 0
+offset_left = 792.0
+offset_top = 328.0
+offset_right = 1340.0
+offset_bottom = 386.0
+text = "选择协议或大游戏"
+alignment = 0
+
+[node name="DropdownNote" type="Label" parent="." unique_id=135199606]
+layout_mode = 0
+offset_left = 580.0
+offset_top = 686.0
+offset_right = 1340.0
+offset_bottom = 716.0
+text = "仅本地模拟 · 密码与公开性不进行真实访问控制"
+
+[node name="Cancel" parent="." unique_id=1385452288 instance=ExtResource("ar_button")]
+layout_mode = 0
+offset_left = 580.0
+offset_top = 746.0
+offset_right = 880.0
+offset_bottom = 818.0
+theme_override_font_sizes/font_size = 26
+text = "取消"
+
+[node name="Confirm" parent="." unique_id=323820946 instance=ExtResource("ar_button")]
+layout_mode = 0
+offset_left = 920.0
+offset_top = 746.0
+offset_right = 1340.0
+offset_bottom = 818.0
+theme_override_font_sizes/font_size = 26
+text = "创建房间"
+
+[node name="RoomNameLabel" type="Label" parent="." unique_id=349557147]
+layout_mode = 0
+offset_left = 580.0
+offset_top = 410.0
+offset_right = 780.0
+offset_bottom = 468.0
+text = "房间名称"
+
+[node name="RoomName" parent="." unique_id=1356381974 instance=ExtResource("ar_line_edit")]
+layout_mode = 0
+offset_left = 792.0
+offset_top = 410.0
+offset_right = 1340.0
+offset_bottom = 468.0
+placeholder_text = "1–24 字"
+max_length = 24
+
+[node name="PortLabel" type="Label" parent="." unique_id=1736106507]
+layout_mode = 0
+offset_left = 580.0
+offset_top = 492.0
+offset_right = 780.0
+offset_bottom = 550.0
+text = "监听端口 (UDP)"
+
+[node name="Port" parent="." unique_id=597618691 instance=ExtResource("ar_line_edit")]
+layout_mode = 0
+offset_left = 792.0
+offset_top = 492.0
+offset_right = 1340.0
+offset_bottom = 550.0
+text = "7777"
+placeholder_text = "1–65535 · 默认 7777"
+
+[node name="VisibilityLabel" type="Label" parent="." unique_id=1122833040]
+layout_mode = 0
+offset_left = 580.0
+offset_top = 574.0
+offset_right = 780.0
+offset_bottom = 632.0
+text = "房间公开性"
+
+[node name="Visibility" parent="." unique_id=2080793745 instance=ExtResource("ar_option_button")]
+layout_mode = 0
+offset_left = 792.0
+offset_top = 574.0
+offset_right = 1340.0
+offset_bottom = 632.0
+selected = 0
+item_count = 3
+popup/item_0/text = "公开"
+popup/item_0/id = 0
+popup/item_1/text = "仅限好友"
+popup/item_1/id = 1
+popup/item_2/text = "仅限邀请"
+popup/item_2/id = 2
+
+[node name="Error" type="Label" parent="." unique_id=1126437486]
+layout_mode = 0
+offset_left = 580.0
+offset_top = 644.0
+offset_right = 1340.0
+offset_bottom = 678.0
+theme_override_colors/font_color = Color(1, 0.65, 0.62, 1)

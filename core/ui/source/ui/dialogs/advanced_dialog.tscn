@@ -1,0 +1,80 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+
+
+[ext_resource type="Script" path="res://core/ui/source/ui/theme/ios_check_button.gd" id="ios_switch"]
+
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/switch.tscn" id="ar_switch"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
+
+[node name="Advanced" type="Control"]
+theme = ExtResource("theme")
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
+[node name="Dialog" parent="." instance=ExtResource("ar_panel")]
+offset_left = 540.0
+offset_top = 270.0
+offset_right = 1380.0
+offset_bottom = 810.0
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="."]
+theme_override_font_sizes/font_size = 29
+offset_left = 600.0
+offset_top = 308.0
+offset_right = 1320.0
+offset_bottom = 368.0
+text = "高级设置"
+mouse_filter = 2
+
+[node name="Note" type="Label" parent="."]
+offset_left = 600.0
+offset_top = 386.0
+offset_right = 1320.0
+offset_bottom = 426.0
+text = "演示选项 · 仅在当前会话中保留"
+mouse_filter = 2
+
+[node name="Shuffle" parent="." instance=ExtResource("ar_switch")]
+script = ExtResource("ios_switch")
+offset_left = 600.0
+offset_top = 442.0
+offset_right = 1320.0
+offset_bottom = 520.0
+text = "随机地图顺序"
+button_pressed = true
+
+[node name="Items" parent="." instance=ExtResource("ar_switch")]
+script = ExtResource("ios_switch")
+offset_left = 600.0
+offset_top = 534.0
+offset_right = 1320.0
+offset_bottom = 612.0
+text = "启用游戏道具"
+button_pressed = true
+
+[node name="Teams" parent="." instance=ExtResource("ar_switch")]
+script = ExtResource("ios_switch")
+offset_left = 600.0
+offset_top = 626.0
+offset_right = 1320.0
+offset_bottom = 704.0
+text = "自动平衡队伍"
+button_pressed = false
+
+[node name="Close" parent="." instance=ExtResource("ar_button")]
+offset_left = 1000.0
+offset_top = 720.0
+offset_right = 1320.0
+offset_bottom = 792.0
+text = "完成"

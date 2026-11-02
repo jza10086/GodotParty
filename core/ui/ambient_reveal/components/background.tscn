@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://core/ui/ambient_reveal/background.gdshader" id="background"]
+
+[sub_resource type="ShaderMaterial" id="BackgroundMaterial"]
+shader = ExtResource("background")
+
+[node name="AmbientBackground" type="ColorRect"]
+layout_mode = 0
+anchors_preset = 15
+anchor_right = 1
+anchor_bottom = 1
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("BackgroundMaterial")
+
+[node name="BackgroundCapture" type="BackBufferCopy" parent="."]
+copy_mode = 2

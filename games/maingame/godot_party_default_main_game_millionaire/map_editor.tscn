@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://h3y4l41hq06j"]
+
+[ext_resource type="Script" uid="uid://biw3j3km8e15r" path="res://games/maingame/godot_party_default_main_game_millionaire/editor/map_editor.gd" id="1"]
+
+[node name="MillionaireMapEditor" type="Node3D" unique_id=674914242]
+script = ExtResource("1")

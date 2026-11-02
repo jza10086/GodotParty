@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://c0i3bv1580s8a"]
+
+[ext_resource type="Script" uid="uid://bw6rhtbu4bvn6" path="res://core/ui/settings/setting_row.gd" id="script"]
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/spin_box.tscn" id="ar_spin_box"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/h_slider.tscn" id="ar_h_slider"]
+
+[ext_resource type="Theme" path="res://core/ui/settings/field_theme.tres" id="field_theme"]
+
+[node name="Setting" type="VBoxContainer" unique_id=529121414]
+size_flags_horizontal = 3
+theme = ExtResource("theme")
+theme_override_constants/separation = 8
+script = ExtResource("script")
+
+[node name="Label" type="Label" parent="." unique_id=1297174912]
+unique_name_in_owner = true
+layout_mode = 2
+text = "设置"
+
+[node name="Controls" type="HBoxContainer" parent="." unique_id=1299047016]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="Value" parent="Controls" unique_id=527327686 instance=ExtResource("ar_h_slider")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+size_flags_horizontal = 3
+scrollable = false
+
+[node name="Number" parent="Controls" unique_id=1905848094 instance=ExtResource("ar_spin_box")]
+theme = ExtResource("field_theme")
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 52)
+layout_mode = 2
+select_all_on_focus = true

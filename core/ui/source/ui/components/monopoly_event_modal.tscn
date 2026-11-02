@@ -1,0 +1,102 @@
+[gd_scene load_steps=5 format=3]
+[ext_resource type="Theme" path="res://core/ui/source/ui/theme/party_theme.tres" id="theme"]
+[ext_resource type="StyleBox" path="res://core/ui/source/ui/theme/card.tres" id="card"]
+[ext_resource type="StyleBox" path="res://core/ui/source/ui/theme/muted.tres" id="muted"]
+
+[ext_resource type="Script" path="res://core/ui/source/ui/theme/theme_color_rect.gd" id="color"]
+[node name="EventModal" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 0
+theme = ExtResource("theme")
+visible = false
+
+[node name="Shade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("color")
+color_role = "modal_overlay"
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Dialog" type="PanelContainer" parent="Center"]
+layout_mode = 2
+custom_minimum_size = Vector2(680, 0)
+mouse_filter = 0
+theme_override_styles/panel = ExtResource("card")
+
+[node name="Margin" type="MarginContainer" parent="Center/Dialog"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="Content" type="VBoxContainer" parent="Center/Dialog/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Tag" type="Label" parent="Center/Dialog/Margin/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"PartyLabelNote"
+text = "特殊事件"
+theme_type_variation = &"PartyLabelMeta"
+
+[node name="Title" type="Label" parent="Center/Dialog/Margin/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"PartyLabelNote"
+text = "事件标题"
+theme_type_variation = &"PartyLabelCompactTitle"
+text_overrun_behavior = 3
+custom_minimum_size = Vector2(600, 0)
+
+[node name="Illustration" type="TextureRect" parent="Center/Dialog/Margin/Content"]
+visible = false
+layout_mode = 2
+custom_minimum_size = Vector2(0, 140)
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BodyScroll" type="ScrollContainer" parent="Center/Dialog/Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(600, 120)
+horizontal_scroll_mode = 0
+focus_mode = 2
+
+[node name="Body" type="Label" parent="Center/Dialog/Margin/Content/BodyScroll"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"PartyLabelNote"
+text = "事件内容由游戏逻辑传入。"
+size_flags_horizontal = 3
+autowrap_mode = 2
+
+[node name="ChoicesScroll" type="ScrollContainer" parent="Center/Dialog/Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(600, 174)
+horizontal_scroll_mode = 0
+focus_mode = 2
+
+[node name="Choices" type="VBoxContainer" parent="Center/Dialog/Margin/Content/ChoicesScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Close" type="Button" parent="Center/Dialog/Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 58)
+theme_type_variation = &"PartyButtonSetting"
+text = "关闭"

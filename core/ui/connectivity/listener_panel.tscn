@@ -1,0 +1,106 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
+[ext_resource type="Script" path="res://core/ui/connectivity/listener_panel.gd" id="r1"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r2"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="r3"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r4"]
+[ext_resource type="Script" path="res://core/network/connectivity/probe_listener.gd" id="r5"]
+
+[node name="ListenerPanel" type="VBoxContainer"]
+theme = ExtResource("ambient")
+script = ExtResource("r1")
+theme_override_constants/separation = 16
+
+[node name="MainText1" parent="." type="Label"]
+unique_name_in_owner = true
+text = "独立网络探测 · 不创建游戏房间。先开始监听，再让其他设备使用相同协议和端口访问。"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="MainOptions" parent="." type="HBoxContainer"]
+theme_override_constants/separation = 12
+
+[node name="Transport" parent="MainOptions" instance=ExtResource("r2")]
+unique_name_in_owner = true
+
+
+[node name="Family" parent="MainOptions" instance=ExtResource("r2")]
+unique_name_in_owner = true
+
+
+[node name="MainText13" parent="MainOptions" type="Label"]
+unique_name_in_owner = true
+text = "端口"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="Port" parent="MainOptions" instance=ExtResource("r3")]
+unique_name_in_owner = true
+
+
+[node name="Start" parent="MainOptions" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "开始监听"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="Stop" parent="MainOptions" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "停止"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="AddressLabel" parent="." type="Label"]
+unique_name_in_owner = true
+text = ""
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="Addresses" parent="." instance=ExtResource("r2")]
+unique_name_in_owner = true
+
+
+[node name="MainActions" parent="." type="HBoxContainer"]
+theme_override_constants/separation = 12
+
+[node name="AddressRefresh" parent="MainActions" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "刷新地址"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="Copy" parent="MainActions" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "复制客户端链接"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="Web" parent="MainActions" instance=ExtResource("r4")]
+unique_name_in_owner = true
+text = "复制网页链接"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,56)
+
+[node name="Status" parent="." type="Label"]
+unique_name_in_owner = true
+text = "尚未开始"
+autowrap_mode = 3
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0,150)
+
+[node name="Notice" parent="." type="Label"]
+unique_name_in_owner = true
+text = "UDP：使用极简客户端。TCP：使用客户端，或在浏览器中打开复制的 http:// 链接。"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="MainText35" parent="." type="Label"]
+unique_name_in_owner = true
+text = "本机绑定成功 ≠ 外网可达。只有远端收到匹配回复，才证明本次双向探测通过。关闭此窗口会释放端口；正式游戏目前仍使用 ENet/UDP。"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="Listener" parent="." type="Node"]
+unique_name_in_owner = true
+script = ExtResource("r5")

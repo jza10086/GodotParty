@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://bud5g21mg45ms"]
+
+[ext_resource type="Script" uid="uid://dsawqhdbs28v4" path="res://games/minigame/settings_ui_test/game.gd" id="1_ln7p6"]
+
+[node name="SettingsUiTest" type="Control" unique_id=807878553]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ln7p6")
+
+[node name="Notice" type="Label" parent="." unique_id=1976326837]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "空白设置测试小游戏
+请在大厅 → 小游戏池 → 本机设置中测试配置。"
+horizontal_alignment = 1
+vertical_alignment = 1

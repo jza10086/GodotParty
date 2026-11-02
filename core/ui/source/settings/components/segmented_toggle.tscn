@@ -1,0 +1,59 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Theme" path="res://core/ui/source/ui/theme/party_theme.tres" id="shared_theme"]
+[ext_resource type="Script" path="res://core/ui/source/settings/segmented_toggle.gd" id="script"]
+
+[ext_resource type="Script" path="res://core/ui/source/ui/theme/switch_texture_rect.gd" id="texture_script"]
+
+[sub_resource type="StyleBoxEmpty" id="empty"]
+
+[node name="Toggle" type="Button"]
+theme = ExtResource("shared_theme")
+theme_type_variation = "PartyButtonSetting"
+custom_minimum_size = Vector2(226, 72)
+size_flags_horizontal = 10
+size_flags_vertical = 4
+mouse_filter = 1
+toggle_mode = true
+script = ExtResource("script")
+theme_override_styles/normal = SubResource("empty")
+theme_override_styles/hover = SubResource("empty")
+theme_override_styles/pressed = SubResource("empty")
+theme_override_styles/hover_pressed = SubResource("empty")
+theme_override_styles/disabled = SubResource("empty")
+theme_override_styles/focus = SubResource("empty")
+
+[node name="Track" type="TextureRect" parent="."]
+script = ExtResource("texture_script")
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -106.0
+offset_right = -4.0
+offset_top = -31.0
+offset_bottom = 31.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Off" type="Label" parent="."]
+theme_type_variation = "PartyLabelSetting"
+anchor_bottom = 1.0
+offset_right = 100.0
+mouse_filter = 2
+text = "关"
+horizontal_alignment = 2
+vertical_alignment = 1
+text_overrun_behavior = 3
+
+[node name="On" type="Label" parent="."]
+theme_type_variation = "PartyLabelSetting"
+anchor_bottom = 1.0
+offset_right = 100.0
+mouse_filter = 2
+text = "开"
+horizontal_alignment = 2
+vertical_alignment = 1
+text_overrun_behavior = 3
+visible = false

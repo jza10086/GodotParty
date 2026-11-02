@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="button"]
+
+[node name="Category" groups=["settings_category"] instance=ExtResource("button")]
+custom_minimum_size = Vector2(180, 56)
+theme_type_variation = &"SettingsCategory"
+toggle_mode = true
+clip_text = true
+text_overrun_behavior = 3

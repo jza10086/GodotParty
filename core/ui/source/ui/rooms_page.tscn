@@ -1,0 +1,148 @@
+[gd_scene format=3]
+
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
+
+[node name="Rooms" type="Control"]
+theme = ExtResource("theme")
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
+[node name="PageBacking" parent="." instance=ExtResource("ar_panel")]
+offset_left = 64.0
+offset_top = 164.0
+offset_right = 1856.0
+offset_bottom = 996.0
+mouse_filter = 2
+
+
+[node name="RoomsTitle" type="Label" parent="."]
+theme_type_variation = &"DisplayTitle"
+offset_left = 96.0
+offset_top = 218.0
+offset_right = 1296.0
+offset_bottom = 302.0
+text = "加入房间"
+
+[node name="RoomsSubtitle" type="Label" parent="."]
+offset_left = 96.0
+offset_top = 330.0
+offset_right = 1496.0
+offset_bottom = 378.0
+text = "选择一个演示房间，看看朋友们是否就位。"
+
+[node name="Room0" parent="." instance=ExtResource("ar_panel")]
+offset_left = 96.0
+offset_top = 440.0
+offset_right = 1824.0
+offset_bottom = 560.0
+mouse_filter = 2
+
+[node name="Name0" type="Label" parent="."]
+theme_override_font_sizes/font_size = 29
+offset_left = 136.0
+offset_top = 458.0
+offset_right = 786.0
+offset_bottom = 504.0
+text = "周五快乐局"
+
+[node name="Info0" type="Label" parent="."]
+offset_left = 136.0
+offset_top = 508.0
+offset_right = 1186.0
+offset_bottom = 544.0
+text = "轻松派对 · 3 / 8 人"
+
+[node name="Join0" parent="." instance=ExtResource("ar_button")]
+theme_override_font_sizes/font_size = 26
+offset_left = 1500.0
+offset_top = 464.0
+offset_right = 1780.0
+offset_bottom = 536.0
+text = "加入  →"
+
+[node name="Room1" parent="." instance=ExtResource("ar_panel")]
+offset_left = 96.0
+offset_top = 584.0
+offset_right = 1824.0
+offset_bottom = 704.0
+mouse_filter = 2
+
+[node name="Name1" type="Label" parent="."]
+theme_override_font_sizes/font_size = 29
+offset_left = 136.0
+offset_top = 602.0
+offset_right = 786.0
+offset_bottom = 648.0
+text = "再来一局"
+
+[node name="Info1" type="Label" parent="."]
+offset_left = 136.0
+offset_top = 652.0
+offset_right = 1186.0
+offset_bottom = 688.0
+text = "合作挑战 · 3 / 8 人"
+
+[node name="Join1" parent="." instance=ExtResource("ar_button")]
+theme_override_font_sizes/font_size = 26
+offset_left = 1500.0
+offset_top = 608.0
+offset_right = 1780.0
+offset_bottom = 680.0
+text = "加入  →"
+
+[node name="Room2" parent="." instance=ExtResource("ar_panel")]
+offset_left = 96.0
+offset_top = 728.0
+offset_right = 1824.0
+offset_bottom = 848.0
+mouse_filter = 2
+
+[node name="Name2" type="Label" parent="."]
+theme_override_font_sizes/font_size = 29
+offset_left = 136.0
+offset_top = 746.0
+offset_right = 786.0
+offset_bottom = 792.0
+text = "满员的热闹"
+
+[node name="Info2" type="Label" parent="."]
+offset_left = 136.0
+offset_top = 796.0
+offset_right = 1186.0
+offset_bottom = 832.0
+text = "演示满员状态 · 8 / 8 人"
+
+[node name="Join2" parent="." instance=ExtResource("ar_button")]
+theme_override_font_sizes/font_size = 26
+offset_left = 1500.0
+offset_top = 752.0
+offset_right = 1780.0
+offset_bottom = 824.0
+text = "已满员"
+disabled = true
+
+[node name="Back" parent="." instance=ExtResource("ar_button")]
+theme_override_font_sizes/font_size = 26
+offset_left = 96.0
+offset_top = 904.0
+offset_right = 456.0
+offset_bottom = 976.0
+text = "←  返回主菜单"
+
+[node name="Direct" parent="." instance=ExtResource("ar_button")]
+theme_override_font_sizes/font_size = 26
+offset_left = 1416.0
+offset_top = 224.0
+offset_right = 1824.0
+offset_bottom = 296.0
+text = "IP 直连"

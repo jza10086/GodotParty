@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://core/ui/party_preferences_panel.gd" id="r1"]
+[ext_resource type="PackedScene" path="res://core/ui/settings/settings_workspace.tscn" id="r2"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r3"]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+[node name="PartyPreferencesPanel" type="PanelContainer"]
+theme = ExtResource("theme")
+theme_type_variation = &"PreferencesFullscreen"
+script = ExtResource("r1")
+custom_minimum_size = Vector2(0,480)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Workspace" parent="." instance=ExtResource("r2")]
+unique_name_in_owner = true
+
+
+[node name="Repair" parent="Workspace/Actions" instance=ExtResource("r3")]
+custom_minimum_size = Vector2(180, 56)
+theme_type_variation = &"SettingsAction"
+unique_name_in_owner = true
+text = "重置此设置文件（原文件保留为 .bak）"
+visible = false
+
+[node name="Save" parent="Workspace/Actions" instance=ExtResource("r3")]
+custom_minimum_size = Vector2(180, 56)
+theme_type_variation = &"SettingsAction"
+unique_name_in_owner = true
+text = "应用并保存"
+visible = false

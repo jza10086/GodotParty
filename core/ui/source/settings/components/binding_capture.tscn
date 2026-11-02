@@ -1,0 +1,76 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Theme" path="res://core/ui/source/ui/theme/party_theme.tres" id="shared_theme"]
+
+[ext_resource type="Script" path="res://core/ui/source/ui/theme/theme_color_rect.gd" id="color_binding"]
+
+[ext_resource type="Script" path="res://core/ui/source/ui/theme/theme_style.gd" id="bound_style"]
+
+[sub_resource type="StyleBoxFlat" id="panel"]
+script = ExtResource("bound_style")
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+content_margin_left = 32.0
+content_margin_right = 32.0
+content_margin_top = 32.0
+content_margin_bottom = 32.0
+
+[node name="BindingCapture" type="Control"]
+theme = ExtResource("shared_theme")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+z_index = 30
+
+[node name="Shade" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+script = ExtResource("color_binding")
+color_role = "capture_overlay"
+
+[node name="Panel" type="PanelContainer" parent="."]
+offset_left = 470.0
+offset_top = 330.0
+offset_right = 1450.0
+offset_bottom = 710.0
+theme_override_styles/panel = SubResource("panel")
+
+[node name="Content" type="VBoxContainer" parent="Panel"]
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="Panel/Content"]
+theme_type_variation = "PartyLabelSection"
+vertical_alignment = 1
+
+[node name="Message" type="Label" parent="Panel/Content"]
+theme_type_variation = "PartyLabelBody"
+custom_minimum_size = Vector2(880,124)
+vertical_alignment = 1
+autowrap_mode = 3
+text = "按下新按键，可组合 Ctrl / Alt / Shift / Meta\nEsc 取消 · Delete / Backspace 清除"
+
+[node name="Actions" type="HBoxContainer" parent="Panel/Content"]
+theme_override_constants/separation = 24
+
+[node name="Clear" type="Button" parent="Panel/Content/Actions"]
+theme_type_variation = "PartyButtonSetting"
+custom_minimum_size = Vector2(0, 64)
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 1
+text = "清除绑定"
+
+[node name="Cancel" type="Button" parent="Panel/Content/Actions"]
+theme_type_variation = "PartyButtonSetting"
+custom_minimum_size = Vector2(0, 64)
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 1
+text = "取消"

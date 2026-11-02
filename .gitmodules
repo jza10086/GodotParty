@@ -1,0 +1,44 @@
+[submodule "godot_party_default_auction_master"]
+	path = games/minigame/godot_party_default_auction_master
+	url = https://github.com/jza10086/AuctionMaster.git
+	branch = main
+[submodule "godot_party_default_billiards"]
+	path = games/minigame/godot_party_default_billiards
+	url = https://github.com/jza10086/Billiards.git
+	branch = main
+[submodule "godot_party_default_fruit_samurai"]
+	path = games/minigame/godot_party_default_fruit_samurai
+	url = https://github.com/jza10086/FruitSamurai.git
+	branch = main
+[submodule "godot_party_default_identity_party"]
+	path = games/minigame/godot_party_default_identity_party
+	url = https://github.com/jza10086/IdentityTemplate.git
+	branch = main
+[submodule "godot_party_default_matching_game"]
+	path = games/minigame/godot_party_default_matching_game
+	url = https://github.com/jza10086/MatchingGame.git
+	branch = main
+[submodule "godot_party_default_platformer"]
+	path = games/minigame/godot_party_default_platformer
+	url = https://github.com/jza10086/Platformer.git
+	branch = main
+[submodule "godot_party_default_psychological_party"]
+	path = games/minigame/godot_party_default_psychological_party
+	url = https://github.com/jza10086/PsychologicalPartyGame.git
+	branch = main
+[submodule "godot_party_default_snake_game"]
+	path = games/minigame/godot_party_default_snake_game
+	url = https://github.com/jza10086/SnakeGame.git
+	branch = main
+[submodule "godot_party_default_star_wave"]
+	path = games/minigame/godot_party_default_star_wave
+	url = https://github.com/jza10086/StarWave.git
+	branch = main
+[submodule "gp_rhythm_game"]
+	path = games/minigame/gp_rhythm_game
+	url = https://github.com/jza10086/MusicGame.git
+	branch = main
+[submodule "direction_password"]
+	path = games/minigame/direction_password
+	url = https://github.com/jza10086/MemoryGame.git
+	branch = main

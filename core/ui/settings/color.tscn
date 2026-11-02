@@ -1,0 +1,21 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://core/ui/settings/setting_row.gd" id="script"]
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/color_picker_button.tscn" id="ar_color_picker_button"]
+
+[ext_resource type="Theme" path="res://core/ui/settings/field_theme.tres" id="field_theme"]
+
+[node name="Setting" type="VBoxContainer"]
+theme = ExtResource("theme")
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+script = ExtResource("script")
+[node name="Label" type="Label" parent="."]
+unique_name_in_owner = true
+text = "设置"
+[node name="Value" parent="." instance=ExtResource("ar_color_picker_button")]
+theme = ExtResource("field_theme")
+unique_name_in_owner = true
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 56)

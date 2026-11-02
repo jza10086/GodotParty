@@ -1,0 +1,44 @@
+{
+  "manifest_version": 2,
+  "core_api_major": 4,
+  "package_version": "1.0.0",
+  "player_counts": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "entry": "game.tscn",
+  "dependencies": {
+    "godot_party_default_protocol": "1.0.0"
+  },
+  "id": "godot_party_default_framework_probe",
+  "name": "GodotPartyDefault · 框架探针",
+  "kind": "minigame",
+  "introduction": "真实就绪、参赛身份、可靠通信、父子回执与生命周期检查。",
+  "adapters": [
+    {
+      "id": "standard",
+      "protocol": {
+        "id": "godot_party_default_protocol",
+        "api_major": 1,
+        "min_api_minor": 0
+      },
+      "entry": "adapter.gd"
+    }
+  ],
+  "config_schema": "settings.gd",
+  "resources": {
+    "probe_script": "game.gd"
+  },
+  "streams": {
+    "receipt": {
+      "mode": "reliable",
+      "audience": "instance"
+    }
+  }
+}

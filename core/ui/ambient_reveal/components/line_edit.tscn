@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/parts/input_surface.tscn" id="surface"]
+
+[node name="LineEdit" type="LineEdit"]
+theme = ExtResource("theme")
+placeholder_text = "输入文字"
+custom_minimum_size = Vector2(160, 0)
+
+[node name="Surface" parent="." instance=ExtResource("surface")]

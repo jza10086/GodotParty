@@ -1,0 +1,65 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="r1"]
+[ext_resource type="Script" path="res://games/protocols/godot_party_default_protocol/ranked_round.gd" id="r2"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="r3"]
+
+[node name="RankedRound" type="Control"]
+script = ExtResource("r2")
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource("r1")
+
+[node name="Background" parent="." instance=ExtResource("r3")]
+
+
+[node name="Layout" parent="." type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = 28.0
+offset_right = -28.0
+offset_bottom = -28.0
+theme_override_constants/separation = 16
+
+[node name="Heading" parent="Layout" type="Label"]
+unique_name_in_owner = true
+text = "游戏"
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 34
+
+[node name="Status" parent="Layout" type="Label"]
+unique_name_in_owner = true
+text = "等待所有玩家就绪"
+autowrap_mode = 3
+
+[node name="Body" parent="Layout" type="HBoxContainer"]
+unique_name_in_owner = true
+theme_override_constants/separation = 24
+size_flags_vertical = 3
+
+[node name="Stage" parent="Layout/Body" type="Control"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SidebarScroll" parent="Layout/Body" type="ScrollContainer"]
+custom_minimum_size = Vector2(360,0)
+horizontal_scroll_mode = 0
+
+[node name="Sidebar" parent="Layout/Body/SidebarScroll" type="VBoxContainer"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(330,0)
+theme_override_constants/separation = 14
+
+[node name="Standings" parent="Layout/Body/SidebarScroll/Sidebar" type="Label"]
+unique_name_in_owner = true
+text = ""
+autowrap_mode = 3
+
+[node name="Footer" parent="Layout" type="Label"]
+unique_name_in_owner = true
+text = ""
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 20

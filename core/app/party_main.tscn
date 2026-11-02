@@ -1,0 +1,164 @@
+[gd_scene format=3 uid="uid://df0k065cblnk1"]
+
+[ext_resource type="Script" uid="uid://jhdhih3rcbug" path="res://core/app/party_main.gd" id="1_vg4ib"]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="background"]
+[ext_resource type="Script" path="res://core/ui/ambient_reveal/audio/menu_audio.gd" id="audio"]
+[ext_resource type="Script" path="res://core/network/party_connection.gd" id="connection"]
+[ext_resource type="Script" path="res://core/runtime/party_coordinator.gd" id="coordinator"]
+[ext_resource type="PackedScene" path="res://core/ui/frontend/party_frontend.tscn" id="frontend"]
+[ext_resource type="Script" path="res://core/ui/party_ui_navigation.gd" id="navigation"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/pad_keyboard.tscn" id="keyboard"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="button"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/xbox_hints.tscn" id="hints"]
+
+[node name="party_main" type="Control" unique_id=1685594889]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("theme")
+script = ExtResource("1_vg4ib")
+
+[node name="Background" parent="." instance=ExtResource("background")]
+unique_name_in_owner = true
+
+[node name="MenuAudio" type="AudioStreamPlayer" parent="." groups=["ambient_menu_audio"]]
+unique_name_in_owner = true
+bus = &"CoreUI"
+script = ExtResource("audio")
+
+[node name="Connection" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("connection")
+
+[node name="Session" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("coordinator")
+
+[node name="Framework" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="Pages" type="Control" parent="Framework" groups=["framework_pages"]]
+unique_name_in_owner = true
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="HintMargin" type="MarginContainer" parent="Framework"]
+unique_name_in_owner = true
+mouse_filter = 2
+z_index = 901
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 12
+
+[node name="InputHints" parent="Framework/HintMargin" instance=ExtResource("hints")]
+unique_name_in_owner = true
+
+[node name="PartyUI" parent="Framework/Pages" node_paths=PackedStringArray("app") instance=ExtResource("frontend")]
+unique_name_in_owner = true
+app = NodePath("../../..")
+
+[node name="GameScreen" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = 32.0
+offset_right = -48.0
+offset_bottom = -32.0
+mouse_filter = 2
+theme_override_constants/separation = 14
+
+[node name="GameStatus" type="Label" parent="GameScreen"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+
+[node name="Actions" type="HBoxContainer" parent="GameScreen"]
+
+[node name="Settings" parent="GameScreen/Actions" instance=ExtResource("button")]
+custom_minimum_size = Vector2(0, 48)
+size_flags_horizontal = 3
+text = "本地设置"
+
+[node name="Rules" parent="GameScreen/Actions" instance=ExtResource("button")]
+custom_minimum_size = Vector2(0, 48)
+size_flags_horizontal = 3
+text = "下一轮规则"
+
+[node name="Standings" parent="GameScreen/Actions" instance=ExtResource("button")]
+custom_minimum_size = Vector2(0, 48)
+size_flags_horizontal = 3
+text = "排名总览 [Tab]"
+
+[node name="RetrySave" parent="GameScreen/Actions" instance=ExtResource("button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+size_flags_horizontal = 3
+text = "重试保存"
+
+[node name="LeaveSession" parent="GameScreen/Actions" instance=ExtResource("button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+size_flags_horizontal = 3
+text = "返回大厅"
+
+[node name="Briefing" type="VBoxContainer" parent="GameScreen"]
+unique_name_in_owner = true
+visible = false
+
+[node name="GameName" type="Label" parent="GameScreen/Briefing"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 32
+autowrap_mode = 3
+
+[node name="Cover" type="TextureRect" parent="GameScreen/Briefing"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 180)
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Introduction" type="Label" parent="GameScreen/Briefing"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+
+[node name="GameBindings" type="Label" parent="GameScreen/Briefing"]
+unique_name_in_owner = true
+
+[node name="PlayerReadiness" type="Label" parent="GameScreen/Briefing"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+
+[node name="UINavigation" type="Control" parent="."]
+unique_name_in_owner = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+z_as_relative = false
+z_index = 900
+script = ExtResource("navigation")
+
+[node name="PadKeyboard" parent="UINavigation" instance=ExtResource("keyboard")]
+unique_name_in_owner = true
+
+[connection signal="pressed" from="GameScreen/Actions/Settings" to="." method="_settings_dialog"]
+
+[connection signal="pressed" from="GameScreen/Actions/Rules" to="." method="_room_rules_dialog"]
+
+[connection signal="pressed" from="GameScreen/Actions/Standings" to="." method="_open_standings"]
+
+[connection signal="pressed" from="GameScreen/Actions/RetrySave" to="." method="_retry_save"]
+
+[connection signal="pressed" from="GameScreen/Actions/LeaveSession" to="." method="_leave_session"]

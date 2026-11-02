@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://dhhotq3ggwny1"
+path="res://.godot/imported/UI_Single_Set 13_01-001.wav-070712a89871a6aa1d3f754ce5a91aff.sample"
+
+[deps]
+
+source_file="res://core/ui/ambient_reveal/audio/UI_Single_Set 13_01-001.wav"
+dest_files=["res://.godot/imported/UI_Single_Set 13_01-001.wav-070712a89871a6aa1d3f754ce5a91aff.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

@@ -1,0 +1,54 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://core/ui/party_protocol_page.gd" id="r1"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="r2"]
+[ext_resource type="PackedScene" path="res://core/ui/settings/settings_workspace.tscn" id="r3"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r4"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r5"]
+
+[node name="PartyProtocolPage" type="Control"]
+script = ExtResource("r1")
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Background" parent="." instance=ExtResource("r2")]
+
+
+[node name="Workspace" parent="." instance=ExtResource("r3")]
+unique_name_in_owner = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40
+offset_right = -40
+offset_top = 28
+offset_bottom = -28
+
+[node name="ProtocolPicker" parent="Workspace/Tools" instance=ExtResource("r4")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300,52)
+
+[node name="Apply" parent="Workspace/Actions" instance=ExtResource("r5")]
+custom_minimum_size = Vector2(180, 56)
+theme_type_variation = &"SettingsAction"
+unique_name_in_owner = true
+text = "应用当前协议"
+
+[node name="System" parent="Workspace/Actions" instance=ExtResource("r5")]
+custom_minimum_size = Vector2(180, 56)
+theme_type_variation = &"SettingsAction"
+unique_name_in_owner = true
+text = "系统设置"
+
+[node name="Game" parent="Workspace/Actions" instance=ExtResource("r5")]
+custom_minimum_size = Vector2(180, 56)
+theme_type_variation = &"SettingsAction"
+unique_name_in_owner = true
+text = "本大游戏偏好"
+
+[node name="Profile" parent="Workspace/Columns/List/Forms" type="VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+
+[node name="EditProfile" parent="Workspace/Columns/List/Forms/Profile" instance=ExtResource("r5")]
+unique_name_in_owner = true
+text = "编辑个人资料与形象"

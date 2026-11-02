@@ -1,0 +1,97 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+
+
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="ar_line_edit"]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
+
+[node name="Direct" type="Control"]
+theme = ExtResource("theme")
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
+[node name="Dialog" parent="." instance=ExtResource("ar_panel")]
+offset_left = 540.0
+offset_top = 270.0
+offset_right = 1380.0
+offset_bottom = 810.0
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="."]
+theme_override_font_sizes/font_size = 29
+offset_left = 600.0
+offset_top = 310.0
+offset_right = 1320.0
+offset_bottom = 374.0
+text = "IP 直连 · 模拟"
+
+[node name="Note" type="Label" parent="."]
+offset_left = 600.0
+offset_top = 386.0
+offset_right = 1320.0
+offset_bottom = 426.0
+text = "仅预览加入流程，不建立真实网络连接"
+
+[node name="Error" type="Label" parent="."]
+theme_override_colors/font_color = Color(1, 0.65, 0.62, 1)
+offset_left = 600.0
+offset_top = 642.0
+offset_right = 1320.0
+offset_bottom = 678.0
+text = ""
+
+[node name="Cancel" parent="." instance=ExtResource("ar_button")]
+theme_override_font_sizes/font_size = 26
+offset_left = 600.0
+offset_top = 700.0
+offset_right = 900.0
+offset_bottom = 772.0
+text = "取消"
+
+[node name="Confirm" parent="." instance=ExtResource("ar_button")]
+theme_override_font_sizes/font_size = 26
+offset_left = 936.0
+offset_top = 700.0
+offset_right = 1320.0
+offset_bottom = 772.0
+text = "模拟加入"
+
+[node name="AddressLabel" type="Label" parent="."]
+offset_left = 600.0
+offset_top = 452.0
+offset_right = 770.0
+offset_bottom = 510.0
+text = "IP 地址"
+
+[node name="Address" parent="." instance=ExtResource("ar_line_edit")]
+offset_left = 792.0
+offset_top = 452.0
+offset_right = 1320.0
+offset_bottom = 510.0
+placeholder_text = "127.0.0.1 或 IPv6"
+max_length = 45
+
+[node name="PortLabel" type="Label" parent="."]
+offset_left = 600.0
+offset_top = 542.0
+offset_right = 770.0
+offset_bottom = 600.0
+text = "端口"
+
+[node name="Port" parent="." instance=ExtResource("ar_line_edit")]
+offset_left = 792.0
+offset_top = 542.0
+offset_right = 1320.0
+offset_bottom = 600.0
+text = "7777"
+max_length = 5
+placeholder_text = "1–65535"

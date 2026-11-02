@@ -1,0 +1,71 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
+[ext_resource type="Script" path="res://core/ui/party_dialog.gd" id="r1"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="r2"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r3"]
+
+[node name="PartyDialog" type="Control"]
+theme = ExtResource("ambient")
+script = ExtResource("r1")
+anchor_right = 1.0
+anchor_bottom = 1.0
+z_index = 100
+
+[node name="Scrim" parent="." type="ColorRect"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.015,0.025,0.045,0.76)
+
+[node name="Panel" parent="." instance=ExtResource("r2")]
+unique_name_in_owner = true
+offset_right = 1200.0
+offset_bottom = 860.0
+mouse_filter = 0
+
+[node name="Layout" parent="Panel" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = -32.0
+offset_bottom = -32.0
+theme_override_constants/separation = 24
+
+[node name="Title" parent="Panel/Layout" type="Label"]
+unique_name_in_owner = true
+text = "标题"
+autowrap_mode = 3
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
+
+[node name="Scroll" parent="Panel/Layout" type="ScrollContainer"]
+unique_name_in_owner = true
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Content" parent="Panel/Layout/Scroll" type="VBoxContainer"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="Message" parent="Panel/Layout/Scroll/Content" type="Label"]
+unique_name_in_owner = true
+text = ""
+autowrap_mode = 3
+visible = false
+
+[node name="Actions" parent="Panel/Layout" type="HBoxContainer"]
+theme_override_constants/separation = 24
+
+[node name="Cancel" parent="Panel/Layout/Actions" instance=ExtResource("r3")]
+unique_name_in_owner = true
+text = "取消"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(180,64)
+
+[node name="Confirm" parent="Panel/Layout/Actions" instance=ExtResource("r3")]
+unique_name_in_owner = true
+text = "确定"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(180,64)
