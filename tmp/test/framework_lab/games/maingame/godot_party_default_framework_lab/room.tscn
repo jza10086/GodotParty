@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://cuc0csymfc4gb"]
-
-[ext_resource type="Script" path="res://tmp/test/framework_lab/games/maingame/godot_party_default_framework_lab/room.gd" id="1_gcydy"]
-
-[node name="LabRoom" type="Control" unique_id=1215313930]
-layout_mode = 3
-anchors_preset = 0
-script = ExtResource("1_gcydy")

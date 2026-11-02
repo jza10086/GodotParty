@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://6ruhemkuidtm"]
-
-[ext_resource type="Script" path="res://tmp/test/framework_lab/games/minigame/godot_party_default_framework_probe/game.gd" id="1_qkm1q"]
-
-[node name="FrameworkProbe" type="Control" unique_id=1474235701]
-layout_mode = 3
-anchors_preset = 0
-script = ExtResource("1_qkm1q")

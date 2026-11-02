@@ -1,9 +1,9 @@
 extends RefCounted
-## Only the standard ranking contract is implemented by this blank template.
+## Only the standard ranking contract is implemented by the framework probe.
 
 func check_request(request: Dictionary) -> Dictionary:
 	if request.get("mode") != "standard":
-		return {"ok": false, "code": "unsupported_mode", "message": "空白模板仅支持 standard 普通局"}
+		return {"ok": false, "code": "unsupported_mode", "message": "框架测试小游戏仅支持 standard 普通局"}
 	return {"ok": true}
 
 func make_config(request: Dictionary) -> Dictionary:

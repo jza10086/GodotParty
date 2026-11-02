@@ -11,9 +11,20 @@ var _message: Label
 
 func party_setup(value: PartyAPI, _settings: Dictionary) -> void:
 	api = value
+	api.net.child_message_received.connect(_child_query)
 	api.state_committed.connect(_state_committed)
 	api.round_cancelled.connect(_round_cancelled)
 	api.commit_failed.connect(_commit_failed)
+
+## Answer a query from the host child with the request ID actually locked by this playlist.
+func _child_query(sender: Dictionary, topic: StringName, payload: Variant) -> void:
+	if topic != &"playlist/round_query" or sender.peer_id != 1 or state.launch.is_empty():
+		return
+	if not payload is Dictionary or not payload.get("nonce") is int:
+		return
+	var error: Error = api.net.send_to_child(&"playlist/round_info", {"nonce": payload.nonce, "request_id": state.launch.request_id})
+	if error != OK:
+		api.fail("round_info_failed", error_string(error))
 
 func _ready() -> void:
 	if api == null:
@@ -163,11 +174,17 @@ func _advance() -> void:
 		return
 	if state.launch.is_empty():
 		var participants: Array[String] = []
-		for player: Dictionary in api.get_players():
-			if player.connected:
+		var roster: Array[Dictionary] = api.get_players()
+		var spectators: Array = []
+		var game_id: String = state.queue[state.cursor]
+		if game_id == "godot_party_default_framework_probe":
+			spectators = api.get_minigame_settings(game_id).spectator_seats
+		for index: int in roster.size():
+			var player: Dictionary = roster[index]
+			if player.connected and index + 1 not in spectators:
 				participants.append(player.player_id)
 		if participants.is_empty():
-			_pause("没有在线参赛者。")
+			_pause("本局没有在线参赛者，请检查在线人数及观战席位。")
 			return
 		var next: Dictionary = state.duplicate(true)
 		next.attempt += 1

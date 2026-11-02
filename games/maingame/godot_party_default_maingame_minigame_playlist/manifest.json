@@ -1,13 +1,13 @@
 {
   "manifest_version": 2,
   "core_api_major": 4,
-  "package_version": "1.1.0",
+  "package_version": "1.1.1",
   "id": "godot_party_default_maingame_minigame_playlist",
   "name": "GodotPartyDefault · 小游戏轮换",
   "kind": "maingame",
   "entry": "game.tscn",
   "room_scene": "room.tscn",
-  "minigames": ["godot_party_default_identity_party", "settings_ui_test", "gp_rhythm_game"],
+  "minigames": ["godot_party_default_identity_party", "settings_ui_test", "gp_rhythm_game", "godot_party_default_framework_probe"],
   "protocol": {
     "id": "godot_party_default_protocol",
     "api_major": 1,

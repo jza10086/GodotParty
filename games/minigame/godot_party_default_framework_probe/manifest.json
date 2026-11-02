@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "core_api_major": 4,
-  "package_version": "1.0.0",
+  "package_version": "1.1.0",
   "player_counts": [
     1,
     2,
@@ -17,9 +17,9 @@
     "godot_party_default_protocol": "1.0.0"
   },
   "id": "godot_party_default_framework_probe",
-  "name": "GodotPartyDefault · 框架探针",
+  "name": "框架测试小游戏",
   "kind": "minigame",
-  "introduction": "真实就绪、参赛身份、可靠通信、父子回执与生命周期检查。",
+  "introduction": "从房间直接进入，检查技术就绪、参赛身份、通信回执、父游戏请求与普通局结算。连续两轮可在第二轮观察上一轮的清理结果。",
   "adapters": [
     {
       "id": "standard",
@@ -32,9 +32,6 @@
     }
   ],
   "config_schema": "settings.gd",
-  "resources": {
-    "probe_script": "game.gd"
-  },
   "streams": {
     "receipt": {
       "mode": "reliable",
