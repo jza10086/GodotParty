@@ -2,7 +2,7 @@ extends RefCounted
 
 static func schema() -> Dictionary:
 	return {"schema_format": 3, "settings_version": 2, "fields": {
-		"ready_delay": {"type": "float", "default": 0.3, "min": 0.0, "max": 5.0,
+		"ready_delay": {"type": "float", "default": 0.3, "min": 0.0, "max": 5.0, "step": 0.1,
 			"title": "就绪延迟（秒）", "audience": "room", "apply": "next_round"},
 		"spectator_seats": {"type": "array", "control": "switches", "default": [],
 			"items": {"type": "int", "values": [1, 2, 3, 4, 5, 6, 7, 8]},
