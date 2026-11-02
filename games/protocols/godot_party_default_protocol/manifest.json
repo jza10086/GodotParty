@@ -36,7 +36,11 @@
     "font_serif": "fonts/SourceHanSerifSC-Regular.otf",
     "player_cursors": "player_cursors.gd",
     "ranked_round": "ranked_round.gd",
-    "ranked_round_scene": "ranked_round.tscn"
+    "ranked_round_scene": "ranked_round.tscn",
+    "briefing_gate": "briefing/briefing_gate.gd",
+    "briefing_view": "briefing/briefing_view.tscn",
+    "settlement_view": "settlement/settlement_view.tscn",
+    "settlement_gate": "settlement/settlement_gate.gd"
   },
   "appearance_resources": {
     "avatar_silver_lavender": {

@@ -6,6 +6,13 @@
 所有在线必要端就绪 → party_start → finish / fail → 提交或取消 → 关闭 API →
 party_stop → LIFO 清理 → 释放场景。
 
+`mark_ready()` 和 `party_start()` 只表示框架的技术准备屏障，不表示玩家已阅读规则或手动准备。
+`get_preparation_status()` 返回本作用域的 `session_id`、`scope_id`、`phase`、
+`required_peers` 与房主确认的 `ready_peers`。技术就绪包含游戏初始化、设置生效和规则校验；
+开始后保留本次屏障的端点快照，关闭 API 后返回空字典。内容可读取该诊断快照，不能修改框架状态。
+游戏如需玩家确认、规则页或倒计时，应自行实现（或选用协议的可选资源），并在确认流程完成前
+保持输入、计时、音乐和模拟停止。不得将手动点击伪装成 `mark_ready()`，也不应让30秒技术超时计作阅读超时。
+
 准备阶段的 ready 后续处理排队执行，避免从 _ready 重入 party_start。
 一轮只有一个终态；旧局消息不交给新局。每局参与者名单固定，断线仅更新 connected。
 

@@ -154,3 +154,14 @@ Millionaire 当前仍是独立 F6 视觉原型：读取同一资料槽的协议�
 协议公共偏好 `ui.player_cursors`（默认开，可被小游戏覆盖，立即生效）控制本机是否显示其他玩家鼠标；不影响发送自己位置。组件 `enabled` 则由游戏在离开交互阶段时关闭发送与显示。组件的生命周期限于本次活动，释放后信号连接自动清理。果园连线使用此组件；其他游戏可按需接入。
 
 公开资源 `ranked_round` 为原版五款街机小游戏复用的 Control 基类，提供 standard 生命周期、受发送者身份与单调序号约束的逻辑行动、主机快照、一次性结果提交和基础布局；不定义玩法和奖励。游戏入口场景继承协议的 ranked_round.tscn，根节点挂载对应的子类脚本。子类通过 build_game/start_game/tick_game/handle_action/make_snapshot/render_game 实现各自玩法。state 使用可靠快照；大型星潮状态另作压缩，视觉短时外推不改变裁定。清单应声明 state（reliable/instance）及需要时的 private_view（reliable/instance）。
+
+## 加载与结算场景
+
+协议公开 `briefing_view` / `briefing_gate` 与 `settlement_view` / `settlement_gate`；主游戏或小游戏按需挂载，不改变未接入游戏。
+
+- 加载：helper入树前 `configure(api, content)`，content含title/introduction/cover/controls；`read_content(manifest_path, api)`可读取自己的简介和实际绑定。初始化后游戏正常`mark_ready()`，`party_start()`中调用`transport_started()`；等`play_requested`才启动玩法。人工确认使用Enter/空格，观战无需确认；技术准备与人工准备独立，全员满足后默认3秒开始。
+- 结算：helper入树前`configure(api, presentation, result_token)`，presentation为`{title, rows:[{player_id, rank, metrics:{score}}]}`。score是本轮小游戏分数，不是父游戏奖励；作者给定rank，视图稳定处理并列，不按分数重排。所有在线端装好页面后自动回执，默认3秒发出`continued`，没有人工准备/退出按钮。
+- helper不调用`finish()`或发奖。拥有者自行选择提交前展示，或在父游戏持有已提交结果后展示；必须保证节点在展示期间仍存活。同一轮使用唯一token，消息校验session/scope/token/revision和真实发送者，退出时调用`stop()`。
+- 纯view可单独使用：加载view提供`configure`/`set_state`与`ready_requested`；结算view提供`configure(presentation, players)`与`set_countdown`，不拥有网络或计时。
+
+空白模板是接入示例：自己持有加载和结算页面；房主冻结并广播零分候选，所有端自动看完结算后才`finish()`一次。页面使用已有主菜单背景/主题/面板，不引入外部资产。其他小游戏与正式轮换保持原实现。

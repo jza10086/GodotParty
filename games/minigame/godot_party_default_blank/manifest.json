@@ -17,9 +17,9 @@
     "godot_party_default_protocol": "1.0.0"
   },
   "id": "godot_party_default_blank",
-  "name": "GodotPartyDefault · 空白模板",
+  "name": "空白小游戏",
   "kind": "minigame",
-  "introduction": "无玩法的 standard 入口模板。房主结束后返回父游戏；不预置分数或奖励。",
+  "introduction": "所有参赛玩家准备就绪后，倒计时三秒进入空白场景。房主点击「结束本局」查看本轮分数；在线玩家零分并列。所有客户端加载完结算页后自动倒计时三秒，再返回父游戏。",
   "config_schema": "settings.gd",
   "adapters": [
     {

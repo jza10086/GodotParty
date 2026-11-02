@@ -113,34 +113,6 @@ custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "返回大厅"
 
-[node name="Briefing" type="VBoxContainer" parent="GameScreen"]
-unique_name_in_owner = true
-visible = false
-
-[node name="GameName" type="Label" parent="GameScreen/Briefing"]
-unique_name_in_owner = true
-theme_override_font_sizes/font_size = 32
-autowrap_mode = 3
-
-[node name="Cover" type="TextureRect" parent="GameScreen/Briefing"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 180)
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Introduction" type="Label" parent="GameScreen/Briefing"]
-unique_name_in_owner = true
-theme_override_font_sizes/font_size = 22
-autowrap_mode = 3
-
-[node name="GameBindings" type="Label" parent="GameScreen/Briefing"]
-unique_name_in_owner = true
-
-[node name="PlayerReadiness" type="Label" parent="GameScreen/Briefing"]
-unique_name_in_owner = true
-theme_override_font_sizes/font_size = 22
-autowrap_mode = 3
-
 [node name="UINavigation" type="Control" parent="."]
 unique_name_in_owner = true
 anchor_right = 1.0

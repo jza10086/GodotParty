@@ -39,7 +39,6 @@ var _profile_panel: Control
 var _profile_error: Label
 var _arguments: Dictionary
 var _overview: GPPartyDialog
-var _last_loading: String = ""
 var _minigame_browser: Control
 
 func _ready() -> void:
@@ -124,7 +123,6 @@ func _refresh() -> void:
 	if _page == "game":
 		%GameStatus.text = connection.status if not connection.status.is_empty() else _notice_text
 		%RetrySave.disabled = not connection.host or runner._pending.is_empty()
-		_update_loading()
 
 func _show_page() -> void:
 	var playing: bool = _page == "game"
@@ -134,8 +132,6 @@ func _show_page() -> void:
 	if playing:
 		_frontend.close_modal()
 		%LeaveSession.text = "返回大厅" if connection.host else "退出会话"
-	else:
-		_clear_briefing()
 
 ## UI adapters enter the same connection and catalog pipeline as development arguments.
 func host_from_ui(main_id: String, title: String, port: int = 7777) -> Error:
@@ -212,37 +208,6 @@ func _leave_session() -> void:
 		connection.control("abort", {"reason": "返回大厅"})
 	else:
 		connection.leave()
-
-func _clear_briefing() -> void:
-	_last_loading = ""
-	%Briefing.hide()
-	%Cover.texture = null
-	%GameBindings.text = ""
-
-func _update_loading() -> void:
-	var id: String = runner.loading.get("scope", "")
-	if id != _last_loading:
-		_clear_briefing()
-		if not id.is_empty():
-			_last_loading = id
-			var manifest: Dictionary = catalog.get_package(runner.loading["package"])
-			%GameName.text = manifest.get("name", manifest["id"])
-			%Cover.visible = manifest.has("cover")
-			if %Cover.visible:
-				%Cover.texture = load(catalog.path(manifest["id"], manifest["cover"]))
-			%Introduction.text = manifest.get("introduction", "")
-			var input_context: PartyInput = runner._scopes[id].api.input
-			var bindings: PackedStringArray = []
-			for action: String in manifest.get("controls", {}):
-				bindings.append("%s   %s" % [input_context.binding_text(StringName(action)), manifest.controls[action]])
-			%GameBindings.text = "\n".join(bindings)
-			%Briefing.show()
-	if not id.is_empty():
-		var text: String = ""
-		for player: Dictionary in connection.players:
-			if player["connected"]:
-				text += player["name"] + ("  ✓ 已就绪" if player["peer_id"] in runner.loading.get("ready", []) else "  等待就绪") + "\n"
-		%PlayerReadiness.text = text
 
 func _modal(title: String, scene: PackedScene = preload("res://core/ui/party_dialog.tscn")) -> VBoxContainer:
 	if is_instance_valid(_dialog):

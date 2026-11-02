@@ -151,6 +151,10 @@ func _query(scope_id: String, key: String, argument: Dictionary) -> Variant:
 	var scope: Dictionary = _scopes.get(scope_id, {})
 	if scope.is_empty():
 		return null
+	if key == "preparation_status":
+		return {"session_id": connection.session_id, "scope_id": scope_id,
+			"phase": scope["phase"], "required_peers": scope.get("preparation_peers", []).duplicate(),
+			"ready_peers": scope.get("prepared_peers", []).duplicate()}
 	if key == "round_presentation":
 		return record.get("round_presentation", {}).duplicate(true)
 	if key == "asset":
@@ -381,6 +385,7 @@ func _control(sender: int, kind: String, payload: Dictionary) -> void:
 		"readiness":
 			if payload.get("scope") == loading.get("scope"):
 				loading["ready"] = payload.get("peers", []).duplicate()
+				_scopes[loading.scope]["prepared_peers"] = loading["ready"].duplicate()
 				changed.emit()
 		"start":
 			_start_scope(payload.get("scope", ""))
@@ -466,6 +471,8 @@ func _begin_barrier(scope: Dictionary) -> void:
 	for player: Dictionary in connection.players:
 		if player["connected"]:
 			_expected.append(player["peer_id"])
+	scope["preparation_peers"] = _expected.duplicate()
+	scope["prepared_peers"] = []
 	loading = {"scope": scope["id"], "package": scope["package"], "ready": []}
 	_deadline = Time.get_ticks_msec() + 30000
 	if scope["ready_requested"]:
@@ -483,6 +490,8 @@ func _start_scope(id: String) -> void:
 	if scope["phase"] != "preparing":
 		return
 	scope["phase"] = "playing"
+	# The start packet confirms all required endpoints passed the technical barrier.
+	scope["prepared_peers"] = scope.get("preparation_peers", []).duplicate()
 	voice_backend.started = true
 	voice_backend.sync_epoch()
 	scope["api"].input.input_blocked = false

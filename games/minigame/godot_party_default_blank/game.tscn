@@ -16,7 +16,7 @@ layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_constants/margin_left = 40
-theme_override_constants/margin_top = 32
+theme_override_constants/margin_top = 220
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 32
 
@@ -27,13 +27,13 @@ theme_override_constants/separation = 24
 [node name="Title" type="Label" parent="Margin/Content" unique_id=1777718129]
 layout_mode = 2
 theme_override_font_sizes/font_size = 36
-text = "GodotPartyDefault · 空白小游戏"
+text = "空白小游戏"
 
 [node name="Status" type="Label" parent="Margin/Content" unique_id=64335552]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "初始化，等待所有必要端就绪"
+text = ""
 
 [node name="Players" type="Label" parent="Margin/Content" unique_id=1743467604]
 unique_name_in_owner = true
@@ -46,4 +46,4 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 disabled = true
-text = "结束本局（房主）"
+text = "结束本局"

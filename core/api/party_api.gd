@@ -84,6 +84,11 @@ func load_asset(ref: Dictionary) -> Resource:
 		return null
 	return _query.call(scope_id, "asset", ref)
 
+## Read-only technical preparation snapshot for this scope, never a user confirmation.
+## Scope/session identify the generation; closed APIs return an empty dictionary.
+func get_preparation_status() -> Dictionary:
+	return _read("preparation_status", {})
+
 ## Explicit local readiness; repeated reports are OK only while preparing.
 func mark_ready() -> Error:
 	return _invoke("ready", {})
