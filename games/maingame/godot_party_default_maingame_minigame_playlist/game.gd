@@ -174,17 +174,11 @@ func _advance() -> void:
 		return
 	if state.launch.is_empty():
 		var participants: Array[String] = []
-		var roster: Array[Dictionary] = api.get_players()
-		var spectators: Array = []
-		var game_id: String = state.queue[state.cursor]
-		if game_id == "godot_party_default_framework_probe":
-			spectators = api.get_minigame_settings(game_id).spectator_seats
-		for index: int in roster.size():
-			var player: Dictionary = roster[index]
-			if player.connected and index + 1 not in spectators:
+		for player: Dictionary in api.get_players():
+			if player.connected:
 				participants.append(player.player_id)
 		if participants.is_empty():
-			_pause("本局没有在线参赛者，请检查在线人数及观战席位。")
+			_pause("本局没有在线参赛者。")
 			return
 		var next: Dictionary = state.duplicate(true)
 		next.attempt += 1

@@ -2,6 +2,7 @@ extends Control
 ## Self-contained example: load, confirm, play, present the local result, then finish once.
 ## Core readiness stays technical; the parent receives only the final standard result.
 enum Phase { PREPARING, RUNNING, SETTLING, SUBMITTED, STOPPED }
+const PRESS_TOPIC: StringName = &"blank/press"
 const RESULT_TOPIC: StringName = &"blank/result"
 var api: PartyAPI
 var request: Dictionary
@@ -9,10 +10,9 @@ var phase: Phase = Phase.PREPARING
 var _briefing: Control
 var _settlement: Control
 var _result: Dictionary = {}
-@onready var status: Label = %Status
-@onready var players: Label = %Players
+var _press_order: Array[String] = []
 @onready var finish_button: Button = %Finish
-@onready var _content: MarginContainer = $Margin
+@onready var _content: CenterContainer = $Content
 
 func party_setup(value: PartyAPI, config: Dictionary) -> void:
 	api = value
@@ -30,16 +30,15 @@ func _ready() -> void:
 		return
 	_briefing = gate_script.new()
 	var content: Dictionary = gate_script.read_content(get_script().resource_path.get_base_dir().path_join("manifest.json"), api)
-	content["controls"] = [{"binding": "鼠标左键", "description": "房主点击「结束本局」查看本轮结算"}]
+	content["controls"] = [{"binding": "鼠标左键", "description": "每人点击一次「结束游戏」，越早按下排名越高"}]
 	_briefing.configure(api, content)
 	_briefing.play_requested.connect(_begin_play)
 	add_child(_briefing)
 	await get_tree().process_frame
 	if not api.is_open():
 		return
-	finish_button.pressed.connect(finish_round)
-	api.players_changed.connect(_refresh_players)
-	_refresh_players()
+	finish_button.pressed.connect(_press_finish)
+	api.players_changed.connect(_try_settle)
 	var error: Error = api.mark_ready()
 	if error != OK:
 		api.fail("load_failed", error_string(error))
@@ -50,17 +49,45 @@ func party_start() -> void:
 func _begin_play() -> void:
 	phase = Phase.RUNNING
 	_content.show()
-	status.text = "本局已开始" if api.is_host() else "本局已开始，等待房主结束"
-	finish_button.disabled = not api.is_host()
+	for player: Dictionary in api.get_players():
+		if player.connected and player.is_local:
+			finish_button.disabled = false
+			break
+	_try_settle()
 
-## Freeze one authoritative candidate. Presentation happens while this child is still alive.
-func finish_round() -> void:
+func _press_finish() -> void:
+	if phase != Phase.RUNNING or finish_button.disabled:
+		return
+	finish_button.disabled = true
+	finish_button.text = "已结束，等待其他玩家"
+	var error: Error = api.net.send_to_host(PRESS_TOPIC, {})
+	if error != OK:
+		api.fail("press_send_failed", error_string(error))
+
+## The host derives identity from the sender and records the first press in receipt order.
+func _record_press(sender: Dictionary) -> void:
+	for player: Dictionary in api.get_players():
+		if player.connected and player.peer_id == sender.peer_id and player.player_id in sender.player_ids:
+			if player.player_id not in _press_order:
+				_press_order.append(player.player_id)
+				_try_settle()
+			return
+
+func _try_settle() -> void:
 	if phase != Phase.RUNNING or not api.is_host():
 		return
+	var roster: Array[Dictionary] = api.get_players()
+	for player: Dictionary in roster:
+		if not player.connected:
+			_press_order.erase(player.player_id)
+		elif player.player_id not in _press_order:
+			return
 	var rows: Array[Dictionary] = []
-	for player: Dictionary in api.get_players():
-		rows.append({"player_id": player.player_id, "rank": 1 if player.connected else 0,
-			"status": "completed" if player.connected else "withdrawn", "metrics": {"score": 0}})
+	for player: Dictionary in roster:
+		var place: int = _press_order.find(player.player_id) + 1
+		var score: int = _press_order.size() - place + 1 if place > 0 else 0
+		rows.append({"player_id": player.player_id, "rank": place,
+			"status": "completed" if player.connected else "withdrawn", "metrics": {"score": score}})
 	var result: Dictionary = {"request_id": request.request_id, "reason": "completed",
 		"rankings": rows, "columns": [{"key": "score", "title": "分数", "format": "integer"}]}
 	_open_settlement(result)
@@ -72,7 +99,13 @@ func finish_round() -> void:
 		api.fail("result_send_failed", error_string(error))
 
 func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
-	if topic != RESULT_TOPIC or phase != Phase.RUNNING or sender.get("peer_id") != 1 or not payload is Dictionary:
+	if phase != Phase.RUNNING:
+		return
+	if topic == PRESS_TOPIC:
+		if api.is_host() and payload is Dictionary and payload.is_empty():
+			_record_press(sender)
+		return
+	if topic != RESULT_TOPIC or sender.get("peer_id") != 1 or not payload is Dictionary:
 		return
 	if payload.get("session") != api.session_id or payload.get("scope") != api.scope_id or not payload.get("result") is Dictionary:
 		return
@@ -81,8 +114,10 @@ func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 		api.fail("contract_missing", "原版协议缺少结果契约。")
 		return
 	var checked: Dictionary = contract_script.new().validate_result(payload.result, request, api.get_players())
-	if checked.get("ok", false):
-		_open_settlement(payload.result)
+	if not checked.ok:
+		api.fail(checked.code, checked.message)
+		return
+	_open_settlement(payload.result)
 
 func _open_settlement(result: Dictionary) -> void:
 	if phase != Phase.RUNNING:
@@ -116,15 +151,9 @@ func party_stop(_reason: StringName) -> void:
 		_settlement.stop()
 	if api != null and api.net.message_received.is_connected(_message):
 		api.net.message_received.disconnect(_message)
+	if api.players_changed.is_connected(_try_settle):
+		api.players_changed.disconnect(_try_settle)
 	phase = Phase.STOPPED
 	set_process(false)
 	if is_node_ready():
 		finish_button.disabled = true
-
-func _refresh_players() -> void:
-	var lines: PackedStringArray = []
-	for player: Dictionary in api.get_players():
-		lines.append("%s · %s%s" % [player.name, "在线" if player.connected else "已退出",
-			" · 本机" if player.is_local else ""])
-	lines.append("观战人数：%d" % api.get_spectators().size())
-	players.text = "\n".join(lines)

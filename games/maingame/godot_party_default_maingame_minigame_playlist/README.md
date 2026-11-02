@@ -11,13 +11,13 @@ F5 → 创建房间 → 选择「GodotPartyDefault · 小游戏轮换」→ 大�
 | 允许小游戏重复 | 开启 | 顺序循环列表；随机每局独立抽取，可能连续抽中同一项 |
 | 局间间隔 | 0 秒 | 0–30；0 表示直接继续，不弹出阻断流程的单局成绩页 |
 
-大厅也可直接勾选[框架测试小游戏](../../minigame/godot_party_default_framework_probe/README.md)。房主子实例发送 `playlist/round_query` 和整数 `nonce` 后，轮换控制器向当前子实例发送 `playlist/round_info`，载荷包含同一 `nonce` 和父游戏已锁定的 `request_id`。
+大厅可直接勾选[空白小游戏](../../minigame/godot_party_default_blank/README.md)，测试全员点击后的本轮排名。房主子实例发送 `playlist/round_query` 和整数 `nonce` 后，轮换控制器向当前子实例发送 `playlist/round_info`，载荷包含同一 `nonce` 和父游戏已锁定的 `request_id`。
 
 不允许重复时，顺序取列表前 N 项，随机洗牌后取前 N 项。队列在开始时生成并随大游戏状态保存；恢复存档不重新抽签。房间规则只在开局前调整。每轮默认选择所有仍在线的主游戏参与者，小游戏人数限制继续由框架检查。
 
 测试单个原版小游戏：只勾选该项，开启允许重复，总局数设 1 为单次测试、设更大值为连续测试；无需修改小游戏入口或增加独立 runner。仍需满足小游戏的联机人数要求，不创建机器人或同屏玩家。
 
-当前可选池开放霓虹回响（`gp_rhythm_game`，1–8 人，默认 Bad Apple!! 4K Normal）和阿瓦隆（`godot_party_default_identity_party`，5–8 人），并临时加入 `settings_ui_test`（设置 UI 测试）。在大厅“小游戏池”中单击测试卡片，再点右侧“本机设置”，即可测试 25 个示例项的 JSON 保存、协议继承和覆盖；无需勾选或开局。测试包是空白内容，没有回合结算玩法。其本机数据位于安装根目录 `minigame/settings_ui_test/config/`，与 tmp/test/ 下的 F6 预览资料独立。狼人杀和其他未完成小游戏仍不在可选池中。
+当前可选池开放空白小游戏（1–8 人）、霓虹回响（`gp_rhythm_game`，1–8 人，默认 Bad Apple!! 4K Normal）和阿瓦隆（`godot_party_default_identity_party`，5–8 人），并临时加入 `settings_ui_test`（设置 UI 测试）。在大厅“小游戏池”中单击测试卡片，再点右侧“本机设置”，即可测试 25 个示例项的 JSON 保存、协议继承和覆盖；无需勾选或开局。测试包是空白内容，没有回合结算玩法。其本机数据位于安装根目录 `minigame/settings_ui_test/config/`，与 tmp/test/ 下的 F6 预览资料独立。狼人杀和其他未完成小游戏仍不在可选池中。
 
 每局已完成且有名次的玩家获得「本局参赛人数 − 名次 + 1」积分，并列同分；退出者不得该局积分。只有正式持久化的小游戏结果才能推进队列及加分。Tab 查看总积分，局间页可查看上一局成绩与完整队列。
 

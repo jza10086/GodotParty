@@ -7,7 +7,7 @@
   "kind": "maingame",
   "entry": "game.tscn",
   "room_scene": "room.tscn",
-  "minigames": ["godot_party_default_identity_party", "settings_ui_test", "gp_rhythm_game", "godot_party_default_framework_probe"],
+  "minigames": ["godot_party_default_identity_party", "settings_ui_test", "gp_rhythm_game", "godot_party_default_blank"],
   "protocol": {
     "id": "godot_party_default_protocol",
     "api_major": 1,
