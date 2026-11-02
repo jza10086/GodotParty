@@ -7,17 +7,6 @@
 
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/keyboard/number_keys.tscn" id="number_keys"]
 
-[sub_resource type="StyleBoxFlat" id="Panel"]
-bg_color = Color(0.075, 0.12, 0.17, 0.98)
-content_margin_left = 28.0
-content_margin_top = 22.0
-content_margin_right = 28.0
-content_margin_bottom = 22.0
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_left = 16
-corner_radius_bottom_right = 16
-
 [node name="PadKeyboard" type="ColorRect"]
 visible = false
 theme = ExtResource("ambient_theme")
@@ -33,7 +22,6 @@ anchor_bottom = 1.0
 
 [node name="Panel" type="PanelContainer" parent="Center"]
 custom_minimum_size = Vector2(912, 0)
-theme_override_styles/panel = SubResource("Panel")
 
 [node name="Layout" type="VBoxContainer" parent="Center/Panel"]
 theme_override_constants/separation = 12

@@ -215,7 +215,7 @@ func _modal(title: String, scene: PackedScene = preload("res://core/ui/party_dia
 		_dialog.queue_free()
 	_dialog = scene.instantiate()
 	_dialog.title = title
-	%Pages.add_child(_dialog)
+	%DialogHost.add_child(_dialog)
 	_dialog.popup_centered(Vector2i(1100, 850))
 	return _dialog.content
 
@@ -322,7 +322,7 @@ func _configuration_dialog() -> void:
 	_dialog.ok_button_text = "应用小游戏池"
 	_dialog.scroll_content = false
 	_dialog.dialog_hide_on_ok = false
-	%Pages.add_child(_dialog)
+	%DialogHost.add_child(_dialog)
 	_minigame_browser = preload("res://core/ui/minigame_browser/minigame_browser.tscn").instantiate()
 	_minigame_browser.configure(self, connection.room, editable)
 	_dialog.content.add_child(_minigame_browser)
@@ -411,7 +411,7 @@ func _show_results(value: Dictionary) -> void:
 		_overview.queue_free()
 	_overview = preload("res://core/ui/dialogs/standings.tscn").instantiate()
 	_overview.title = value.get("title", "当前排名")
-	%Pages.add_child(_overview)
+	%DialogHost.add_child(_overview)
 	var lines: PackedStringArray = []
 	var rows: Array = value.get("rows", []).duplicate(true)
 	for index: int in rows.size():
@@ -587,7 +587,7 @@ func _package_dialog() -> void:
 func _confirm_action(text: String, action: Callable) -> void:
 	var dialog: GPPartyDialog = preload("res://core/ui/party_dialog.tscn").instantiate()
 	dialog.dialog_text = text
-	%Pages.add_child(dialog)
+	%DialogHost.add_child(dialog)
 	dialog.confirmed.connect(action)
 	dialog.confirmed.connect(dialog.queue_free)
 	dialog.canceled.connect(dialog.queue_free)

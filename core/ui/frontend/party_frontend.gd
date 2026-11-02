@@ -2,6 +2,11 @@
 extends Control
 const RoomAPI = preload("res://core/api/party_room_api.gd")
 @export var app: Control
+@export var modal_layer: Control
+@onready var _create: Control = modal_layer.get_node("Create")
+@onready var _direct: Control = modal_layer.get_node("Direct")
+@onready var _profile: Control = modal_layer.get_node("Profile")
+@onready var _confirm: Control = modal_layer.get_node("Confirm")
 var _room_view: Control
 var _room_activity: PartyAPI
 var page: String = "Home"
@@ -16,8 +21,9 @@ var _create_step: String = "protocol"
 var _focus_modes: Dictionary = {}
 ## Bind the authored pages once the application has loaded its catalog and session.
 func initialize() -> void:
+	visibility_changed.connect(func() -> void: modal_layer.visible = is_visible_in_tree() and not modal_kind.is_empty())
 	# Source pages use fixed-height text boxes. Center single-line text within each row.
-	for node: Node in find_children("*", "Label", true, false):
+	for node: Node in find_children("*", "Label", true, false) + modal_layer.find_children("*", "Label", true, false):
 		var label: Label = node as Label
 		if label.autowrap_mode == TextServer.AUTOWRAP_OFF and not label.text.contains("\n"):
 			label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -34,17 +40,17 @@ func initialize() -> void:
 	_button("Rooms/Back", func() -> void: show_page("Home"))
 	_button("Rooms/Direct", func() -> void: open_modal("Direct"))
 	_button("Rooms/Join1", func() -> void: open_modal("Direct"))
-	$Modal/Create/Game.item_selected.connect(func(index: int) -> void: select_game($Modal/Create/Game.get_item_metadata(index)))
-	_button("Modal/Create/Cancel", _create_back)
-	_button("Modal/Create/Confirm", submit_create)
-	_button("Modal/Profile/Cancel", close_modal)
-	_button("Modal/Profile/Confirm", submit_profile)
-	_button("Modal/Direct/Cancel", close_modal)
-	_button("Modal/Direct/Confirm", submit_direct)
-	_button("Modal/Confirm/Cancel", close_modal)
-	_button("Modal/Confirm/Quit", func() -> void: get_tree().quit())
-	$Modal/Profile/Name.text_submitted.connect(func(_text: String) -> void: submit_profile())
-	$Modal/Direct/Port.text_submitted.connect(func(_text: String) -> void: submit_direct())
+	_create.get_node("Game").item_selected.connect(func(index: int) -> void: select_game(_create.get_node("Game").get_item_metadata(index)))
+	_create.get_node("Cancel").pressed.connect(_create_back)
+	_create.get_node("Confirm").pressed.connect(submit_create)
+	_profile.get_node("Cancel").pressed.connect(close_modal)
+	_profile.get_node("Confirm").pressed.connect(submit_profile)
+	_direct.get_node("Cancel").pressed.connect(close_modal)
+	_direct.get_node("Confirm").pressed.connect(submit_direct)
+	_confirm.get_node("Cancel").pressed.connect(close_modal)
+	_confirm.get_node("Quit").pressed.connect(func() -> void: get_tree().quit())
+	_profile.get_node("Name").text_submitted.connect(func(_text: String) -> void: submit_profile())
+	_direct.get_node("Port").text_submitted.connect(func(_text: String) -> void: submit_direct())
 	$Rooms/RoomsSubtitle.text = "通过 IP 直连加入房主 · 房间发现服务暂未开放"
 	$Rooms/Name0.text = "房间发现暂未开放"
 	$Rooms/Info0.text = "当前没有公共房间列表；请向房主获取地址和端口。"
@@ -54,27 +60,26 @@ func initialize() -> void:
 	$Rooms/Join1.text = "填写 / 连接"
 	for key: String in ["Room2", "Name2", "Info2", "Join2"]:
 		get_node("Rooms/" + key).hide()
-	$Modal/Create/Note.text = "选择已安装的大游戏，确认后创建真实联机房间。"
-	$Modal/Create/Port.text_submitted.connect(func(_text: String) -> void: submit_create())
-	$Modal/Create/Visibility.clear()
-	$Modal/Create/Visibility.add_item("IP 直连")
-	$Modal/Create/Visibility.disabled = true
-	$Modal/Direct/Title.text = "IP 直连"
-	$Modal/Direct/Confirm.text = "连接房间"
-	$Modal/Direct/Note.text = "IPv4 / IPv6 地址（可带方括号），端口单独填写"
-	$Modal/Direct/Port.max_length = 0
-	$Modal/Direct/Address.max_length = 64
-	$Modal/Direct/Address.placeholder_text = "192.168.1.10 或 2001:db8::1"
-	for path: String in ["Modal/Create/Error", "Modal/Direct/Error", "Rooms/Info1"]:
-		var label: Label = get_node(path)
+	_create.get_node("Note").text = "选择已安装的大游戏，确认后创建真实联机房间。"
+	_create.get_node("Port").text_submitted.connect(func(_text: String) -> void: submit_create())
+	_create.get_node("Visibility").clear()
+	_create.get_node("Visibility").add_item("IP 直连")
+	_create.get_node("Visibility").disabled = true
+	_direct.get_node("Title").text = "IP 直连"
+	_direct.get_node("Confirm").text = "连接房间"
+	_direct.get_node("Note").text = "IPv4 / IPv6 地址（可带方括号），端口单独填写"
+	_direct.get_node("Port").max_length = 0
+	_direct.get_node("Address").max_length = 64
+	_direct.get_node("Address").placeholder_text = "192.168.1.10 或 2001:db8::1"
+	for label: Label in [_create.get_node("Error"), _direct.get_node("Error"), $Rooms/Info1]:
 		label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		label.mouse_filter = Control.MOUSE_FILTER_PASS
 		label.mouse_entered.connect(func() -> void: label.tooltip_text = label.text)
-	$Modal/Profile/Note.text = "昵称保存在本机；协议形象由所选协议提供。"
-	$Modal/Profile/Name.max_length = 16
-	$Modal/Profile/Name.placeholder_text = "1–16 字"
-	$Modal/Profile/Avatar/Placeholder.text = "形象"
-	$Modal/Profile/AvatarNote.text = "头像与形象请在加入房间后，点击大厅中的本人资料设置。"
+	_profile.get_node("Note").text = "昵称保存在本机；协议形象由所选协议提供。"
+	_profile.get_node("Name").max_length = 16
+	_profile.get_node("Name").placeholder_text = "1–16 字"
+	_profile.get_node("Avatar/Placeholder").text = "形象"
+	_profile.get_node("AvatarNote").text = "头像与形象请在加入房间后，点击大厅中的本人资料设置。"
 	set_anchors_preset(Control.PRESET_TOP_LEFT)
 	get_parent().resized.connect(_fit)
 	_fit()
@@ -100,23 +105,23 @@ func _build_games() -> void:
 		if binding.get("id") == selected_protocol and binding.get("api_major") == contract.get("api_major") and int(binding.get("min_api_minor", 0)) <= int(contract.get("api_minor", 0)):
 			_games.append(id)
 	var options: Array[String] = app.catalog.ids("protocols") if _create_step == "protocol" else _games
-	var picker: OptionButton = $Modal/Create/Game
+	var picker: OptionButton = _create.get_node("Game")
 	picker.clear()
 	for id: String in options:
 		picker.add_item(app.catalog.get_package(id).get("name", id))
 		picker.set_item_metadata(picker.item_count - 1, id)
-	$Modal/Create/Title.text = "创建房间 · 选择协议" if _create_step == "protocol" else "创建房间 · 选择大游戏"
-	$Modal/Create/GameLabel.text = "协议" if _create_step == "protocol" else "大游戏"
-	$Modal/Create/Confirm.text = "下一步" if _create_step == "protocol" else "创建房间"
-	$Modal/Create/Cancel.text = "取消" if _create_step == "protocol" else "上一步"
-	$Modal/Create/Note.text = "协议决定房间规则、形象与公共体验。" if _create_step == "protocol" else "仅显示兼容大游戏；具体配置在创建后的大厅设置。"
+	_create.get_node("Title").text = "创建房间 · 选择协议" if _create_step == "protocol" else "创建房间 · 选择大游戏"
+	_create.get_node("GameLabel").text = "协议" if _create_step == "protocol" else "大游戏"
+	_create.get_node("Confirm").text = "下一步" if _create_step == "protocol" else "创建房间"
+	_create.get_node("Cancel").text = "取消" if _create_step == "protocol" else "上一步"
+	_create.get_node("Note").text = "协议决定房间规则、形象与公共体验。" if _create_step == "protocol" else "仅显示兼容大游戏；具体配置在创建后的大厅设置。"
 	for key: String in ["RoomNameLabel", "RoomName", "PortLabel", "Port", "VisibilityLabel", "Visibility"]:
-		get_node("Modal/Create/" + key).visible = _create_step == "game"
-	$Modal/Create/Game.disabled = options.is_empty()
-	$Modal/Create/Confirm.disabled = options.is_empty()
+		_create.get_node(key).visible = _create_step == "game"
+	_create.get_node("Game").disabled = options.is_empty()
+	_create.get_node("Confirm").disabled = options.is_empty()
 	if options.is_empty():
 		selected_game = ""
-		$Modal/Create/Game.text = "没有已安装的协议" if _create_step == "protocol" else "没有兼容的大游戏"
+		_create.get_node("Game").text = "没有已安装的协议" if _create_step == "protocol" else "没有兼容的大游戏"
 	else:
 		var current: String = selected_protocol if _create_step == "protocol" else selected_game
 		select_game(current if current in options else options[0])
@@ -131,7 +136,7 @@ func select_game(id: String) -> void:
 		if id not in _games:
 			return
 		selected_game = id
-	var picker: OptionButton = $Modal/Create/Game
+	var picker: OptionButton = _create.get_node("Game")
 	for index: int in picker.item_count:
 		if picker.get_item_metadata(index) == id:
 			picker.select(index)
@@ -140,14 +145,14 @@ func select_game(id: String) -> void:
 func _create_back() -> void:
 	if _create_step == "game":
 		_create_step = "protocol"
-		$Modal/Create/Error.text = ""
+		_create.get_node("Error").text = ""
 		_build_games()
 	else:
 		close_modal()
 
 func navigation_scope() -> Control:
 	if not modal_kind.is_empty():
-		return get_node("Modal/" + modal_kind)
+		return modal_layer.get_node(modal_kind)
 	return get_node(page)
 
 func show_page(next: String) -> void:
@@ -165,36 +170,36 @@ func open_modal(kind: String) -> void:
 	close_modal()
 	previous_focus = get_viewport().gui_get_focus_owner()
 	modal_kind = kind
-	$Modal.show()
+	modal_layer.show()
 	for key: String in ["Create", "Direct", "Profile", "Confirm"]:
-		get_node("Modal/" + key).visible = kind == key
+		modal_layer.get_node(key).visible = kind == key
 	_set_page_focus(false)
 	match kind:
 		"Create":
 			_create_step = "protocol"
 			_build_games()
-			$Modal/Create/RoomName.text = "我的派对"
-			$Modal/Create/Error.text = ""
-			$Modal/Create/Port.text = str(app.settings.config.get_value("connection", "host_port", 7777))
-			$Modal/Create/DropdownNote.text = "同时监听 IPv4 / IPv6 · 请允许所填 UDP 端口通过防火墙"
-			$Modal/Create/Game.grab_focus()
+			_create.get_node("RoomName").text = "我的派对"
+			_create.get_node("Error").text = ""
+			_create.get_node("Port").text = str(app.settings.config.get_value("connection", "host_port", 7777))
+			_create.get_node("DropdownNote").text = "同时监听 IPv4 / IPv6 · 请允许所填 UDP 端口通过防火墙"
+			_create.get_node("Game").grab_focus()
 		"Direct":
-			$Modal/Direct/Address.text = str(app.settings.config.get_value("connection", "address", "127.0.0.1"))
-			$Modal/Direct/Port.text = str(app.settings.config.get_value("connection", "port", 7777))
-			$Modal/Direct/Error.text = ""
-			$Modal/Direct/Confirm.disabled = false
-			$Modal/Direct/Address.grab_focus()
+			_direct.get_node("Address").text = str(app.settings.config.get_value("connection", "address", "127.0.0.1"))
+			_direct.get_node("Port").text = str(app.settings.config.get_value("connection", "port", 7777))
+			_direct.get_node("Error").text = ""
+			_direct.get_node("Confirm").disabled = false
+			_direct.get_node("Address").grab_focus()
 		"Profile":
-			$Modal/Profile/Name.text = app.local_display_name()
-			$Modal/Profile/Error.text = ""
-			$Modal/Profile/Name.grab_focus()
-		_: $Modal/Confirm/Cancel.grab_focus()
+			_profile.get_node("Name").text = app.local_display_name()
+			_profile.get_node("Error").text = ""
+			_profile.get_node("Name").grab_focus()
+		_: _confirm.get_node("Cancel").grab_focus()
 
 func close_modal() -> void:
 	if _joining and app.connection.room.is_empty():
 		_joining = false
 		app.connection.leave()
-	$Modal.hide()
+	modal_layer.hide()
 	modal_kind = ""
 	_set_page_focus(true)
 	if is_instance_valid(previous_focus) and previous_focus.is_visible_in_tree():
@@ -223,46 +228,46 @@ func submit_create() -> void:
 		_build_games()
 		return
 	if selected_game not in _games or app.catalog.get_package(selected_game).get("protocol", {}).get("id") != selected_protocol:
-		$Modal/Create/Error.text = "请选择兼容的大游戏"
+		_create.get_node("Error").text = "请选择兼容的大游戏"
 		return
-	var title: String = $Modal/Create/RoomName.text.strip_edges()
+	var title: String = _create.get_node("RoomName").text.strip_edges()
 	if not app.connection.valid_room_name(title):
-		$Modal/Create/Error.text = "请输入 1–24 字的房间名称"
+		_create.get_node("Error").text = "请输入 1–24 字的房间名称"
 		return
-	var port: int = app.connection.parse_port($Modal/Create/Port.text)
+	var port: int = app.connection.parse_port(_create.get_node("Port").text)
 	if port == 0:
-		$Modal/Create/Error.text = "端口请输入 1–65535 的整数"
+		_create.get_node("Error").text = "端口请输入 1–65535 的整数"
 		return
 	var error: Error = app.host_from_ui(selected_game, title, port)
 	if error != OK:
-		$Modal/Create/Error.text = app.connection.status if not app.connection.status.is_empty() else error_string(error)
+		_create.get_node("Error").text = app.connection.status if not app.connection.status.is_empty() else error_string(error)
 
 func submit_direct() -> void:
 	if modal_kind != "Direct" or _joining:
 		return
-	var address: String = app.connection.normalize_address($Modal/Direct/Address.text)
-	var port: int = app.connection.parse_port($Modal/Direct/Port.text)
+	var address: String = app.connection.normalize_address(_direct.get_node("Address").text)
+	var port: int = app.connection.parse_port(_direct.get_node("Port").text)
 	if address.is_empty():
-		$Modal/Direct/Error.text = "请输入有效 IPv4 / IPv6，端口请填在下方"
+		_direct.get_node("Error").text = "请输入有效 IPv4 / IPv6，端口请填在下方"
 		return
 	if port == 0:
-		$Modal/Direct/Error.text = "端口请输入 1–65535 的整数"
+		_direct.get_node("Error").text = "端口请输入 1–65535 的整数"
 		return
 	var error: Error = app.join_from_ui(address, port)
 	if error != OK:
-		$Modal/Direct/Error.text = app.connection.status if not app.connection.status.is_empty() else error_string(error)
+		_direct.get_node("Error").text = app.connection.status if not app.connection.status.is_empty() else error_string(error)
 		return
 	_joining = true
-	$Modal/Direct/Confirm.disabled = true
-	$Modal/Direct/Error.text = "正在连接 " + app.connection.format_endpoint(address, port) + "…"
+	_direct.get_node("Confirm").disabled = true
+	_direct.get_node("Error").text = "正在连接 " + app.connection.format_endpoint(address, port) + "…"
 
 func submit_profile() -> void:
 	if modal_kind != "Profile" or app.connection.online:
 		return
-	var name_value: String = $Modal/Profile/Name.text.strip_edges()
+	var name_value: String = _profile.get_node("Name").text.strip_edges()
 	var error: Error = app.save_local_name(name_value)
 	if error != OK:
-		$Modal/Profile/Error.text = "昵称需为 1–16 字，且不能包含控制字符" if error == ERR_INVALID_PARAMETER else "保存失败：" + error_string(error)
+		_profile.get_node("Error").text = "昵称需为 1–16 字，且不能包含控制字符" if error == ERR_INVALID_PARAMETER else "保存失败：" + error_string(error)
 		return
 	close_modal()
 	refresh()
@@ -271,8 +276,8 @@ func refresh() -> void:
 	_sync_room()
 	if _joining and not app.connection.online:
 		_joining = false
-		$Modal/Direct/Confirm.disabled = false
-		$Modal/Direct/Error.text = app.connection.status
+		_direct.get_node("Confirm").disabled = false
+		_direct.get_node("Error").text = app.connection.status
 	if app._page == "lobby" and _room_view != null and page != "Lobby":
 		_joining = false
 		show_page("Lobby")

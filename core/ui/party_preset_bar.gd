@@ -33,7 +33,7 @@ func configure(store: RefCounted, id: String, protocol: String, read_draft: Call
 
 ## Modals belong to the viewport, outside this toolbar and any clipping scroll container.
 func _attach_dialog(dialog: Control) -> void:
-	get_tree().get_first_node_in_group(&"framework_pages").add_child(dialog)
+	get_tree().get_first_node_in_group(&"framework_dialog_host").add_child(dialog)
 	dialogs.append(dialog)
 
 func _exit_tree() -> void:

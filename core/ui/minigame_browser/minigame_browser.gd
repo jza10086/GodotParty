@@ -297,7 +297,7 @@ func open_advanced() -> void:
 	advanced_dialog.title = "高级设置 · " + _title(id)
 	advanced_dialog.ok_button_text = "应用到草稿"
 	advanced_dialog.dialog_hide_on_ok = false
-	app.get_node("%Pages").add_child(advanced_dialog)
+	app.get_node("%DialogHost").add_child(advanced_dialog)
 	var panel: Control = app._panel(id, draft.children[id], editable)
 	advanced_dialog.content.get_node("FormSlot").add_child(panel)
 	var protocol: String = app.catalog.get_package(draft.main).protocol.id

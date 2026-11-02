@@ -15,6 +15,7 @@ var scroll_content: bool = true
 @onready var _title: Label = %Title
 @onready var _ok: Button = %Confirm
 @onready var _cancel: Button = %Cancel
+@onready var _hints: Control = get_tree().get_first_node_in_group(&"framework_hints")
 var _requested_size: Vector2 = Vector2(1200, 860)
 var _focus_modes: Dictionary = {}
 var _previous_focus: Control
@@ -32,6 +33,9 @@ func _ready() -> void:
 			hide())
 	visibility_changed.connect(_visibility_changed)
 	resized.connect(_fit)
+	if _hints != null:
+		_hints.resized.connect(_fit)
+		_hints.visibility_changed.connect(_fit)
 	hide()
 
 func get_ok_button() -> Button:
@@ -53,7 +57,11 @@ func popup_centered(requested: Vector2i = Vector2i(1200, 860)) -> void:
 func _fit() -> void:
 	if _panel == null:
 		return
-	_panel.size = _requested_size.min((size - Vector2(64, 64)).max(Vector2(320, 240)))
+	# Reserve equal top and bottom clearance so tall dialogs stay centered above the input hints.
+	var margin_y: float = 32.0
+	if _hints != null and _hints.is_visible_in_tree():
+		margin_y = maxf(margin_y, _hints.size.y + 12.0)
+	_panel.size = _requested_size.min((size - Vector2(64.0, margin_y * 2.0)).max(Vector2(320, 240)))
 	_panel.position = (size - _panel.size) / 2.0
 
 func _lock_background(node: Node) -> void:

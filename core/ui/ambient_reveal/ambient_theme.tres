@@ -3,6 +3,9 @@
 [ext_resource type="Texture2D" uid="uid://c5fqhnagel4ux" path="res://core/ui/ambient_reveal/icons/arrow.svg" id="arrow"]
 [ext_resource type="Texture2D" uid="uid://dshfvo8cjdtk7" path="res://core/ui/ambient_reveal/icons/check.svg" id="check"]
 [ext_resource type="Texture2D" uid="uid://dc6xaev27hkh2" path="res://core/ui/ambient_reveal/icons/close.svg" id="close"]
+[ext_resource type="StyleBox" path="res://core/ui/ambient_reveal/theme/frames/available.tres" id="frame_available"]
+[ext_resource type="StyleBox" path="res://core/ui/ambient_reveal/theme/frames/disabled.tres" id="frame_disabled"]
+[ext_resource type="StyleBox" path="res://core/ui/ambient_reveal/theme/frames/focused.tres" id="frame_focused"]
 [ext_resource type="Texture2D" uid="uid://dsw67sxxp6t40" path="res://core/ui/ambient_reveal/icons/radio_off.svg" id="radio_off"]
 [ext_resource type="Texture2D" uid="uid://cay4jrgk6cdfw" path="res://core/ui/ambient_reveal/icons/radio_on.svg" id="radio_on"]
 [ext_resource type="Texture2D" uid="uid://c3rlk2ogquvj2" path="res://core/ui/ambient_reveal/icons/right.svg" id="right"]
@@ -19,14 +22,6 @@ content_margin_top = 44.0
 content_margin_right = 44.0
 content_margin_bottom = 44.0
 bg_color = Color(1, 1, 1, 0)
-
-[sub_resource type="StyleBoxFlat" id="Card"]
-content_margin_left = 22.0
-content_margin_top = 22.0
-content_margin_right = 22.0
-content_margin_bottom = 22.0
-bg_color = Color(0.1, 0.14, 0.2, 1)
-anti_aliasing = false
 
 [sub_resource type="StyleBoxFlat" id="HorizontalFill"]
 content_margin_left = 0.0
@@ -111,22 +106,6 @@ corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 
-[sub_resource type="StyleBoxFlat" id="Disabled"]
-content_margin_left = 12.0
-content_margin_top = 12.0
-content_margin_right = 12.0
-content_margin_bottom = 12.0
-bg_color = Color(1, 1, 1, 0.02)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.06)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
 [sub_resource type="StyleBoxFlat" id="Check"]
 content_margin_left = 4.0
 content_margin_top = 4.0
@@ -139,37 +118,7 @@ corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 
-[sub_resource type="StyleBoxFlat" id="Focus"]
-content_margin_left = 12.0
-content_margin_top = 12.0
-content_margin_right = 12.0
-content_margin_bottom = 12.0
-bg_color = Color(1, 1, 1, 0)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.14)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="StyleBoxFlat" id="Panel"]
-content_margin_left = 12.0
-content_margin_top = 12.0
-content_margin_right = 12.0
-content_margin_bottom = 12.0
-bg_color = Color(1, 1, 1, 0.025)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.08)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+[sub_resource type="StyleBoxEmpty" id="NoInset"]
 
 [sub_resource type="StyleBoxFlat" id="Scroll"]
 content_margin_left = 4.0
@@ -231,48 +180,6 @@ corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 
-[sub_resource type="StyleBoxFlat" id="Hover"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(1, 1, 1, 0.08)
-border_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="StyleBoxFlat" id="Selected"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(1, 1, 1, 0.08)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="StyleBoxFlat" id="Input"]
-content_margin_left = 14.0
-content_margin_top = 14.0
-content_margin_right = 14.0
-content_margin_bottom = 14.0
-bg_color = Color(1, 1, 1, 0)
-border_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="StyleBoxEmpty" id="NoInset"]
-
 [sub_resource type="StyleBoxEmpty" id="PageInset"]
 content_margin_left = 40.0
 content_margin_top = 28.0
@@ -285,25 +192,6 @@ content_margin_top = 14.0
 content_margin_right = 14.0
 content_margin_bottom = 14.0
 
-[sub_resource type="StyleBoxFlat" id="Tooltip"]
-content_margin_left = 14.0
-content_margin_top = 14.0
-content_margin_right = 14.0
-content_margin_bottom = 14.0
-bg_color = Color(1, 1, 1, 0.12)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-shadow_color = Color(0.012, 0.027, 0.071, 0.18)
-shadow_size = 16
-shadow_offset = Vector2(0, 4)
-
 [resource]
 default_font = ExtResource("sans")
 default_font_size = 21
@@ -312,7 +200,7 @@ AccentLabel/colors/font_color = Color(0.5843, 0.7804, 0.9255, 1)
 AcceptDialog/constants/buttons_separation = 12
 AcceptDialog/styles/panel = SubResource("PopupCard")
 AmbientCard/base_type = &"PanelContainer"
-AmbientCard/styles/panel = SubResource("Card")
+AmbientCard/styles/panel = ExtResource("frame_available")
 AmbientHSlider/base_type = &"HSlider"
 AmbientHSlider/styles/grabber_area = SubResource("HorizontalFill")
 AmbientHSlider/styles/grabber_area_highlight = SubResource("HorizontalFill")
@@ -352,7 +240,7 @@ CheckBox/icons/radio_unchecked = ExtResource("radio_off")
 CheckBox/icons/radio_unchecked_disabled = ExtResource("radio_off")
 CheckBox/icons/unchecked = ExtResource("uncheck")
 CheckBox/icons/unchecked_disabled = ExtResource("uncheck")
-CheckBox/styles/disabled = SubResource("Disabled")
+CheckBox/styles/disabled = ExtResource("frame_disabled")
 CheckBox/styles/focus = SubResource("Empty")
 CheckBox/styles/hover = SubResource("Check")
 CheckBox/styles/hover_pressed = SubResource("Check")
@@ -369,7 +257,7 @@ CheckButton/icons/checked = ExtResource("switch_on")
 CheckButton/icons/checked_disabled = ExtResource("switch_on")
 CheckButton/icons/unchecked = ExtResource("switch_off")
 CheckButton/icons/unchecked_disabled = ExtResource("switch_off")
-CheckButton/styles/disabled = SubResource("Disabled")
+CheckButton/styles/disabled = ExtResource("frame_disabled")
 CheckButton/styles/focus = SubResource("Empty")
 CheckButton/styles/hover = SubResource("Check")
 CheckButton/styles/hover_pressed = SubResource("Check")
@@ -382,21 +270,31 @@ ColorPickerButton/colors/font_hover_color = Color(0.96, 0.97, 0.99, 1)
 ColorPickerButton/colors/font_hover_pressed_color = Color(0.96, 0.97, 0.99, 1)
 ColorPickerButton/colors/font_pressed_color = Color(0.96, 0.97, 0.99, 1)
 ColorPickerButton/constants/h_separation = 8
-ColorPickerButton/styles/disabled = SubResource("Disabled")
-ColorPickerButton/styles/focus = SubResource("Focus")
-ColorPickerButton/styles/hover = SubResource("Button")
-ColorPickerButton/styles/hover_pressed = SubResource("Button")
-ColorPickerButton/styles/normal = SubResource("Button")
-ColorPickerButton/styles/pressed = SubResource("Button")
+ColorPickerButton/styles/disabled = ExtResource("frame_disabled")
+ColorPickerButton/styles/focus = ExtResource("frame_focused")
+ColorPickerButton/styles/hover = ExtResource("frame_focused")
+ColorPickerButton/styles/hover_pressed = ExtResource("frame_focused")
+ColorPickerButton/styles/normal = ExtResource("frame_available")
+ColorPickerButton/styles/pressed = ExtResource("frame_focused")
 DisplayTitle/base_type = &"Label"
 DisplayTitle/colors/font_color = Color(0.8, 0.89, 0.96, 1)
 DisplayTitle/font_sizes/font_size = 58
+DropdownPopup/base_type = &"PopupMenu"
+DropdownPopup/constants/item_end_padding = 12
+DropdownPopup/constants/item_start_padding = 12
+DropdownPopup/styles/panel = SubResource("NoInset")
 FoldBody/base_type = &"PanelContainer"
-FoldBody/styles/panel = SubResource("Panel")
+FoldBody/styles/panel = ExtResource("frame_available")
 FoldHeader/base_type = &"Label"
 FoldHeader/colors/font_color = Color(0.96, 0.97, 0.99, 1)
 FoldHeaderActive/base_type = &"FoldHeader"
 FoldHeaderActive/colors/font_color = Color(0.58, 0.78, 0.93, 1)
+FrameAvailable/base_type = &"Panel"
+FrameAvailable/styles/panel = ExtResource("frame_available")
+FrameDisabled/base_type = &"Panel"
+FrameDisabled/styles/panel = ExtResource("frame_disabled")
+FrameFocused/base_type = &"Panel"
+FrameFocused/styles/panel = ExtResource("frame_focused")
 GridContainer/constants/h_separation = 20
 GridContainer/constants/v_separation = 20
 HBoxContainer/constants/separation = 14
@@ -415,20 +313,20 @@ ItemList/colors/font_color = Color(0.96, 0.97, 0.99, 1)
 ItemList/colors/font_selected_color = Color(0.5843, 0.7804, 0.9255, 1)
 ItemList/constants/h_separation = 20
 ItemList/constants/v_separation = 8
-ItemList/styles/focus = SubResource("Focus")
-ItemList/styles/hovered = SubResource("Hover")
-ItemList/styles/panel = SubResource("Panel")
-ItemList/styles/selected = SubResource("Selected")
-ItemList/styles/selected_focus = SubResource("Selected")
+ItemList/styles/focus = ExtResource("frame_focused")
+ItemList/styles/hovered = ExtResource("frame_focused")
+ItemList/styles/panel = ExtResource("frame_available")
+ItemList/styles/selected = ExtResource("frame_focused")
+ItemList/styles/selected_focus = ExtResource("frame_focused")
 Label/colors/font_color = Color(0.96, 0.97, 0.99, 1)
 LineEdit/colors/caret_color = Color(0.5843, 0.7804, 0.9255, 1)
 LineEdit/colors/font_color = Color(0.96, 0.97, 0.99, 1)
 LineEdit/colors/font_placeholder_color = Color(0.75, 0.79, 0.84, 1)
 LineEdit/colors/selection_color = Color(1, 1, 1, 0.15)
 LineEdit/icons/clear = ExtResource("close")
-LineEdit/styles/focus = SubResource("Focus")
-LineEdit/styles/normal = SubResource("Input")
-LineEdit/styles/read_only = SubResource("Disabled")
+LineEdit/styles/focus = ExtResource("frame_focused")
+LineEdit/styles/normal = ExtResource("frame_available")
+LineEdit/styles/read_only = ExtResource("frame_disabled")
 LinkButton/colors/font_color = Color(0.96, 0.97, 0.99, 1)
 LinkButton/colors/font_hover_color = Color(0.5843, 0.7804, 0.9255, 1)
 LinkButton/colors/font_pressed_color = Color(0.5843, 0.7804, 0.9255, 1)
@@ -456,33 +354,37 @@ OptionButton/colors/font_hover_pressed_color = Color(0.96, 0.97, 0.99, 1)
 OptionButton/colors/font_pressed_color = Color(0.5843, 0.7804, 0.9255, 1)
 OptionButton/constants/h_separation = 8
 OptionButton/icons/arrow = ExtResource("arrow")
-OptionButton/styles/disabled = SubResource("Button")
-OptionButton/styles/focus = SubResource("Empty")
-OptionButton/styles/hover = SubResource("Button")
-OptionButton/styles/hover_pressed = SubResource("Button")
-OptionButton/styles/normal = SubResource("Button")
-OptionButton/styles/pressed = SubResource("Button")
-PanelContainer/styles/panel = SubResource("Panel")
+OptionButton/styles/disabled = ExtResource("frame_disabled")
+OptionButton/styles/focus = ExtResource("frame_focused")
+OptionButton/styles/hover = ExtResource("frame_focused")
+OptionButton/styles/hover_pressed = ExtResource("frame_focused")
+OptionButton/styles/normal = ExtResource("frame_available")
+OptionButton/styles/pressed = ExtResource("frame_focused")
+Panel/styles/panel = ExtResource("frame_available")
+PanelContainer/styles/panel = ExtResource("frame_available")
 PartyPanel/base_type = &"Panel"
-PartyPanel/styles/panel = SubResource("Card")
+PartyPanel/styles/panel = ExtResource("frame_available")
 PoolCard/base_type = &"Button"
-PoolCard/styles/hover = SubResource("Selected")
-PoolCard/styles/hover_pressed = SubResource("Selected")
-PoolCard/styles/normal = SubResource("Panel")
-PoolCard/styles/pressed = SubResource("Selected")
+PoolCard/styles/disabled = ExtResource("frame_disabled")
+PoolCard/styles/focus = ExtResource("frame_focused")
+PoolCard/styles/hover = ExtResource("frame_focused")
+PoolCard/styles/hover_pressed = ExtResource("frame_focused")
+PoolCard/styles/normal = ExtResource("frame_available")
+PoolCard/styles/pressed = ExtResource("frame_focused")
 PoolCheck/base_type = &"Button"
 PoolCheck/font_sizes/font_size = 30
-PoolCheck/styles/disabled = SubResource("Panel")
-PoolCheck/styles/hover = SubResource("Panel")
-PoolCheck/styles/hover_pressed = SubResource("Selected")
-PoolCheck/styles/normal = SubResource("Panel")
-PoolCheck/styles/pressed = SubResource("Selected")
+PoolCheck/styles/disabled = ExtResource("frame_disabled")
+PoolCheck/styles/focus = ExtResource("frame_focused")
+PoolCheck/styles/hover = ExtResource("frame_focused")
+PoolCheck/styles/hover_pressed = ExtResource("frame_focused")
+PoolCheck/styles/normal = ExtResource("frame_available")
+PoolCheck/styles/pressed = ExtResource("frame_focused")
 PoolCheckChecked/base_type = &"PoolCheck"
-PoolCheckChecked/styles/disabled = SubResource("Selected")
+PoolCheckChecked/styles/disabled = ExtResource("frame_disabled")
 PopupMenu/colors/font_color = Color(0.96, 0.97, 0.99, 1)
 PopupMenu/colors/font_hover_color = Color(0.5843, 0.7804, 0.9255, 1)
 PopupMenu/constants/v_separation = 12
-PopupMenu/styles/hover = SubResource("Hover")
+PopupMenu/styles/hover = ExtResource("frame_focused")
 PopupMenu/styles/panel = SubResource("PopupCard")
 PopupMenu/styles/separator = SubResource("Separator")
 PopupPanel/styles/panel = SubResource("PopupCard")
@@ -521,7 +423,7 @@ TabContainer/colors/font_selected_color = Color(0.5843, 0.7804, 0.9255, 1)
 TabContainer/colors/font_unselected_color = Color(0.75, 0.79, 0.84, 1)
 TabContainer/constants/side_margin = 0
 TabContainer/styles/panel = SubResource("Empty")
-TabContainer/styles/tab_focus = SubResource("Focus")
+TabContainer/styles/tab_focus = ExtResource("frame_focused")
 TabContainer/styles/tab_hovered = SubResource("Tab")
 TabContainer/styles/tab_selected = SubResource("Tab")
 TabContainer/styles/tab_unselected = SubResource("Tab")
@@ -529,21 +431,21 @@ TextEdit/colors/caret_color = Color(0.5843, 0.7804, 0.9255, 1)
 TextEdit/colors/font_color = Color(0.96, 0.97, 0.99, 1)
 TextEdit/colors/font_placeholder_color = Color(0.75, 0.79, 0.84, 1)
 TextEdit/colors/selection_color = Color(1, 1, 1, 0.15)
-TextEdit/styles/focus = SubResource("Focus")
-TextEdit/styles/normal = SubResource("Input")
-TextEdit/styles/read_only = SubResource("Disabled")
+TextEdit/styles/focus = ExtResource("frame_focused")
+TextEdit/styles/normal = ExtResource("frame_available")
+TextEdit/styles/read_only = ExtResource("frame_disabled")
 TooltipLabel/colors/font_color = Color(0.96, 0.97, 0.99, 1)
-TooltipPanel/styles/panel = SubResource("Tooltip")
+TooltipPanel/styles/panel = ExtResource("frame_available")
 Tree/colors/font_color = Color(0.96, 0.97, 0.99, 1)
 Tree/colors/font_selected_color = Color(0.5843, 0.7804, 0.9255, 1)
 Tree/constants/v_separation = 8
 Tree/icons/arrow = ExtResource("arrow")
 Tree/icons/arrow_collapsed = ExtResource("right")
-Tree/styles/focus = SubResource("Focus")
-Tree/styles/hovered = SubResource("Hover")
-Tree/styles/panel = SubResource("Panel")
-Tree/styles/selected = SubResource("Selected")
-Tree/styles/selected_focus = SubResource("Selected")
+Tree/styles/focus = ExtResource("frame_focused")
+Tree/styles/hovered = ExtResource("frame_focused")
+Tree/styles/panel = ExtResource("frame_available")
+Tree/styles/selected = ExtResource("frame_focused")
+Tree/styles/selected_focus = ExtResource("frame_focused")
 VBoxContainer/constants/separation = 14
 VScrollBar/styles/grabber = SubResource("Scroll")
 VScrollBar/styles/grabber_highlight = SubResource("ScrollHover")

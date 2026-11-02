@@ -3,7 +3,7 @@ extends CanvasLayer
 const SURFACE = preload("res://core/ui/ambient_reveal/components/parts/button_surface.tscn")
 @export var inset: Vector2 = Vector2(24, 24)
 @onready var window: Window = get_parent()
-@onready var _surface: ColorRect = $Surface
+@onready var _surface: Panel = $Surface
 
 
 func _ready() -> void:

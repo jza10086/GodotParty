@@ -7,29 +7,10 @@
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/action_prompt.tscn" id="prompt"]
 [ext_resource type="StyleBox" path="res://core/ui/ambient_reveal/theme/materials/prompt_shoulder.tres" id="shoulder"]
 
-[sub_resource type="StyleBoxFlat" id="Strip"]
-content_margin_left = 22.0
-border_width_left = 1
-content_margin_top = 12.0
-border_width_top = 1
-content_margin_right = 22.0
-border_width_right = 1
-content_margin_bottom = 12.0
-border_width_bottom = 1
-bg_color = Color(0.10, 0.16, 0.22, 0.55)
-border_color = Color(0.55, 0.75, 0.90, 0.16)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-
-
 [node name="XboxHints" type="PanelContainer"]
 script = ExtResource("logic")
 theme = ExtResource("ambient_theme")
 mouse_filter = 2
-theme_override_styles/panel = SubResource("Strip")
 
 [node name="Hints" type="HFlowContainer" parent="."]
 visible = false

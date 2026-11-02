@@ -5,7 +5,3 @@
 [resource]
 resource_local_to_scene = true
 shader = ExtResource("surface")
-shader_parameter/surface_role = 0
-shader_parameter/radius = 20.0
-shader_parameter/hover_amount = 0.0
-shader_parameter/focus_amount = 0.0

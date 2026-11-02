@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://core/ui/frontend/party_frontend.gd" id="1"]
 [ext_resource type="PackedScene" path="res://core/ui/source/ui/home_page.tscn" id="scene_home"]
-[ext_resource type="PackedScene" path="res://core/ui/source/ui/modal_layer.tscn" id="scene_modal"]
 [ext_resource type="PackedScene" path="res://core/ui/source/ui/rooms_page.tscn" id="scene_rooms"]
 [ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 
@@ -32,10 +31,6 @@ anchors_preset = 0
 offset_right = 1920.0
 offset_bottom = 1080.0
 mouse_filter = 2
-
-[node name="Modal" parent="." unique_id=54842109 instance=ExtResource("scene_modal")]
-visible = false
-anchors_preset = 0
 
 [node name="Toast" parent="." unique_id=1899311329 instance=ExtResource("ar_panel")]
 visible = false

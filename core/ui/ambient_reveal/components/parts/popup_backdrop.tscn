@@ -3,12 +3,16 @@
 [ext_resource type="ShaderMaterial" path="res://core/ui/ambient_reveal/theme/materials/panel.tres" id="material"]
 [ext_resource type="Script" path="res://core/ui/ambient_reveal/components/popup_backdrop.gd" id="script"]
 
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
 [node name="Backdrop" type="CanvasLayer"]
 layer = -1
 script = ExtResource("script")
 
-[node name="Surface" type="ColorRect" parent="."]
+[node name="Surface" type="Panel" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+theme = ExtResource("theme")
+theme_type_variation = &"FrameAvailable"
 material = ExtResource("material")

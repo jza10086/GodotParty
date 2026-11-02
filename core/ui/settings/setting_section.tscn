@@ -5,19 +5,10 @@
 
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/card.tscn" id="ar_card"]
 
-[sub_resource type="StyleBoxFlat" id="CardInset"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-bg_color = Color(0.10, 0.14, 0.20, 1)
-anti_aliasing = false
-
 [node name="SettingSection" type="VBoxContainer"]
 theme_override_constants/separation = 14
 script = ExtResource("script")
 [node name="RowFrame" parent="." instance=ExtResource("ar_card")]
-theme_override_styles/panel = SubResource("CardInset")
 unique_name_in_owner = true
 [node name="Column" type="VBoxContainer" parent="RowFrame"]
 theme_override_constants/separation = 0

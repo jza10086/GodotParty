@@ -1,24 +1,21 @@
 [gd_resource type="Theme" format=3 uid="uid://5cjclksfwx4"]
 
-[sub_resource type="StyleBoxFlat" id="CompactInput"]
-content_margin_left = 10.0
-content_margin_top = 6.0
-content_margin_right = 10.0
-content_margin_bottom = 6.0
-bg_color = Color(1, 1, 1, 0.025)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+[ext_resource type="StyleBox" path="res://core/ui/ambient_reveal/theme/frames/disabled.tres" id="frame_disabled"]
+[ext_resource type="StyleBox" path="res://core/ui/ambient_reveal/theme/frames/available.tres" id="frame_available"]
+[ext_resource type="StyleBox" path="res://core/ui/ambient_reveal/theme/frames/focused.tres" id="frame_focused"]
 
 [resource]
 default_font_size = 18
-Button/styles/hover = SubResource("CompactInput")
-Button/styles/normal = SubResource("CompactInput")
-Button/styles/pressed = SubResource("CompactInput")
+Button/styles/hover = ExtResource("frame_available")
+Button/styles/normal = ExtResource("frame_available")
+Button/styles/pressed = ExtResource("frame_focused")
 ColorPicker/constants/h_width = 22
 ColorPicker/constants/sv_height = 160
 ColorPicker/constants/sv_width = 240
 HBoxContainer/constants/separation = 6
-LineEdit/styles/normal = SubResource("CompactInput")
+LineEdit/styles/normal = ExtResource("frame_available")
 VBoxContainer/constants/separation = 6
+Button/styles/disabled = ExtResource("frame_disabled")
+Button/styles/focus = ExtResource("frame_focused")
+LineEdit/styles/read_only = ExtResource("frame_disabled")
+LineEdit/styles/focus = ExtResource("frame_focused")

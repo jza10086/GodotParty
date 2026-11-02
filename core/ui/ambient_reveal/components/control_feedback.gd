@@ -1,13 +1,14 @@
-extends ColorRect
+extends Panel
 
 const DURATION: float = 0.24
 
-@onready var control: Control = get_parent().get_line_edit() if get_parent() is SpinBox else get_parent()
+@onready var control: Control = get_parent()
 static var _last_pointer: bool = true
 var _pointer: bool
 var _enabled: bool
-var _hover_tween: Tween
-var _focus_tween: Tween
+var _reveal_tween: Tween
+var _press_tween: Tween
+var _hovered: bool = false
 
 
 func _ready() -> void:
@@ -16,8 +17,8 @@ func _ready() -> void:
 	_enabled = _accepts_input()
 	control.draw.connect(_check_enabled)
 	visibility_changed.connect(_on_visibility_changed)
-	control.focus_entered.connect(_update_focus)
-	control.focus_exited.connect(_update_focus)
+	control.focus_entered.connect(_update_frame)
+	control.focus_exited.connect(_update_frame)
 	if control is Button or control is Slider:
 		control.mouse_entered.connect(_hover.bind(true))
 		control.mouse_exited.connect(_hover.bind(false))
@@ -29,8 +30,11 @@ func _ready() -> void:
 			control.drag_ended.connect(func(changed: bool) -> void:
 				if changed: audio.click())
 	if control is Button:
+		# Framed buttons draw their own native state. Only transparent buttons need the reveal layer.
+		visible = control.get_theme_stylebox(&"normal") != get_theme_stylebox(&"panel", &"FrameAvailable")
 		control.button_down.connect(_hover.bind(true, true))
 		control.button_up.connect(func() -> void: _hover(control.is_hovered()))
+	_update_frame()
 
 
 func _input(event: InputEvent) -> void:
@@ -53,9 +57,8 @@ func set_pointer_mode(pointer: bool) -> void:
 
 
 func refresh() -> void:
-	_update_focus()
-	if control is Button or control is Slider:
-		_hover(get_viewport().gui_get_hovered_control() == control)
+	_hovered = get_viewport().gui_get_hovered_control() == control
+	_update_frame()
 
 
 func _on_visibility_changed() -> void:
@@ -73,32 +76,30 @@ func _check_enabled() -> void:
 		_enabled = enabled
 		refresh()
 
-func _update_focus() -> void:
-	var focused: bool = control.has_focus()
-	if control is Slider or control is LineEdit or control is TextEdit:
-		focused = focused and control.editable
-	if control is Button:
-		focused = focused and not _pointer and not control.disabled
-	if _focus_tween:
-		_focus_tween.kill()
-	_focus_tween = create_tween()
-	_focus_tween.tween_property(material, "shader_parameter/focus_amount", float(focused),
-		DURATION).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+func _update_frame() -> void:
+	if not visible:
+		return
+	var focus_active: bool = control.has_focus() and (control is Slider or not _pointer)
+	var highlight: bool = _enabled and (focus_active or (_pointer and _hovered))
+	if control is Slider:
+		theme_type_variation = &"FrameDisabled" if not _enabled else (&"FrameFocused" if highlight else &"FrameAvailable")
+		return
+	if _reveal_tween:
+		_reveal_tween.kill()
+	_reveal_tween = create_tween()
+	_reveal_tween.tween_property(self, "self_modulate:a", float(highlight), DURATION).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
 
 
 func _hover(over: bool, pressing: bool = false) -> void:
-	var enabled: bool = not control.disabled if control is Button else control.editable
-	var highlight: bool = enabled and (pressing or (_pointer and over))
-	if _hover_tween:
-		_hover_tween.kill()
-	_hover_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
-	var tint: PropertyTweener = _hover_tween.tween_property(material, "shader_parameter/hover_amount", float(highlight), DURATION)
+	_hovered = over
+	_update_frame()
 	if control is Button:
-		tint.set_trans(Tween.TRANS_LINEAR).set_custom_interpolator(_button_ease)
+		if _press_tween:
+			_press_tween.kill()
 		control.pivot_offset = control.size * 0.5
-		var target: Vector2 = Vector2.ONE * 0.985 if enabled and pressing else Vector2.ONE
-		var press: PropertyTweener = _hover_tween.tween_property(control, "scale", target, DURATION)
-		press.set_trans(Tween.TRANS_LINEAR).set_custom_interpolator(_button_ease)
+		var target: Vector2 = Vector2.ONE * 0.985 if _enabled and pressing else Vector2.ONE
+		_press_tween = create_tween()
+		_press_tween.tween_property(control, "scale", target, DURATION).set_custom_interpolator(_button_ease)
 
 
 func _button_ease(progress: float) -> float:

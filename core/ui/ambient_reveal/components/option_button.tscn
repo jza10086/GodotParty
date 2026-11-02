@@ -5,6 +5,8 @@
 
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/parts/button_surface.tscn" id="surface"]
 
+[ext_resource type="Script" path="res://core/ui/ambient_reveal/components/dropdown_motion.gd" id="motion"]
+
 [node name="OptionButton" type="OptionButton"]
 theme = ExtResource("theme")
 
@@ -12,3 +14,12 @@ theme = ExtResource("theme")
 
 [node name="MenuBackdrop" type="Node" parent="."]
 script = ExtResource("menu_backdrop")
+
+[node name="ClosingMenu" type="TextureRect" parent="."]
+visible = false
+top_level = true
+z_as_relative = false
+z_index = 4095
+mouse_filter = 2
+expand_mode = 1
+script = ExtResource("motion")

@@ -51,7 +51,9 @@ func configure(field: Dictionary, value: Variant, editable: bool) -> void:
 				%Value.max_value = spin.max_value
 				%Value.step = spin.custom_arrow_step
 				%Value.set_value_no_signal(value * _scale)
-				%Value.value_changed.connect(func(number: float) -> void: spin.value = number)
+				# A tick is min + n * step. Drop binary rounding noise only for slider edits.
+				var tick_decimals: int = maxi(str(spin.custom_arrow_step).get_slice(".", 1).length(), str(spin.min_value).get_slice(".", 1).length())
+				%Value.value_changed.connect(func(number: float) -> void: spin.value = String.num(number, tick_decimals).to_float())
 				spin.value_changed.connect(func(number: float) -> void: %Value.set_value_no_signal(number))
 			spin.value_changed.connect(func(_number: float) -> void: _notify())
 		"numbers":
