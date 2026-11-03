@@ -151,7 +151,7 @@ Millionaire 当前仍是独立 F6 视觉原型：读取同一资料槽的协议�
 
 公开资源 `player_cursor` 为 `appearance/player_cursor.tscn`（Node2D）：一份默认纯白的矢量箭头，尖端 `(0, 0)` 为热点。`apply_color(Color)` 为单个实例染色，使用上面的协议八色；白/深色双描边保证黑白指针在不同背景上可见，不为每种颜色复制资源。也可在 Inspector 设置 `color` 预览。
 
-公开资源 `player_cursors` 为 `player_cursors.tscn`（Control 多人指针场景）。实例化后先 `setup(api)`，再作为实际交互区域（例如棋盘）的子节点加入；场景铺满父节点并忽略鼠标事件。同一活动只挂载一份，同一坐标面上的玩家应使用相同内容布局。果园连线与空白小游戏已接入；空白小游戏以全屏为坐标面，仅在正式游戏阶段显示，个人结束等待期间保留，准备和结算时隐藏。
+公开资源 `player_cursors` 为 `player_cursors.tscn`（Control 多人指针场景）。实例化后先 `setup(api)`，再作为实际交互区域（例如棋盘）的子节点加入；场景铺满父节点并忽略鼠标事件。同一活动只挂载一份，同一坐标面上的玩家应使用相同内容布局。连连看与空白小游戏已接入；空白小游戏以全屏为坐标面，仅在正式游戏阶段显示，个人结束等待期间保留，准备和结算时隐藏。
 
 ```gdscript
 var scene: PackedScene = api.load_asset({"package_id": "godot_party_default_protocol", "resource_key": "player_cursors"}) as PackedScene
