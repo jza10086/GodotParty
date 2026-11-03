@@ -123,8 +123,10 @@
 
 ## Git
 
-- The user grants standing project-level authorization for task-scoped Git inspection, staging and commits in this repository, including future sessions. Do not ask again for ordinary Git operations within the requested task. This does not authorize unrelated changes, destructive history rewrites or remote publication.
-- Use `git -C F:/GodotProjects/GodotParty add ...` and `git -C F:/GodotProjects/GodotParty commit ...` for local writes so the project's narrow command rules can match. Platform approval and managed sandbox restrictions still apply; this instruction does not override them.
+- The user grants standing authorization, including future sessions, for task-scoped Git inspection, fetch, staging, commits and ordinary pushes in this repository and its minigame submodules registered in `.gitmodules`, provided their remotes belong to `jza10086` on GitHub. Do not ask again for these operations within the requested task. Preserve unrelated working-tree changes and never stage or publish them as part of the task.
+- Use `git -C F:/GodotProjects/GodotParty ...` for the main repository and `git -C F:/GodotProjects/GodotParty/games/minigame/<id> ...` for submodules so the explicit repository command rules can match. Prefer the configured SSH remotes. Platform approval and managed sandbox restrictions still apply; this authorization does not override them.
+- After relevant validation, commit and push affected minigame submodules first, then commit and push the main repository's updated submodule references and task changes. Default to `origin main`; use `push --recurse-submodules=on-demand origin main` for the main repository when appropriate. Recursive push does not commit uncommitted submodule changes.
+- This authorization excludes unrelated changes, force pushes, destructive history rewrites, remote branch or tag deletion, remote URL changes, and bypassing branch protection. Remote URL changes require explicit task authorization. Permission-check tasks use `push --dry-run` unless actual publication is explicitly requested.
 - Work directly on `main`; do not create feature branches unless the user changes this rule.
 - Keep `main` runnable and commit coherent, describable functionality rather than every small edit.
 - Use concise English imperative commit messages, for example `Add multiplayer lobby flow`.
