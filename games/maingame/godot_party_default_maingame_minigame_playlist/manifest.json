@@ -9,7 +9,6 @@
   "room_scene": "room.tscn",
   "minigames": [
     "godot_party_default_identity_party",
-    "settings_ui_test",
     "gp_rhythm_game",
     "godot_party_default_blank",
     "direction_password",

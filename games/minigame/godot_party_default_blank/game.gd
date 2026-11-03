@@ -23,6 +23,8 @@ func _ready() -> void:
 	if api == null:
 		push_error("请从 GodotParty 大厅启动空白小游戏。")
 		return
+	finish_button.text = api.i18n.text(&"game.finish")
+	finish_button.tooltip_text = api.i18n.text(&"game.settings_hint") + "\n" + api.i18n.text(&"game.locale", {"locale": api.i18n.effective_locale()})
 	_content.hide()
 	var gate_script: Script = api.load_asset({"package_id": api.protocol_id, "resource_key": "briefing_gate"}) as Script
 	if gate_script == null:
@@ -30,7 +32,7 @@ func _ready() -> void:
 		return
 	_briefing = gate_script.new()
 	var content: Dictionary = gate_script.read_content(get_script().resource_path.get_base_dir().path_join("manifest.json"), api)
-	content["controls"] = [{"binding": "鼠标左键", "description": "每人点击一次「结束游戏」，越早按下排名越高"}]
+	content["controls"] = [{"binding": api.i18n.text(&"game.mouse"), "description": api.i18n.text(&"game.controls")}]
 	_briefing.configure(api, content)
 	_briefing.play_requested.connect(_begin_play)
 	add_child(_briefing)
@@ -59,7 +61,7 @@ func _press_finish() -> void:
 	if phase != Phase.RUNNING or finish_button.disabled:
 		return
 	finish_button.disabled = true
-	finish_button.text = "已结束，等待其他玩家"
+	finish_button.text = api.i18n.text(&"game.waiting")
 	var error: Error = api.net.send_to_host(PRESS_TOPIC, {})
 	if error != OK:
 		api.fail("press_send_failed", error_string(error))
@@ -131,7 +133,7 @@ func _open_settlement(result: Dictionary) -> void:
 	finish_button.disabled = true
 	_content.hide()
 	_settlement = gate_script.new()
-	_settlement.configure(api, {"title": "本轮结算", "rows": _result.rankings}, request.request_id)
+	_settlement.configure(api, {"title": api.i18n.text(&"game.results"), "rows": _result.rankings}, request.request_id)
 	_settlement.continued.connect(_submit_result)
 	add_child(_settlement)
 

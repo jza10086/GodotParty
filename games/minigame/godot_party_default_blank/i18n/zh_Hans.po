@@ -2,10 +2,231 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: zh_Hans\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "所有参赛者准备后倒计时三秒开局。每人点击一次「结束游戏」，按房主收到点击的先后排名。所有在线参赛者按完后显示本轮结算，退出者不排名。"
-msgstr "所有参赛者准备后倒计时三秒开局。每人点击一次「结束游戏」，按房主收到点击的先后排名。所有在线参赛者按完后显示本轮结算，退出者不排名。"
+msgid "%"
+msgstr "%"
+
+msgid "120 FPS"
+msgstr "120 FPS"
+
+msgid "1280 × 720"
+msgstr "1280 × 720"
+
+msgid "1920 × 1080"
+msgstr "1920 × 1080"
+
+msgid "2560 × 1440"
+msgstr "2560 × 1440"
+
+msgid "30 FPS"
+msgstr "30 FPS"
+
+msgid "60 FPS"
+msgstr "60 FPS"
+
+msgid "X"
+msgstr "X"
+
+msgid "Y"
+msgstr "Y"
+
+msgid "Z"
+msgstr "Z"
+
+msgid "game.locale"
+msgstr "本小游戏当前语言：{locale}"
+
+
+msgid "三个数值分别代表 X、Y、Z，复用同一种数字输入组件。"
+msgstr "三个数值分别代表 X、Y、Z，复用同一种数字输入组件。"
+
+msgid "三分量：多个数值"
+msgstr "三分量：多个数值"
+
+msgid "三级折叠中的数值"
+msgstr "三级折叠中的数值"
+
+msgid "上限"
+msgstr "上限"
+
+msgid "下限"
+msgstr "下限"
+
+msgid "不限"
+msgstr "不限"
+
+msgid "主键与备用键都支持 Ctrl、Alt、Shift、Meta 组合。点击录入按钮后按下组合键，Esc 取消录入。"
+msgstr "主键与备用键都支持 Ctrl、Alt、Shift、Meta 组合。点击录入按钮后按下组合键，Esc 取消录入。"
+
+msgid "分别输入区间的下限与上限，下限不能高于上限。"
+msgstr "分别输入区间的下限与上限，下限不能高于上限。"
+
+msgid "区间：两个数值"
+msgstr "区间：两个数值"
+
+msgid "单一按键＋备用键"
+msgstr "单一按键＋备用键"
+
+msgid "单行文本"
+msgstr "单行文本"
+
+msgid "启用高级设置"
+msgstr "启用高级设置"
+
+msgid "困难"
+msgstr "困难"
+
+msgid "固定导航键，仅展示；不会保存到用户配置。"
+msgstr "固定导航键，仅展示；不会保存到用户配置。"
+
+msgid "固定按键"
+msgstr "固定按键"
+
+msgid "固定按键：Esc"
+msgstr "固定按键：Esc"
+
+msgid "基础设置"
+msgstr "基础设置"
+
+msgid "多分量数值"
+msgstr "多分量数值"
+
+msgid "多行文本"
+msgstr "多行文本"
+
+msgid "多选开关"
+msgstr "多选开关"
+
+msgid "多选：开关组"
+msgstr "多选：开关组"
+
+msgid "小数：无界输入"
+msgstr "小数：无界输入"
+
+msgid "小数：百分比显示"
+msgstr "小数：百分比显示"
+
+msgid "开关示例"
+msgstr "开关示例"
+
+msgid "开启高级设置后可编辑。"
+msgstr "开启高级设置后可编辑。"
+
+msgid "按键绑定"
+msgstr "按键绑定"
+
+msgid "效果强度"
+msgstr "效果强度"
+
+msgid "整数：数量"
+msgstr "整数：数量"
+
+msgid "文件选择"
+msgstr "文件选择"
+
+msgid "文字设置"
+msgstr "文字设置"
+
+msgid "无边框全屏时沿用屏幕尺寸，保留窗口分辨率草稿。"
+msgstr "无边框全屏时沿用屏幕尺寸，保留窗口分辨率草稿。"
+
+msgid "普通"
+msgstr "普通"
+
+msgid "枚举：字符串"
+msgstr "枚举：字符串"
+
+msgid "枚举：整数"
+msgstr "枚举：整数"
+
+msgid "模拟无边框全屏"
+msgstr "模拟无边框全屏"
+
+msgid "此开关用于测试父项控制子项的布局。开启时分辨率子项隐藏，关闭后可重新展开。"
+msgstr "此开关用于测试父项控制子项的布局。开启时分辨率子项隐藏，关闭后可重新展开。"
+
+msgid "特殊按键：鼠标枚举"
+msgstr "特殊按键：鼠标枚举"
+
+msgid "界面动画"
+msgstr "界面动画"
+
+msgid "目录选择"
+msgstr "目录选择"
+
+msgid "秒"
+msgstr "秒"
+
+msgid "空绑定：清空与重新录入"
+msgstr "空绑定：清空与重新录入"
+
+msgid "窗口分辨率"
+msgstr "窗口分辨率"
+
+msgid "简单"
+msgstr "简单"
+
+msgid "粒子特效"
+msgstr "粒子特效"
+
+msgid "组合按键"
+msgstr "组合按键"
+
+msgid "细节（三级）"
+msgstr "细节（三级）"
+
+msgid "联动与层级"
+msgstr "联动与层级"
+
+msgid "背景音乐"
+msgstr "背景音乐"
+
+
+msgid "调整窗口画面的输出分辨率。开启上方的无边框全屏示例后，父项的展开箭头会禁用；恢复窗口模式后保留之前的选择。"
+msgstr "调整窗口画面的输出分辨率。开启上方的无边框全屏示例后，父项的展开箭头会禁用；恢复窗口模式后保留之前的选择。"
+
+msgid "输入标题"
+msgstr "输入标题"
+
+
+msgid "选项设置"
+msgstr "选项设置"
+
+msgid "颜色样式"
+msgstr "颜色样式"
+
+msgid "颜色：RGBA"
+msgstr "颜色：RGBA"
+
+msgid "颜色：固定不透明"
+msgstr "颜色：固定不透明"
+
+msgid "高级效果（二级）"
+msgstr "高级效果（二级）"
+
+msgid "鼠标按键"
+msgstr "鼠标按键"
 
 msgid "空白小游戏"
 msgstr "空白小游戏"
+
+msgid "所有参赛者准备后倒计时三秒开局。每人点击一次「结束游戏」，按房主收到点击的先后排名。所有在线参赛者按完后显示本轮结算，退出者不排名。 大厅“本机设置”提供控件、协议继承/覆盖与保存测试；样例值不改变玩法。"
+msgstr "所有参赛者准备后倒计时三秒开局。每人点击一次「结束游戏」，按房主收到点击的先后排名。所有在线参赛者按完后显示本轮结算，退出者不排名。 大厅“本机设置”提供控件、协议继承/覆盖与保存测试；样例值不改变玩法。"
+
+msgid "game.finish"
+msgstr "结束游戏"
+
+msgid "game.waiting"
+msgstr "已结束，等待其他玩家"
+
+msgid "game.mouse"
+msgstr "鼠标左键"
+
+msgid "game.controls"
+msgstr "每人点击一次「结束游戏」，越早按下排名越高"
+
+msgid "game.results"
+msgstr "本轮结算"
+
+msgid "game.settings_hint"
+msgstr "在大厅 → 小游戏池 → 空白小游戏 → 本机设置中测试控件、继承与保存；样例设置不改变玩法。"
