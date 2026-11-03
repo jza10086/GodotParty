@@ -3,8 +3,7 @@
 ## Priorities
 
 - Build a practical indie-scale party game. Finish playable feature loops before refactoring or optimizing them.
-- Do not introduce enterprise architecture, speculative abstractions, or framework layers without a current need.
-- Prefer clear, direct code. Extract shared code only after stable duplication or a concrete reuse case appears.
+- Follow the user-level coding instructions in `~/.codex/AGENTS.md` (injected into the session): scope, internal contracts, error propagation, abstraction, and testing. This file adds GodotParty-specific requirements; do not duplicate the general rules or introduce stricter defensive coding or testing by default.
 
 ## Editing and permissions
 
@@ -70,7 +69,7 @@
 - Support up to eight players, with four-player behavior as the primary development and balancing target.
 - The primary mode is a large game, such as a board-game layer, containing tagged medium games and minigames.
 - Medium games are ordinary minigames with a medium tag, not a distinct runtime type. Each main game binds one executable protocol package and named pools; hosts select compatible minigames, and authors own business semantics and rewards.
-- A playlist is an ordinary main-game package. The old thin test content has been removed; protocol tests should accompany the new original content.
+- A playlist is an ordinary main-game package. The old thin test content has been removed; add protocol tests only for important behavior or concrete regression risks introduced by new content.
 - Every minigame has its own state machine. Ordinary nodes implement party_setup, party_start and party_stop, with an injected PartyAPI and explicit mark_ready. Main-game controllers also expose state, view and pure reducer hooks.
 
 ## Networking
@@ -96,7 +95,7 @@
 
 ## UI and resolution
 
-- Design UI at 1920x1080. Treat 2560x1440 and 3840x2160 as recommended validation resolutions.
+- Design UI at 1920x1080. All visual testing, previews used for acceptance, screenshots, and manual or automated layout checks use only 1920x1080. Do not add other resolutions, ultrawide checks, or a resolution test matrix.
 - Use `canvas_items` stretch mode, `expand` aspect, and fractional scaling for non-pixel-art UI.
 - Use full-rect `Control` roots, anchors, and container nodes. Avoid absolute positioning for primary layouts.
 - Anchor HUD elements to their intended corners or center. Design for additional horizontal space on ultrawide displays.
@@ -105,11 +104,11 @@
 
 ## Testing and completion
 
-- Choose the smallest validation that answers a concrete question about the changed behavior. Complete related edits as one coherent batch before running checks; check earlier only to resolve a blocker or a risky implementation assumption.
-- Documentation, comments, and other non-behavioral edits need only a focused text review. Simple configuration edits need only the relevant syntax or value check. Neither requires a game launch, full import, smoke test, file hashes, or a new test harness.
-- For local gameplay logic changes, prefer the existing test for that feature. Add a focused regression test only when it protects a meaningful behavior; do not add tests that merely repeat implementation details or chase coverage.
-- Changes to RPC validation, host/client authority, loading readiness, disconnect handling, serialization, or cross-round state require the relevant protocol/state regression checks. Add a host/client smoke check when the changed behavior depends on communication between peers; do not run every multiplayer suite for unrelated edits.
-- At a completed module or playable loop, validate the affected integration path. Reserve full-project imports/checks for changes to shared dependencies, autoloads, global classes, asset imports, engine/plugins, or evidence of a project-wide regression; module completion alone does not require every suite.
+- Follow the user-level testing rules and choose the smallest validation that answers a concrete question about this change. Complete related edits as one coherent batch before checking; check earlier only to resolve a blocker or a risky implementation assumption.
+- Documentation and comments need only focused text review; simple configuration edits need only syntax and value checks. Do not launch the game, import the project, or add smoke tests for these changes. Never validate files with hashes.
+- Reuse the relevant existing test for local logic changes. Add a test only for important behavior, complex rules, or a known regression; do not create tests for reversible low-impact edits, simple assignments, forwarding, framework behavior, or implementation details. Do not build a test framework, separate acceptance project, or large simulation for a small change.
+- For changes to RPC validation, authority, readiness, disconnect handling, serialization, or cross-round state, select only the affected protocol/state checks. Run a host/client check only when peer communication is needed to verify the changed behavior; do not run a multiplayer suite merely because the project is multiplayer.
+- Run integration or full-project checks only when a specific shared-dependency change, cross-module effect, or observed failure requires them. Completing a module, playable loop, commit, or delivery does not itself trigger more tests.
 - Stop after the relevant checks pass. Repeat or broaden checks only after a relevant code/dependency/environment change, a failure, an unresolved concrete concern, or an explicit user request. Reuse results from the current task while their inputs remain unchanged; a commit or final summary alone is not a reason to rerun them.
 - Use one suitable diagnostic route for each question. Successful inline MCP diagnostics can satisfy script parsing, but not runtime or multiplayer correctness; do not duplicate the same parse check through MCP, LSP, and CLI without a reason.
 - Before an automated Godot validation batch, verify the intended engine using `godot --version`. The version check performed by `godot-project-tooling` already satisfies this requirement; do not add a separate duplicate version probe. Recheck when the engine selection changes.
@@ -117,10 +116,9 @@
 - Run standalone GDScript checks with `--headless --path <project> --script res://path/to/test.gd`; add `--check-only` when only parsing is intended.
 - Treat the process exit code plus `SCRIPT ERROR`, `ERROR`, and parser output as the result. Do not assume silence means success.
 - Use Godot editor multi-instance features for human local multiplayer acceptance.
-- For UI, feel, physics, timing, and multiplayer experience, prioritize manual editor testing.
-- Add focused automated tests for pure logic, configuration, serialization, networking protocol boundaries, and serious regressions when useful.
-- The agent may choose lightweight launch scripts or automated debug harnesses for its own repeatable checks, but these must not replace the requested editor-based human acceptance.
-- Report automated checks separately from manual multiplayer testing and real external-network or Steam validation.
+- For visual changes, use the existing preview and focused manual inspection at 1920x1080 only. Add numeric layout assertions only for explicit numeric requirements; do not create a visual test harness for a cosmetic adjustment.
+- Feel, physics, timing, and multiplayer experience need focused manual editor acceptance when affected. Use a lightweight automated harness only when it answers a necessary question that existing checks cannot answer; it does not replace requested human acceptance.
+- Report static checks, automated tests, runtime checks, and manual acceptance accurately and separately. Do not imply that local checks validate external networks or Steam.
 - Keep investigation and output scoped: read changed files and direct dependencies first; use targeted searches, bounded logs, and incremental diagnostics instead of repeated repository scans or full scene dumps. For running checks, use completion-aware waits rather than frequent status polls. Summarize the result and relevant untested behavior briefly; do not generate a separate verification report unless requested.
 
 ## Git
