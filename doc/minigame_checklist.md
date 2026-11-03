@@ -35,7 +35,7 @@
 | 名称 | 声明人数 | 完成度 | 下一阶段目标 | 备注 |
 | --- | --- | --- | --- | --- |
 | [铁鹰防线](../games/minigame/godot_party_default_tank_battle/README.md) | 2–8，未开放 | 原型已纳入独立子仓并登记框架入口；尚无可开局的协议适配。 | 明确队伍、胜负和排名契约；后续接入在线玩家、主机权威状态、加载及结果提交，再开放。 | 独立子仓 TankBattle；不能把原型的多人逻辑等同于已适配派对房间。 |
-| [静海交锋](../games/minigame/godot_party_default_battleship_chess/README.md) | 2，未开放 | 原型与状态入口已登记；正式对局尚未接通框架。 | 明确秘密布阵、回合操作和胜负结果；后续实现按玩家过滤的视图、操作传输及结算。 | 独立子仓 BattleshipChess；重点是对手舰位保密、非法行动拒绝和断线处理。 |
+| [海战棋](../games/minigame/godot_party_default_battleship_chess/README.md) | 2，未开放 | 原型与状态入口已登记；正式对局尚未接通框架。 | 明确秘密布阵、回合操作和胜负结果；后续实现按玩家过滤的视图、操作传输及结算。 | 独立子仓 BattleshipChess；重点是对手舰位保密、非法行动拒绝和断线处理。 |
 | [小小炮火](../games/minigame/godot_party_default_artillery_game/README.md) | 2，未开放 | 原型与状态入口已登记；正式对局尚未接通框架。 | 明确回合控制和胜负契约；后续接入瞄准/发射逻辑操作、权威命中结果和框架结算。 | 独立子仓 ArtilleryGame；先保留原型，不在本次清单任务中扩展人数或玩法。 |
 | [纸牌会客厅](../games/minigame/godot_party_default_card_game/README.md) | 1–8，未开放 | 已使用上游 GodotCardGame 替换旧本地纸牌，原型与状态入口已登记。 | 按已确认方向优先规划 UNO／彩序：对接座次、主机权威操作、私密手牌和 `?` 牌显示，完成后再开放。 | 独立子仓 GodotCardGame；上游本地座次、人机或共用设备逻辑不等于联网支持；21 点与唬牌暂不接入。 |
 

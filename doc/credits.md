@@ -72,6 +72,6 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 模型：山脊竞速，Kenney Car Kit https://kenney.nl/assets/car-kit
 模型：山脊竞速，Kenney Racing Kit https://kenney.nl/assets/racing-kit
 模型：山脊竞速，Kenney Nature Kit https://kenney.nl/assets/nature-kit
-模型：静海交锋原型，Kenney Watercraft Kit https://kenney.nl/assets/watercraft-kit
-字体：山脊竞速、拾光拼图、铁鹰防线、静海交锋与纸牌会客厅的 Noto CJK 子集 https://github.com/notofonts/noto-cjk
+模型：海战棋原型，Kenney Watercraft Kit https://kenney.nl/assets/watercraft-kit
+字体：山脊竞速、拾光拼图、铁鹰防线、海战棋与纸牌会客厅的 Noto CJK 子集 https://github.com/notofonts/noto-cjk
 字体：小小炮火原型，DejaVu https://dejavu-fonts.github.io/
