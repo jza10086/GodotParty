@@ -1,6 +1,9 @@
+@tool
 extends Control
 ## Self-contained example: load, confirm, play, present the local result, then finish once.
 ## Core readiness stays technical; the parent receives only the final standard result.
+## 同一场景在编辑器、F6 画面预览与正式联机中实例化；调校资源在 graphics_lab.tscn 中编辑。
+const GraphicsLab: PackedScene = preload("res://games/minigame/godot_party_default_blank/graphics_lab.tscn")
 enum Phase { PREPARING, RUNNING, SETTLING, SUBMITTED, STOPPED }
 const PRESS_TOPIC: StringName = &"blank/press"
 const RESULT_TOPIC: StringName = &"blank/result"
@@ -21,8 +24,15 @@ func party_setup(value: PartyAPI, config: Dictionary) -> void:
 	api.net.message_received.connect(_message)
 
 func _ready() -> void:
+	var graphics: SubViewportContainer = GraphicsLab.instantiate()
+	graphics.name = "GraphicsLab"
+	add_child(graphics)
+	move_child(graphics, 0)
+	if Engine.is_editor_hint():
+		return
 	if api == null:
-		push_error("请从 GodotParty 大厅启动空白小游戏。")
+		# F6 只预览画面；正式流程仍由大厅注入 API。
+		_content.hide()
 		return
 	finish_button.text = api.i18n.text(&"game.finish")
 	finish_button.tooltip_text = api.i18n.text(&"game.settings_hint") + "\n" + api.i18n.text(&"game.locale", {"locale": api.i18n.effective_locale()})
