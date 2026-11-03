@@ -1,0 +1,11 @@
+{
+  "supported_locales": [
+    "zh_Hans",
+    "en"
+  ],
+  "fallback_locale": "zh_Hans",
+  "translations": {
+    "zh_Hans": "zh_Hans.po",
+    "en": "en.po"
+  }
+}

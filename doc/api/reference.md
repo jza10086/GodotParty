@@ -15,6 +15,8 @@
 | get_settings() -> Dictionary | 全部 | 本活动锁定配置的副本 |
 | get_pool(name: String) -> Array | 大游戏 | 房主选择的小游戏 ID |
 | get_game_name(id: String) -> String | 活跃作用域 | 当前目录中的游戏显示名称 |
+| i18n.text(key: StringName, parameters: Dictionary = {}, package_id: String = "") -> String | 已注入作用域 | 本包译文；可显式读取协议/core，翻译后填入命名参数 |
+| i18n.effective_locale() -> String | 已注入作用域 | 本包独立解析后的语言 |
 | get_minigame_settings(id: String) -> Dictionary | 大游戏 | 已选择小游戏的配置 |
 | get_seed() -> int | 活跃作用域 | 本局公开种子 |
 | load_asset(ref: Dictionary) -> Resource | 活跃作用域 | 已激活包公开资源；失败为 null |
@@ -31,6 +33,8 @@
 | on_close(callback: Callable) -> Error | 关闭前 | 同步、LIFO、至多一次；节点释放前执行 |
 
 只读标识：session_id、scope_id、round_id、package_id、protocol_id。
+
+语言声明与回退见 [本地化](localization.md)。PartyRoomAPI.i18n 同样可用，默认绑定主游戏。
 玩家字段：player_id、peer_id、name、connected、is_local，以及协议资料快照。不要把 peer_id 写成永久业务身份。
 
 信号：players_changed；state_committed(revision)；commit_failed(code, message)；

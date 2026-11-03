@@ -110,6 +110,7 @@ func _create_scope(id: String, package_id: String, round: String, participants: 
 	var protocol_id: String = catalog.get_package(record["room"]["main"])["protocol"]["id"]
 	var context: Dictionary = {"session_id": connection.session_id, "scope_id": id, "round_id": round, "package_id": package_id, "protocol_id": protocol_id, "is_host": connection.host, "settings": config, "pools": record["room"]["pools"], "child_settings": record["room"]["children"], "seed": record.get("seed", 0) if round.is_empty() else seed_value}
 	var api: PartyAPI = API.new(context, _dispatch, _query)
+	api.i18n = catalog.i18n.scope(package_id)
 	var input_context: PartyInput = settings.create_context()
 	input_context.input_blocked = true
 	var local: Dictionary = _peer(connection.local_peer())
@@ -810,6 +811,7 @@ func _update_lobby_settings() -> void:
 		return
 	var id: String = "lobby_" + protocol
 	_lobby_api = API.new({"session_id": connection.session_id, "scope_id": id, "protocol_id": protocol, "package_id": "", "rules_revision": connection.room.get("rules_revision"), "is_host": connection.host}, func(_scope: String, _op: String, _data: Dictionary) -> Error: return ERR_UNAVAILABLE, func(_scope: String, key: String, _argument: Dictionary) -> Variant: return connection.players.duplicate(true) if key in ["players", "room_players"] else {})
+	_lobby_api.i18n = catalog.i18n.scope(connection.room.main)
 	_lobby_api.config = Config.new()
 	if _lobby_api.config.initialize(config_store, "", protocol, {"common": connection.room.get("common", {}), "own": {}}) != OK:
 		failed.emit(_lobby_api.config.last_error)

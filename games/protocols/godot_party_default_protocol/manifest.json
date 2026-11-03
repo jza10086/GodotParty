@@ -81,5 +81,14 @@
   "config_directories": {
     "maingame": "godot_party_default_v1",
     "minigame": "godot_party_default_v1"
+  },
+  "localization": {
+    "supported_locales": [
+      "zh_Hans"
+    ],
+    "fallback_locale": "zh_Hans",
+    "translations": {
+      "zh_Hans": "i18n/zh_Hans.po"
+    }
   }
 }

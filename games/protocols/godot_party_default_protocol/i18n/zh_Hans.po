@@ -1,0 +1,65 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh_Hans\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "GodotPartyDefaultProtocol"
+msgstr "GodotPartyDefaultProtocol"
+
+msgid "PCSS 软阴影"
+msgstr "PCSS 软阴影"
+
+msgid "三维渲染比例"
+msgstr "三维渲染比例"
+
+msgid "不影响 UI；低于 1 提速，高于 1 超采样。"
+msgstr "不影响 UI；低于 1 提速，高于 1 超采样。"
+
+msgid "仅对接入协议鼠标组件的游戏生效，不影响他人看到自己的鼠标。"
+msgstr "仅对接入协议鼠标组件的游戏生效，不影响他人看到自己的鼠标。"
+
+msgid "关闭真实日光投影。"
+msgstr "关闭真实日光投影。"
+
+msgid "减少闪烁，运动中可能柔化或拖影。"
+msgstr "减少闪烁，运动中可能柔化或拖影。"
+
+msgid "可变半影；可能产生采样噪点，关闭时使用较硬的 PCF。"
+msgstr "可变半影；可能产生采样噪点，关闭时使用较硬的 PCF。"
+
+msgid "增强接触细节；需要 Forward+。"
+msgstr "增强接触细节；需要 Forward+。"
+
+msgid "开启场景定义的高光辉光。"
+msgstr "开启场景定义的高光辉光。"
+
+msgid "控制阴影图、抗锯齿与 AO 采样；独立开关不随档位重置。"
+msgstr "控制阴影图、抗锯齿与 AO 采样；独立开关不随档位重置。"
+
+msgid "日光阴影"
+msgstr "日光阴影"
+
+msgid "时间抗锯齿（TAA）"
+msgstr "时间抗锯齿（TAA）"
+
+msgid "显示其他玩家鼠标"
+msgstr "显示其他玩家鼠标"
+
+msgid "独立画面效果"
+msgstr "独立画面效果"
+
+msgid "环境光遮蔽（AO）"
+msgstr "环境光遮蔽（AO）"
+
+msgid "画质档位"
+msgstr "画质档位"
+
+msgid "画面"
+msgstr "画面"
+
+msgid "界面"
+msgstr "界面"
+
+msgid "辉光"
+msgstr "辉光"

@@ -1,0 +1,35 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh_Hans\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "GodotPartyDefault · 小游戏轮换"
+msgstr "GodotPartyDefault · 小游戏轮换"
+
+msgid "允许小游戏重复"
+msgstr "允许小游戏重复"
+
+msgid "关闭重复时，实际局数最多为所选小游戏数量。"
+msgstr "关闭重复时，实际局数最多为所选小游戏数量。"
+
+msgid "局间间隔（秒）"
+msgstr "局间间隔（秒）"
+
+msgid "开启后顺序循环、随机有放回抽取；单选一个小游戏可连续测试。"
+msgstr "开启后顺序循环、随机有放回抽取；单选一个小游戏可连续测试。"
+
+msgid "总局数"
+msgstr "总局数"
+
+msgid "游戏规则"
+msgstr "游戏规则"
+
+msgid "轮换方式"
+msgstr "轮换方式"
+
+msgid "顺序按小游戏列表排列；随机由房主抽取并保存整次队列。"
+msgstr "顺序按小游戏列表排列；随机由房主抽取并保存整次队列。"
+
+msgid "默认 0：上一局正式结算后直接加载下一局，无需手动确认。"
+msgstr "默认 0：上一局正式结算后直接加载下一局，无需手动确认。"

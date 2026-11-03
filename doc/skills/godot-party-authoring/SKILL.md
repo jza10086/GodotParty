@@ -18,6 +18,7 @@ Paths are relative to the project root.
 - Readiness, scope cleanup, generic/native networking: doc/api/api.md.
 - Main-game state, reducers, durable results and recovery: doc/api/results.md.
 - Configuration, custom panels and host-selected pools: doc/api/configuration.md.
+- Package languages, Chinese fallback, translated metadata/settings and api.i18n: doc/api/localization.md. Selection is manual in the main menu and never synchronized with room rules.
 - Exact participant counts and configuration-dependent start limits: doc/api/player_counts.md.
 - Protocols and optional adapters: doc/api/protocols_and_briefing.md.
 - Protocol-defined player configuration and assets: doc/api/avatars.md.

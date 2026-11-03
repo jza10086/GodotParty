@@ -37,6 +37,7 @@ var _accept_pad_bindings: Array[InputEvent] = []
 
 func initialize() -> void:
 	_hints.set_mode(false, false)
+	app.catalog.i18n.changed.connect(_refresh_hints)
 	_keyboard.key_pressed.connect(app._ui_audio.click)
 	_keyboard.closed.connect(func() -> void:
 		if is_instance_valid(_masked_parent):
@@ -122,6 +123,13 @@ func _refresh_hints() -> void:
 	var workspace: Workspace = _workspace(scope)
 	var back_to_tabs: bool = cursor and workspace != null and workspace.inside_category_content(get_viewport().gui_get_focus_owner())
 	_hints.set_context(fold, on_header, workspace != null, back_to_tabs, is_instance_valid(_adjusting_slider), _keyboard.visible, cursor, field)
+	var keyboard_text: Dictionary = {
+		"Title": "键盘与鼠标", "Navigate/Key": "方向键", "Navigate/Action": "移动焦点",
+		"Next/Action": "切换焦点", "Accept/Key": "Enter / 空格", "Back/Action": "返回",
+		"Accept/Action": fold if on_header else "确认"
+	}
+	for path: String in keyboard_text:
+		_hints.get_node("KeyboardHints/" + path).text = app.catalog.i18n.text("core", keyboard_text[path])
 
 func _track_pad_repeat(event: InputEvent, viewport: Viewport) -> void:
 	if not (event is InputEventJoypadButton or event is InputEventJoypadMotion):

@@ -56,6 +56,9 @@ func load_settings() -> Error:
 func validate_system_settings() -> Error:
 	var values: Dictionary = display_values()
 	var invalid: String = ""
+	if config.get_value("localization", "locale", "zh_Hans") not in ["zh_Hans", "en"]:
+		push_error("Invalid system setting: localization/locale")
+		return ERR_INVALID_DATA
 	if not values.mode is String or not DISPLAY_MODES.has(values.mode):
 		invalid = "display/mode"
 	elif not config.get_value("display", "resolution", DISPLAY_DEFAULTS.resolution) is Array or values.resolution not in RESOLUTIONS:

@@ -69,7 +69,8 @@ func configure(field: Dictionary, value: Variant, editable: bool) -> void:
 		"switches":
 			for candidate: Variant in field.items.values:
 				var choice: CheckButton = load("res://core/ui/settings/switch_option.tscn").instantiate()
-				choice.text = str(candidate)
+				var choice_index: int = field.items.values.find(candidate)
+				choice.text = str(field.items.get("labels", field.items.values)[choice_index])
 				choice.button_pressed = candidate in value
 				choice.set_meta("value", candidate)
 				%Value.add_child(choice)

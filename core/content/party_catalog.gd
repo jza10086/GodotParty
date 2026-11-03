@@ -4,6 +4,8 @@ extends RefCounted
 const Paths = preload("res://core/config/party_paths.gd")
 const Data = preload("res://core/runtime/party_data.gd")
 const Schema = preload("res://core/config/party_schema.gd")
+const Localization = preload("res://core/i18n/party_localization.gd")
+var i18n: RefCounted = Localization.new()
 const PlayerCounts = preload("res://core/config/party_player_counts.gd")
 const KINDS: Array[String] = ["maingame", "minigame", "protocols", "avatars"]
 var packages: Dictionary = {}
@@ -62,6 +64,12 @@ func register_manifest(path: String) -> Error:
 	if not schema_issue.is_empty():
 		errors.append(id + ": " + schema_issue)
 		return ERR_INVALID_DATA
+	if manifest.kind != "avatars" and i18n.register_package(id, manifest.localization, path.get_base_dir()) != OK:
+		errors.append(i18n.last_error)
+		return ERR_INVALID_DATA
+	if manifest.kind != "avatars" and i18n.validate_messages(id, manifest, configuration) != OK:
+		errors.append(i18n.last_error)
+		return ERR_INVALID_DATA
 	manifest["_schema"] = configuration
 	manifest["_root"] = path.get_base_dir()
 	packages[id] = manifest
@@ -76,6 +84,13 @@ func validate_manifest(manifest: Dictionary) -> String:
 		return "Missing package kind/version"
 	if manifest["kind"] != "avatars" and (not manifest.get("entry") is String or not Data.relative_path(manifest["entry"])):
 		return "Missing entry relative to package root"
+	if manifest.kind != "avatars":
+		var localization_issue: String = Localization.validate_declaration(manifest.get("localization"))
+		if not localization_issue.is_empty():
+			return localization_issue
+	for key: String in ["name", "introduction"]:
+		if manifest.has(key) and not manifest[key] is String:
+			return key + " must be a translation message string"
 	for key: String in ["pools", "tags", "player_fields"]:
 		if not manifest.get(key, []) is Array:
 			return key + " must be an array"
@@ -160,7 +175,12 @@ func _protocol_reference(value: Variant) -> bool:
 	return value is Dictionary and value.get("id") is String and Data.identifier(value["id"]) and typeof(value.get("api_major")) == TYPE_INT and typeof(value.get("min_api_minor", 0)) == TYPE_INT
 
 func get_package(id: String) -> Dictionary:
-	return packages.get(id, {}).duplicate(true)
+	var result: Dictionary = packages.get(id, {}).duplicate(true)
+	if not result.is_empty() and result.kind != "avatars":
+		for key: String in ["name", "introduction"]:
+			if result.has(key) and not result[key].is_empty():
+				result[key] = i18n.text(id, result[key])
+	return result
 
 func ids(kind: String = "") -> Array[String]:
 	var result: Array[String] = []
@@ -288,7 +308,9 @@ func asset(ref: Dictionary, active: Dictionary) -> Resource:
 	return load(path(id, relative)) if not relative.is_empty() else null
 
 func schema(id: String) -> Dictionary:
-	return packages.get(id, {}).get("_schema", Schema.empty()).duplicate(true)
+	if not packages.has(id):
+		return Schema.empty()
+	return i18n.localize_schema(id, packages[id]._schema)
 
 func fields(id: String, audience: String = "room") -> Array:
 	return Schema.fields(schema(id), audience)

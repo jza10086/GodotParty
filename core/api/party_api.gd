@@ -10,6 +10,8 @@ signal round_cancelled(round_id: String, reason: String)
 
 const Data = preload("res://core/runtime/party_data.gd")
 const Net = preload("res://core/api/party_net.gd")
+## Package-local text lookup; language preference never enters network state.
+var i18n: RefCounted
 var voice: RefCounted
 var config: RefCounted
 var net: PartyNet

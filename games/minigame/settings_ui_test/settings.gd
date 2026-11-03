@@ -122,7 +122,8 @@ static func schema() -> Dictionary:
 						"背景音乐",
 						"界面动画",
 						"粒子特效"
-					]
+					],
+					"labels": ["背景音乐", "界面动画", "粒子特效"]
 				},
 				"unique": true,
 				"max_items": 3

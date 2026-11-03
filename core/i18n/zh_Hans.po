@@ -1,0 +1,211 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh_Hans\n"
+
+msgid "192.168.1.10 或 2001:db8::1"
+msgstr "192.168.1.10 或 2001:db8::1"
+
+msgid "1–16 字"
+msgstr "1–16 字"
+
+msgid "1–24 字"
+msgstr "1–24 字"
+
+msgid "1–65535 · 默认 7777"
+msgstr "1–65535 · 默认 7777"
+
+msgid "IP 地址"
+msgstr "IP 地址"
+
+msgid "IP 直连"
+msgstr "IP 直连"
+
+msgid "IPv4 / IPv6 地址（可带方括号），端口单独填写"
+msgstr "IPv4 / IPv6 地址（可带方括号），端口单独填写"
+
+msgid "←  返回主菜单"
+msgstr "←  返回主菜单"
+
+msgid "上一步"
+msgstr "上一步"
+
+msgid "上次使用的连接地址"
+msgstr "上次使用的连接地址"
+
+msgid "下一步"
+msgstr "下一步"
+
+msgid "仅显示兼容大游戏；具体配置在创建后的大厅设置。"
+msgstr "仅显示兼容大游戏；具体配置在创建后的大厅设置。"
+
+msgid "保存"
+msgstr "保存"
+
+msgid "保存失败：{error}"
+msgstr "保存失败：{error}"
+
+msgid "关闭当前原型窗口。"
+msgstr "关闭当前原型窗口。"
+
+msgid "创建房间"
+msgstr "创建房间"
+
+msgid "创建房间 · 选择协议"
+msgstr "创建房间 · 选择协议"
+
+msgid "创建房间 · 选择大游戏"
+msgstr "创建房间 · 选择大游戏"
+
+msgid "加入房间"
+msgstr "加入房间"
+
+msgid "协议"
+msgstr "协议"
+
+msgid "协议决定房间规则、形象与公共体验。"
+msgstr "协议决定房间规则、形象与公共体验。"
+
+msgid "取消"
+msgstr "取消"
+
+msgid "同时监听 IPv4 / IPv6 · 请允许所填 UDP 端口通过防火墙"
+msgstr "同时监听 IPv4 / IPv6 · 请允许所填 UDP 端口通过防火墙"
+
+msgid "填写 / 连接"
+msgstr "填写 / 连接"
+
+msgid "大游戏"
+msgstr "大游戏"
+
+msgid "头像"
+msgstr "头像"
+
+msgid "头像与形象请在加入房间后，点击大厅中的本人资料设置。"
+msgstr "头像与形象请在加入房间后，点击大厅中的本人资料设置。"
+
+msgid "当前没有公共房间列表；请向房主获取地址和端口。"
+msgstr "当前没有公共房间列表；请向房主获取地址和端口。"
+
+msgid "形象"
+msgstr "形象"
+
+msgid "我的派对"
+msgstr "我的派对"
+
+msgid "房间公开性"
+msgstr "房间公开性"
+
+msgid "房间发现暂未开放"
+msgstr "房间发现暂未开放"
+
+msgid "房间名称"
+msgstr "房间名称"
+
+msgid "昵称保存在本机；协议形象由所选协议提供。"
+msgstr "昵称保存在本机；协议形象由所选协议提供。"
+
+msgid "昵称需为 1–16 字，且不能包含控制字符"
+msgstr "昵称需为 1–16 字，且不能包含控制字符"
+
+msgid "暂不可用"
+msgstr "暂不可用"
+
+msgid "正在连接 {endpoint}…"
+msgstr "正在连接 {endpoint}…"
+
+msgid "没有兼容的大游戏"
+msgstr "没有兼容的大游戏"
+
+msgid "没有已安装的协议"
+msgstr "没有已安装的协议"
+
+msgid "玩家名称"
+msgstr "玩家名称"
+
+msgid "玩家资料"
+msgstr "玩家资料"
+
+msgid "监听测试"
+msgstr "监听测试"
+
+msgid "监听端口 (UDP)"
+msgstr "监听端口 (UDP)"
+
+msgid "确认退出"
+msgstr "确认退出"
+
+msgid "离开当前房间？"
+msgstr "离开当前房间？"
+
+msgid "端口"
+msgstr "端口"
+
+msgid "端口请输入 1–65535 的整数"
+msgstr "端口请输入 1–65535 的整数"
+
+msgid "继续留下"
+msgstr "继续留下"
+
+msgid "编辑玩家资料"
+msgstr "编辑玩家资料"
+
+msgid "要离开派对吗？"
+msgstr "要离开派对吗？"
+
+msgid "设置"
+msgstr "设置"
+
+msgid "语言保存失败：{error}"
+msgstr "语言保存失败：{error}"
+
+msgid "请输入 1–24 字的房间名称"
+msgstr "请输入 1–24 字的房间名称"
+
+msgid "请输入有效 IPv4 / IPv6，端口请填在下方"
+msgstr "请输入有效 IPv4 / IPv6，端口请填在下方"
+
+msgid "请选择兼容的大游戏"
+msgstr "请选择兼容的大游戏"
+
+msgid "连接房间"
+msgstr "连接房间"
+
+msgid "连接测试"
+msgstr "连接测试"
+
+msgid "退出"
+msgstr "退出"
+
+msgid "选择已安装的大游戏，确认后创建真实联机房间。"
+msgstr "选择已安装的大游戏，确认后创建真实联机房间。"
+
+msgid "通过 IP 直连加入房主 · 房间发现服务暂未开放"
+msgstr "通过 IP 直连加入房主 · 房间发现服务暂未开放"
+
+msgid "键盘与鼠标"
+msgstr "键盘与鼠标"
+
+msgid "方向键"
+msgstr "方向键"
+
+msgid "移动焦点"
+msgstr "移动焦点"
+
+msgid "切换焦点"
+msgstr "切换焦点"
+
+msgid "Enter / 空格"
+msgstr "Enter / 空格"
+
+msgid "返回"
+msgstr "返回"
+
+msgid "确认"
+msgstr "确认"
+
+msgid "收起面板"
+msgstr "收起面板"
+
+msgid "展开面板"
+msgstr "展开面板"

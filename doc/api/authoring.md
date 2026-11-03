@@ -39,6 +39,8 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 
 ## 最小清单
 
+所有协议、主游戏与小游戏须声明独立语言及回退资源，见 [本地化](localization.md)。
+
 ```json
 {
   "manifest_version": 2,
@@ -48,6 +50,11 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
   "core_api_major": 4,
   "player_counts": [2, 3, 4, 5, 6, 7, 8],
   "entry": "game.tscn",
+  "localization": {
+    "supported_locales": ["zh_Hans"],
+    "fallback_locale": "zh_Hans",
+    "translations": {"zh_Hans": "i18n/zh_Hans.po"}
+  },
   "adapters": [
     {"id": "ranked", "protocol": {"id": "your.protocol", "api_major": 1, "min_api_minor": 0}}
   ]

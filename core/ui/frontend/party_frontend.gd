@@ -19,6 +19,51 @@ var _connection_notice: String = ""
 var _games: Array[String] = []
 var _create_step: String = "protocol"
 var _focus_modes: Dictionary = {}
+const MENU_TEXT: Dictionary = {
+	"Home/Menu/Start:text": "创建房间",
+	"Home/Menu/Join:text": "加入房间",
+	"Home/Menu/Settings:text": "设置",
+	"Home/Menu/Exit:text": "退出",
+	"Home/Menu/ListenTest:text": "监听测试",
+	"Home/Menu/ConnectTest:text": "连接测试",
+	"Home/Profile:tooltip_text": "编辑玩家资料",
+	"Home/Profile/Hint:text": "编辑玩家资料",
+	"Home/Profile/Avatar/Placeholder:text": "头像",
+	"Rooms/RoomsTitle:text": "加入房间",
+	"Rooms/Back:text": "←  返回主菜单",
+	"Rooms/Direct:text": "IP 直连",
+	"@Profile/Title:text": "玩家资料",
+	"@Profile/NameLabel:text": "玩家名称",
+	"@Profile/Cancel:text": "取消",
+	"@Profile/Confirm:text": "保存",
+	"@Confirm/Title:text": "要离开派对吗？",
+	"@Confirm/Body:text": "关闭当前原型窗口。",
+	"@Confirm/Cancel:text": "继续留下",
+	"@Confirm/Quit:text": "确认退出",
+	"@Direct/Cancel:text": "取消",
+	"@Direct/AddressLabel:text": "IP 地址",
+	"@Direct/PortLabel:text": "端口",
+	"@Create/RoomNameLabel:text": "房间名称",
+	"@Create/RoomName:placeholder_text": "1–24 字",
+	"@Create/PortLabel:text": "监听端口 (UDP)",
+	"@Create/Port:placeholder_text": "1–65535 · 默认 7777",
+	"@Create/VisibilityLabel:text": "房间公开性",
+	"Rooms/RoomsSubtitle:text": "通过 IP 直连加入房主 · 房间发现服务暂未开放",
+	"Rooms/Name0:text": "房间发现暂未开放",
+	"Rooms/Info0:text": "当前没有公共房间列表；请向房主获取地址和端口。",
+	"Rooms/Join0:text": "暂不可用",
+	"Rooms/Name1:text": "上次使用的连接地址",
+	"Rooms/Join1:text": "填写 / 连接",
+	"@Create/Note:text": "选择已安装的大游戏，确认后创建真实联机房间。",
+	"@Direct/Title:text": "IP 直连",
+	"@Direct/Confirm:text": "连接房间",
+	"@Direct/Note:text": "IPv4 / IPv6 地址（可带方括号），端口单独填写",
+	"@Direct/Address:placeholder_text": "192.168.1.10 或 2001:db8::1",
+	"@Profile/Note:text": "昵称保存在本机；协议形象由所选协议提供。",
+	"@Profile/Name:placeholder_text": "1–16 字",
+	"@Profile/Avatar/Placeholder:text": "形象",
+	"@Profile/AvatarNote:text": "头像与形象请在加入房间后，点击大厅中的本人资料设置。"
+}
 ## Bind the authored pages once the application has loaded its catalog and session.
 func initialize() -> void:
 	visibility_changed.connect(func() -> void: modal_layer.visible = is_visible_in_tree() and not modal_kind.is_empty())
@@ -51,40 +96,26 @@ func initialize() -> void:
 	_confirm.get_node("Quit").pressed.connect(func() -> void: get_tree().quit())
 	_profile.get_node("Name").text_submitted.connect(func(_text: String) -> void: submit_profile())
 	_direct.get_node("Port").text_submitted.connect(func(_text: String) -> void: submit_direct())
-	$Rooms/RoomsSubtitle.text = "通过 IP 直连加入房主 · 房间发现服务暂未开放"
-	$Rooms/Name0.text = "房间发现暂未开放"
-	$Rooms/Info0.text = "当前没有公共房间列表；请向房主获取地址和端口。"
-	$Rooms/Join0.text = "暂不可用"
 	$Rooms/Join0.disabled = true
-	$Rooms/Name1.text = "上次使用的连接地址"
-	$Rooms/Join1.text = "填写 / 连接"
 	for key: String in ["Room2", "Name2", "Info2", "Join2"]:
 		get_node("Rooms/" + key).hide()
-	_create.get_node("Note").text = "选择已安装的大游戏，确认后创建真实联机房间。"
 	_create.get_node("Port").text_submitted.connect(func(_text: String) -> void: submit_create())
 	_create.get_node("Visibility").clear()
-	_create.get_node("Visibility").add_item("IP 直连")
 	_create.get_node("Visibility").disabled = true
-	_direct.get_node("Title").text = "IP 直连"
-	_direct.get_node("Confirm").text = "连接房间"
-	_direct.get_node("Note").text = "IPv4 / IPv6 地址（可带方括号），端口单独填写"
 	_direct.get_node("Port").max_length = 0
 	_direct.get_node("Address").max_length = 64
-	_direct.get_node("Address").placeholder_text = "192.168.1.10 或 2001:db8::1"
 	for label: Label in [_create.get_node("Error"), _direct.get_node("Error"), $Rooms/Info1]:
 		label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		label.mouse_filter = Control.MOUSE_FILTER_PASS
 		label.mouse_entered.connect(func() -> void: label.tooltip_text = label.text)
-	_profile.get_node("Note").text = "昵称保存在本机；协议形象由所选协议提供。"
 	_profile.get_node("Name").max_length = 16
-	_profile.get_node("Name").placeholder_text = "1–16 字"
-	_profile.get_node("Avatar/Placeholder").text = "形象"
-	_profile.get_node("AvatarNote").text = "头像与形象请在加入房间后，点击大厅中的本人资料设置。"
 	set_anchors_preset(Control.PRESET_TOP_LEFT)
 	get_parent().resized.connect(_fit)
 	_fit()
 	show_page("Home")
-	refresh()
+	app.catalog.i18n.changed.connect(_apply_language)
+	$Home/Language.item_selected.connect(_select_language)
+	_apply_language()
 
 func _button(path: String, action: Callable) -> void:
 	get_node(path).pressed.connect(action)
@@ -110,18 +141,18 @@ func _build_games() -> void:
 	for id: String in options:
 		picker.add_item(app.catalog.get_package(id).get("name", id))
 		picker.set_item_metadata(picker.item_count - 1, id)
-	_create.get_node("Title").text = "创建房间 · 选择协议" if _create_step == "protocol" else "创建房间 · 选择大游戏"
-	_create.get_node("GameLabel").text = "协议" if _create_step == "protocol" else "大游戏"
-	_create.get_node("Confirm").text = "下一步" if _create_step == "protocol" else "创建房间"
-	_create.get_node("Cancel").text = "取消" if _create_step == "protocol" else "上一步"
-	_create.get_node("Note").text = "协议决定房间规则、形象与公共体验。" if _create_step == "protocol" else "仅显示兼容大游戏；具体配置在创建后的大厅设置。"
+	_create.get_node("Title").text = _t("创建房间 · 选择协议") if _create_step == "protocol" else _t("创建房间 · 选择大游戏")
+	_create.get_node("GameLabel").text = _t("协议") if _create_step == "protocol" else _t("大游戏")
+	_create.get_node("Confirm").text = _t("下一步") if _create_step == "protocol" else _t("创建房间")
+	_create.get_node("Cancel").text = _t("取消") if _create_step == "protocol" else _t("上一步")
+	_create.get_node("Note").text = _t("协议决定房间规则、形象与公共体验。") if _create_step == "protocol" else _t("仅显示兼容大游戏；具体配置在创建后的大厅设置。")
 	for key: String in ["RoomNameLabel", "RoomName", "PortLabel", "Port", "VisibilityLabel", "Visibility"]:
 		_create.get_node(key).visible = _create_step == "game"
 	_create.get_node("Game").disabled = options.is_empty()
 	_create.get_node("Confirm").disabled = options.is_empty()
 	if options.is_empty():
 		selected_game = ""
-		_create.get_node("Game").text = "没有已安装的协议" if _create_step == "protocol" else "没有兼容的大游戏"
+		_create.get_node("Game").text = _t("没有已安装的协议") if _create_step == "protocol" else _t("没有兼容的大游戏")
 	else:
 		var current: String = selected_protocol if _create_step == "protocol" else selected_game
 		select_game(current if current in options else options[0])
@@ -178,10 +209,10 @@ func open_modal(kind: String) -> void:
 		"Create":
 			_create_step = "protocol"
 			_build_games()
-			_create.get_node("RoomName").text = "我的派对"
+			_create.get_node("RoomName").text = _t("我的派对")
 			_create.get_node("Error").text = ""
 			_create.get_node("Port").text = str(app.settings.config.get_value("connection", "host_port", 7777))
-			_create.get_node("DropdownNote").text = "同时监听 IPv4 / IPv6 · 请允许所填 UDP 端口通过防火墙"
+			_create.get_node("DropdownNote").text = _t("同时监听 IPv4 / IPv6 · 请允许所填 UDP 端口通过防火墙")
 			_create.get_node("Game").grab_focus()
 		"Direct":
 			_direct.get_node("Address").text = str(app.settings.config.get_value("connection", "address", "127.0.0.1"))
@@ -228,15 +259,15 @@ func submit_create() -> void:
 		_build_games()
 		return
 	if selected_game not in _games or app.catalog.get_package(selected_game).get("protocol", {}).get("id") != selected_protocol:
-		_create.get_node("Error").text = "请选择兼容的大游戏"
+		_create.get_node("Error").text = _t("请选择兼容的大游戏")
 		return
 	var title: String = _create.get_node("RoomName").text.strip_edges()
 	if not app.connection.valid_room_name(title):
-		_create.get_node("Error").text = "请输入 1–24 字的房间名称"
+		_create.get_node("Error").text = _t("请输入 1–24 字的房间名称")
 		return
 	var port: int = app.connection.parse_port(_create.get_node("Port").text)
 	if port == 0:
-		_create.get_node("Error").text = "端口请输入 1–65535 的整数"
+		_create.get_node("Error").text = _t("端口请输入 1–65535 的整数")
 		return
 	var error: Error = app.host_from_ui(selected_game, title, port)
 	if error != OK:
@@ -248,10 +279,10 @@ func submit_direct() -> void:
 	var address: String = app.connection.normalize_address(_direct.get_node("Address").text)
 	var port: int = app.connection.parse_port(_direct.get_node("Port").text)
 	if address.is_empty():
-		_direct.get_node("Error").text = "请输入有效 IPv4 / IPv6，端口请填在下方"
+		_direct.get_node("Error").text = _t("请输入有效 IPv4 / IPv6，端口请填在下方")
 		return
 	if port == 0:
-		_direct.get_node("Error").text = "端口请输入 1–65535 的整数"
+		_direct.get_node("Error").text = _t("端口请输入 1–65535 的整数")
 		return
 	var error: Error = app.join_from_ui(address, port)
 	if error != OK:
@@ -259,7 +290,7 @@ func submit_direct() -> void:
 		return
 	_joining = true
 	_direct.get_node("Confirm").disabled = true
-	_direct.get_node("Error").text = "正在连接 " + app.connection.format_endpoint(address, port) + "…"
+	_direct.get_node("Error").text = _t("正在连接 {endpoint}…", {"endpoint": app.connection.format_endpoint(address, port)})
 
 func submit_profile() -> void:
 	if modal_kind != "Profile" or app.connection.online:
@@ -267,7 +298,7 @@ func submit_profile() -> void:
 	var name_value: String = _profile.get_node("Name").text.strip_edges()
 	var error: Error = app.save_local_name(name_value)
 	if error != OK:
-		_profile.get_node("Error").text = "昵称需为 1–16 字，且不能包含控制字符" if error == ERR_INVALID_PARAMETER else "保存失败：" + error_string(error)
+		_profile.get_node("Error").text = _t("昵称需为 1–16 字，且不能包含控制字符") if error == ERR_INVALID_PARAMETER else _t("保存失败：{error}", {"error": error_string(error)})
 		return
 	close_modal()
 	refresh()
@@ -351,7 +382,30 @@ func navigation_back() -> bool:
 	elif page == "Home":
 		open_modal("Confirm")
 	elif page == "Lobby":
-		app._confirm_action("离开当前房间？", app.connection.leave)
+		app._confirm_action(_t("离开当前房间？"), app.connection.leave)
 	else:
 		return false
 	return true
+
+## Menu-owned presentation refreshes without rebuilding controls or overwriting user input.
+func _apply_language() -> void:
+	for binding: String in MENU_TEXT:
+		var parts: PackedStringArray = binding.split(":")
+		var target: Node = modal_layer.get_node(parts[0].trim_prefix("@")) if parts[0].begins_with("@") else get_node(parts[0])
+		target.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+		target.set(parts[1], _t(MENU_TEXT[binding]))
+	_create.get_node("Visibility").clear()
+	_create.get_node("Visibility").add_item(_t("IP 直连"))
+	$Home/Language.select(0 if app.catalog.i18n.locale == "zh_Hans" else 1)
+	if modal_kind == "Create":
+		_build_games()
+	refresh()
+
+func _t(key: StringName, parameters: Dictionary = {}) -> String:
+	return app.catalog.i18n.text("core", key, parameters)
+
+func _select_language(index: int) -> void:
+	var error: Error = app.select_language("zh_Hans" if index == 0 else "en")
+	if error != OK:
+		$Home/Language.select(0 if app.catalog.i18n.locale == "zh_Hans" else 1)
+		show_notice(_t("语言保存失败：{error}", {"error": error_string(error)}))

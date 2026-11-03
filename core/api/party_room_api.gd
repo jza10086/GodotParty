@@ -1,12 +1,14 @@
 ## Public room-view context. Framework services stay in core; the main-game scene owns presentation.
 extends RefCounted
 
+var i18n: RefCounted
 var activity: PartyAPI
 var _query: Callable
 var _dispatch: Callable
 
 func _init(api: PartyAPI, query: Callable, dispatch: Callable) -> void:
 	activity = api
+	i18n = api.i18n
 	_query = query
 	_dispatch = dispatch
 

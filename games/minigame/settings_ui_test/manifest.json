@@ -33,5 +33,16 @@
       }
     }
   ],
-  "config_schema": "settings.gd"
+  "config_schema": "settings.gd",
+  "localization": {
+    "supported_locales": [
+      "zh_Hans",
+      "en"
+    ],
+    "fallback_locale": "zh_Hans",
+    "translations": {
+      "zh_Hans": "i18n/zh_Hans.po",
+      "en": "i18n/en.po"
+    }
+  }
 }

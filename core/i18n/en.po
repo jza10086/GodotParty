@@ -1,0 +1,211 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+msgid "192.168.1.10 或 2001:db8::1"
+msgstr "192.168.1.10 or 2001:db8::1"
+
+msgid "1–16 字"
+msgstr "1–16 characters"
+
+msgid "1–24 字"
+msgstr "1–24 characters"
+
+msgid "1–65535 · 默认 7777"
+msgstr "1–65535 · Default 7777"
+
+msgid "IP 地址"
+msgstr "IP Address"
+
+msgid "IP 直连"
+msgstr "Direct IP"
+
+msgid "IPv4 / IPv6 地址（可带方括号），端口单独填写"
+msgstr "Enter an IPv4 or IPv6 address (brackets accepted), with the port below."
+
+msgid "←  返回主菜单"
+msgstr "←  Main Menu"
+
+msgid "上一步"
+msgstr "Back"
+
+msgid "上次使用的连接地址"
+msgstr "Last connection address"
+
+msgid "下一步"
+msgstr "Next"
+
+msgid "仅显示兼容大游戏；具体配置在创建后的大厅设置。"
+msgstr "Only compatible main games are shown. Configure rules in the lobby."
+
+msgid "保存"
+msgstr "Save"
+
+msgid "保存失败：{error}"
+msgstr "Could not save: {error}"
+
+msgid "关闭当前原型窗口。"
+msgstr "Close GodotParty."
+
+msgid "创建房间"
+msgstr "Create Room"
+
+msgid "创建房间 · 选择协议"
+msgstr "Create Room · Protocol"
+
+msgid "创建房间 · 选择大游戏"
+msgstr "Create Room · Main Game"
+
+msgid "加入房间"
+msgstr "Join Room"
+
+msgid "协议"
+msgstr "Protocol"
+
+msgid "协议决定房间规则、形象与公共体验。"
+msgstr "The protocol defines shared rules, appearances and features."
+
+msgid "取消"
+msgstr "Cancel"
+
+msgid "同时监听 IPv4 / IPv6 · 请允许所填 UDP 端口通过防火墙"
+msgstr "Listens on IPv4 and IPv6 · Allow this UDP port through your firewall"
+
+msgid "填写 / 连接"
+msgstr "Enter / Connect"
+
+msgid "大游戏"
+msgstr "Main Game"
+
+msgid "头像"
+msgstr "Avatar"
+
+msgid "头像与形象请在加入房间后，点击大厅中的本人资料设置。"
+msgstr "Join a room, then open your profile in the lobby to edit your appearance."
+
+msgid "当前没有公共房间列表；请向房主获取地址和端口。"
+msgstr "Ask your host for their address and port. No public room list is available."
+
+msgid "形象"
+msgstr "Appearance"
+
+msgid "我的派对"
+msgstr "My Party"
+
+msgid "房间公开性"
+msgstr "Connection Type"
+
+msgid "房间发现暂未开放"
+msgstr "Room discovery unavailable"
+
+msgid "房间名称"
+msgstr "Room Name"
+
+msgid "昵称保存在本机；协议形象由所选协议提供。"
+msgstr "Your name is saved locally. Appearance is provided by the selected protocol."
+
+msgid "昵称需为 1–16 字，且不能包含控制字符"
+msgstr "Names must be 1–16 characters with no control characters"
+
+msgid "暂不可用"
+msgstr "Unavailable"
+
+msgid "正在连接 {endpoint}…"
+msgstr "Connecting to {endpoint}…"
+
+msgid "没有兼容的大游戏"
+msgstr "No compatible main games"
+
+msgid "没有已安装的协议"
+msgstr "No protocols installed"
+
+msgid "玩家名称"
+msgstr "Player Name"
+
+msgid "玩家资料"
+msgstr "Player Profile"
+
+msgid "监听测试"
+msgstr "Listener Test"
+
+msgid "监听端口 (UDP)"
+msgstr "Listen Port (UDP)"
+
+msgid "确认退出"
+msgstr "Quit Game"
+
+msgid "离开当前房间？"
+msgstr "Leave this room?"
+
+msgid "端口"
+msgstr "Port"
+
+msgid "端口请输入 1–65535 的整数"
+msgstr "Enter a port number from 1 to 65535"
+
+msgid "继续留下"
+msgstr "Stay"
+
+msgid "编辑玩家资料"
+msgstr "Edit Profile"
+
+msgid "要离开派对吗？"
+msgstr "Leave the party?"
+
+msgid "设置"
+msgstr "Settings"
+
+msgid "语言保存失败：{error}"
+msgstr "Could not save language: {error}"
+
+msgid "请输入 1–24 字的房间名称"
+msgstr "Enter a room name of 1–24 characters"
+
+msgid "请输入有效 IPv4 / IPv6，端口请填在下方"
+msgstr "Enter a valid IPv4 or IPv6 address, with the port below"
+
+msgid "请选择兼容的大游戏"
+msgstr "Select a compatible main game"
+
+msgid "连接房间"
+msgstr "Connect"
+
+msgid "连接测试"
+msgstr "Connection Test"
+
+msgid "退出"
+msgstr "Quit"
+
+msgid "选择已安装的大游戏，确认后创建真实联机房间。"
+msgstr "Choose an installed main game to create an online room."
+
+msgid "通过 IP 直连加入房主 · 房间发现服务暂未开放"
+msgstr "Connect to a host by IP · Room discovery is not available yet"
+
+msgid "键盘与鼠标"
+msgstr "Keyboard & Mouse"
+
+msgid "方向键"
+msgstr "Arrows"
+
+msgid "移动焦点"
+msgstr "Move focus"
+
+msgid "切换焦点"
+msgstr "Change focus"
+
+msgid "Enter / 空格"
+msgstr "Enter / Space"
+
+msgid "返回"
+msgstr "Back"
+
+msgid "确认"
+msgstr "Confirm"
+
+msgid "收起面板"
+msgstr "Collapse panel"
+
+msgid "展开面板"
+msgstr "Expand panel"

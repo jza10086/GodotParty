@@ -31,5 +31,14 @@
       },
       "entry": "adapter.gd"
     }
-  ]
+  ],
+  "localization": {
+    "supported_locales": [
+      "zh_Hans"
+    ],
+    "fallback_locale": "zh_Hans",
+    "translations": {
+      "zh_Hans": "i18n/zh_Hans.po"
+    }
+  }
 }

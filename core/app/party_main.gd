@@ -67,6 +67,11 @@ func _ready() -> void:
 		_content_error = packages.last_error
 	catalog = Catalog.new()
 	catalog.scan()
+	var declaration: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://core/i18n/localization.json"))
+	if catalog.i18n.register_package("core", declaration, "res://core/i18n") != OK:
+		push_error(catalog.i18n.last_error)
+		return
+	catalog.i18n.set_locale(settings.config.get_value("localization", "locale", "zh_Hans"))
 	_apply_system_preferences()
 	if connection.initialize(catalog, settings) != OK:
 		return
@@ -86,6 +91,19 @@ func _ready() -> void:
 	if not catalog.errors.is_empty():
 		_notice("\n".join(catalog.errors))
 	_boot.call_deferred()
+
+## Main-menu selection is explicit and local. Save successfully before refreshing presentation.
+func select_language(language: String) -> Error:
+	if language not in ["zh_Hans", "en"]:
+		return ERR_INVALID_PARAMETER
+	var previous: String = settings.config.encode_to_text()
+	settings.config.set_value("localization", "locale", language)
+	var error: Error = settings.save_settings()
+	if error != OK:
+		settings.config.clear()
+		settings.config.parse(previous)
+		return error
+	return catalog.i18n.set_locale(language)
 
 func _boot() -> void:
 	if not _content_error.is_empty():

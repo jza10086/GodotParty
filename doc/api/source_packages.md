@@ -1,5 +1,7 @@
 # 源码与 PCK 内容包
 
+协议、主游戏与小游戏须声明 localization；PO 放在包内，随源码/PCK 一同收集。目录加载校验资源语言及中文回退，见 [本地化](localization.md)。
+
 完整开发工程保留 core/、games/、doc/、addons/；测试专用内容只放在 tmp/test/，不属于发布包。源码包位于 games/{protocols,maingame,minigame}/<id>/；形象包位于 games/protocols/<protocol_id>/avatars/<id>/，其清单声明 owner_protocol。manifest.json 是唯一作者维护的内容目录项，包 ID 全局唯一。
 
 玩家安装目录见 [配置与预设](configuration.md)。协议、maingame、minigame 分别放入对应根文件夹，每包单独目录，包含 content.pck 和 content.pck.json；形象包放入所属协议 avatars/。替换版本时只替换这两个生成文件，保留 config/。安装、删除、更新及来源切换后重新启动，不做热替换。
