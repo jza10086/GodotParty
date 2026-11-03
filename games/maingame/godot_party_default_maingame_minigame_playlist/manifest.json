@@ -8,6 +8,7 @@
   "entry": "game.tscn",
   "room_scene": "room.tscn",
   "minigames": [
+    "godot_party_default_battleship_chess",
     "godot_party_default_identity_party",
     "gp_rhythm_game",
     "godot_party_default_blank",
