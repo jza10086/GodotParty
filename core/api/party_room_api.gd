@@ -34,6 +34,8 @@ func show_player(peer: int) -> void:
 func show_notice(message: String) -> void:
 	_dispatch.call("notice", {"message": message})
 
+## Normalize IPv4, IPv6 (optionally bracketed) or an ASCII / Punycode DNS hostname.
+## This accepts an address without a port; invalid input returns an empty string.
 func normalize_address(value: String) -> String:
 	return _query.call("normalize_address", {"value": value})
 

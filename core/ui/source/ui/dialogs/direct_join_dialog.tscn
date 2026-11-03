@@ -1,19 +1,20 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c550vw5wet1rs"]
 
-[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
-
-
-
-
+[ext_resource type="Shader" uid="uid://bbmv2flgi2w7i" path="res://core/ui/ambient_reveal/surface.gdshader" id="3_tms0k"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
-
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="ar_line_edit"]
-
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
+[ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 
-[node name="Direct" type="Control"]
-theme = ExtResource("theme")
-mouse_filter = 2
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6e8s6"]
+resource_local_to_scene = true
+shader = ExtResource("3_tms0k")
+shader_parameter/use_backdrop = false
+shader_parameter/backdrop_origin = Vector2(0, 0)
+shader_parameter/backdrop_extent = Vector2(1100, 760)
+
+[node name="Direct" type="Control" unique_id=1497117995]
+layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -23,80 +24,73 @@ offset_left = -420.0
 offset_top = -270.0
 offset_right = 420.0
 offset_bottom = 270.0
+mouse_filter = 2
+theme = ExtResource("theme")
 
-[node name="Dialog" parent="." instance=ExtResource("ar_panel")]
-offset_left = 0.0
-offset_top = 0.0
+[node name="Dialog" parent="." unique_id=260655026 instance=ExtResource("ar_panel")]
+material = SubResource("ShaderMaterial_6e8s6")
+layout_mode = 0
 offset_right = 840.0
 offset_bottom = 540.0
 mouse_filter = 2
 
-[node name="Title" type="Label" parent="."]
-theme_override_font_sizes/font_size = 29
+[node name="Title" type="Label" parent="." unique_id=92142384]
+layout_mode = 0
 offset_left = 60.0
 offset_top = 40.0
 offset_right = 780.0
 offset_bottom = 104.0
-text = "IP 直连 · 模拟"
+theme_override_font_sizes/font_size = 29
+text = "地址直连"
 
-[node name="Note" type="Label" parent="."]
+[node name="Note" type="Label" parent="." unique_id=33742185]
+layout_mode = 0
 offset_left = 60.0
 offset_top = 116.0
 offset_right = 780.0
-offset_bottom = 156.0
-text = "仅预览加入流程，不建立真实网络连接"
+offset_bottom = 182.0
+text = "支持 IP / 域名；省略端口使用 7777，IPv6 带端口需加 []"
+autowrap_mode = 3
 
-[node name="Error" type="Label" parent="."]
-theme_override_colors/font_color = Color(1, 0.65, 0.62, 1)
+[node name="Error" type="Label" parent="." unique_id=7140916]
+layout_mode = 0
 offset_left = 60.0
 offset_top = 372.0
 offset_right = 780.0
 offset_bottom = 408.0
-text = ""
+theme_override_colors/font_color = Color(1, 0.65, 0.62, 1)
 
-[node name="Cancel" parent="." instance=ExtResource("ar_button")]
-theme_override_font_sizes/font_size = 26
+[node name="Cancel" parent="." unique_id=293623789 instance=ExtResource("ar_button")]
+layout_mode = 0
 offset_left = 60.0
 offset_top = 430.0
 offset_right = 360.0
 offset_bottom = 502.0
+theme_override_font_sizes/font_size = 26
 text = "取消"
 
-[node name="Confirm" parent="." instance=ExtResource("ar_button")]
-theme_override_font_sizes/font_size = 26
+[node name="Confirm" parent="." unique_id=1953226696 instance=ExtResource("ar_button")]
+layout_mode = 0
 offset_left = 396.0
 offset_top = 430.0
 offset_right = 780.0
 offset_bottom = 502.0
-text = "模拟加入"
+theme_override_font_sizes/font_size = 26
+text = "连接房间"
 
-[node name="AddressLabel" type="Label" parent="."]
+[node name="AddressLabel" type="Label" parent="." unique_id=524068793]
+layout_mode = 0
 offset_left = 60.0
-offset_top = 182.0
+offset_top = 202.0
 offset_right = 230.0
 offset_bottom = 240.0
-text = "IP 地址"
+text = "连接地址"
 
-[node name="Address" parent="." instance=ExtResource("ar_line_edit")]
-offset_left = 252.0
-offset_top = 182.0
-offset_right = 780.0
-offset_bottom = 240.0
-placeholder_text = "127.0.0.1 或 IPv6"
-max_length = 45
-
-[node name="PortLabel" type="Label" parent="."]
+[node name="Address" parent="." unique_id=645967602 instance=ExtResource("ar_line_edit")]
+layout_mode = 0
 offset_left = 60.0
-offset_top = 272.0
-offset_right = 230.0
-offset_bottom = 330.0
-text = "端口"
-
-[node name="Port" parent="." instance=ExtResource("ar_line_edit")]
-offset_left = 252.0
-offset_top = 272.0
+offset_top = 252.0
 offset_right = 780.0
-offset_bottom = 330.0
-text = "7777"
-max_length = 5
-placeholder_text = "1–65535"
+offset_bottom = 310.0
+placeholder_text = "example.com:7777"
+max_length = 260

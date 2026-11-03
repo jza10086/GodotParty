@@ -41,15 +41,55 @@ static func parse_port(value: String) -> int:
 	var port: int = text.to_int()
 	return port if valid_port(port) else 0
 
-## Accept bare IP literals or bracketed IPv6; the port stays in its own field.
-## Never split bare IPv6 at its last colon, which is part of the address.
+## Normalize an IP literal or DNS hostname without a port; DNS resolution belongs to ENet.
 static func normalize_address(value: String) -> String:
 	var address: String = value.strip_edges()
 	if address.begins_with("[") and address.ends_with("]"):
 		address = address.substr(1, address.length() - 2)
-		if not address.contains(":"):
+		return address if address.contains(":") and address.is_valid_ip_address() else ""
+	if address.is_valid_ip_address():
+		return address
+	address = address.to_lower()
+	var hostname: String = address.trim_suffix(".")
+	if hostname.is_empty() or hostname.length() > 253:
+		return ""
+	var has_letter: bool = false
+	for label: String in hostname.split("."):
+		if label.is_empty() or label.length() > 63 or label.begins_with("-") or label.ends_with("-"):
 			return ""
-	return address if address.is_valid_ip_address() else ""
+		for character: String in label:
+			if character >= "a" and character <= "z":
+				has_letter = true
+			elif not (character >= "0" and character <= "9") and character != "-":
+				return ""
+	# Reject malformed numeric IPv4 addresses instead of treating them as hostnames.
+	return address if has_letter else ""
+
+## Parse one join field. Missing ports use 7777; IPv6 ports require [address]:port.
+## An empty result means invalid user input. Bare IPv6 is never split at its last colon.
+static func parse_endpoint(value: String) -> Dictionary:
+	var text: String = value.strip_edges()
+	var address: String = text
+	var port: int = 7777
+	if text.begins_with("["):
+		var closing: int = text.find("]")
+		if closing == -1:
+			return {}
+		address = normalize_address(text.substr(0, closing + 1))
+		var suffix: String = text.substr(closing + 1)
+		if not suffix.is_empty():
+			if not suffix.begins_with(":"):
+				return {}
+			port = parse_port(suffix.substr(1))
+	elif text.count(":") == 1:
+		var separator: int = text.find(":")
+		address = normalize_address(text.substr(0, separator))
+		port = parse_port(text.substr(separator + 1))
+	else:
+		address = normalize_address(text)
+	if address.is_empty() or not valid_port(port):
+		return {}
+	return {"address": address, "port": port}
 
 static func format_endpoint(address: String, port: int) -> String:
 	return "[%s]:%d" % [address, port] if address.contains(":") else "%s:%d" % [address, port]
@@ -93,7 +133,7 @@ func open_host(port: int = 7777, bind_address: String = "*", room_name: String =
 		status = "房间名称无效或端口不在 1–65535 范围内"
 		return ERR_INVALID_PARAMETER
 	var bind_ip: String = "*" if bind_address == "*" else normalize_address(bind_address)
-	if bind_ip.is_empty():
+	if bind_ip != "*" and not bind_ip.is_valid_ip_address():
 		status = "监听地址必须是 IPv4、IPv6 或 *"
 		return ERR_INVALID_PARAMETER
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
@@ -140,7 +180,7 @@ func join(address: String, port: int = 7777) -> Error:
 		return ERR_ALREADY_IN_USE
 	var target: String = normalize_address(address)
 	if target.is_empty() or not valid_port(port):
-		status = "请输入有效的 IPv4 / IPv6，端口单独填写 1–65535"
+		status = "请输入有效的 IPv4、IPv6 或域名，端口范围为 1–65535"
 		return ERR_INVALID_PARAMETER
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 	var error: Error = peer.create_client(target, port, 80)

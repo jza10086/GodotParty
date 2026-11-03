@@ -3,8 +3,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: en\n"
 
-msgid "192.168.1.10 或 2001:db8::1"
-msgstr "192.168.1.10 or 2001:db8::1"
+msgid "example.com:7777"
+msgstr "example.com:7777"
 
 msgid "1–16 字"
 msgstr "1–16 characters"
@@ -15,14 +15,14 @@ msgstr "1–24 characters"
 msgid "1–65535 · 默认 7777"
 msgstr "1–65535 · Default 7777"
 
-msgid "IP 地址"
-msgstr "IP Address"
+msgid "连接地址"
+msgstr "Server Address"
 
-msgid "IP 直连"
-msgstr "Direct IP"
+msgid "地址直连"
+msgstr "Direct Connect"
 
-msgid "IPv4 / IPv6 地址（可带方括号），端口单独填写"
-msgstr "Enter an IPv4 or IPv6 address (brackets accepted), with the port below."
+msgid "支持 IP / 域名；省略端口使用 7777，IPv6 带端口需加 []"
+msgstr "IP or hostname; default port 7777. Use [IPv6]:port for IPv6."
 
 msgid "←  返回主菜单"
 msgstr "←  Main Menu"
@@ -162,8 +162,8 @@ msgstr "Could not save language: {error}"
 msgid "请输入 1–24 字的房间名称"
 msgstr "Enter a room name of 1–24 characters"
 
-msgid "请输入有效 IPv4 / IPv6，端口请填在下方"
-msgstr "Enter a valid IPv4 or IPv6 address, with the port below"
+msgid "格式：IP:端口 / 域名:端口 / [IPv6]:端口；端口 1–65535"
+msgstr "Use IP:port, hostname:port or [IPv6]:port; port 1–65535"
 
 msgid "请选择兼容的大游戏"
 msgstr "Select a compatible main game"
@@ -180,8 +180,8 @@ msgstr "Quit"
 msgid "选择已安装的大游戏，确认后创建真实联机房间。"
 msgstr "Choose an installed main game to create an online room."
 
-msgid "通过 IP 直连加入房主 · 房间发现服务暂未开放"
-msgstr "Connect to a host by IP · Room discovery is not available yet"
+msgid "通过 IP 或域名加入房主 · 房间发现服务暂未开放"
+msgstr "Connect by IP or hostname · Room discovery is not available yet"
 
 msgid "键盘与鼠标"
 msgstr "Keyboard & Mouse"

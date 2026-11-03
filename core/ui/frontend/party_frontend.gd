@@ -31,7 +31,7 @@ const MENU_TEXT: Dictionary = {
 	"Home/Profile/Avatar/Placeholder:text": "头像",
 	"Rooms/RoomsTitle:text": "加入房间",
 	"Rooms/Back:text": "←  返回主菜单",
-	"Rooms/Direct:text": "IP 直连",
+	"Rooms/Direct:text": "地址直连",
 	"@Profile/Title:text": "玩家资料",
 	"@Profile/NameLabel:text": "玩家名称",
 	"@Profile/Cancel:text": "取消",
@@ -41,24 +41,23 @@ const MENU_TEXT: Dictionary = {
 	"@Confirm/Cancel:text": "继续留下",
 	"@Confirm/Quit:text": "确认退出",
 	"@Direct/Cancel:text": "取消",
-	"@Direct/AddressLabel:text": "IP 地址",
-	"@Direct/PortLabel:text": "端口",
+	"@Direct/AddressLabel:text": "连接地址",
 	"@Create/RoomNameLabel:text": "房间名称",
 	"@Create/RoomName:placeholder_text": "1–24 字",
 	"@Create/PortLabel:text": "监听端口 (UDP)",
 	"@Create/Port:placeholder_text": "1–65535 · 默认 7777",
 	"@Create/VisibilityLabel:text": "房间公开性",
-	"Rooms/RoomsSubtitle:text": "通过 IP 直连加入房主 · 房间发现服务暂未开放",
+	"Rooms/RoomsSubtitle:text": "通过 IP 或域名加入房主 · 房间发现服务暂未开放",
 	"Rooms/Name0:text": "房间发现暂未开放",
 	"Rooms/Info0:text": "当前没有公共房间列表；请向房主获取地址和端口。",
 	"Rooms/Join0:text": "暂不可用",
 	"Rooms/Name1:text": "上次使用的连接地址",
 	"Rooms/Join1:text": "填写 / 连接",
 	"@Create/Note:text": "选择已安装的大游戏，确认后创建真实联机房间。",
-	"@Direct/Title:text": "IP 直连",
+	"@Direct/Title:text": "地址直连",
 	"@Direct/Confirm:text": "连接房间",
-	"@Direct/Note:text": "IPv4 / IPv6 地址（可带方括号），端口单独填写",
-	"@Direct/Address:placeholder_text": "192.168.1.10 或 2001:db8::1",
+	"@Direct/Note:text": "支持 IP / 域名；省略端口使用 7777，IPv6 带端口需加 []",
+	"@Direct/Address:placeholder_text": "example.com:7777",
 	"@Profile/Note:text": "昵称保存在本机；协议形象由所选协议提供。",
 	"@Profile/Name:placeholder_text": "1–16 字",
 	"@Profile/Avatar/Placeholder:text": "形象",
@@ -95,15 +94,14 @@ func initialize() -> void:
 	_confirm.get_node("Cancel").pressed.connect(close_modal)
 	_confirm.get_node("Quit").pressed.connect(func() -> void: get_tree().quit())
 	_profile.get_node("Name").text_submitted.connect(func(_text: String) -> void: submit_profile())
-	_direct.get_node("Port").text_submitted.connect(func(_text: String) -> void: submit_direct())
+	_direct.get_node("Address").text_submitted.connect(func(_text: String) -> void: submit_direct())
 	$Rooms/Join0.disabled = true
 	for key: String in ["Room2", "Name2", "Info2", "Join2"]:
 		get_node("Rooms/" + key).hide()
 	_create.get_node("Port").text_submitted.connect(func(_text: String) -> void: submit_create())
 	_create.get_node("Visibility").clear()
 	_create.get_node("Visibility").disabled = true
-	_direct.get_node("Port").max_length = 0
-	_direct.get_node("Address").max_length = 64
+	_direct.get_node("Address").max_length = 260
 	for label: Label in [_create.get_node("Error"), _direct.get_node("Error"), $Rooms/Info1]:
 		label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		label.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -215,8 +213,7 @@ func open_modal(kind: String) -> void:
 			_create.get_node("DropdownNote").text = _t("同时监听 IPv4 / IPv6 · 请允许所填 UDP 端口通过防火墙")
 			_create.get_node("Game").grab_focus()
 		"Direct":
-			_direct.get_node("Address").text = str(app.settings.config.get_value("connection", "address", "127.0.0.1"))
-			_direct.get_node("Port").text = str(app.settings.config.get_value("connection", "port", 7777))
+			_direct.get_node("Address").text = app.connection.format_endpoint(str(app.settings.config.get_value("connection", "address", "127.0.0.1")), int(app.settings.config.get_value("connection", "port", 7777)))
 			_direct.get_node("Error").text = ""
 			_direct.get_node("Confirm").disabled = false
 			_direct.get_node("Address").grab_focus()
@@ -276,14 +273,12 @@ func submit_create() -> void:
 func submit_direct() -> void:
 	if modal_kind != "Direct" or _joining:
 		return
-	var address: String = app.connection.normalize_address(_direct.get_node("Address").text)
-	var port: int = app.connection.parse_port(_direct.get_node("Port").text)
-	if address.is_empty():
-		_direct.get_node("Error").text = _t("请输入有效 IPv4 / IPv6，端口请填在下方")
+	var endpoint: Dictionary = app.connection.parse_endpoint(_direct.get_node("Address").text)
+	if endpoint.is_empty():
+		_direct.get_node("Error").text = _t("格式：IP:端口 / 域名:端口 / [IPv6]:端口；端口 1–65535")
 		return
-	if port == 0:
-		_direct.get_node("Error").text = _t("端口请输入 1–65535 的整数")
-		return
+	var address: String = endpoint.address
+	var port: int = endpoint.port
 	var error: Error = app.join_from_ui(address, port)
 	if error != OK:
 		_direct.get_node("Error").text = app.connection.status if not app.connection.status.is_empty() else error_string(error)
@@ -395,7 +390,7 @@ func _apply_language() -> void:
 		target.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 		target.set(parts[1], _t(MENU_TEXT[binding]))
 	_create.get_node("Visibility").clear()
-	_create.get_node("Visibility").add_item(_t("IP 直连"))
+	_create.get_node("Visibility").add_item(_t("地址直连"))
 	$Home/Language.select(0 if app.catalog.i18n.locale == "zh_Hans" else 1)
 	if modal_kind == "Create":
 		_build_games()
