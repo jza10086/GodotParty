@@ -32,6 +32,8 @@ var settings: PartyInput
 var presets: RefCounted
 @onready var _screen: VBoxContainer = %GameScreen
 var _page: String = ""
+var _minimal_hud: bool = false
+var _session_controls_open: bool = false
 var _dialog: GPPartyDialog
 var _profile_apply: Button
 var _profile_name: LineEdit
@@ -652,17 +654,33 @@ func navigation_back() -> void:
 		_close_settings()
 	elif _frontend.is_visible_in_tree():
 		_frontend.navigation_back()
+	elif _page == "game" and _minimal_hud:
+		_session_controls_open = not _session_controls_open
 
 func _process(_delta: float) -> void:
+	# Content opts in through the public view group; scope removal restores the shell.
+	var minimal: bool = false
+	for scope: Dictionary in runner._scopes.values():
+		if scope.phase != "suspended" and scope.root.is_in_group(&"party_minimal_hud"):
+			minimal = true
+	if minimal != _minimal_hud:
+		_minimal_hud = minimal
+		_session_controls_open = false
+	_screen.visible = _page == "game" and not is_instance_valid(_settings_page) and not is_instance_valid(_preferences_page) and (not _minimal_hud or _session_controls_open)
+	_background.visible = _page != "game" or (_minimal_hud and _session_controls_open)
 	var focus: Control = get_viewport().gui_get_focus_owner()
 	var framework_modal: bool = get_tree().get_nodes_in_group("framework_modal").any(func(node: Node) -> bool: return node is Control and node.is_visible_in_tree())
 	var modal: bool = framework_modal or not _frontend.modal_kind.is_empty() or is_instance_valid(_settings_page) or is_instance_valid(_preferences_page) or focus is LineEdit or focus is TextEdit or (is_instance_valid(_dialog) and _dialog.visible) or (is_instance_valid(_overview) and _overview.visible)
 	if runner._lobby_api != null:
 		runner._lobby_api.input.input_blocked = modal
 	for scope: Dictionary in runner._scopes.values():
-		scope["api"].input.input_blocked = modal or scope["phase"] != "playing"
+		scope["api"].input.input_blocked = modal or (_minimal_hud and _session_controls_open) or scope["phase"] != "playing"
 
 func _unhandled_key_input(event: InputEvent) -> void:
+	if _page == "game" and _minimal_hud and event.is_action_pressed("ui_cancel"):
+		navigation_back()
+		get_viewport().set_input_as_handled()
+		return
 	if is_instance_valid(_preferences_page):
 		if event.is_action_pressed("ui_cancel"):
 			_close_preferences()
