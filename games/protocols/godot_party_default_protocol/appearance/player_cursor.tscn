@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dwmwrv5rvttwh"]
+
+[ext_resource type="Script" uid="uid://dpj0n5hdh1njj" path="res://games/protocols/godot_party_default_protocol/appearance/player_cursor.gd" id="1_e6e51"]
+
+[node name="PlayerCursor" type="Node2D" unique_id=1686254081]
+script = ExtResource("1_e6e51")

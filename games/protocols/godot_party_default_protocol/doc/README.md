@@ -149,9 +149,20 @@ Millionaire 当前仍是独立 F6 视觉原型：读取同一资料槽的协议�
 
 ## 共享玩家鼠标
 
-公开资源 `player_cursors` 为 Control 脚本。游戏创建后先 `setup(api)`，再作为实际交互区域（例如棋盘）的子节点加入；组件铺满父节点并忽略鼠标事件。清单声明 `cursors: {mode: "ordered", audience: "instance"}`。组件通过便利消息 pointer 发给主机，再经声明流广播；只接纳当前在线参赛者的消息。仅相对区域的 0–1 坐标过网，不发送屏幕像素；主机验证类型、有限数、范围、序号和发送间隔。每秒最多约 15 次发送，收到的显示数据 1.5 秒过期，断线/失焦/离开区域后隐藏。颜色取 api.get_appearance 的 color，另显示名字和高对比描边。鼠标数据只作表现，不能据此判断点击或奖励。
+公开资源 `player_cursor` 为 `appearance/player_cursor.tscn`（Node2D）：一份默认纯白的矢量箭头，尖端 `(0, 0)` 为热点。`apply_color(Color)` 为单个实例染色，使用上面的协议八色；白/深色双描边保证黑白指针在不同背景上可见，不为每种颜色复制资源。也可在 Inspector 设置 `color` 预览。
 
-协议公共偏好 `ui.player_cursors`（默认开，可被小游戏覆盖，立即生效）控制本机是否显示其他玩家鼠标；不影响发送自己位置。组件 `enabled` 则由游戏在离开交互阶段时关闭发送与显示。组件的生命周期限于本次活动，释放后信号连接自动清理。果园连线使用此组件；其他游戏可按需接入。
+公开资源 `player_cursors` 为 `player_cursors.tscn`（Control 多人指针场景）。实例化后先 `setup(api)`，再作为实际交互区域（例如棋盘）的子节点加入；场景铺满父节点并忽略鼠标事件。同一活动只挂载一份，同一坐标面上的玩家应使用相同内容布局。果园连线已接入，进入同一房间即可互相看到指针。
+
+```gdscript
+var scene: PackedScene = api.load_asset({"package_id": "godot_party_default_protocol", "resource_key": "player_cursors"}) as PackedScene
+var cursors: Control = scene.instantiate()
+cursors.setup(api)
+board_area.add_child(cursors)
+```
+
+游戏清单声明 `"streams": {"cursors": {"mode": "ordered", "audience": "instance"}}`。组件通过便利消息 `pointer` 发给主机，再经声明流广播；只接纳当前在线参赛者的消息，观战者可查看。仅相对区域的 0–1 坐标过网，不发送屏幕像素；主机验证类型、有限数、范围、序号和发送间隔。每秒最多约 20 次发送，远端平滑追随，收到的显示数据 1.5 秒过期，断线/失焦/离开区域后隐藏。颜色直接取 `api.get_appearance(id).color` 的房间分配值，另显示远端玩家名字。本机彩色指针即时跟随鼠标，在交互区域内替代系统指针；离开、禁用、关闭作用域或释放场景时恢复系统指针，不接管已捕获/隐藏的鼠标。发送失败明确报错并停止同步。鼠标数据只作表现，不能据此判断点击或奖励。
+
+协议公共偏好 `ui.player_cursors`（默认开，可被小游戏覆盖，立即生效）控制本机是否显示其他玩家鼠标；不影响本机彩色指针及发送自己位置。组件 `enabled` 则由游戏在离开交互阶段时关闭显示并发布隐藏状态。组件的生命周期限于本次活动，释放时断开消息连接并恢复系统指针。
 
 公开资源 `ranked_round` 为原版五款街机小游戏复用的 Control 基类，提供 standard 生命周期、受发送者身份与单调序号约束的逻辑行动、主机快照、一次性结果提交和基础布局；不定义玩法和奖励。游戏入口场景继承协议的 ranked_round.tscn，根节点挂载对应的子类脚本。子类通过 build_game/start_game/tick_game/handle_action/make_snapshot/render_game 实现各自玩法。state 使用可靠快照；大型星潮状态另作压缩，视觉短时外推不改变裁定。清单应声明 state（reliable/instance）及需要时的 private_view（reliable/instance）。
 
