@@ -230,3 +230,12 @@ msgstr "Round Results"
 
 msgid "game.settings_hint"
 msgstr "Test controls, inheritance and saving in Lobby → Minigame Pool → Blank Minigame → Local Settings. Sample settings do not change gameplay."
+
+msgid "game.hud_ready"
+msgstr "Waiting to start"
+
+msgid "game.hud_playing"
+msgstr "Finish when you are ready"
+
+msgid "game.hud_controls"
+msgstr "Click Finish to complete the round\nEsc: menu"

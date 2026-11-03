@@ -33,7 +33,12 @@ func _ready() -> void:
 	if api == null:
 		# F6 只预览画面；正式流程仍由大厅注入 API。
 		_content.hide()
+		%Status.text = "画面预览"
+		%Controls.text = "全幅场景 · 简要叠加 HUD"
 		return
+	%Title.text = api.i18n.text(&"空白小游戏")
+	%Status.text = api.i18n.text(&"game.hud_ready")
+	%Controls.text = api.i18n.text(&"game.hud_controls")
 	finish_button.text = api.i18n.text(&"game.finish")
 	finish_button.tooltip_text = api.i18n.text(&"game.settings_hint") + "\n" + api.i18n.text(&"game.locale", {"locale": api.i18n.effective_locale()})
 	_content.hide()
@@ -70,6 +75,7 @@ func party_start() -> void:
 
 func _begin_play() -> void:
 	phase = Phase.RUNNING
+	%Status.text = api.i18n.text(&"game.hud_playing")
 	_content.show()
 	_cursors.enabled = true
 	_cursors.show()
@@ -80,10 +86,11 @@ func _begin_play() -> void:
 	_try_settle()
 
 func _press_finish() -> void:
-	if phase != Phase.RUNNING or finish_button.disabled:
+	if phase != Phase.RUNNING or api.input.input_blocked or finish_button.disabled:
 		return
 	finish_button.disabled = true
 	finish_button.text = api.i18n.text(&"game.waiting")
+	%Status.text = api.i18n.text(&"game.waiting")
 	var error: Error = api.net.send_to_host(PRESS_TOPIC, {})
 	if error != OK:
 		api.fail("press_send_failed", error_string(error))
@@ -152,6 +159,7 @@ func _open_settlement(result: Dictionary) -> void:
 		return
 	_result = result.duplicate(true)
 	phase = Phase.SETTLING
+	$HUD.hide()
 	_cursors.enabled = false
 	_cursors.hide()
 	finish_button.disabled = true

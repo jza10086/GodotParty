@@ -230,3 +230,12 @@ msgstr "本轮结算"
 
 msgid "game.settings_hint"
 msgstr "在大厅 → 小游戏池 → 空白小游戏 → 本机设置中测试控件、继承与保存；样例设置不改变玩法。"
+
+msgid "game.hud_ready"
+msgstr "等待开局"
+
+msgid "game.hud_playing"
+msgstr "完成后点击结束"
+
+msgid "game.hud_controls"
+msgstr "点击「结束游戏」完成本轮\nEsc：菜单"
