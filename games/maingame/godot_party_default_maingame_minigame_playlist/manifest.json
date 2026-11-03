@@ -25,7 +25,8 @@
     "godot_party_default_tank_range",
     "godot_party_default_car_racing",
     "godot_party_default_flight",
-    "godot_party_default_russian_block"
+    "godot_party_default_russian_block",
+    "godot_party_default_artillery_game"
   ],
   "protocol": {
     "id": "godot_party_default_protocol",
