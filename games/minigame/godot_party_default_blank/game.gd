@@ -9,6 +9,7 @@ var request: Dictionary
 var phase: Phase = Phase.PREPARING
 var _briefing: Control
 var _settlement: Control
+var _cursors: Control
 var _result: Dictionary = {}
 var _press_order: Array[String] = []
 @onready var finish_button: Button = %Finish
@@ -26,6 +27,15 @@ func _ready() -> void:
 	finish_button.text = api.i18n.text(&"game.finish")
 	finish_button.tooltip_text = api.i18n.text(&"game.settings_hint") + "\n" + api.i18n.text(&"game.locale", {"locale": api.i18n.effective_locale()})
 	_content.hide()
+	var cursor_scene: PackedScene = api.load_asset({"package_id": api.protocol_id, "resource_key": "player_cursors"}) as PackedScene
+	if cursor_scene == null:
+		api.fail("cursors_missing", "原版协议缺少玩家鼠标场景。")
+		return
+	_cursors = cursor_scene.instantiate()
+	_cursors.setup(api)
+	_cursors.enabled = false
+	_cursors.hide()
+	add_child(_cursors)
 	var gate_script: Script = api.load_asset({"package_id": api.protocol_id, "resource_key": "briefing_gate"}) as Script
 	if gate_script == null:
 		api.fail("briefing_missing", "原版协议缺少加载场景。")
@@ -51,6 +61,8 @@ func party_start() -> void:
 func _begin_play() -> void:
 	phase = Phase.RUNNING
 	_content.show()
+	_cursors.enabled = true
+	_cursors.show()
 	for player: Dictionary in api.get_players():
 		if player.connected and player.is_local:
 			finish_button.disabled = false
@@ -130,6 +142,8 @@ func _open_settlement(result: Dictionary) -> void:
 		return
 	_result = result.duplicate(true)
 	phase = Phase.SETTLING
+	_cursors.enabled = false
+	_cursors.hide()
 	finish_button.disabled = true
 	_content.hide()
 	_settlement = gate_script.new()
@@ -147,6 +161,9 @@ func _submit_result() -> void:
 		api.fail("result_rejected", error_string(error))
 
 func party_stop(_reason: StringName) -> void:
+	if is_instance_valid(_cursors):
+		_cursors.enabled = false
+		_cursors.hide()
 	if is_instance_valid(_briefing):
 		_briefing.stop()
 	if is_instance_valid(_settlement):
