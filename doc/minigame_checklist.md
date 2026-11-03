@@ -11,7 +11,7 @@
 | 名称 | 当前人数 | 完成度 | 下一阶段目标 | 备注 |
 | --- | --- | --- | --- | --- |
 | [秘仓竞拍](../games/minigame/godot_party_default_auction_master/README.md) | 2–8 | 已接入；密封报价、私密鉴定、成交与金币排名闭环；100 件物资、7 档品质、tag 羁绊已实现。 | 人工走完多仓竞拍；审阅低价物资与高价珍品的出货、估值和羁绊平衡；检查大件布局及私密信息显示。 | 独立子仓 AuctionMaster；物资审阅表为 `doc/auction_inventory.html`；各仓羁绊独立统计。 |
-| [3d桌球](../games/minigame/godot_party_default_billiards/README.md) | 2–8 | 已接入；主机物理、九球分桌、自由球、胜败分组及排名已实现。 | 重点人工验收 3/5/7 人分桌、犯规与 9 号球重摆、跨桌观战及完整赛事；调整瞄准和力度反馈。 | 独立子仓 Billiards；采用已确认的简化九球规则，无轮盘淘汰；断线或赛事超时取消，不猜测名次。 |
+| [3d桌球](../games/minigame/godot_party_default_billiards/README.md) | 2–8 | 已接入；主机连续碰撞、滑动/滚动、高低杆与左右塞、实体袋角、九球分桌及排名已实现。 | 重点人工验收杆法与袋口手感、3/5/7 人分桌、犯规与 9 号球重摆、跨桌观战及完整赛事。 | 独立子仓 Billiards；采用已确认的简化九球规则，无轮盘淘汰；断线或赛事超时取消，不猜测名次。 |
 | [水果武士](../games/minigame/godot_party_default_fruit_samurai/README.md) | 2–8 | 已接入；各自独立切水果，实时排行榜和统一结算已实现。 | 验收切割、连击、炸弹、个人提前结束及观战榜单；完善操作反馈。 | 独立子仓 FruitSamurai；玩家互不影响；“独立玩法”不等于当前入口支持 1 人，manifest 仍为 2–8 人。 |
 | [连连看](../games/minigame/godot_party_default_matching_game/README.md) | 1–8 | 已接入；全幅透视棋盘、贴图薄棋子、轻抬选中、射线点选、空间连线、主机判分、私密提示、无解重排和玩家鼠标显示已实现。 | 人工验收多人争抢、键鼠手感与各分辨率视觉效果。 | 独立子仓 MatchingGame；单人限时清盘，多人共享棋盘；鼠标按协议玩家颜色区分，不参与得分裁定。 |
 | [云间跃行](../games/minigame/godot_party_default_platformer/README.md) | 2–8 | 已接入；默认 World 1-1、本地关卡模拟、成绩汇总与结算可用；与此前同场竞速目标仍有差距。 | 先验收现有完整关卡与分数结算；后续若启动多人改造，再实现远端角色显示、独立拾取和默认 50% 透明度，并确认竞速排名规则。 | 独立子仓 Platformer；当前按得分排名，不同步逐帧角色位置；不能视为已完成同场竞速。 |
