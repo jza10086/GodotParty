@@ -3,7 +3,15 @@
 [ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 
 
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/parts/input_surface.tscn" id="feedback"]
+
 [node name="TextEdit" type="TextEdit"]
 theme = ExtResource("theme")
 wrap_mode = 1
 custom_minimum_size = Vector2(240, 110)
+
+caret_blink = true
+caret_blink_interval = 0.53
+
+[node name="Surface" parent="." instance=ExtResource("feedback")]
+visible = false

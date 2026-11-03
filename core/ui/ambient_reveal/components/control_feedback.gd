@@ -9,19 +9,25 @@ var _enabled: bool
 var _reveal_tween: Tween
 var _press_tween: Tween
 var _hovered: bool = false
+var _enabled_focus_mode: Control.FocusMode
 
 
 func _ready() -> void:
 	add_to_group(&"ambient_feedback")
 	_pointer = _last_pointer
 	_enabled = _accepts_input()
+	_enabled_focus_mode = control.focus_mode
+	if not _enabled:
+		control.focus_mode = Control.FOCUS_NONE
 	control.draw.connect(_check_enabled)
 	visibility_changed.connect(_on_visibility_changed)
 	control.focus_entered.connect(_update_frame)
 	control.focus_exited.connect(_update_frame)
-	if control is Button or control is Slider:
-		control.mouse_entered.connect(_hover.bind(true))
-		control.mouse_exited.connect(_hover.bind(false))
+	control.mouse_entered.connect(_hover.bind(true))
+	control.mouse_exited.connect(_hover.bind(false))
+	if control is LineEdit or control is TextEdit:
+		# Text inputs draw their state directly through the theme.
+		hide()
 	var audio: Node = get_tree().get_first_node_in_group(&"ambient_menu_audio")
 	if audio != null:
 		if control is Button and not control.is_in_group(&"settings_category"):
@@ -73,10 +79,19 @@ func _accepts_input() -> bool:
 func _check_enabled() -> void:
 	var enabled: bool = _accepts_input()
 	if enabled != _enabled:
+		if enabled:
+			control.focus_mode = _enabled_focus_mode
+		else:
+			_enabled_focus_mode = control.focus_mode
+			control.focus_mode = Control.FOCUS_NONE
 		_enabled = enabled
 		refresh()
 
 func _update_frame() -> void:
+	if control is LineEdit or control is TextEdit:
+		var frame: StringName = &"FrameFocused" if _enabled and _hovered and not control.has_focus() else &"FrameAvailable"
+		control.add_theme_stylebox_override(&"normal", get_theme_stylebox(&"panel", frame))
+		return
 	if not visible:
 		return
 	var focus_active: bool = control.has_focus() and (control is Slider or not _pointer)

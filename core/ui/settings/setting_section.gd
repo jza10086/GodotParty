@@ -114,8 +114,10 @@ func _refresh() -> void:
 	%Header.focus_mode = Control.FOCUS_ALL if can_fold() else Control.FOCUS_NONE
 	%HeaderHit.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if can_fold() else Control.CURSOR_ARROW
 	_highlight_header()
-	%Title.modulate.a = 1.0 if enabled else 0.45
-	%Editor.modulate.a = 1.0 if enabled else 0.45
+	if enabled:
+		%Title.remove_theme_color_override(&"font_color")
+	else:
+		%Title.add_theme_color_override(&"font_color", get_theme_color(&"font_disabled_color", &"Button"))
 	%Summary.modulate.a = 0.6
 	%Editor.visible = _field_mode and not inherited
 	%Summary.visible = inherited and not %Summary.text.is_empty()

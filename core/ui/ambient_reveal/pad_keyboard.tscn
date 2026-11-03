@@ -31,6 +31,8 @@ text = "屏幕键盘"
 theme_type_variation = &"SectionTitle"
 
 [node name="Single" type="LineEdit" parent="Center/Panel/Layout"]
+caret_blink = true
+caret_blink_interval = 0.53
 unique_name_in_owner = true
 focus_mode = 0
 mouse_filter = 2
@@ -39,6 +41,8 @@ deselect_on_focus_loss_enabled = false
 caret_force_displayed = true
 
 [node name="Multi" type="TextEdit" parent="Center/Panel/Layout"]
+caret_blink = true
+caret_blink_interval = 0.53
 visible = false
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 96)
