@@ -1,6 +1,8 @@
 # GodotParty 4.2
 
-开发检出使用 `git clone --recurse-submodules <主仓地址>`。已有检出运行 `git submodule update --init --recursive`。在 `games/minigame/<id>/` 编辑会直接修改对应小游戏仓库。首次开发时在子模块中切到 `main` 并核对主仓锁定的版本，先向游戏仓库提交并推送，再在主仓提交该目录的版本指针。
+开发检出使用 `git clone --recurse-submodules <主仓地址>` 获取主仓记录的小游戏版本。在 `games/minigame/<id>/` 中切到小游戏自己的分支，修改、提交和推送后，重启游戏就能使用本机检出的内容。只有需要更新主仓为其他人锁定的子模块版本时，才提交版本指针。
+
+新增小游戏可以作为独立仓库直接克隆到 `games/minigame/<id>/`，包根放置 `manifest.json`。主仓忽略这些新增目录；GodotParty 启动时会发现它们。声明兼容原版协议适配器后，就会出现在小游戏轮换的候选列表。其他开发机分别检出所需小游戏，玩家安装对应的内容包。
 
 完整 Godot 4.7.stable 工程是开发、测试与调试环境。内容通过 PartyAPI 接入正式宿主；不再提供独立 SDK 工程。
 

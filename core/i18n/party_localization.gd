@@ -29,7 +29,7 @@ class Scope extends RefCounted:
 func scope(package_id: String) -> Scope:
 	return Scope.new(self, package_id)
 
-## Validate author input once at catalog registration, including resource locale and placeholders.
+## Checks the manifest declaration without loading translation resources.
 static func validate_declaration(value: Variant) -> String:
 	if not value is Dictionary:
 		return "Missing localization declaration"
@@ -47,6 +47,21 @@ static func validate_declaration(value: Variant) -> String:
 			return "Invalid translation resource path"
 	return ""
 
+## Discovery records paths only. Display loads the requested language on first use.
+func declare_package(package_id: String, declaration: Dictionary, root: String) -> void:
+	_packages[package_id] = {"declaration": declaration, "root": root, "translations": {}}
+
+func _translation(package: Dictionary, language: String) -> Translation:
+	if not package.translations.has(language):
+		var path: String = package.root.path_join(package.declaration.translations[language])
+		var resource: Resource = load(path)
+		if not resource is Translation or resource.locale != language:
+			push_error("Invalid translation/locale: " + path)
+			return null
+		package.translations[language] = resource
+	return package.translations[language]
+
+## Full translation checks are used by the core and package publishing tools.
 func register_package(package_id: String, declaration: Dictionary, root: String) -> Error:
 	last_error = validate_declaration(declaration)
 	if not last_error.is_empty():
@@ -129,17 +144,20 @@ func effective_locale(package_id: String) -> String:
 
 func has_message(package_id: String, key: StringName) -> bool:
 	var package: Dictionary = _packages[package_id]
-	var fallback: Translation = package.translations[package.declaration.fallback_locale]
-	return not fallback.get_message(key).is_empty()
+	var fallback: Translation = _translation(package, package.declaration.fallback_locale)
+	return fallback != null and not fallback.get_message(key).is_empty()
 
 ## Missing target messages use this package's declared fallback. Missing fallback is an author error.
 func text(package_id: String, key: StringName, parameters: Dictionary = {}) -> String:
 	var package: Dictionary = _packages[package_id]
-	var translation: Translation = package.translations[effective_locale(package_id)]
+	var translation: Translation = _translation(package, effective_locale(package_id))
+	if translation == null:
+		return "[MISSING " + package_id + "/" + str(key) + "]"
 	var message: String = translation.get_message(key)
 	if message.is_empty():
-		var fallback: Translation = package.translations[package.declaration.fallback_locale]
-		message = fallback.get_message(key)
+		var fallback: Translation = _translation(package, package.declaration.fallback_locale)
+		if fallback != null:
+			message = fallback.get_message(key)
 	if message.is_empty():
 		push_error("Missing localization message: " + package_id + "/" + str(key))
 		return "[MISSING " + package_id + "/" + str(key) + "]"

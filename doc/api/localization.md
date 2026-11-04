@@ -37,7 +37,7 @@ var language: String = api.i18n.effective_locale()
 
 ## 清单与设置
 
-清单 name、introduction 及 Schema 的 title、description、placeholder、suffix、disabled_reason、labels 直接作为 PO 消息键，保留字段结构，不另建 _key 别名。可以用中文源文作为键，也可以填写稳定键并在中文 PO 提供译文。目录注册时校验这些键的中文条目，交给 UI 的名称及 Schema 副本按所属包翻译。
+清单 name、introduction 及 Schema 的 title、description、placeholder、suffix、disabled_reason、labels 直接作为 PO 消息键。可以用中文源文作为键，也可以填写稳定键并在中文 PO 提供译文。首次显示时加载所用语言并缓存；发布包时检查这些键的中文条目和占位符。
 
 翻译不修改 default、values、enabled_when、字段 ID、动作名或保存值。选择控件用 labels 提供可译标签，多选开关用 items.labels，与 items.values 一一对应。继承的协议设置仍使用协议语言。昵称、聊天、预设名称及用户输入的文本偏好原样显示。
 

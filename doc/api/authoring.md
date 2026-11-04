@@ -15,7 +15,7 @@
 
 房间脚本实现 `room_setup(context)`、`room_refresh()`、`room_focus()`、`room_stop()`。setup 在入树前调用；stop 必须可重复调用。context 来自公开 `core/api/party_room_api.gd`：`get_state()` 返回房间和玩家快照，`get_game_name(id)` 读取内容名称；`ready_or_start()`、`leave()`、`show_player(peer)`、`open_settings(panel)` 和 `show_notice(message)` 调用框架服务。panel 支持 pool/main/protocol/rules/system。`activity` 为本次大厅作用域 PartyAPI，配置变更或离开时关闭；通过 `on_close` 清理语音等资源。房间代码不依赖框架前端的私有节点。
 
-主游戏可声明 `minigames: [包ID...]` 限制可选池；省略时使用全部协议兼容项，显式空数组不开放任何项。目录解析同时拒绝越界选择，不能只在界面过滤。主游戏声明的每个池开局前须至少选一项；空池可以作为可编辑草稿保留。
+小游戏轮换自动列出目录中所有适配所选协议的小游戏；新增或更新小游戏后重启即可。其他主游戏可声明 `minigames: [包ID...]` 限制可选池，省略时使用全部协议兼容项，显式空数组不开放任何项。房主勾选的项目组成实际轮换池，每个声明的池开局前须至少选一项。
 
 ## 最小玩法入口
 

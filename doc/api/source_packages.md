@@ -1,6 +1,6 @@
 # 源码与 PCK 内容包
 
-协议、主游戏与小游戏须声明 localization；PO 放在包内，随源码/PCK 一同收集。目录加载校验资源语言及中文回退，见 [本地化](localization.md)。
+启动时只枚举各分类的直接子目录并读取 manifest，按 ID 登记及分配网络通道。协议、主游戏与小游戏须声明 localization；显示文本时按需读取包内 PO，访问设置时才加载设置脚本。发布源码 ZIP 或 PCK 时检查该包的完整声明、设置与翻译。见 [本地化](localization.md)。
 
 完整开发工程保留 core/、games/、doc/、addons/；测试专用内容只放在 tmp/test/，不属于发布包。源码包位于 games/{protocols,maingame,minigame}/<id>/；形象包位于 games/protocols/<protocol_id>/avatars/<id>/，其清单声明 owner_protocol。manifest.json 是唯一作者维护的内容目录项，包 ID 全局唯一。
 

@@ -7,9 +7,12 @@ var last_error: String = ""
 var mounted: Dictionary = {}
 
 func export_source(catalog: RefCounted, id: String, output: String) -> Error:
-	var manifest: Dictionary = catalog.get_package(id)
-	if manifest.is_empty():
+	if not catalog.packages.has(id):
 		return ERR_DOES_NOT_EXIST
+	var issue: String = catalog.publication_issue(id)
+	if not issue.is_empty():
+		return _error(issue)
+	var manifest: Dictionary = catalog.packages[id]
 	var root: String = manifest["_root"]
 	var writer: ZIPPacker = ZIPPacker.new()
 	var error: Error = writer.open(output)
@@ -29,9 +32,12 @@ func export_source(catalog: RefCounted, id: String, output: String) -> Error:
 ## Exports raw scripts/scenes plus Godot-imported resources and their remaps.
 func export_pack(catalog: RefCounted, id: String, output: String) -> Error:
 	last_error = ""
-	var manifest: Dictionary = catalog.get_package(id)
-	if manifest.is_empty():
+	if not catalog.packages.has(id):
 		return ERR_DOES_NOT_EXIST
+	var issue: String = catalog.publication_issue(id)
+	if not issue.is_empty():
+		return _error(issue)
+	var manifest: Dictionary = catalog.packages[id]
 	var root: String = manifest["_root"]
 	var paths: Dictionary = {}
 	var uid_index: Dictionary = {}
@@ -162,9 +168,6 @@ func mount_directory(directory: String, choices: Dictionary = {}) -> Error:
 				return _error("UID conflict: " + uid_text)
 		if not ProjectSettings.load_resource_pack(expected.path_join("content.pck"), false):
 			return _error("Cannot mount " + expected)
-		for path: String in description.files:
-			if not FileAccess.file_exists(path):
-				return _error("Mounted file missing; restart required: " + path)
 		var manifest: Dictionary = Data.read_json(root.path_join("manifest.json"))
 		if manifest.get("id") != id or manifest.get("package_version") != description.version or manifest.get("kind") != description.kind or Paths.package_relative(manifest) != Paths.package_relative(description):
 			return _error("Mounted manifest differs from descriptor; restart required: " + id)

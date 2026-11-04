@@ -10,6 +10,9 @@
 !/data/.gdignore
 
 # Portable installation/configuration; development sources remain under games/.
+# New minigames can be independent checkouts. The blank template belongs to this repo.
+/games/minigame/*/
+!/games/minigame/godot_party_default_blank/
 /protocols/*
 !/protocols/.gdignore
 /maingame/*

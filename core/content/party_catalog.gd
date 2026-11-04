@@ -9,12 +9,14 @@ var i18n: RefCounted = Localization.new()
 const PlayerCounts = preload("res://core/config/party_player_counts.gd")
 const KINDS: Array[String] = ["maingame", "minigame", "protocols", "avatars"]
 var packages: Dictionary = {}
+var _schemas: Dictionary = {}
 var errors: Array[String] = []
 var channels: Dictionary = {}
 var channel_count: int = 3
 
 func scan() -> Error:
 	packages.clear()
+	_schemas.clear()
 	errors.clear()
 	for kind: String in ["protocols", "maingame", "minigame"]:
 		var root: String = "res://games/" + kind
@@ -36,46 +38,38 @@ func scan() -> Error:
 
 func register_manifest(path: String) -> Error:
 	var manifest: Dictionary = Data.read_json(path)
-	var issue: String = validate_manifest(manifest)
-	if not issue.is_empty():
-		errors.append(path + ": " + issue)
-		return ERR_INVALID_DATA
-	var id: String = manifest["id"]
-	if not path.get_base_dir().ends_with("games/" + Paths.package_relative(manifest)):
+	var relative: String = Paths.package_relative(manifest)
+	if relative.is_empty() or not path.get_base_dir().ends_with("games/" + relative):
 		errors.append("Package path must match its declared owner: " + path)
+		return ERR_INVALID_DATA
+	var id: String = manifest.id
+	if manifest.get("manifest_version") != 2 or manifest.get("core_api_major") != Data.API_VERSION:
+		errors.append(id + ": unsupported manifest/API")
 		return ERR_INVALID_DATA
 	if packages.has(id):
 		errors.append("DUPLICATE_PACKAGE: " + id)
 		return ERR_ALREADY_EXISTS
-	for obsolete: String in ["fields", "defaults", "input_actions"]:
-		if manifest.has(obsolete):
-			errors.append(id + ": superseded configuration declaration " + obsolete)
+	var native_count: Variant = manifest.get("native_channels", 0)
+	if not manifest.get("streams", {}) is Dictionary or not native_count is int or native_count < 0 or native_count > 80:
+		errors.append(id + ": invalid channel declaration")
+		return ERR_INVALID_DATA
+	if manifest.kind == "protocols" and not manifest.get("config_directories") is Dictionary:
+		errors.append(id + ": missing config_directories")
+		return ERR_INVALID_DATA
+	if manifest.kind != "avatars":
+		var issue: String = Localization.validate_declaration(manifest.get("localization"))
+		if not issue.is_empty():
+			errors.append(id + ": " + issue)
 			return ERR_INVALID_DATA
-	var configuration: Dictionary = Schema.empty()
-	if manifest.has("config_schema"):
-		var declaration: Resource = load(path.get_base_dir().path_join(manifest.config_schema))
-		if not declaration is Script or not declaration.has_method("schema"):
-			errors.append(id + ": config_schema must name a script exposing static schema()")
-			return ERR_INVALID_DATA
-		configuration = declaration.schema()
-	var schema_issue: String = Schema.validate(configuration, manifest.kind)
-	if schema_issue.is_empty():
-		schema_issue = PlayerCounts.validate_fields(manifest, configuration)
-	if not schema_issue.is_empty():
-		errors.append(id + ": " + schema_issue)
-		return ERR_INVALID_DATA
-	if manifest.kind != "avatars" and i18n.register_package(id, manifest.localization, path.get_base_dir()) != OK:
-		errors.append(i18n.last_error)
-		return ERR_INVALID_DATA
-	if manifest.kind != "avatars" and i18n.validate_messages(id, manifest, configuration) != OK:
-		errors.append(i18n.last_error)
-		return ERR_INVALID_DATA
-	manifest["_schema"] = configuration
+		i18n.declare_package(id, manifest.localization, path.get_base_dir())
 	manifest["_root"] = path.get_base_dir()
 	packages[id] = manifest
 	return OK
 
 func validate_manifest(manifest: Dictionary) -> String:
+	for obsolete: String in ["fields", "defaults", "input_actions"]:
+		if manifest.has(obsolete):
+			return "Superseded configuration declaration: " + obsolete
 	if manifest.get("manifest_version") != 2 or manifest.get("core_api_major") != Data.API_VERSION:
 		return "Unsupported manifest/API; only current format is accepted"
 	if not manifest.get("id") is String or not Data.identifier(manifest["id"]):
@@ -178,7 +172,7 @@ func get_package(id: String) -> Dictionary:
 	var result: Dictionary = packages.get(id, {}).duplicate(true)
 	if not result.is_empty() and result.kind != "avatars":
 		for key: String in ["name", "introduction"]:
-			if result.has(key) and not result[key].is_empty():
+			if result.get(key) is String and not result[key].is_empty():
 				result[key] = i18n.text(id, result[key])
 	return result
 
@@ -201,28 +195,37 @@ func load_entry(id: String) -> Resource:
 
 func protocol_matches(reference: Dictionary) -> bool:
 	var manifest: Dictionary = packages.get(reference.get("id", ""), {})
-	var contract: Dictionary = manifest.get("contract", {})
-	return manifest.get("kind") == "protocols" and contract.get("api_major") == reference.get("api_major") and int(contract.get("api_minor", -1)) >= int(reference.get("min_api_minor", 0))
+	var contract: Variant = manifest.get("contract")
+	return manifest.get("kind") == "protocols" and contract is Dictionary and contract.get("api_major") == reference.get("api_major") and int(contract.get("api_minor", -1)) >= int(reference.get("min_api_minor", 0))
 
 func adapter(mini: String, protocol_id: String) -> Dictionary:
-	for item: Dictionary in packages.get(mini, {}).get("adapters", []):
-		if item.get("protocol", {}).get("id") == protocol_id and protocol_matches(item["protocol"]):
+	var manifest: Dictionary = packages.get(mini, {})
+	if manifest.get("kind") != "minigame" or manifest.get("playable", true) != true or not manifest.get("adapters") is Array:
+		return {}
+	for item: Variant in manifest.adapters:
+		if item is Dictionary and _protocol_reference(item.get("protocol")) and item.protocol.id == protocol_id and protocol_matches(item.protocol):
 			return item.duplicate(true)
 	return {}
 
 func compatible_minis(main_id: String) -> Array[String]:
 	var result: Array[String] = []
-	var protocol_id: String = packages.get(main_id, {}).get("protocol", {}).get("id", "")
+	var main: Dictionary = packages.get(main_id, {})
+	if not _protocol_reference(main.get("protocol")) or not main.get("minigames", []) is Array:
+		return result
 	for id: String in ids("minigame"):
-		var allowed: Array = packages[main_id].get("minigames", [])
-		if (not packages[main_id].has("minigames") or id in allowed) and not adapter(id, protocol_id).is_empty():
+		if not _pool_adapter(main, id).is_empty():
 			result.append(id)
 	return result
+
+func _pool_adapter(main: Dictionary, id: String) -> Dictionary:
+	if main.has("minigames") and id not in main.minigames:
+		return {}
+	return adapter(id, main.protocol.id)
 
 ## Resolves only the selected adapter dependencies, never all advertised protocols.
 func resolve(main_id: String, pools: Dictionary, appearances: Array = []) -> Dictionary:
 	var main: Dictionary = packages.get(main_id, {})
-	if main.get("kind") != "maingame" or not protocol_matches(main.get("protocol", {})):
+	if main.get("kind") != "maingame" or not _protocol_reference(main.get("protocol")) or not protocol_matches(main.protocol):
 		return Data.failure("PROTOCOL_NOT_SUPPORTED", "Main game protocol is unavailable")
 	var selected: Dictionary = {}
 	var visiting: Dictionary = {}
@@ -236,11 +239,11 @@ func resolve(main_id: String, pools: Dictionary, appearances: Array = []) -> Dic
 		if name not in main.get("pools", []) or not pools[name] is Array:
 			return Data.failure("INVALID_POOL", name)
 		for id: Variant in pools[name]:
-			if not id is String or id not in compatible_minis(main_id):
+			if not id is String:
 				return Data.failure("INVALID_POOL", name)
-			var chosen: Dictionary = adapter(id, main["protocol"]["id"])
+			var chosen: Dictionary = _pool_adapter(main, id)
 			if chosen.is_empty():
-				return Data.failure("PROTOCOL_NOT_SUPPORTED", id)
+				return Data.failure("INVALID_POOL", name)
 			error = _visit(id, selected, visiting)
 			if error.is_empty():
 				error = _dependencies(chosen.get("dependencies", {}), selected, visiting)
@@ -267,6 +270,9 @@ func _visit(id: String, selected: Dictionary, visiting: Dictionary) -> String:
 		return "Missing package: " + id
 	visiting[id] = true
 	var manifest: Dictionary = packages[id]
+	var issue: String = _prepare_schema(id)
+	if not issue.is_empty():
+		return issue
 	var required: Array = manifest.get("resources", {}).values()
 	if manifest.has("entry"):
 		required.append(manifest["entry"])
@@ -307,10 +313,48 @@ func asset(ref: Dictionary, active: Dictionary) -> Resource:
 	var relative: String = packages.get(id, {}).get("resources", {}).get(key, "")
 	return load(path(id, relative)) if not relative.is_empty() else null
 
+## A schema is shared by its consumers and loaded once, when settings are first needed.
+func _prepare_schema(id: String) -> String:
+	var manifest: Dictionary = packages[id]
+	if _schemas.has(id):
+		return ""
+	var manifest_issue: String = validate_manifest(manifest)
+	if not manifest_issue.is_empty():
+		return id + ": " + manifest_issue
+	var configuration: Dictionary = Schema.empty()
+	if manifest.has("config_schema"):
+		var declaration: Resource = load(path(id, manifest.config_schema))
+		if not declaration is Script or not declaration.has_method("schema"):
+			return id + ": config_schema must name a script exposing static schema()"
+		configuration = declaration.schema()
+	var schema_issue: String = Schema.validate(configuration, manifest.kind)
+	if schema_issue.is_empty():
+		schema_issue = PlayerCounts.validate_fields(manifest, configuration)
+	if not schema_issue.is_empty():
+		return id + ": " + schema_issue
+	_schemas[id] = configuration
+	return ""
+
+## Publishing checks the full declaration, schema and translations for the requested package.
+func publication_issue(id: String) -> String:
+	var manifest: Dictionary = packages[id]
+	var issue: String = _prepare_schema(id)
+	if not issue.is_empty() or manifest.kind == "avatars":
+		return issue
+	if i18n.register_package(id, manifest.localization, manifest._root) != OK:
+		return i18n.last_error
+	if i18n.validate_messages(id, manifest, _schemas[id]) != OK:
+		return i18n.last_error
+	return ""
+
 func schema(id: String) -> Dictionary:
 	if not packages.has(id):
 		return Schema.empty()
-	return i18n.localize_schema(id, packages[id]._schema)
+	var issue: String = _prepare_schema(id)
+	if not issue.is_empty():
+		push_error(issue)
+		return {}
+	return i18n.localize_schema(id, _schemas[id])
 
 func fields(id: String, audience: String = "room") -> Array:
 	return Schema.fields(schema(id), audience)
@@ -319,7 +363,12 @@ func defaults(id: String) -> Dictionary:
 	return Schema.defaults(schema(id), "room")
 
 func validate_settings(id: String, value: Dictionary) -> Dictionary:
-	var report: Dictionary = Schema.values(schema(id), value, "room")
+	if not packages.has(id):
+		return Data.failure("PACKAGE_MISSING", id)
+	var issue: String = _prepare_schema(id)
+	if not issue.is_empty():
+		return Data.failure("INVALID_SCHEMA", issue)
+	var report: Dictionary = Schema.values(_schemas[id], value, "room")
 	if not report.ok:
 		return report
 	var manifest: Dictionary = packages.get(id, {})
@@ -360,7 +409,11 @@ func _validate_config_directories() -> void:
 	for kind: String in ["maingame", "minigame"]:
 		var used: Dictionary = {}
 		for id: String in ids("protocols"):
-			var directory: String = packages[id].config_directories[kind].to_lower()
+			var value: Variant = packages[id].config_directories.get(kind)
+			if not Paths.folder(value):
+				errors.append(id + ": invalid config_directories." + kind)
+				continue
+			var directory: String = value.to_lower()
 			if used.has(directory):
 				errors.append("Protocol config directory collision: " + id + " / " + used[directory])
 			used[directory] = id

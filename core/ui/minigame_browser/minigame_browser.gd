@@ -38,9 +38,8 @@ func configure(owner_app: Node, room: Dictionary, can_edit: bool) -> void:
 	main_id = draft.main
 	editable = can_edit
 	ids = app.catalog.compatible_minis(main_id)
-	for id: String in ids:
-		var value: Dictionary = draft.children.get(id, app.catalog.defaults(id))
-		draft.children[id] = value.duplicate(true)
+	for id: String in draft.children:
+		var value: Dictionary = draft.children[id]
 		preset_labels[id] = "默认预设"
 		if value != app.catalog.defaults(id):
 			temporary[id] = value.duplicate(true)
@@ -298,7 +297,7 @@ func open_advanced() -> void:
 	advanced_dialog.ok_button_text = "应用到草稿"
 	advanced_dialog.dialog_hide_on_ok = false
 	app.get_node("%DialogHost").add_child(advanced_dialog)
-	var panel: Control = app._panel(id, draft.children[id], editable)
+	var panel: Control = app._panel(id, draft.children[id] if draft.children.has(id) else app.catalog.defaults(id), editable)
 	advanced_dialog.content.get_node("FormSlot").add_child(panel)
 	var protocol: String = app.catalog.get_package(draft.main).protocol.id
 	var state: Dictionary = {"common": draft.common_overrides.get(id, {}).duplicate(true)}
@@ -360,4 +359,3 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.ctrl_pressed and event.keycode in [KEY_A, KEY_I]:
 		highlight_all(event.keycode == KEY_I)
 		get_viewport().set_input_as_handled()
-
