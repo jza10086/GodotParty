@@ -82,3 +82,7 @@
 	path = games/minigame/godot_party_default_card_game
 	url = git@github.com:jza10086/GodotCardGame.git
 	branch = main
+[submodule "games/minigame/godot_party_default_3d_chess"]
+	path = games/minigame/godot_party_default_3d_chess
+	url = git@github.com:jza10086/3DChess.git
+	branch = main
