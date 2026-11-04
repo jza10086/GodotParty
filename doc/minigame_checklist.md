@@ -27,7 +27,7 @@
 | [山脊竞速](../games/minigame/godot_party_default_car_racing/README.md) | 1 | 单人玩法已接入；三圈完赛计时、框架结算及个人纪录已实现。 | 验收检查点顺序、圈数、偏离赛道与重置；检查车辆操控和相机。 | 独立子仓 CarRacing；未实现多车联网比赛。 |
 | [COASTLINE · 海岸飞行](../games/minigame/godot_party_default_flight/README.md) | 1 | 单人玩法已接入；成功或坠毁可提交飞行结果与航标数量。 | 验收完整航线、航标穿越、坠毁终止与返回轮换；调整飞行控制和状态提示。 | 独立子仓 FlightGame；当前结算展示结果和经过航标数，未定义多人对抗规则。 |
 | [圆角俄罗斯方块](../games/minigame/godot_party_default_russian_block/README.md) | 1 | 经典单人模式已接入；结束后提交得分、消行数及个人纪录。 | 验收旋转、落块、消行、堆顶结束和长局稳定性；整理难度与输入说明。 | 独立子仓 RussianBlock；原型的其他模式未作为正式框架玩法开放。 |
-| [海战棋](../games/minigame/godot_party_default_battleship_chess/README.md) | 1–8 | 已接入；单人交替操作两队测试，多人随机均分两队、队长秘密布阵、轮流按票数权重抽签轰炸及队伍排名。 | 跨机器联机、布阵操作及投票节奏待人工验收。 | 独立子仓 BattleshipChess；主机过滤舰位，断线移除选票，整队退出判负。 |
+| [海战棋](../games/minigame/godot_party_default_battleship_chess/README.md) | 1–8 | 已接入；单人交替操作两队测试，多人随机均分两队、舰船随机均分给队员各自布阵、轮流按票数权重抽签轰炸及队伍排名。 | 跨机器联机、布阵操作及投票节奏待人工验收。 | 独立子仓 BattleshipChess；主机过滤舰位，断线移除选票，整队退出判负。 |
 | [火炮大战](../games/minigame/godot_party_default_artillery_game/README.md) | 1–8，团队仅偶数 | 混战、团队对抗、单人试射；主机权威弹道与地形、八类弹药。 | 跨机器联机与手感平衡待人工验收。 | ArtilleryGame；单人测试须在房间规则选择。 |
 
 ## 已登记、尚未开放的游戏
