@@ -249,8 +249,8 @@ msgstr "Open 3D gallery"
 msgid "game.channel"
 msgstr "2D Channel"
 
-msgid "game.beacon"
-msgstr "Beacon"
+msgid "game.beacon_status"
+msgstr "Beacon  {current} / {total}"
 
 msgid "game.next_beacon"
 msgstr "Next beacon"

@@ -249,8 +249,8 @@ msgstr "查看 3D 展台"
 msgid "game.channel"
 msgstr "2D 航道"
 
-msgid "game.beacon"
-msgstr "航标"
+msgid "game.beacon_status"
+msgstr "航标  {current} / {total}"
 
 msgid "game.next_beacon"
 msgstr "前往下一航标"
