@@ -1,65 +1,124 @@
 [gd_scene format=3]
 
-[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="r1"]
-[ext_resource type="Script" path="res://games/protocols/godot_party_default_protocol/ranked_round.gd" id="r2"]
-[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="r3"]
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[ext_resource type="Script" path="res://games/protocols/godot_party_default_protocol/ranked_round.gd" id="script"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="background"]
 
-[node name="RankedRound" type="Control"]
-script = ExtResource("r2")
+[sub_resource type="StyleBoxFlat" id="DrawerStyle"]
+bg_color = Color(0.04, 0.08, 0.12, 0.94)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+content_margin_left = 18.0
+content_margin_right = 18.0
+content_margin_top = 16.0
+content_margin_bottom = 16.0
+
+[node name="RankedRound" type="Control" groups=["party_minimal_hud"]]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = ExtResource("r1")
+mouse_filter = 2
+theme = ExtResource("theme")
+script = ExtResource("script")
 
-[node name="Background" parent="." instance=ExtResource("r3")]
+[node name="GameCanvas" type="CanvasLayer" parent="."]
+layer = -4
 
+[node name="Background" parent="GameCanvas" instance=ExtResource("background")]
 
-[node name="Layout" parent="." type="VBoxContainer"]
+[node name="Stage" type="Control" parent="GameCanvas"]
+unique_name_in_owner = true
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="OverlayHUD" type="CanvasLayer" parent="."]
+layer = -2
+
+[node name="Standard" type="Control" parent="OverlayHUD"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme = ExtResource("theme")
+
+[node name="Counters" type="VBoxContainer" parent="OverlayHUD/Standard"]
+anchor_right = 1.0
 offset_left = 28.0
-offset_top = 28.0
-offset_right = -28.0
-offset_bottom = -28.0
-theme_override_constants/separation = 16
+offset_top = 24.0
+offset_right = -460.0
+mouse_filter = 2
 
-[node name="Heading" parent="Layout" type="Label"]
+[node name="Heading" type="Label" parent="OverlayHUD/Standard/Counters"]
 unique_name_in_owner = true
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.957, 0.945, 0.91, 1)
+theme_override_colors/font_outline_color = Color(0.071, 0.145, 0.176, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 26
+autowrap_mode = 3
 text = "游戏"
+
+[node name="Status" type="Label" parent="OverlayHUD/Standard/Counters"]
+unique_name_in_owner = true
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.957, 0.945, 0.91, 1)
+theme_override_colors/font_outline_color = Color(0.071, 0.145, 0.176, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 22
 autowrap_mode = 3
-theme_override_font_sizes/font_size = 34
+text = "剩余 01:30"
 
-[node name="Status" parent="Layout" type="Label"]
+[node name="Footer" type="Label" parent="OverlayHUD/Standard"]
 unique_name_in_owner = true
-text = "等待所有玩家就绪"
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -850.0
+offset_top = -82.0
+offset_right = -28.0
+offset_bottom = -24.0
+horizontal_alignment = 2
+vertical_alignment = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.957, 0.945, 0.91, 1)
+theme_override_colors/font_outline_color = Color(0.071, 0.145, 0.176, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 22
 autowrap_mode = 3
+text = "Esc：菜单"
 
-[node name="Body" parent="Layout" type="HBoxContainer"]
-unique_name_in_owner = true
-theme_override_constants/separation = 24
-size_flags_vertical = 3
+[node name="Details" type="PanelContainer" parent="OverlayHUD/Standard"]
+visible = false
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -420.0
+offset_right = -28.0
+offset_top = 86.0
+offset_bottom = 850.0
+theme_override_styles/panel = SubResource("DrawerStyle")
 
-[node name="Stage" parent="Layout/Body" type="Control"]
-unique_name_in_owner = true
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="SidebarScroll" parent="Layout/Body" type="ScrollContainer"]
-custom_minimum_size = Vector2(360,0)
+[node name="SidebarScroll" type="ScrollContainer" parent="OverlayHUD/Standard/Details"]
 horizontal_scroll_mode = 0
 
-[node name="Sidebar" parent="Layout/Body/SidebarScroll" type="VBoxContainer"]
+[node name="Sidebar" type="VBoxContainer" parent="OverlayHUD/Standard/Details/SidebarScroll"]
 unique_name_in_owner = true
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(330,0)
 theme_override_constants/separation = 14
 
-[node name="Standings" parent="Layout/Body/SidebarScroll/Sidebar" type="Label"]
+[node name="Standings" type="VBoxContainer" parent="OverlayHUD/Standard/Details/SidebarScroll/Sidebar"]
 unique_name_in_owner = true
-text = ""
-autowrap_mode = 3
+mouse_filter = 2
 
-[node name="Footer" parent="Layout" type="Label"]
-unique_name_in_owner = true
-text = ""
-autowrap_mode = 3
-theme_override_font_sizes/font_size = 20
+[node name="ToggleDetails" type="Button" parent="OverlayHUD/Standard"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -210.0
+offset_right = -28.0
+offset_top = 24.0
+offset_bottom = 72.0
+toggle_mode = true
+text = "操作 / 排名"
+
+[connection signal="toggled" from="OverlayHUD/Standard/ToggleDetails" to="OverlayHUD/Standard/Details" method="set_visible"]

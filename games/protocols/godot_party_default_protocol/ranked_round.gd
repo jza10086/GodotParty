@@ -16,12 +16,13 @@ var received_sequence: int = -1
 var action_sequences: Dictionary = {}
 var disconnected: Dictionary = {}
 var view: Dictionary = {}
-@onready var body: HBoxContainer = %Body
 @onready var stage: Control = %Stage
 @onready var sidebar: VBoxContainer = %Sidebar
 @onready var heading: Label = %Heading
 @onready var status: Label = %Status
-@onready var standings: Label = %Standings
+const StandingRow: PackedScene = preload("res://games/protocols/godot_party_default_protocol/standing_row.tscn")
+var _rows: Dictionary[String, Label] = {}
+@onready var standings: VBoxContainer = %Standings
 @onready var footer: Label = %Footer
 
 func party_setup(value: PartyAPI, config: Dictionary) -> void:
@@ -42,96 +43,21 @@ func _ready() -> void:
 	if request.get("mode") != "standard":
 		api.fail("unsupported_mode", "只支持普通局")
 		return
+	status.text = "等待所有玩家就绪"
 	build_game()
 	pages = Pages.new()
 	var ready_error: Error = pages.prepare(self, api, request, _start_gameplay)
 	if ready_error != OK:
 		api.fail("load_failed", error_string(ready_error))
 
-## Full-viewport playfield with edge HUD; detailed controls never resize the game.
-## Call from games that use the standard heading/status/sidebar contract.
-func compose_fullscreen_hud() -> void:
-	add_to_group(&"party_minimal_hud")
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	stage.reparent(self)
-	stage.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	stage.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	move_child(stage, 1)
-	var hud: Control = Control.new()
-	hud.name = "OverlayHUD"
-	hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(hud)
-	var counters: VBoxContainer = VBoxContainer.new()
-	counters.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hud.add_child(counters)
-	counters.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	counters.offset_left = 28
-	counters.offset_top = 24
-	counters.offset_right = -460
-	heading.reparent(counters)
-	status.reparent(counters)
-	for caption: Label in [heading, status, footer]:
-		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		caption.add_theme_color_override("font_color", Color("f4f1e8"))
-		caption.add_theme_color_override("font_outline_color", Color("12252d"))
-		caption.add_theme_constant_override("outline_size", 5)
-		caption.add_theme_font_size_override("font_size", 22)
-	heading.add_theme_font_size_override("font_size", 26)
-	footer.reparent(hud)
-	footer.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
-	footer.offset_left = -850
-	footer.offset_top = -82
-	footer.offset_right = -28
-	footer.offset_bottom = -24
-	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	footer.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	footer.text += "\nEsc：菜单"
-	var drawer: PanelContainer = PanelContainer.new()
-	drawer.name = "Details"
-	hud.add_child(drawer)
-	drawer.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	drawer.offset_left = -420
-	drawer.offset_right = -28
-	drawer.offset_top = 86
-	drawer.offset_bottom = 850
-	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.08, 0.12, 0.94)
-	style.set_corner_radius_all(12)
-	style.content_margin_left = 18
-	style.content_margin_right = 18
-	style.content_margin_top = 16
-	style.content_margin_bottom = 16
-	drawer.add_theme_stylebox_override("panel", style)
-	var scroll: ScrollContainer = sidebar.get_parent() as ScrollContainer
-	scroll.reparent(drawer)
-	scroll.custom_minimum_size.x = 0
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	sidebar.custom_minimum_size.x = 0
-	var toggle: Button = button(hud, "操作 / 排名", func() -> void: drawer.visible = not drawer.visible)
-	toggle.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	toggle.offset_left = -210
-	toggle.offset_right = -28
-	toggle.offset_top = 24
-	toggle.offset_bottom = 72
-	drawer.hide()
-	$Layout.hide()
-
-func label(parent: Node, text: String, font_size: int = 24) -> Label:
-	var result: Label = preload("res://core/ui/ambient_reveal/components/display/label.tscn").instantiate()
-	result.text = text
-	result.add_theme_font_size_override("font_size", font_size)
-	result.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	parent.add_child(result)
-	return result
-
-func button(parent: Node, text: String, callback: Callable) -> Button:
-	var result: Button = preload("res://core/ui/ambient_reveal/components/button.tscn").instantiate()
-	result.text = text
-	result.custom_minimum_size.y = 48
-	result.pressed.connect(callback)
-	parent.add_child(result)
-	return result
+## Entries keep the round roster order, including withdrawn players.
+func update_standing(player_id: String, caption: String) -> void:
+	if not _rows.has(player_id):
+		var row: Label = StandingRow.instantiate()
+		standings.add_child(row)
+		_rows[player_id] = row
+	if _rows[player_id].text != caption:
+		_rows[player_id].text = caption
 
 func player_name(id: String) -> String:
 	for player: Dictionary in players:

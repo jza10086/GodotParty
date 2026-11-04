@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[node name="StandingRow" type="Label"]
+autowrap_mode = 3
+mouse_filter = 2
+text = "小林　1,250 分"
