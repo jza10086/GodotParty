@@ -238,4 +238,4 @@ msgid "game.hud_playing"
 msgstr "Finish when you are ready"
 
 msgid "game.hud_controls"
-msgstr "Click Finish to complete the round\nEsc: menu"
+msgstr "Wheel: zoom · Middle drag: orbit · Shift + middle drag: pan\nClick Finish to complete the round\nEsc: menu"

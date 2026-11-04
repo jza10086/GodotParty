@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bcs4splw5sk0o"]
 
 [ext_resource type="Script" uid="uid://o0v51sikeypt" path="res://games/minigame/godot_party_default_blank/graphics_lab.gd" id="1_p4e3l"]
+[ext_resource type="Script" uid="uid://mbphnwtn250q" path="res://games/minigame/godot_party_default_blank/orbit_camera.gd" id="2_p0ujp"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_p0ujp"]
 sky_top_color = Color(0.14, 0.24, 0.4, 1)
@@ -317,17 +318,18 @@ environment = SubResource("Environment_1mijf")
 
 [node name="Camera" type="Camera3D" parent="Render/Stage" unique_id=1991545558]
 unique_name_in_owner = true
-transform = Transform3D(0.9135455, -0.19095129, 0.3591271, 0, 0.88294756, 0.4694716, -0.4067366, -0.42888367, 0.8066128, 7.900797, 11.328375, 17.745481)
+transform = Transform3D(0.9135455, -0.19095127, 0.3591271, 0, 0.8829475, 0.4694716, -0.4067366, -0.42888364, 0.8066128, 7.900797, 11.328375, 17.745481)
 attributes = SubResource("CameraAttributesPractical_taibb")
 current = true
 fov = 48.0
 size = 18.0
 near = 0.1
 far = 200.0
+script = ExtResource("2_p0ujp")
 
 [node name="Sun" type="DirectionalLight3D" parent="Render/Stage" unique_id=1274415402]
 unique_name_in_owner = true
-transform = Transform3D(0.88294756, 0.3488854, -0.3141378, 0, 0.66913056, 0.74314487, 0.46947157, -0.656158, 0.5908072, 0, 0, 0)
+transform = Transform3D(0.8829475, 0.3488854, -0.3141378, 0, 0.66913056, 0.74314487, 0.46947154, -0.656158, 0.5908072, 0, 0, 0)
 light_color = Color(1, 0.92, 0.8, 1)
 light_energy = 1.2
 light_angular_distance = 0.5

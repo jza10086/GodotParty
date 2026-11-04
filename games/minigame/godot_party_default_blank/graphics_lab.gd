@@ -4,6 +4,10 @@ extends SubViewportContainer
 ## 只修改自己的视口与场景；不写项目设置、RenderingServer 全局质量或用户偏好。
 ## 环境与材质使用原生 Resource Inspector，保留完整参数而不重复一套字段。
 
+const OrbitCamera = preload("res://games/minigame/godot_party_default_blank/orbit_camera.gd")
+var camera_input_allowed: Callable
+var _camera_pose_dirty: bool = true
+
 @export_group("Rendering / 清晰度")
 ## MSAA 几何边缘抗锯齿；与 TAA 可叠加。
 @export_enum("关闭:0", "2×:1", "4×:2", "8×:3") var msaa: int = Viewport.MSAA_4X:
@@ -76,6 +80,7 @@ extends SubViewportContainer
 @export_enum("透视:0", "正交:1") var projection: int = Camera3D.PROJECTION_PERSPECTIVE:
 	set(value):
 		projection = value
+		_camera_pose_dirty = true
 		_queue_apply()
 ## 透视垂直视角。
 @export_range(20.0, 100.0, 1.0) var fov: float = 48.0:
@@ -86,26 +91,31 @@ extends SubViewportContainer
 @export_range(2.0, 40.0, 0.1) var orthographic_size: float = 18.0:
 	set(value):
 		orthographic_size = value
+		_camera_pose_dirty = true
 		_queue_apply()
 ## 相机围绕此点观察。
 @export var camera_target: Vector3 = Vector3(0.0, 1.0, 0.0):
 	set(value):
 		camera_target = value
+		_camera_pose_dirty = true
 		_queue_apply()
 ## 相机到观察点的距离。
 @export_range(3.0, 50.0, 0.1) var camera_distance: float = 22.0:
 	set(value):
 		camera_distance = value
+		_camera_pose_dirty = true
 		_queue_apply()
 ## 相机水平方位角。
 @export_range(-180.0, 180.0, 1.0) var camera_yaw: float = 24.0:
 	set(value):
 		camera_yaw = value
+		_camera_pose_dirty = true
 		_queue_apply()
 ## 相机俯角。
 @export_range(5.0, 85.0, 1.0) var camera_pitch: float = 28.0:
 	set(value):
 		camera_pitch = value
+		_camera_pose_dirty = true
 		_queue_apply()
 ## 近裁剪距离。
 @export_range(0.01, 2.0, 0.01) var camera_near: float = 0.1:
@@ -268,7 +278,7 @@ var _render: SubViewport:
 var _world: WorldEnvironment:
 	get:
 		return %World
-var _camera: Camera3D:
+var _camera: OrbitCamera:
 	get:
 		return %Camera
 var _sun: DirectionalLight3D:
@@ -293,7 +303,18 @@ func _ready() -> void:
 			push_error("GraphicsLab requires environment, camera attributes, sample and floor materials.")
 		set_process(false)
 		return
+	if not Engine.is_editor_hint():
+		mouse_filter = Control.MOUSE_FILTER_PASS
+		_camera.input_allowed = camera_input_allowed
+		# The calibration meshes have no gameplay physics. Their surfaces are pickable only in play.
+		for sample: Node in _sample.get_parent().get_children():
+			if sample is MeshInstance3D:
+				sample.create_trimesh_collision()
 	_apply_settings()
+
+func _gui_input(event: InputEvent) -> void:
+	if not Engine.is_editor_hint() and _camera.handle_input(event):
+		accept_event()
 
 ## 多个 Inspector setter 合并为一次应用；入树前的序列化由 _ready 统一应用。
 func _queue_apply() -> void:
@@ -323,13 +344,12 @@ func _apply_settings() -> void:
 	_camera.attributes = camera_attributes
 	_camera.projection = projection as Camera3D.ProjectionType
 	_camera.fov = fov
-	_camera.size = orthographic_size
 	_camera.near = camera_near
 	_camera.far = camera_far
-	var yaw: float = deg_to_rad(camera_yaw)
-	var pitch: float = deg_to_rad(camera_pitch)
-	_camera.position = camera_target + Vector3(sin(yaw) * cos(pitch), sin(pitch), cos(yaw) * cos(pitch)) * camera_distance
-	_camera.look_at(camera_target)
+	if _camera_pose_dirty:
+		_camera_pose_dirty = false
+		_camera.size = orthographic_size
+		_camera.set_orbit(camera_target, camera_distance, camera_yaw, camera_pitch)
 	_sun.light_color = sun_color
 	_sun.light_energy = sun_energy
 	_sun.rotation_degrees = sun_rotation
