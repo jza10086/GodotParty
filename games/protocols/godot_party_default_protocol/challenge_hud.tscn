@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[node name="ChallengeHUD" type="CanvasLayer"]
+layer = -1
+
+[node name="Status" type="VBoxContainer" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -430.0
+offset_right = -28.0
+offset_top = 125.0
+mouse_filter = 2
+
+[node name="RoundClock" type="Label" parent="Status"]
+text = "剩余 90 秒"
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+mouse_filter = 2
+
+[node name="RankingsToggle" type="Button" parent="Status"]
+text = "本轮排名"
+toggle_mode = true
+size_flags_horizontal = 8
+
+[node name="Rankings" type="VBoxContainer" parent="Status"]
+visible = false
+mouse_filter = 2
+
+[node name="MenuHint" type="Label" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_right = -28.0
+offset_top = -60.0
+offset_bottom = -28.0
+horizontal_alignment = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_outline_color = Color(0.063, 0.145, 0.196, 1)
+theme_override_constants/outline_size = 6
+text = "Esc：菜单"
+
+[connection signal="toggled" from="Status/RankingsToggle" to="Status/Rankings" method="set_visible"]
