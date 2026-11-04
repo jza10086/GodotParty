@@ -24,6 +24,7 @@ func party_setup(context: PartyAPI, config: Dictionary) -> void:
 	participant = api.get_players()[0].player_id
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if api == null:
 		push_error("请从小游戏轮换启动本局。")
 		return
