@@ -1,9 +1,8 @@
-@tool
 extends Control
 ## Self-contained example: load, confirm, play, present the local result, then finish once.
 ## Core readiness stays technical; the parent receives only the final standard result.
 ## 同一场景在编辑器、F6 画面预览与正式联机中实例化；调校资源在 graphics_lab.tscn 中编辑。
-const GraphicsLab: PackedScene = preload("res://games/minigame/godot_party_default_blank/graphics_lab.tscn")
+const NavigationDemo = preload("res://games/minigame/godot_party_default_blank/navigation_2d.gd")
 const GraphicsLabView = preload("res://games/minigame/godot_party_default_blank/graphics_lab.gd")
 enum Phase { PREPARING, RUNNING, SETTLING, SUBMITTED, STOPPED }
 const PRESS_TOPIC: StringName = &"blank/press"
@@ -17,7 +16,13 @@ var _cursors: Control
 var _result: Dictionary = {}
 var _press_order: Array[String] = []
 @onready var finish_button: Button = %Finish
-@onready var _content: CenterContainer = $Content
+@onready var _content: CenterContainer = $GameHUD/Content
+@onready var _graphics: GraphicsLabView = %GraphicsLab
+@onready var _navigation: NavigationDemo = %Navigation2D
+@onready var _game_hud: CanvasLayer = $GameHUD
+@onready var _details_3d: Control = $GameHUD/HUD
+@onready var _switch: Button = %SwitchView
+@onready var _pages: Control = %ProtocolPages
 
 func party_setup(value: PartyAPI, config: Dictionary) -> void:
 	api = value
@@ -25,19 +30,20 @@ func party_setup(value: PartyAPI, config: Dictionary) -> void:
 	api.net.message_received.connect(_message)
 
 func _ready() -> void:
-	var graphics: GraphicsLabView = GraphicsLab.instantiate()
-	graphics.camera_input_allowed = _camera_input_allowed
-	graphics.name = "GraphicsLab"
-	add_child(graphics)
-	move_child(graphics, 0)
-	if Engine.is_editor_hint():
-		return
+	_graphics.orbit_camera.input_allowed = _camera_input_allowed
+	_navigation.input_allowed = _controls_allowed
+	# Keep both sample HUDs below the framework's session menu on canvas 0.
+	_navigation.hud.layer = -3
+	_switch.pressed.connect(_switch_view)
+	_game_hud.visible = api == null
 	if api == null:
 		# F6 只预览画面；正式流程仍由大厅注入 API。
 		_content.hide()
 		%Status.text = "画面预览"
 		%Controls.text = "滚轮缩放 · 中键拖动旋转\nShift＋中键平移"
 		return
+	_navigation.localize(api.i18n)
+	_switch.text = api.i18n.text(&"game.show_2d")
 	%Title.text = api.i18n.text(&"空白小游戏")
 	%Status.text = api.i18n.text(&"game.hud_ready")
 	%Controls.text = api.i18n.text(&"game.hud_controls")
@@ -52,7 +58,7 @@ func _ready() -> void:
 	_cursors.setup(api)
 	_cursors.enabled = false
 	_cursors.hide()
-	add_child(_cursors)
+	_pages.add_child(_cursors)
 	var gate_script: Script = api.load_asset({"package_id": api.protocol_id, "resource_key": "briefing_gate"}) as Script
 	if gate_script == null:
 		api.fail("briefing_missing", "原版协议缺少加载场景。")
@@ -62,7 +68,7 @@ func _ready() -> void:
 	content["controls"] = [{"binding": api.i18n.text(&"game.mouse"), "description": api.i18n.text(&"game.controls")}]
 	_briefing.configure(api, content)
 	_briefing.play_requested.connect(_begin_play)
-	add_child(_briefing)
+	_pages.add_child(_briefing)
 	await get_tree().process_frame
 	if not api.is_open():
 		return
@@ -72,7 +78,22 @@ func _ready() -> void:
 	if error != OK:
 		api.fail("load_failed", error_string(error))
 
+func _switch_view() -> void:
+	if not _controls_allowed():
+		return
+	var show_2d: bool = not _navigation.visible
+	_navigation.visible = show_2d
+	_graphics.visible = not show_2d
+	_details_3d.visible = not show_2d
+	if api == null:
+		_switch.text = "查看 3D 展台" if show_2d else "查看 2D 航道"
+	else:
+		_switch.text = api.i18n.text(&"game.show_3d" if show_2d else &"game.show_2d")
+
 func _camera_input_allowed() -> bool:
+	return _graphics.visible and _controls_allowed()
+
+func _controls_allowed() -> bool:
 	return api == null or (phase == Phase.RUNNING and not api.input.input_blocked)
 
 func party_start() -> void:
@@ -80,6 +101,7 @@ func party_start() -> void:
 
 func _begin_play() -> void:
 	phase = Phase.RUNNING
+	_game_hud.show()
 	%Status.text = api.i18n.text(&"game.hud_playing")
 	_content.show()
 	_cursors.enabled = true
@@ -164,7 +186,8 @@ func _open_settlement(result: Dictionary) -> void:
 		return
 	_result = result.duplicate(true)
 	phase = Phase.SETTLING
-	$HUD.hide()
+	_game_hud.hide()
+	_navigation.hud.hide()
 	_cursors.enabled = false
 	_cursors.hide()
 	finish_button.disabled = true
@@ -172,7 +195,7 @@ func _open_settlement(result: Dictionary) -> void:
 	_settlement = gate_script.new()
 	_settlement.configure(api, {"title": api.i18n.text(&"game.results"), "rows": _result.rankings}, request.request_id)
 	_settlement.continued.connect(_submit_result)
-	add_child(_settlement)
+	_pages.add_child(_settlement)
 
 ## Every client mounted the result and the host's delay elapsed; only now submit once.
 func _submit_result() -> void:

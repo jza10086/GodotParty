@@ -239,3 +239,18 @@ msgstr "完成后点击结束"
 
 msgid "game.hud_controls"
 msgstr "滚轮缩放 · 中键拖动旋转 · Shift＋中键平移\n点击「结束游戏」完成本轮\nEsc：菜单"
+
+msgid "game.show_2d"
+msgstr "查看 2D 航道"
+
+msgid "game.show_3d"
+msgstr "查看 3D 展台"
+
+msgid "game.channel"
+msgstr "2D 航道"
+
+msgid "game.beacon"
+msgstr "航标"
+
+msgid "game.next_beacon"
+msgstr "前往下一航标"

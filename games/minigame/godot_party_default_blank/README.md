@@ -7,7 +7,7 @@ API 4 / manifest 2 / 配置 Schema 3；1–8 人；只实现原版协议 standar
 
 从正常主菜单创建兼容主游戏，加入小游戏池并启动。主游戏若声明 minigames 白名单，须加入本包 ID。
 在「小游戏轮换」里单选「空白小游戏」，总局数设为 1，即可检查按钮名次与本轮结算。
-单独 F6 预览全幅 3D 展台和 HUD 样式，状态显示「画面预览」，隐藏结束按钮，不创建 PartyAPI 或启动联机流程。视觉检查使用 1920×1080。
+打开 `game.tscn` 按 F6，默认显示 3D 展台。右上角按钮可切换 2D 航道和 3D 展台，对局中也可本机切换。单独运行 `navigation_2d.tscn` 可预览 2D 样例，点击「前往下一航标」让船沿航线移动。F6 隐藏结束按钮。视觉检查使用 1920×1080。
 
 ## 3D 画面调校
 
@@ -15,9 +15,9 @@ API 4 / manifest 2 / 配置 Schema 3；1–8 人；只实现原版协议 standar
 
 在 F6 预览或正式对局中，滚轮绕画面中心缩放，按住中键左右拖动调整方位，上下拖动调整俯仰。Shift＋中键沿地面平移，可以把另一件样品移到画面中央。开始旋转或缩放时，相机取中心射线命中的表面作为支点，移动的物体会带着支点一起移动。射线落空时保留原支点。
 
-移植到其他 3D 小游戏时，只需将本目录的 `orbit_camera.gd` 挂到活动的 `Camera3D`。入树后调用 `set_orbit(世界中心, 距离, 方位角, 俯角)` 设置构图，在玩法的 `_unhandled_input` 或视口容器的 `_gui_input` 中将事件传给 `camera.handle_input(event)`，返回 `true` 时消费事件。给 `camera.input_allowed` 传入判断当前阶段与菜单状态的 Callable。中心拾取使用 `focus_mask` 对应的物理碰撞层，已有碰撞体可以直接使用。调用 `camera.focus_on(unit)` 锁定单位原点，或传第二个 `Vector3` 指定单位局部位置，平移会解除锁定。透视相机改变距离，正交相机改变视野尺寸。
+移植到其他 3D 小游戏时，只需将本目录的 `orbit_camera.gd` 挂到活动的 `Camera3D`。入树后调用 `set_orbit(世界中心, 距离, 方位角, 俯角)` 设置构图，在玩法的 `_unhandled_input` 中将事件传给 `camera.handle_input(event)`，返回 `true` 时消费事件。给 `camera.input_allowed` 传入判断当前阶段与菜单状态的 Callable。中心拾取使用 `focus_mask` 对应的物理碰撞层，已有碰撞体可以直接使用。调用 `camera.focus_on(unit)` 锁定单位原点，或传第二个 `Vector3` 指定单位局部位置，平移会解除锁定。透视相机改变距离，正交相机改变视野尺寸。
 
-打开 `graphics_lab.tscn`，选中根节点 GraphicsLab，在 Inspector 调整导出项。使用 **2D 工作区中的视口画面** 对照 F6；3D 工作区的自由观察相机不作为最终效果预览。保存场景后重新 F6 或从大厅进入空白小游戏，使用相同资源、相机与参数。正式游戏的结束按钮位于底部。
+打开 `graphics_lab.tscn`，选中根节点 GraphicsLab，在 Inspector 调整导出项。在 **3D 工作区**直接编辑模型、环境和相机，按 F6 查看游戏相机构图。保存场景后重新 F6 或从大厅进入空白小游戏，使用相同资源、相机与参数。正式游戏的结束按钮位于底部。
 
 展台是本包常驻内容，包含两排金属/非金属粗糙度球、透明球、可旋转材质样品、发光块、悬空与接触阴影块、台阶、细杆及远处背景墙。默认关闭运动，方便对照静帧；开启 Animate Sample 后观察运动边缘与时间抗锯齿。
 
@@ -28,7 +28,7 @@ API 4 / manifest 2 / 配置 Schema 3；1–8 人；只实现原版协议 standar
 - **Local Lights**：点光/聚光开关、颜色、能量、范围、聚光角、阴影开关、局部阴影图尺寸及深度精度。场景内的灯光节点还保留其余原生参数。
 - **Samples**：展开中心样品与地面的完整 StandardMaterial3D，可调材质颜色、金属、粗糙度、透明、发光、纹理与采样；另有运动开关、速度和初始角。
 
-展台通过 `@tool` 在编辑器运行，使用独立 SubViewport/World3D，资源按场景实例隔离。编辑器与运行时共用同一应用方法；不会修改项目设置、外层视口、用户偏好或网络数据。为让导出参数成为唯一来源，本调校展台不登记协议画质接管；协议的画质档位不会覆盖这些值。其他游戏仍沿用原有协议画质实现。
+展台是直接挂在入口场景中的 Node3D，使用活动视口渲染。运行时临时应用 Inspector 画质，出树时恢复原视口设置。编辑器中的 @tool 只更新场景物体与资源。HUD 和协议页面由 CanvasLayer 分层显示。
 
 方向阴影图分辨率、全局阴影过滤和 SSAO 采样质量沿用项目基准，本场景不修改 RenderingServer 的全局值。各效果仍受实际渲染器支持限制；FSR2 自带时间抗锯齿，普通 TAA 不额外生效。基础几何没有导入 LOD，调整 LOD 阈值需配合另行放入的带 LOD 模型；烘焙光照和 VoxelGI 仍需相应场景节点与烘焙数据。不同输出分辨率及时间效果收敛阶段不承诺逐像素一致。
 
@@ -37,7 +37,7 @@ API 4 / manifest 2 / 配置 Schema 3；1–8 人；只实现原版协议 standar
 1. 将本目录复制到 games/minigame/<新包ID>/，修改 manifest 的 id、name、introduction 和 package_version。
 2. 更新 game.tscn 中的脚本路径；复制场景或脚本时不要沿用原包 UID，让编辑器为新资源生成独立 UID。
 3. party_setup 在入树前执行；挂载协议加载场景，初始化后 mark_ready。party_start 仅通知技术屏障完成，等协议 play_requested 后启动玩法。party_stop 清理两个页面及消息。
-4. 在 game.tscn 中编辑 HUD 与 Content：HUD 提供贴边标题、状态和提示，Content 保留主要操作。玩法场景始终铺满根节点，不放入 HUD 的容器中。保留根节点 party_minimal_hud 组与 Esc 提示，所有输入遵守 api.input.input_blocked。若不需要画面调校展台，移除 game.gd 中的 GraphicsLab 实例化，换成自己的全幅场景。
+4. 在 `game.tscn` 场景树中替换 GraphicsLab 或 Navigation2D 实例。在 GameHUD 编辑公共 HUD 和结束按钮，在 `navigation_2d.tscn` 的 DemoHUD 编辑二维操作。固定内容保存在场景文件中，脚本负责状态、交互与确实依赖运行数据的实例。
 5. 配置只在 settings.gd 的 schema() 中声明；本包包含用于检查配置 UI 的样例字段。复制为实际游戏时移除样例，仅保留玩法确实消费的配置。房间规则使用 api.get_settings()，setup 的 config 是协议请求。
 6. 实现自己的结束条件与本轮分数。此模板由房主冻结并广播候选，所有客户端挂载结算场景，自动回执后倒计时3秒；只有房主在 continued 时调用 finish 一次。返回 OK 是候选已接受，正式提交由父游戏观察。
 7. 需要网络时显式声明流并验证外部消息；需要其他协议或 resource 模式时实现其适配与业务语义，再声明兼容。

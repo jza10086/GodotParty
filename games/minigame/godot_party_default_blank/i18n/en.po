@@ -239,3 +239,18 @@ msgstr "Finish when you are ready"
 
 msgid "game.hud_controls"
 msgstr "Wheel: zoom · Middle drag: orbit · Shift + middle drag: pan\nClick Finish to complete the round\nEsc: menu"
+
+msgid "game.show_2d"
+msgstr "Open 2D channel"
+
+msgid "game.show_3d"
+msgstr "Open 3D gallery"
+
+msgid "game.channel"
+msgstr "2D Channel"
+
+msgid "game.beacon"
+msgstr "Beacon"
+
+msgid "game.next_beacon"
+msgstr "Next beacon"

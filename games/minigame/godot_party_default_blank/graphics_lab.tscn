@@ -285,14 +285,7 @@ roughness = 0.18
 [sub_resource type="BoxMesh" id="BoxMesh_kixfc"]
 size = Vector3(0.055, 2.4, 0.055)
 
-[node name="GraphicsLab" type="SubViewportContainer" unique_id=1783061643]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-stretch = true
+[node name="GraphicsLab" type="Node3D" unique_id=1783061643]
 script = ExtResource("1_p4e3l")
 environment = SubResource("Environment_1mijf")
 camera_attributes = SubResource("CameraAttributesPractical_taibb")
@@ -303,25 +296,11 @@ camera_pitch = 55.0
 sample_material = SubResource("StandardMaterial3D_ns3te")
 floor_material = SubResource("StandardMaterial3D_n6ahp")
 
-[node name="Render" type="SubViewport" parent="." unique_id=415846260]
-unique_name_in_owner = true
-own_world_3d = true
-handle_input_locally = false
-msaa_3d = 2
-use_debanding = true
-anisotropic_filtering_level = 3
-gui_disable_input = true
-positional_shadow_atlas_size = 4096
-size = Vector2i(1920, 1080)
-render_target_update_mode = 4
-
-[node name="Stage" type="Node3D" parent="Render" unique_id=321256101]
-
-[node name="World" type="WorldEnvironment" parent="Render/Stage" unique_id=1630728093]
+[node name="World" type="WorldEnvironment" parent="." unique_id=1630728093]
 unique_name_in_owner = true
 environment = SubResource("Environment_1mijf")
 
-[node name="Camera" type="Camera3D" parent="Render/Stage" unique_id=1991545558]
+[node name="Camera" type="Camera3D" parent="." unique_id=1991545558]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.5735764, 0.81915206, 0, -0.819152, 0.57357645, 21.5, 41.757603, 28.678822)
 attributes = SubResource("CameraAttributesPractical_taibb")
@@ -332,7 +311,7 @@ near = 0.1
 far = 200.0
 script = ExtResource("2_p0ujp")
 
-[node name="Sun" type="DirectionalLight3D" parent="Render/Stage" unique_id=1274415402]
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1274415402]
 unique_name_in_owner = true
 transform = Transform3D(0.8829475, 0.3488854, -0.3141378, 0, 0.66913056, 0.74314487, 0.46947154, -0.656158, 0.5908072, 0, 0, 0)
 light_color = Color(1, 0.92, 0.8, 1)
@@ -344,7 +323,7 @@ shadow_normal_bias = 1.0
 directional_shadow_blend_splits = true
 directional_shadow_max_distance = 60.0
 
-[node name="Omni" type="OmniLight3D" parent="Render/Stage" unique_id=141193348]
+[node name="Omni" type="OmniLight3D" parent="." unique_id=141193348]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 3, 2)
 light_color = Color(0.25, 0.55, 1, 1)
@@ -352,7 +331,7 @@ light_energy = 3.0
 shadow_enabled = true
 omni_range = 8.0
 
-[node name="Spot" type="SpotLight3D" parent="Render/Stage" unique_id=1656252786]
+[node name="Spot" type="SpotLight3D" parent="." unique_id=1656252786]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.42261824, 0.9063078, 0, -0.9063078, 0.42261824, 5, 5, 2)
 light_color = Color(1, 0.35, 0.12, 1)
@@ -361,161 +340,161 @@ shadow_enabled = true
 spot_range = 12.0
 spot_angle = 38.0
 
-[node name="Samples" type="Node3D" parent="Render/Stage" unique_id=1391625298]
+[node name="Samples" type="Node3D" parent="." unique_id=1391625298]
 
-[node name="Floor" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=261914765]
+[node name="Floor" type="MeshInstance3D" parent="Samples" unique_id=261914765]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
 material_override = SubResource("StandardMaterial3D_n6ahp")
 mesh = SubResource("BoxMesh_e17mf")
 
-[node name="MaterialSample" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=1347858058]
+[node name="MaterialSample" type="MeshInstance3D" parent="Samples" unique_id=1347858058]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 2)
 material_override = SubResource("StandardMaterial3D_ns3te")
 mesh = SubResource("TorusMesh_p4e3l")
 
-[node name="Sphere00" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=2041821798]
+[node name="Sphere00" type="MeshInstance3D" parent="Samples" unique_id=2041821798]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 0.9, -3.5)
 material_override = SubResource("StandardMaterial3D_qbpyj")
 mesh = SubResource("SphereMesh_k67lw")
 
-[node name="Sphere01" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=881443189]
+[node name="Sphere01" type="MeshInstance3D" parent="Samples" unique_id=881443189]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0.9, -3.5)
 material_override = SubResource("StandardMaterial3D_prtjf")
 mesh = SubResource("SphereMesh_2yg5m")
 
-[node name="Sphere02" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=614889182]
+[node name="Sphere02" type="MeshInstance3D" parent="Samples" unique_id=614889182]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -3.5)
 material_override = SubResource("StandardMaterial3D_hv88j")
 mesh = SubResource("SphereMesh_id4s4")
 
-[node name="Sphere03" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=1260728692]
+[node name="Sphere03" type="MeshInstance3D" parent="Samples" unique_id=1260728692]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.9, -3.5)
 material_override = SubResource("StandardMaterial3D_gqvwk")
 mesh = SubResource("SphereMesh_uu2yg")
 
-[node name="Sphere04" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=962494434]
+[node name="Sphere04" type="MeshInstance3D" parent="Samples" unique_id=962494434]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 0.9, -3.5)
 material_override = SubResource("StandardMaterial3D_7xix4")
 mesh = SubResource("SphereMesh_bps30")
 
-[node name="Sphere10" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=370169493]
+[node name="Sphere10" type="MeshInstance3D" parent="Samples" unique_id=370169493]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 0.9, -6)
 material_override = SubResource("StandardMaterial3D_51wpc")
 mesh = SubResource("SphereMesh_aj1fn")
 
-[node name="Sphere11" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=2038155937]
+[node name="Sphere11" type="MeshInstance3D" parent="Samples" unique_id=2038155937]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0.9, -6)
 material_override = SubResource("StandardMaterial3D_pqiwc")
 mesh = SubResource("SphereMesh_8md53")
 
-[node name="Sphere12" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=378392481]
+[node name="Sphere12" type="MeshInstance3D" parent="Samples" unique_id=378392481]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -6)
 material_override = SubResource("StandardMaterial3D_f0aae")
 mesh = SubResource("SphereMesh_vip8a")
 
-[node name="Sphere13" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=878476075]
+[node name="Sphere13" type="MeshInstance3D" parent="Samples" unique_id=878476075]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.9, -6)
 material_override = SubResource("StandardMaterial3D_ue84f")
 mesh = SubResource("SphereMesh_kris8")
 
-[node name="Sphere14" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=374424784]
+[node name="Sphere14" type="MeshInstance3D" parent="Samples" unique_id=374424784]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 0.9, -6)
 material_override = SubResource("StandardMaterial3D_xctqo")
 mesh = SubResource("SphereMesh_ntc5k")
 
-[node name="Backdrop" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=902734115]
+[node name="Backdrop" type="MeshInstance3D" parent="Samples" unique_id=902734115]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -9)
 material_override = SubResource("StandardMaterial3D_bdvri")
 mesh = SubResource("BoxMesh_elc7y")
 
-[node name="Glass" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=2120411050]
+[node name="Glass" type="MeshInstance3D" parent="Samples" unique_id=2120411050]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 1.2, 2.2)
 material_override = SubResource("StandardMaterial3D_8n0jv")
 mesh = SubResource("SphereMesh_gpmns")
 
-[node name="Glow" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=2137819149]
+[node name="Glow" type="MeshInstance3D" parent="Samples" unique_id=2137819149]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3, 1.2, 2.2)
 material_override = SubResource("StandardMaterial3D_fis24")
 mesh = SubResource("BoxMesh_coi68")
 
-[node name="ContactBlock" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=1733039505]
+[node name="ContactBlock" type="MeshInstance3D" parent="Samples" unique_id=1733039505]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.5, 0)
 material_override = SubResource("StandardMaterial3D_w17s6")
 mesh = SubResource("BoxMesh_rjo5g")
 
-[node name="RaisedBlock" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=859692267]
+[node name="RaisedBlock" type="MeshInstance3D" parent="Samples" unique_id=859692267]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 2, 0)
 material_override = SubResource("StandardMaterial3D_rwify")
 mesh = SubResource("BoxMesh_oadif")
 
-[node name="Step0" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=1665408122]
+[node name="Step0" type="MeshInstance3D" parent="Samples" unique_id=1665408122]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.15, 1)
 material_override = SubResource("StandardMaterial3D_4u437")
 mesh = SubResource("BoxMesh_613tg")
 
-[node name="Step1" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=855404207]
+[node name="Step1" type="MeshInstance3D" parent="Samples" unique_id=855404207]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.3, 0.2)
 material_override = SubResource("StandardMaterial3D_w56fj")
 mesh = SubResource("BoxMesh_dv73d")
 
-[node name="Step2" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=2106503893]
+[node name="Step2" type="MeshInstance3D" parent="Samples" unique_id=2106503893]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.45, -0.6)
 material_override = SubResource("StandardMaterial3D_asogy")
 mesh = SubResource("BoxMesh_r40rt")
 
-[node name="Step3" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=1873364819]
+[node name="Step3" type="MeshInstance3D" parent="Samples" unique_id=1873364819]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.6, -1.4)
 material_override = SubResource("StandardMaterial3D_l7bem")
 mesh = SubResource("BoxMesh_sn7c7")
 
-[node name="Step4" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=2016635994]
+[node name="Step4" type="MeshInstance3D" parent="Samples" unique_id=2016635994]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.75, -2.2)
 material_override = SubResource("StandardMaterial3D_xcobu")
 mesh = SubResource("BoxMesh_olx72")
 
-[node name="ThinBar0" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=1782305618]
+[node name="ThinBar0" type="MeshInstance3D" parent="Samples" unique_id=1782305618]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 1.2, 5.2)
 material_override = SubResource("StandardMaterial3D_f1amj")
 mesh = SubResource("BoxMesh_gqt21")
 
-[node name="ThinBar1" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=1191070572]
+[node name="ThinBar1" type="MeshInstance3D" parent="Samples" unique_id=1191070572]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.2, 5.2)
 material_override = SubResource("StandardMaterial3D_lgucf")
 mesh = SubResource("BoxMesh_45dpi")
 
-[node name="ThinBar2" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=963004352]
+[node name="ThinBar2" type="MeshInstance3D" parent="Samples" unique_id=963004352]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.2, 5.2)
 material_override = SubResource("StandardMaterial3D_vwrue")
 mesh = SubResource("BoxMesh_yc03v")
 
-[node name="ThinBar3" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=321707757]
+[node name="ThinBar3" type="MeshInstance3D" parent="Samples" unique_id=321707757]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 1.2, 5.2)
 material_override = SubResource("StandardMaterial3D_xx6yx")
 mesh = SubResource("BoxMesh_vprf0")
 
-[node name="ThinBar4" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=899569766]
+[node name="ThinBar4" type="MeshInstance3D" parent="Samples" unique_id=899569766]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 1.2, 5.2)
 material_override = SubResource("StandardMaterial3D_6pxe7")
 mesh = SubResource("BoxMesh_lnrje")
 
-[node name="ThinBar5" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=1200812625]
+[node name="ThinBar5" type="MeshInstance3D" parent="Samples" unique_id=1200812625]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.2, 5.2)
 material_override = SubResource("StandardMaterial3D_nmc2s")
 mesh = SubResource("BoxMesh_n1pn7")
 
-[node name="ThinBar6" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=1665485993]
+[node name="ThinBar6" type="MeshInstance3D" parent="Samples" unique_id=1665485993]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.2, 5.2)
 material_override = SubResource("StandardMaterial3D_u4m4c")
 mesh = SubResource("BoxMesh_ifvsr")
 
-[node name="ThinBar7" type="MeshInstance3D" parent="Render/Stage/Samples" unique_id=1457193992]
+[node name="ThinBar7" type="MeshInstance3D" parent="Samples" unique_id=1457193992]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 1.2, 5.2)
 material_override = SubResource("StandardMaterial3D_4l2n6")
 mesh = SubResource("BoxMesh_kixfc")
 
-[node name="Title" type="Label3D" parent="Render/Stage/Samples" unique_id=338390543]
+[node name="Title" type="Label3D" parent="Samples" unique_id=338390543]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -8.7)
 pixel_size = 0.014
 modulate = Color(0.85, 0.91, 1, 1)
@@ -523,7 +502,7 @@ text = "3D GRAPHICS LAB"
 font_size = 42
 outline_size = 4
 
-[node name="MetalLabel" type="Label3D" parent="Render/Stage/Samples" unique_id=440332259]
+[node name="MetalLabel" type="Label3D" parent="Samples" unique_id=440332259]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, -6)
 pixel_size = 0.007
 billboard = 1
@@ -532,7 +511,7 @@ text = "METAL  /  ROUGHNESS  0.08 — 0.96"
 font_size = 42
 outline_size = 4
 
-[node name="MatteLabel" type="Label3D" parent="Render/Stage/Samples" unique_id=809870000]
+[node name="MatteLabel" type="Label3D" parent="Samples" unique_id=809870000]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, -3.5)
 pixel_size = 0.007
 billboard = 1
@@ -541,7 +520,7 @@ text = "DIELECTRIC  /  ROUGHNESS"
 font_size = 42
 outline_size = 4
 
-[node name="GlassLabel" type="Label3D" parent="Render/Stage/Samples" unique_id=1605394691]
+[node name="GlassLabel" type="Label3D" parent="Samples" unique_id=1605394691]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 2.8, 2.2)
 pixel_size = 0.007
 billboard = 1
@@ -550,7 +529,7 @@ text = "TRANSPARENCY"
 font_size = 42
 outline_size = 4
 
-[node name="SampleLabel" type="Label3D" parent="Render/Stage/Samples" unique_id=700616440]
+[node name="SampleLabel" type="Label3D" parent="Samples" unique_id=700616440]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 2)
 pixel_size = 0.007
 billboard = 1
@@ -559,7 +538,7 @@ text = "MATERIAL / MOTION"
 font_size = 42
 outline_size = 4
 
-[node name="GlowLabel" type="Label3D" parent="Render/Stage/Samples" unique_id=1386550219]
+[node name="GlowLabel" type="Label3D" parent="Samples" unique_id=1386550219]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3, 2.8, 2.2)
 pixel_size = 0.007
 billboard = 1
@@ -568,7 +547,7 @@ text = "EMISSION / GLOW"
 font_size = 42
 outline_size = 4
 
-[node name="BarsLabel" type="Label3D" parent="Render/Stage/Samples" unique_id=1093473044]
+[node name="BarsLabel" type="Label3D" parent="Samples" unique_id=1093473044]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 6.1)
 pixel_size = 0.007
 billboard = 1
@@ -577,5 +556,5 @@ text = "FINE EDGES / SHADOWS"
 font_size = 42
 outline_size = 4
 
-[node name="BuildingDisplay" type="Node3D" parent="Render/Stage/Samples" unique_id=1378671061 instance=ExtResource("3_o8aa1")]
+[node name="BuildingDisplay" type="Node3D" parent="Samples" unique_id=1378671061 instance=ExtResource("3_o8aa1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32.5, 0, 0)

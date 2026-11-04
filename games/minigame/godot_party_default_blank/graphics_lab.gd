@@ -1,11 +1,11 @@
 @tool
-extends SubViewportContainer
-## 空白小游戏的常驻画面调校展台。编辑器与实机使用同一独立视口、相机和资源。
-## 只修改自己的视口与场景；不写项目设置、RenderingServer 全局质量或用户偏好。
-## 环境与材质使用原生 Resource Inspector，保留完整参数而不重复一套字段。
-
+extends Node3D
+## 直接渲染到当前 3D 世界。运行时临时应用展台画质，退出时还原视口。
+## 编辑器只更新本场景资源，不修改编辑器视口。
 const OrbitCamera = preload("res://games/minigame/godot_party_default_blank/orbit_camera.gd")
-var camera_input_allowed: Callable
+@onready var orbit_camera: OrbitCamera = %Camera
+var _saved_viewport: Dictionary[StringName, Variant] = {}
+@onready var _viewport: Viewport = get_viewport()
 var _camera_pose_dirty: bool = true
 
 @export_group("Rendering / 清晰度")
@@ -272,15 +272,9 @@ var _camera_pose_dirty: bool = true
 		_queue_apply()
 
 var _apply_queued: bool = false
-var _render: SubViewport:
-	get:
-		return %Render
 var _world: WorldEnvironment:
 	get:
 		return %World
-var _camera: OrbitCamera:
-	get:
-		return %Camera
 var _sun: DirectionalLight3D:
 	get:
 		return %Sun
@@ -304,16 +298,19 @@ func _ready() -> void:
 		set_process(false)
 		return
 	if not Engine.is_editor_hint():
-		mouse_filter = Control.MOUSE_FILTER_PASS
-		_camera.input_allowed = camera_input_allowed
 		# The calibration meshes have no gameplay physics. Their surfaces are pickable only in play.
 		for sample: MeshInstance3D in _sample.get_parent().find_children("*", "MeshInstance3D", true, false):
 			sample.create_trimesh_collision()
 	_apply_settings()
 
-func _gui_input(event: InputEvent) -> void:
-	if not Engine.is_editor_hint() and _camera.handle_input(event):
-		accept_event()
+func _unhandled_input(event: InputEvent) -> void:
+	if not Engine.is_editor_hint() and is_visible_in_tree() and orbit_camera.handle_input(event):
+		get_viewport().set_input_as_handled()
+
+func _exit_tree() -> void:
+	for property: StringName in _saved_viewport:
+		_viewport.set(property, _saved_viewport[property])
+	_saved_viewport.clear()
 
 ## 多个 Inspector setter 合并为一次应用；入树前的序列化由 _ready 统一应用。
 func _queue_apply() -> void:
@@ -326,29 +323,30 @@ func _apply_settings() -> void:
 	_apply_queued = false
 	if not is_inside_tree():
 		return
-	_render.msaa_3d = msaa as Viewport.MSAA
-	_render.use_taa = taa
-	_render.screen_space_aa = screen_space_aa as Viewport.ScreenSpaceAA
-	_render.scaling_3d_mode = scaling_mode as Viewport.Scaling3DMode
-	_render.scaling_3d_scale = render_scale
-	_render.fsr_sharpness = fsr_sharpness
-	_render.use_debanding = debanding
-	_render.anisotropic_filtering_level = anisotropic_filtering as Viewport.AnisotropicFiltering
-	_render.texture_mipmap_bias = mipmap_bias
-	_render.mesh_lod_threshold = lod_threshold
-	_render.debug_draw = debug_draw
-	_render.positional_shadow_atlas_size = positional_shadow_size
-	_render.positional_shadow_atlas_16_bits = positional_shadow_16_bits
+	if not Engine.is_editor_hint():
+		var quality: Dictionary[StringName, Variant] = {
+			&"msaa_3d": msaa, &"use_taa": taa, &"screen_space_aa": screen_space_aa,
+			&"scaling_3d_mode": scaling_mode, &"scaling_3d_scale": render_scale,
+			&"fsr_sharpness": fsr_sharpness, &"use_debanding": debanding,
+			&"anisotropic_filtering_level": anisotropic_filtering, &"texture_mipmap_bias": mipmap_bias,
+			&"mesh_lod_threshold": lod_threshold, &"debug_draw": debug_draw,
+			&"positional_shadow_atlas_size": positional_shadow_size,
+			&"positional_shadow_atlas_16_bits": positional_shadow_16_bits,
+		}
+		for property: StringName in quality:
+			if not _saved_viewport.has(property):
+				_saved_viewport[property] = _viewport.get(property)
+			_viewport.set(property, quality[property])
 	_world.environment = environment
-	_camera.attributes = camera_attributes
-	_camera.projection = projection as Camera3D.ProjectionType
-	_camera.fov = fov
-	_camera.near = camera_near
-	_camera.far = camera_far
+	orbit_camera.attributes = camera_attributes
+	orbit_camera.projection = projection as Camera3D.ProjectionType
+	orbit_camera.fov = fov
+	orbit_camera.near = camera_near
+	orbit_camera.far = camera_far
 	if _camera_pose_dirty:
 		_camera_pose_dirty = false
-		_camera.size = orthographic_size
-		_camera.set_orbit(camera_target, camera_distance, camera_yaw, camera_pitch)
+		orbit_camera.size = orthographic_size
+		orbit_camera.set_orbit(camera_target, camera_distance, camera_yaw, camera_pitch)
 	_sun.light_color = sun_color
 	_sun.light_energy = sun_energy
 	_sun.rotation_degrees = sun_rotation
