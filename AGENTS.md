@@ -42,6 +42,8 @@
 
 ## External assets
 
+- Keep external assets that cannot be redistributed in the project-root `private_assets/` directory beside `tmp/`, including downloads, extracted sources and converted copies. Keep this directory ignored by Git and Godot (`.gdignore`); public packages must work without it.
+
 - Record every externally downloaded art, font, music, sound, or other asset in `res://doc/credits.md`.
 - Follow the existing concise credits format: `类别：资产名称 来源 URL`.
 - Keep required license files alongside the corresponding asset when redistribution terms require it.

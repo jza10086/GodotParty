@@ -5,6 +5,9 @@
 /tmp/
 /temp_game/
 
+# Locally licensed third-party assets and their working copies.
+/private_assets/
+
 # Portable local configuration and saves; retain only the import exclusion marker.
 /data/*
 !/data/.gdignore
