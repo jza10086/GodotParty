@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/party_dialog.tscn" id="dialog"]
+
+[node name="MinigamePoolDialog" instance=ExtResource("dialog")]
+
+[node name="Cancel" parent="Panel/Layout/Actions" index="0"]
+theme_type_variation = &"PoolButton"
+
+[node name="Confirm" parent="Panel/Layout/Actions" index="1"]
+theme_type_variation = &"PoolButton"

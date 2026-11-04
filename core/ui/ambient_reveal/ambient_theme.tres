@@ -16,6 +16,38 @@
 [ext_resource type="Texture2D" uid="uid://i5okght3q1ms" path="res://core/ui/ambient_reveal/icons/thumb.svg" id="thumb"]
 [ext_resource type="Texture2D" uid="uid://dhhw2b7d2jll2" path="res://core/ui/ambient_reveal/icons/uncheck.svg" id="uncheck"]
 
+[sub_resource type="StyleBoxFlat" id="PoolRest"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.15, 0.215, 0.285, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.26, 0.35, 0.44, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="PoolActive"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.18, 0.30, 0.40, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.46, 0.67, 0.83, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [sub_resource type="StyleBoxFlat" id="PopupCard"]
 content_margin_left = 44.0
 content_margin_top = 44.0
@@ -365,13 +397,20 @@ Panel/styles/panel = ExtResource("frame_available")
 PanelContainer/styles/panel = ExtResource("frame_available")
 PartyPanel/base_type = &"Panel"
 PartyPanel/styles/panel = ExtResource("frame_available")
-PoolCard/base_type = &"Button"
-PoolCard/styles/disabled = ExtResource("frame_disabled")
-PoolCard/styles/focus = ExtResource("frame_focused")
-PoolCard/styles/hover = ExtResource("frame_focused")
-PoolCard/styles/hover_pressed = ExtResource("frame_focused")
-PoolCard/styles/normal = ExtResource("frame_available")
-PoolCard/styles/pressed = ExtResource("frame_focused")
+PoolButton/base_type = &"Button"
+PoolButton/styles/disabled = ExtResource("frame_disabled")
+PoolButton/styles/focus = SubResource("PoolActive")
+PoolButton/styles/hover = SubResource("PoolActive")
+PoolButton/styles/hover_pressed = SubResource("PoolActive")
+PoolButton/styles/normal = SubResource("PoolRest")
+PoolButton/styles/pressed = SubResource("PoolActive")
+PoolPicker/base_type = &"OptionButton"
+PoolPicker/styles/disabled = ExtResource("frame_disabled")
+PoolPicker/styles/focus = SubResource("PoolActive")
+PoolPicker/styles/hover = SubResource("PoolActive")
+PoolPicker/styles/hover_pressed = SubResource("PoolActive")
+PoolPicker/styles/normal = SubResource("PoolRest")
+PoolPicker/styles/pressed = SubResource("PoolActive")
 PoolCheck/base_type = &"Button"
 PoolCheck/font_sizes/font_size = 30
 PoolCheck/styles/disabled = ExtResource("frame_disabled")

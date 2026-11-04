@@ -337,7 +337,7 @@ func _configuration_dialog() -> void:
 	var main_id: String = connection.room.main
 	var revision: int = int(connection.room.get("rules_revision", 0))
 	var editable: bool = connection.host and connection.recovery.is_empty() and runner.phase == "idle"
-	_dialog = preload("res://core/ui/party_dialog.tscn").instantiate()
+	_dialog = preload("res://core/ui/minigame_browser/pool_dialog.tscn").instantiate()
 	_dialog.title = "小游戏池"
 	_dialog.ok_button_text = "应用小游戏池"
 	_dialog.scroll_content = false

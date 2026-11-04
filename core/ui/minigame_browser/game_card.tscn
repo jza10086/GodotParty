@@ -11,7 +11,7 @@ theme_override_constants/separation = 6
 unique_name_in_owner = true
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 54)
-theme_type_variation = &"PoolCard"
+theme_type_variation = &"PoolButton"
 theme_override_constants/icon_max_width = 42
 theme_override_constants/h_separation = 14
 toggle_mode = true
@@ -22,5 +22,13 @@ text_overrun_behavior = 3
 
 [node name="Check" parent="." instance=ExtResource("check")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(58, 0)
+size_flags_horizontal = 8
+size_flags_vertical = 4
+flat = true
+theme_override_colors/icon_focus_color = Color(1.4, 1.4, 1.4, 1)
 tooltip_text = "加入或移出小游戏池"
+
+[node name="Surface" parent="Check" index="0"]
+modulate = Color(1, 1, 1, 0)
+
+[editable path="Check"]

@@ -34,6 +34,7 @@ text = "小游戏列表"
 theme_type_variation = &"SectionTitle"
 
 [node name="PoolPicker" parent="Body/ListCard/Library/Header" instance=ExtResource("options")]
+theme_type_variation = &"PoolPicker"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(160, 0)
 
@@ -45,16 +46,19 @@ placeholder_text = "搜索名称或游戏 ID"
 theme_override_constants/separation = 8
 
 [node name="SelectAll" parent="Body/ListCard/Library/Batch" instance=ExtResource("button")]
+theme_type_variation = &"PoolButton"
 unique_name_in_owner = true
 size_flags_horizontal = 3
 text = "全部勾选"
 
 [node name="Invert" parent="Body/ListCard/Library/Batch" instance=ExtResource("button")]
+theme_type_variation = &"PoolButton"
 unique_name_in_owner = true
 size_flags_horizontal = 3
 text = "反向勾选"
 
 [node name="Clear" parent="Body/ListCard/Library/Batch" instance=ExtResource("button")]
+theme_type_variation = &"PoolButton"
 unique_name_in_owner = true
 size_flags_horizontal = 3
 text = "清空勾选"
@@ -128,15 +132,18 @@ theme_override_font_sizes/font_size = 20
 theme_override_constants/separation = 8
 
 [node name="PresetPicker" parent="Body/DetailsCard/Pane/PresetRow" instance=ExtResource("options")]
+theme_type_variation = &"PoolPicker"
 unique_name_in_owner = true
 size_flags_horizontal = 3
 clip_text = true
 
 [node name="Load" parent="Body/DetailsCard/Pane/PresetRow" instance=ExtResource("button")]
+theme_type_variation = &"PoolButton"
 unique_name_in_owner = true
 text = "加载预设"
 
 [node name="Refresh" parent="Body/DetailsCard/Pane/PresetRow" instance=ExtResource("button")]
+theme_type_variation = &"PoolButton"
 unique_name_in_owner = true
 text = "刷新预设"
 
@@ -144,16 +151,19 @@ text = "刷新预设"
 theme_override_constants/separation = 8
 
 [node name="Advanced" parent="Body/DetailsCard/Pane/Actions" instance=ExtResource("button")]
+theme_type_variation = &"PoolButton"
 unique_name_in_owner = true
 size_flags_horizontal = 3
 text = "房间规则"
 
 [node name="LocalPreferences" parent="Body/DetailsCard/Pane/Actions" instance=ExtResource("button")]
+theme_type_variation = &"PoolButton"
 unique_name_in_owner = true
 size_flags_horizontal = 3
 text = "本机设置"
 
 [node name="Folder" parent="Body/DetailsCard/Pane/Actions" instance=ExtResource("button")]
+theme_type_variation = &"PoolButton"
 unique_name_in_owner = true
 size_flags_horizontal = 3
 text = "打开文件夹"
