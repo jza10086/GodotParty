@@ -78,7 +78,7 @@
     }
   },
   "config_schema": "settings.gd",
-  "settings_runtime": "graphics_settings.gd",
+  "settings_runtime": "settings_runtime.gd",
   "config_directories": {
     "maingame": "godot_party_default_v1",
     "minigame": "godot_party_default_v1"

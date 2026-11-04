@@ -85,6 +85,17 @@ static func schema() -> Dictionary:
 				"step": 0.05,
 				"control": "number"
 			},
+			"ui.cursor_theme": {
+				"type": "string",
+				"default": "LighTech",
+				"title": "光标主题",
+				"description": "切换本机默认箭头和多人指针的外形；中心透明，边缘使用玩家颜色。",
+				"audience": "local",
+				"apply": "immediate",
+				"overridable": true,
+				"values": ["LighTech", "Concept 3"],
+				"control": "select"
+			},
 			"ui.player_cursors": {
 				"type": "bool",
 				"default": true,
@@ -137,6 +148,9 @@ static func schema() -> Dictionary:
 				"title": "界面",
 				"expanded": true,
 				"children": [
+					{
+						"field": "ui.cursor_theme"
+					},
 					{
 						"field": "ui.player_cursors"
 					}

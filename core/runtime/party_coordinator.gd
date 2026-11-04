@@ -752,6 +752,8 @@ func _withdraw(peer: int) -> void:
 		scope["api"].players_changed.emit()
 
 func _connection_changed() -> void:
+	if _lobby_api != null:
+		_lobby_api.players_changed.emit()
 	if not connection.online and not _scopes.is_empty():
 		cleanup("disconnected")
 	for scope: Dictionary in _scopes.values():
@@ -802,6 +804,22 @@ func prepare_room() -> PartyAPI:
 	_update_lobby_settings()
 	return _lobby_api
 
+## Lobby settings use the same public identity/appearance snapshots as activity scopes.
+func _lobby_query(_scope: String, key: String, _argument: Dictionary) -> Variant:
+	if key == "appearances":
+		var appearances: Dictionary = {}
+		for player: Dictionary in connection.players:
+			appearances[player.player_id] = player.appearance.duplicate(true)
+		return appearances
+	if key in ["players", "room_players"]:
+		var players: Array[Dictionary] = []
+		for source: Dictionary in connection.players:
+			var player: Dictionary = source.duplicate(true)
+			player["is_local"] = source.peer_id == connection.local_peer()
+			players.append(player)
+		return players
+	return {}
+
 func _update_lobby_settings() -> void:
 	var protocol: String = catalog.get_package(connection.room.get("main", "")).get("protocol", {}).get("id", "")
 	var lobby: bool = connection.online and phase == "idle" and connection.room.get("phase") == "lobby" and not protocol.is_empty()
@@ -810,7 +828,7 @@ func _update_lobby_settings() -> void:
 	if not lobby or _lobby_api != null:
 		return
 	var id: String = "lobby_" + protocol
-	_lobby_api = API.new({"session_id": connection.session_id, "scope_id": id, "protocol_id": protocol, "package_id": "", "rules_revision": connection.room.get("rules_revision"), "is_host": connection.host}, func(_scope: String, _op: String, _data: Dictionary) -> Error: return ERR_UNAVAILABLE, func(_scope: String, key: String, _argument: Dictionary) -> Variant: return connection.players.duplicate(true) if key in ["players", "room_players"] else {})
+	_lobby_api = API.new({"session_id": connection.session_id, "scope_id": id, "protocol_id": protocol, "package_id": "", "rules_revision": connection.room.get("rules_revision"), "is_host": connection.host}, func(_scope: String, _op: String, _data: Dictionary) -> Error: return ERR_UNAVAILABLE, _lobby_query)
 	_lobby_api.i18n = catalog.i18n.scope(connection.room.main)
 	_lobby_api.config = Config.new()
 	if _lobby_api.config.initialize(config_store, "", protocol, {"common": connection.room.get("common", {}), "own": {}}) != OK:

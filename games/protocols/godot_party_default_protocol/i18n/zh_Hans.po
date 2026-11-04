@@ -63,3 +63,15 @@ msgstr "界面"
 
 msgid "辉光"
 msgstr "辉光"
+
+msgid "光标主题"
+msgstr "光标主题"
+
+msgid "切换本机默认箭头和多人指针的外形；中心透明，边缘使用玩家颜色。"
+msgstr "切换本机默认箭头和多人指针的外形；中心透明，边缘使用玩家颜色。"
+
+msgid "LighTech"
+msgstr "LighTech"
+
+msgid "Concept 3"
+msgstr "Concept 3"

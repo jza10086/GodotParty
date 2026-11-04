@@ -108,7 +108,7 @@ resource 正常结果必须含全体参与者 resource_result，每人 `{coins, 
 
 `graphics.quality` 使用枚举值 `低/中/高/极高`。独立开关为 `graphics.shadows`（默认开）、`graphics.pcss`（默认关）、`graphics.ao`（默认关）、`graphics.taa`（默认开）、`graphics.bloom`（默认关）；`graphics.render_scale` 默认 1，范围 0.5–2。切换档位不重置开关。所有字段可覆盖、立即应用于活跃三维视图；保存成功与效果报告仍按框架约定分开。PCSS 关闭使用 PCF；开启可能出现采样噪点，不保证更好观感。非 Forward+ 下 AO/TAA 报告不支持，不更改用户期望值。
 
-正式游戏不要自行创建画质 runtime，也不要重复写 RenderingServer。清单选择本协议后，由 core 的 settings scope 自动创建 `graphics_settings.gd`。三维视图根提供以下协议专属登记方法（大游戏放在 create_view 返回的节点，小游戏放在入口根）：
+正式游戏不要自行创建画质 runtime，也不要重复写 RenderingServer。清单选择本协议后，由 core 的 settings scope 自动创建 `settings_runtime.gd`，复用 `graphics_settings.gd` 的画质实现。三维视图根提供以下协议专属登记方法（大游戏放在 create_view 返回的节点，小游戏放在入口根）：
 
 ```gdscript
 @export var graphics_world: WorldEnvironment
@@ -149,7 +149,9 @@ Millionaire 当前仍是独立 F6 视觉原型：读取同一资料槽的协议�
 
 ## 共享玩家鼠标
 
-公开资源 `player_cursor` 为 `appearance/player_cursor.tscn`（Node2D）：一份默认纯白的矢量箭头，尖端 `(0, 0)` 为热点。`apply_color(Color)` 为单个实例染色，使用上面的协议八色；白/深色双描边保证黑白指针在不同背景上可见，不为每种颜色复制资源。也可在 Inspector 设置 `color` 预览。
+公开资源 `player_cursor` 为 `appearance/player_cursor.tscn`（Node2D）：透明中心、彩色边缘的空心箭头，场景原点 `(0, 0)` 为热点。提供 `LighTech`（默认，直边尖角）与 `Concept 3`（圆润轮廓）两种自行绘制的主题。`apply_color(Color)` 为单个实例的边缘染色，使用上面的协议八色；中性细描边保证黑白指针在不同背景上可见。Inspector 的 `cursor_theme` / `color` 可预览外观。
+
+公共设置「界面 → 光标主题」（`ui.cursor_theme`）在应用后立即生效，属于本地偏好，可按游戏覆盖，不同步给其他玩家。它同时控制本机显示的多人指针与协议内的默认箭头。`settings_runtime.gd` 在大厅和活动的设置作用域内安装本机玩家颜色的原生光标，离开协议时恢复系统箭头；仍保留控件的文本、拖动等专用鼠标形状及游戏的鼠标捕获行为。原生光标和多人场景复用同一透明图像，主题不影响网络坐标或点击规则。画质仍由 `graphics_settings.gd` 实现，独立地图预览的画质调用不安装光标。
 
 公开资源 `player_cursors` 为 `player_cursors.tscn`（Control 多人指针场景）。实例化后先 `setup(api)`，再作为实际交互区域（例如棋盘）的子节点加入；场景铺满父节点并忽略鼠标事件。同一活动只挂载一份，同一坐标面上的玩家应使用相同内容布局。连连看与空白小游戏已接入；空白小游戏以全屏为坐标面，仅在正式游戏阶段显示，个人结束等待期间保留，准备和结算时隐藏。
 

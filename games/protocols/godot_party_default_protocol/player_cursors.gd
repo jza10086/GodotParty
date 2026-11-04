@@ -57,6 +57,7 @@ func _process(delta: float) -> void:
 			visual.hide()
 			add_child(visual)
 		var visual: Node2D = _visuals[id]
+		visual.cursor_theme = api.config.get_common(&"ui.cursor_theme")
 		visual.apply_color(Color(api.get_appearance(id).color))
 		if id == local_id:
 			show_local = local_visible and player.connected and not _network_failed
