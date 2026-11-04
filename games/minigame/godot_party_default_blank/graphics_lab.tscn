@@ -296,10 +296,10 @@ stretch = true
 script = ExtResource("1_p4e3l")
 environment = SubResource("Environment_1mijf")
 camera_attributes = SubResource("CameraAttributesPractical_taibb")
-camera_target = Vector3(10.5, 0.8, 0)
-camera_distance = 41.0
-camera_yaw = 12.0
-camera_pitch = 35.0
+camera_target = Vector3(21.5, 0.8, 0)
+camera_distance = 50.0
+camera_yaw = 0.0
+camera_pitch = 55.0
 sample_material = SubResource("StandardMaterial3D_ns3te")
 floor_material = SubResource("StandardMaterial3D_n6ahp")
 
@@ -323,7 +323,7 @@ environment = SubResource("Environment_1mijf")
 
 [node name="Camera" type="Camera3D" parent="Render/Stage" unique_id=1991545558]
 unique_name_in_owner = true
-transform = Transform3D(0.9781476, -0.11925325, 0.1703113, 0, 0.819152, 0.57357645, -0.2079117, -0.56104237, 0.80125165, 17.482763, 24.316633, 32.851315)
+transform = Transform3D(1, 0, 0, 0, 0.5735764, 0.81915206, 0, -0.819152, 0.57357645, 21.5, 41.757603, 28.678822)
 attributes = SubResource("CameraAttributesPractical_taibb")
 current = true
 fov = 48.0
@@ -578,4 +578,4 @@ font_size = 42
 outline_size = 4
 
 [node name="BuildingDisplay" type="Node3D" parent="Render/Stage/Samples" unique_id=1378671061 instance=ExtResource("3_o8aa1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.5, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32.5, 0, 0)
