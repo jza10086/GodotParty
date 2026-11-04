@@ -1,194 +1,177 @@
 [gd_scene format=3]
 
 [ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
-[ext_resource type="Script" path="res://core/ui/minigame_browser/minigame_browser.gd" id="r1"]
-[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r2"]
-[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="r3"]
-[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r4"]
-[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/card.tscn" id="r5"]
-[ext_resource type="PackedScene" path="res://core/ui/minigame_browser/game_card.tscn" id="r6"]
+[ext_resource type="Script" path="res://core/ui/minigame_browser/minigame_browser.gd" id="logic"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/card.tscn" id="card"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="button"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/display/label.tscn" id="label"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="edit"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="options"]
 
 [node name="MinigameBrowser" type="VBoxContainer"]
 theme = ExtResource("ambient")
-script = ExtResource("r1")
+script = ExtResource("logic")
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 12
-
-[node name="Toolbar" parent="." type="HBoxContainer"]
-
-
-[node name="PoolPicker" parent="Toolbar" instance=ExtResource("r2")]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(180,0)
-
-[node name="Search" parent="Toolbar" instance=ExtResource("r3")]
-unique_name_in_owner = true
-size_flags_horizontal = 3
-placeholder_text = "搜索小游戏"
-
-[node name="SelectAll" parent="Toolbar" instance=ExtResource("r4")]
-unique_name_in_owner = true
-text = "全部勾选"
-
-[node name="Invert" parent="Toolbar" instance=ExtResource("r4")]
-unique_name_in_owner = true
-text = "反向勾选"
-
-[node name="Clear" parent="Toolbar" instance=ExtResource("r4")]
-unique_name_in_owner = true
-text = "清空勾选"
+theme_override_constants/separation = 10
 
 [node name="Body" parent="." type="HBoxContainer"]
 size_flags_vertical = 3
 theme_override_constants/separation = 24
 
-[node name="ListCard" parent="Body" instance=ExtResource("r5")]
-unique_name_in_owner = true
+[node name="ListCard" parent="Body" instance=ExtResource("card")]
 size_flags_horizontal = 3
-size_flags_vertical = 3
+size_flags_stretch_ratio = 0.85
 
-[node name="ListScroll" parent="Body/ListCard" type="ScrollContainer"]
+[node name="Library" parent="Body/ListCard" type="VBoxContainer"]
+theme_override_constants/separation = 8
+
+[node name="Header" parent="Body/ListCard/Library" type="HBoxContainer"]
+
+[node name="Title" parent="Body/ListCard/Library/Header" instance=ExtResource("label")]
+size_flags_horizontal = 3
+text = "小游戏列表"
+theme_type_variation = &"SectionTitle"
+
+[node name="PoolPicker" parent="Body/ListCard/Library/Header" instance=ExtResource("options")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 0)
+
+[node name="Search" parent="Body/ListCard/Library" instance=ExtResource("edit")]
+unique_name_in_owner = true
+placeholder_text = "搜索名称或游戏 ID"
+
+[node name="Batch" parent="Body/ListCard/Library" type="HBoxContainer"]
+theme_override_constants/separation = 8
+
+[node name="SelectAll" parent="Body/ListCard/Library/Batch" instance=ExtResource("button")]
 unique_name_in_owner = true
 size_flags_horizontal = 3
+text = "全部勾选"
+
+[node name="Invert" parent="Body/ListCard/Library/Batch" instance=ExtResource("button")]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+text = "反向勾选"
+
+[node name="Clear" parent="Body/ListCard/Library/Batch" instance=ExtResource("button")]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+text = "清空勾选"
+
+[node name="ListScroll" parent="Body/ListCard/Library" type="ScrollContainer"]
+unique_name_in_owner = true
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
+follow_focus = true
 
-[node name="Grid" parent="Body/ListCard/ListScroll" type="GridContainer"]
+[node name="Rows" parent="Body/ListCard/Library/ListScroll" type="VBoxContainer"]
 unique_name_in_owner = true
 size_flags_horizontal = 3
-columns = 3
-theme_override_constants/h_separation = 14
-theme_override_constants/v_separation = 14
+theme_override_constants/separation = 4
 
-[node name="Slot1" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
-
-
-[node name="Slot2" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
+[node name="NoMatches" parent="Body/ListCard/Library/ListScroll/Rows" instance=ExtResource("label")]
+unique_name_in_owner = true
 visible = false
+text = "没有匹配的小游戏"
+horizontal_alignment = 1
 
-[node name="Slot3" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
-visible = false
-
-[node name="Slot4" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
-visible = false
-
-[node name="Slot5" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
-visible = false
-
-[node name="Slot6" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
-visible = false
-
-[node name="Slot7" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
-visible = false
-
-[node name="Slot8" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
-visible = false
-
-[node name="Slot9" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
-visible = false
-
-[node name="Slot10" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
-visible = false
-
-[node name="Slot11" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
-visible = false
-
-[node name="Slot12" parent="Body/ListCard/ListScroll/Grid" instance=ExtResource("r6")]
-visible = false
-
-[node name="DetailsScroll" parent="Body" type="ScrollContainer"]
-custom_minimum_size = Vector2(330,0)
-horizontal_scroll_mode = 0
-
-[node name="Details" parent="Body/DetailsScroll" type="VBoxContainer"]
+[node name="DetailsCard" parent="Body" instance=ExtResource("card")]
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.15
+
+[node name="Pane" parent="Body/DetailsCard" type="VBoxContainer"]
 theme_override_constants/separation = 10
 
-[node name="Preview" parent="Body/DetailsScroll/Details" type="TextureRect"]
+[node name="DetailsScroll" parent="Body/DetailsCard/Pane" type="ScrollContainer"]
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+follow_focus = true
+
+[node name="Details" parent="Body/DetailsCard/Pane/DetailsScroll" type="VBoxContainer"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="GameTitle" parent="Body/DetailsCard/Pane/DetailsScroll/Details" instance=ExtResource("label")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0,150)
+text = "选择一个小游戏"
+theme_type_variation = &"SectionTitle"
+theme_override_font_sizes/font_size = 32
+autowrap_mode = 3
+
+[node name="Preview" parent="Body/DetailsCard/Pane/DetailsScroll/Details" type="TextureRect"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 190)
 expand_mode = 1
 stretch_mode = 5
 
-[node name="PreviewNote" parent="Body/DetailsScroll/Details" type="Label"]
+[node name="PreviewNote" parent="Body/DetailsCard/Pane/DetailsScroll/Details" instance=ExtResource("label")]
 unique_name_in_owner = true
 text = ""
-autowrap_mode = 3
+horizontal_alignment = 1
 theme_override_font_sizes/font_size = 18
 
-[node name="GameTitle" parent="Body/DetailsScroll/Details" type="Label"]
-unique_name_in_owner = true
-text = "选择一个小游戏"
-autowrap_mode = 3
-theme_override_font_sizes/font_size = 27
-
-[node name="GameInfo" parent="Body/DetailsScroll/Details" type="Label"]
+[node name="PlayerCounts" parent="Body/DetailsCard/Pane/DetailsScroll/Details" instance=ExtResource("label")]
 unique_name_in_owner = true
 text = ""
-autowrap_mode = 3
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 
-[node name="PresetTitle" parent="Body/DetailsScroll/Details" type="Label"]
+[node name="GameInfo" parent="Body/DetailsCard/Pane/DetailsScroll/Details" instance=ExtResource("label")]
 unique_name_in_owner = true
-text = "预设选择"
+text = ""
 autowrap_mode = 3
 theme_override_font_sizes/font_size = 20
 
-[node name="PresetPicker" parent="Body/DetailsScroll/Details" instance=ExtResource("r2")]
+[node name="Separator" parent="Body/DetailsCard/Pane" type="HSeparator"]
+
+[node name="PresetRow" parent="Body/DetailsCard/Pane" type="HBoxContainer"]
+theme_override_constants/separation = 8
+
+[node name="PresetPicker" parent="Body/DetailsCard/Pane/PresetRow" instance=ExtResource("options")]
 unique_name_in_owner = true
 size_flags_horizontal = 3
 clip_text = true
 
-[node name="Load" parent="Body/DetailsScroll/Details" instance=ExtResource("r4")]
+[node name="Load" parent="Body/DetailsCard/Pane/PresetRow" instance=ExtResource("button")]
 unique_name_in_owner = true
-text = "加载所选预设"
+text = "加载预设"
 
-[node name="Refresh" parent="Body/DetailsScroll/Details" instance=ExtResource("r4")]
+[node name="Refresh" parent="Body/DetailsCard/Pane/PresetRow" instance=ExtResource("button")]
 unique_name_in_owner = true
-text = "刷新预设列表"
+text = "刷新预设"
 
-[node name="Advanced" parent="Body/DetailsScroll/Details" instance=ExtResource("r4")]
-unique_name_in_owner = true
-text = "高级设置"
+[node name="Actions" parent="Body/DetailsCard/Pane" type="HBoxContainer"]
+theme_override_constants/separation = 8
 
-[node name="LocalPreferences" parent="Body/DetailsScroll/Details" instance=ExtResource("r4")]
+[node name="Advanced" parent="Body/DetailsCard/Pane/Actions" instance=ExtResource("button")]
 unique_name_in_owner = true
+size_flags_horizontal = 3
+text = "房间规则"
+
+[node name="LocalPreferences" parent="Body/DetailsCard/Pane/Actions" instance=ExtResource("button")]
+unique_name_in_owner = true
+size_flags_horizontal = 3
 text = "本机设置"
 
-[node name="Folder" parent="Body/DetailsScroll/Details" instance=ExtResource("r4")]
+[node name="Folder" parent="Body/DetailsCard/Pane/Actions" instance=ExtResource("button")]
 unique_name_in_owner = true
-text = "打开所在文件夹"
+size_flags_horizontal = 3
+text = "打开文件夹"
 
-[node name="Pages" parent="." type="HBoxContainer"]
-unique_name_in_owner = true
-visible = false
+[node name="Footer" parent="." type="HBoxContainer"]
+theme_override_constants/separation = 20
 
-[node name="Prev" parent="Pages" instance=ExtResource("r4")]
-unique_name_in_owner = true
-text = "上一页"
-
-[node name="PageNumber" parent="Pages" type="Label"]
-unique_name_in_owner = true
-text = "1 / 1"
-autowrap_mode = 3
-
-[node name="Next" parent="Pages" instance=ExtResource("r4")]
-unique_name_in_owner = true
-text = "下一页"
-
-[node name="CountLabel" parent="." type="Label"]
+[node name="CountLabel" parent="Footer" instance=ExtResource("label")]
 unique_name_in_owner = true
 text = ""
-autowrap_mode = 3
 
-[node name="Instructions" parent="." type="Label"]
-unique_name_in_owner = true
-text = "单击高亮预览 · Ctrl 切换高亮 · Shift 连续高亮 · Ctrl+A / I 全选 / 反选高亮 · 点击勾选框调整小游戏池"
-autowrap_mode = 3
+[node name="Instructions" parent="Footer" instance=ExtResource("label")]
+size_flags_horizontal = 3
+horizontal_alignment = 2
+text = "点击名称预览   ·   勾选加入本房   ·   Ctrl 多选 / Shift 连选"
 theme_override_font_sizes/font_size = 17
 
-[node name="ErrorLabel" parent="." type="Label"]
+[node name="ErrorLabel" parent="." instance=ExtResource("label")]
 unique_name_in_owner = true
 text = ""
 autowrap_mode = 3

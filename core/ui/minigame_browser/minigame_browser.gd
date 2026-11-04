@@ -1,6 +1,8 @@
-## Lobby-only draft. Card highlights select inspection/batch targets; corner checks edit pool membership.
+## Lobby-only draft. Row highlights select inspection/batch targets; checkboxes edit pool membership.
 ## Temporary presets live with this dialog. Only explicit preset saves write to disk.
 extends VBoxContainer
+
+const GAME_ROW: PackedScene = preload("res://core/ui/minigame_browser/game_card.tscn")
 
 var app: Node
 var draft: Dictionary = {}
@@ -14,9 +16,8 @@ var highlighted: Array[String] = []
 var anchor: String = ""
 var temporary: Dictionary = {}
 var preset_labels: Dictionary = {}
-var cards: Dictionary = {}
-var _page: int = 0
-@onready var grid: GridContainer = %Grid
+var rows: Dictionary[String, Control] = {}
+@onready var row_list: VBoxContainer = %Rows
 @onready var list_scroll: ScrollContainer = %ListScroll
 @onready var search: LineEdit = %Search
 @onready var pool_picker: OptionButton = %PoolPicker
@@ -60,18 +61,15 @@ func _ready() -> void:
 	pool_picker.item_selected.connect(func(index: int) -> void:
 		pool_name = pool_picker.get_item_metadata(index)
 		anchor = ""
-		_refresh_cards())
-	search.text_changed.connect(func(_query: String) -> void:
-		_page = 0
-		_build_cards())
-	list_scroll.resized.connect(_resize_grid)
+		_refresh_rows())
+	search.text_changed.connect(_filter_rows)
 	for button: Button in [%SelectAll, %Invert, %Clear]:
-		button.disabled = not editable
+		button.disabled = not editable or pool_name.is_empty()
 	%SelectAll.pressed.connect(select_all.bind(false))
 	%Invert.pressed.connect(select_all.bind(true))
 	%Clear.pressed.connect(func() -> void:
 		draft.pools[pool_name] = []
-		_refresh_cards())
+		_refresh_rows())
 	%Load.pressed.connect(func() -> void: _select_preset(preset_picker.selected))
 	%Refresh.pressed.connect(_refresh_inspector)
 	advanced.pressed.connect(open_advanced)
@@ -79,18 +77,23 @@ func _ready() -> void:
 	folder.pressed.connect(_open_folder)
 	if not editable:
 		error_label.text = "当前为只读；房间设置由房主修改。"
-	%Prev.pressed.connect(_turn_page.bind(-1))
-	%Next.pressed.connect(_turn_page.bind(1))
-	for card: Button in grid.get_children():
-		card.pressed.connect(func() -> void: choose(card.get_meta("game_id"), Input.is_key_pressed(KEY_CTRL), Input.is_key_pressed(KEY_SHIFT)))
-		card.get_node("%Check").toggled.connect(func(on: bool) -> void: set_checked(card.get_meta("game_id"), on))
+	for id: String in ids:
+		var row: HBoxContainer = GAME_ROW.instantiate()
+		var inspect: Button = row.get_node("%Inspect")
+		var check: CheckBox = row.get_node("%Check")
+		inspect.text = _title(id)
+		inspect.icon = _cover(id)
+		inspect.tooltip_text = inspect.text
+		inspect.pressed.connect(_inspect_pressed.bind(id))
+		check.disabled = not editable or pool_name.is_empty()
+		check.tooltip_text = "加入或移出小游戏池 · " + inspect.text
+		check.pressed.connect(_check_pressed.bind(id, check))
+		row_list.add_child(row)
+		rows[id] = row
 	visibility_changed.connect(func() -> void:
 		if not is_visible_in_tree() and is_instance_valid(advanced_dialog):
 			advanced_dialog.hide())
-	_build_cards()
-	if not ids.is_empty():
-		focused = ids[0]
-	_refresh_inspector()
+	_filter_rows(search.text)
 
 func _cover(id: String) -> Texture2D:
 	var cover: String = app.catalog.get_package(id).get("cover", "")
@@ -105,48 +108,31 @@ func _cover(id: String) -> Texture2D:
 func _title(id: String) -> String:
 	return str(app.catalog.get_package(id).get("name", id)).trim_prefix("GodotPartyDefault · ")
 
-func _build_cards() -> void:
+func _inspect_pressed(id: String) -> void:
+	choose(id, Input.is_key_pressed(KEY_CTRL), Input.is_key_pressed(KEY_SHIFT))
+
+func _check_pressed(id: String, check: CheckBox) -> void:
+	set_checked(id, check.button_pressed)
+
+func _filter_rows(text: String) -> void:
 	shown.clear()
-	var query: String = search.text.strip_edges().to_lower()
+	var query: String = text.strip_edges().to_lower()
 	for id: String in ids:
-		if not query.is_empty() and not (_title(id) + " " + id).to_lower().contains(query):
-			continue
-		shown.append(id)
-	_display_page()
-
-func _turn_page(direction: int) -> void:
-	_page += direction
-	_display_page()
-
-func _display_page() -> void:
-	cards.clear()
-	var capacity: int = grid.get_child_count()
-	var pages: int = maxi(1, ceili(float(shown.size()) / capacity))
-	_page = clampi(_page, 0, pages - 1)
-	%Pages.visible = pages > 1
-	%PageNumber.text = "%d / %d" % [_page + 1, pages]
-	%Prev.disabled = _page == 0
-	%Next.disabled = _page + 1 >= pages
+		var row: Control = rows[id]
+		var button: Button = row.get_node("%Inspect")
+		row.visible = query.is_empty() or query in (button.text + " " + id).to_lower()
+		if row.visible:
+			shown.append(id)
+	if focused not in shown:
+		focused = "" if shown.is_empty() else shown[0]
+		highlighted.clear()
+		anchor = focused
+		if not focused.is_empty():
+			highlighted.append(focused)
+	%NoMatches.visible = shown.is_empty()
 	list_scroll.scroll_vertical = 0
-	for index: int in capacity:
-		var card: Button = grid.get_child(index)
-		var offset: int = _page * capacity + index
-		card.visible = offset < shown.size()
-		if not card.visible:
-			continue
-		var id: String = shown[offset]
-		card.set_meta("game_id", id)
-		card.tooltip_text = _title(id)
-		card.get_node("%Cover").texture = _cover(id)
-		card.get_node("%Caption").text = _title(id)
-		var check: Button = card.get_node("%Check")
-		check.disabled = not editable or pool_name.is_empty()
-		cards[id] = {"card": card, "check": check}
-	_resize_grid()
-	_refresh_cards()
-
-func _resize_grid() -> void:
-	grid.columns = maxi(1, int((list_scroll.size.x - 16) / 224.0))
+	_refresh_rows()
+	_refresh_inspector()
 
 ## Highlighting never changes membership. Shift follows visible order; Ctrl+Shift adds a range.
 func choose(id: String, control: bool, shift: bool) -> void:
@@ -170,10 +156,10 @@ func choose(id: String, control: bool, shift: bool) -> void:
 	else:
 		highlighted.assign([id])
 		anchor = id
-	_refresh_cards()
+	_refresh_rows()
 	_refresh_inspector()
 
-## A highlighted check applies its state to visible highlighted cards; otherwise only to itself.
+## A highlighted check applies its state to visible highlighted rows; otherwise only to itself.
 func set_checked(id: String, checked: bool) -> void:
 	if not editable or pool_name.is_empty() or id not in shown:
 		return
@@ -192,7 +178,7 @@ func set_checked(id: String, checked: bool) -> void:
 			selected.erase(target)
 	_store_selection(selected)
 	focused = id
-	_refresh_cards()
+	_refresh_rows()
 	_refresh_inspector()
 
 func highlight_all(invert: bool) -> void:
@@ -201,7 +187,7 @@ func highlight_all(invert: bool) -> void:
 			highlighted.erase(id)
 		elif id not in highlighted:
 			highlighted.append(id)
-	_refresh_cards()
+	_refresh_rows()
 
 func _store_selection(selected: Array) -> void:
 	var ordered: Array = []
@@ -220,31 +206,42 @@ func select_all(invert: bool) -> void:
 		elif id not in selected:
 			selected.append(id)
 	_store_selection(selected)
-	_refresh_cards()
+	_refresh_rows()
 
-func _refresh_cards() -> void:
+func _refresh_rows() -> void:
 	var selected: Array = draft.pools.get(pool_name, [])
-	for id: String in cards:
-		cards[id].check.set_pressed_no_signal(id in selected)
-		cards[id].check.text = "✓" if id in selected else ""
-		cards[id].check.theme_type_variation = &"PoolCheckChecked" if id in selected else &"PoolCheck"
-		cards[id].card.set_pressed_no_signal(id in highlighted)
+	for id: String in rows:
+		var row: Control = rows[id]
+		var check: CheckBox = row.get_node("%Check")
+		check.button_pressed = id in selected
+		var inspect: Button = row.get_node("%Inspect")
+		inspect.set_pressed_no_signal(id in highlighted)
 	count_label.text = "已勾选 %d / %d · 允许开始：%s%s" % [selected.size(), ids.size(), app.connection.PlayerCounts.describe(app.connection.PlayerCounts.room_counts(draft, app.catalog)), " · 没有匹配结果" if shown.is_empty() else ""]
 
 func _refresh_inspector() -> void:
 	var valid: bool = not focused.is_empty()
+	%Load.disabled = not editable or not valid
+	%Refresh.disabled = not valid
 	preset_picker.disabled = not editable or not valid
 	advanced.disabled = not valid
 	local_preferences.disabled = not valid
 	folder.disabled = not valid or OS.has_feature("web") or OS.has_feature("standalone")
 	if not valid:
+		game_title.text = "选择一个小游戏"
+		preview.texture = null
+		preview_note.hide()
+		%PlayerCounts.text = ""
+		game_info.text = ""
+		preset_picker.clear()
 		return
 	var manifest: Dictionary = app.catalog.get_package(focused)
 	game_title.text = _title(focused)
 	var counts: Array[int] = app.connection.PlayerCounts.game_counts(draft, focused, app.catalog)
-	game_info.text = "当前配置：%s\n%s" % [app.connection.PlayerCounts.describe(counts), manifest.get("introduction", "在高级设置中调整本小游戏的房间规则。")]
+	%PlayerCounts.text = "支持人数  ·  " + app.connection.PlayerCounts.describe(counts)
+	game_info.text = manifest.get("introduction", "")
 	preview.texture = _cover(focused)
-	preview_note.text = "预览图" if manifest.has("cover") else "该小游戏尚未提供预览图"
+	preview_note.text = "尚无专属预览图"
+	preview_note.visible = not manifest.has("cover")
 	preset_picker.clear()
 	preset_picker.add_item("默认预设")
 	for preset: String in app.presets.names(focused, app.catalog.get_package(draft.main).protocol.id):
@@ -276,7 +273,7 @@ func _select_preset(index: int) -> void:
 	draft.children[focused] = value.duplicate(true)
 	preset_labels[focused] = caption
 	error_label.text = ""
-	_refresh_cards()
+	_refresh_rows()
 	_refresh_inspector()
 
 ## Local preferences are editable by each client, independently of host-only pool/rule drafts.
@@ -312,7 +309,7 @@ func open_advanced() -> void:
 		if apply_advanced(id, panel.get_value()):
 			draft.common_overrides[id] = state.common.duplicate(true)
 			advanced_dialog.hide()
-			_refresh_cards()
+			_refresh_rows()
 			_refresh_inspector()
 		else:
 			hint.text = error_label.text)
