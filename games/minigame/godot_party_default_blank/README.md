@@ -11,6 +11,8 @@ API 4 / manifest 2 / 配置 Schema 3；1–8 人；只实现原版协议 standar
 
 ## 3D 画面调校
 
+同一展台右侧的 `building_display.tscn` 将大富翁使用的 Kenney City Kit 建筑分三行陈列：商业 5 件、工业 3 件（含水塔）、住宅 3 件。F6 或从大厅进入后即可使用同一台相机查看两侧样品。
+
 在 F6 预览或正式对局中，滚轮绕画面中心缩放，按住中键左右拖动调整方位，上下拖动调整俯仰。Shift＋中键沿地面平移，可以把另一件样品移到画面中央。开始旋转或缩放时，相机取中心射线命中的表面作为支点，移动的物体会带着支点一起移动。射线落空时保留原支点。
 
 移植到其他 3D 小游戏时，只需将本目录的 `orbit_camera.gd` 挂到活动的 `Camera3D`。入树后调用 `set_orbit(世界中心, 距离, 方位角, 俯角)` 设置构图，在玩法的 `_unhandled_input` 或视口容器的 `_gui_input` 中将事件传给 `camera.handle_input(event)`，返回 `true` 时消费事件。给 `camera.input_allowed` 传入判断当前阶段与菜单状态的 Callable。中心拾取使用 `focus_mask` 对应的物理碰撞层，已有碰撞体可以直接使用。调用 `camera.focus_on(unit)` 锁定单位原点，或传第二个 `Vector3` 指定单位局部位置，平移会解除锁定。透视相机改变距离，正交相机改变视野尺寸。

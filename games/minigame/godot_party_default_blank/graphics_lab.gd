@@ -307,9 +307,8 @@ func _ready() -> void:
 		mouse_filter = Control.MOUSE_FILTER_PASS
 		_camera.input_allowed = camera_input_allowed
 		# The calibration meshes have no gameplay physics. Their surfaces are pickable only in play.
-		for sample: Node in _sample.get_parent().get_children():
-			if sample is MeshInstance3D:
-				sample.create_trimesh_collision()
+		for sample: MeshInstance3D in _sample.get_parent().find_children("*", "MeshInstance3D", true, false):
+			sample.create_trimesh_collision()
 	_apply_settings()
 
 func _gui_input(event: InputEvent) -> void:

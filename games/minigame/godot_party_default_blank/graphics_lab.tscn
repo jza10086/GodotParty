@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://o0v51sikeypt" path="res://games/minigame/godot_party_default_blank/graphics_lab.gd" id="1_p4e3l"]
 [ext_resource type="Script" uid="uid://mbphnwtn250q" path="res://games/minigame/godot_party_default_blank/orbit_camera.gd" id="2_p0ujp"]
+[ext_resource type="PackedScene" uid="uid://dijcuamwyjhks" path="res://games/minigame/godot_party_default_blank/building_display.tscn" id="3_o8aa1"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_p0ujp"]
 sky_top_color = Color(0.14, 0.24, 0.4, 1)
@@ -295,6 +296,10 @@ stretch = true
 script = ExtResource("1_p4e3l")
 environment = SubResource("Environment_1mijf")
 camera_attributes = SubResource("CameraAttributesPractical_taibb")
+camera_target = Vector3(10.5, 0.8, 0)
+camera_distance = 41.0
+camera_yaw = 12.0
+camera_pitch = 35.0
 sample_material = SubResource("StandardMaterial3D_ns3te")
 floor_material = SubResource("StandardMaterial3D_n6ahp")
 
@@ -318,7 +323,7 @@ environment = SubResource("Environment_1mijf")
 
 [node name="Camera" type="Camera3D" parent="Render/Stage" unique_id=1991545558]
 unique_name_in_owner = true
-transform = Transform3D(0.9135455, -0.19095127, 0.3591271, 0, 0.8829475, 0.4694716, -0.4067366, -0.42888364, 0.8066128, 7.900797, 11.328375, 17.745481)
+transform = Transform3D(0.9781476, -0.11925325, 0.1703113, 0, 0.819152, 0.57357645, -0.2079117, -0.56104237, 0.80125165, 17.482763, 24.316633, 32.851315)
 attributes = SubResource("CameraAttributesPractical_taibb")
 current = true
 fov = 48.0
@@ -571,3 +576,6 @@ modulate = Color(0.85, 0.91, 1, 1)
 text = "FINE EDGES / SHADOWS"
 font_size = 42
 outline_size = 4
+
+[node name="BuildingDisplay" type="Node3D" parent="Render/Stage/Samples" unique_id=1378671061 instance=ExtResource("3_o8aa1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.5, 0, 0)
