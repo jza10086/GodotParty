@@ -46,7 +46,7 @@ var _stroke_last: Vector2i
 
 const AFTER_GUI_INPUT_PASS: int = 0
 const AFTER_GUI_INPUT_STOP: int = 1
-const DEFAULT_MAP: String = "res://games/maingame/godot_party_default_main_game_millionaire/maps/mountain_bay.tscn"
+const DEFAULT_MAP: String = "res://games/maingame/godot_party_default_main_game_millionaire/map_preview.tscn"
 var _history: UndoRedo = UndoRedo.new()
 var _map: Node3D
 var _path: String = DEFAULT_MAP
