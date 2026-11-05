@@ -1,0 +1,717 @@
+[gd_scene format=3 uid="uid://icrs0grgwvtu"]
+
+[ext_resource type="FontFile" uid="uid://ycpuwgjxu5k" path="res://games/protocols/godot_party_default_protocol/fonts/NotoSansSC-UI.otf" id="1_epily"]
+[ext_resource type="Script" uid="uid://ciu2l1pvqklci" path="res://games/maingame/godot_party_default_main_game_millionaire/slot_machine/slot_machine.gd" id="2_2yiya"]
+[ext_resource type="FontFile" uid="uid://dyq3c8sojauh8" path="res://games/protocols/godot_party_default_protocol/fonts/SourceHanSerifSC-Regular.otf" id="3_rh56v"]
+[ext_resource type="Script" uid="uid://dmvcub01n1h1w" path="res://games/maingame/godot_party_default_main_game_millionaire/slot_machine/slot_reel.gd" id="4_abty8"]
+
+[sub_resource type="Theme" id="Theme_3dmc1"]
+default_font = ExtResource("1_epily")
+default_font_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p0f2g"]
+content_margin_left = 26.0
+content_margin_top = 26.0
+content_margin_right = 26.0
+content_margin_bottom = 26.0
+bg_color = Color(0.14901961, 0.23137255, 0.29411766, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.78039217, 0.6313726, 0.4, 1)
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3emrl"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6uy0x"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6b78k"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mfgq3"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o5m68"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vm7ve"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ejldg"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cj4mb"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x3dmu"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jruf2"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3luca"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a2e1e"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3oc4p"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+border_color = Color(0.972549, 0.8392157, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5eimo"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.7294118, 0.57254905, 0.34117648, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.94509804, 0.8117647, 0.54901963, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s1xwj"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.9843137, 0.95686275, 0.90588236, 1)
+border_color = Color(0.8901961, 0.81960785, 0.6745098, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_telje"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.9843137, 0.95686275, 0.90588236, 1)
+border_color = Color(0.8901961, 0.81960785, 0.6745098, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t368d"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.9843137, 0.95686275, 0.90588236, 1)
+border_color = Color(0.8901961, 0.81960785, 0.6745098, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y1ffr"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.7411765, 0.30588236, 0.29411766, 1)
+border_color = Color(0.5882353, 0.23921569, 0.23137255, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cdcnj"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.6156863, 0.25490198, 0.24313726, 1)
+border_color = Color(0.5882353, 0.23921569, 0.23137255, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5y75x"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.8235294, 0.36078432, 0.32941177, 1)
+border_color = Color(0.5882353, 0.23921569, 0.23137255, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c7foo"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.52156866, 0.5686275, 0.56078434, 1)
+border_color = Color(0.52156866, 0.5686275, 0.56078434, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bj5of"]
+content_margin_left = 40.0
+content_margin_top = 40.0
+content_margin_right = 40.0
+content_margin_bottom = 40.0
+bg_color = Color(1, 0.972549, 0.92156863, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.7254902, 0.5686275, 0.3254902, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[node name="SlotMachine" type="Control" unique_id=2047723247]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_3dmc1")
+script = ExtResource("2_2yiya")
+
+[node name="Backdrop" type="ColorRect" parent="." unique_id=598358151]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.9411765, 0.9137255, 0.8627451, 1)
+
+[node name="TopMargin" type="MarginContainer" parent="." unique_id=1669106589]
+layout_mode = 0
+anchor_right = 1.0
+offset_left = 64.0
+offset_top = 36.0
+offset_right = -64.0
+offset_bottom = 90.0
+mouse_filter = 2
+
+[node name="TopBar" type="HBoxContainer" parent="TopMargin" unique_id=1048563746]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 20
+
+[node name="Brand" type="Label" parent="TopMargin/TopBar" unique_id=1275706826]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.14509805, 0.22352941, 0.29411766, 1)
+theme_override_font_sizes/font_size = 23
+text = "大富翁  /  幸运时刻"
+
+[node name="Mode" type="Label" parent="TopMargin/TopBar" unique_id=461834836]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.44705883, 0.48235294, 0.47843137, 1)
+theme_override_font_sizes/font_size = 19
+text = "独立试玩 · 不扣除金币"
+horizontal_alignment = 1
+
+[node name="RulesButton" type="Button" parent="TopMargin/TopBar" unique_id=1011752454]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 48)
+layout_mode = 2
+text = "玩法说明"
+
+[node name="Center" type="CenterContainer" parent="." unique_id=856139171]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 95.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Composition" type="VBoxContainer" parent="Center" unique_id=688068714]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 20
+
+[node name="Eyebrow" type="Label" parent="Center/Composition" unique_id=374470348]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.48235294, 0.27058825, 1)
+theme_override_font_sizes/font_size = 17
+text = "L U C K Y   M O M E N T"
+horizontal_alignment = 1
+
+[node name="Heading" type="Label" parent="Center/Composition" unique_id=382194670]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.14509805, 0.22352941, 0.29411766, 1)
+theme_override_fonts/font = ExtResource("3_rh56v")
+theme_override_font_sizes/font_size = 48
+text = "幸运老虎机"
+horizontal_alignment = 1
+
+[node name="Cabinet" type="PanelContainer" parent="Center/Composition" unique_id=343244994]
+custom_minimum_size = Vector2(1100, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_p0f2g")
+
+[node name="Interior" type="VBoxContainer" parent="Center/Composition/Cabinet" unique_id=576169021]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="Center/Composition/Cabinet/Interior" unique_id=2053526804]
+layout_mode = 2
+
+[node name="MachineId" type="Label" parent="Center/Composition/Cabinet/Interior/Header" unique_id=1282938490]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.8509804, 0.7411765, 0.5294118, 1)
+theme_override_font_sizes/font_size = 18
+text = "NO.  777"
+
+[node name="PaylineCaption" type="Label" parent="Center/Composition/Cabinet/Interior/Header" unique_id=574702498]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9647059, 0.9098039, 0.8039216, 1)
+theme_override_font_sizes/font_size = 19
+text = "中间横线 · 唯一判定线"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="Center/Composition/Cabinet/Interior/Header" unique_id=470598317]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.8509804, 0.7411765, 0.5294118, 1)
+theme_override_font_sizes/font_size = 18
+text = "准备就绪"
+horizontal_alignment = 2
+
+[node name="Lights" type="HBoxContainer" parent="Center/Composition/Cabinet/Interior" unique_id=92979671]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 58
+alignment = 1
+
+[node name="Light0" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=568292215]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_3emrl")
+
+[node name="Light1" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=1897490378]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_6uy0x")
+
+[node name="Light2" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=909434858]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_6b78k")
+
+[node name="Light3" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=1328261676]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mfgq3")
+
+[node name="Light4" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=218453675]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_o5m68")
+
+[node name="Light5" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=2110284077]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vm7ve")
+
+[node name="Light6" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=1632356058]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ejldg")
+
+[node name="Light7" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=472525543]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_cj4mb")
+
+[node name="Light8" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=1380274042]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_x3dmu")
+
+[node name="Light9" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=1325996984]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_jruf2")
+
+[node name="Light10" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=469431438]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_3luca")
+
+[node name="Light11" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=1928056676]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_a2e1e")
+
+[node name="Light12" type="Panel" parent="Center/Composition/Cabinet/Interior/Lights" unique_id=1926090140]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_3oc4p")
+
+[node name="ReelFrame" type="PanelContainer" parent="Center/Composition/Cabinet/Interior" unique_id=1549581079]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_5eimo")
+
+[node name="ReelRow" type="HBoxContainer" parent="Center/Composition/Cabinet/Interior/ReelFrame" unique_id=2121384355]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Window0" type="PanelContainer" parent="Center/Composition/Cabinet/Interior/ReelFrame/ReelRow" unique_id=599158842]
+custom_minimum_size = Vector2(330, 300)
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_s1xwj")
+
+[node name="ReelLeft" type="Control" parent="Center/Composition/Cabinet/Interior/ReelFrame/ReelRow/Window0" unique_id=1912762192]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(330, 300)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("4_abty8")
+reel_position = 3.0
+symbol_font = ExtResource("1_epily")
+
+[node name="Payline" type="ColorRect" parent="Center/Composition/Cabinet/Interior/ReelFrame/ReelRow/Window0/ReelLeft" unique_id=788238211]
+layout_mode = 0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -1.0
+offset_bottom = 1.0
+mouse_filter = 2
+color = Color(0.7294118, 0.57254905, 0.34117648, 0.2)
+
+[node name="Window1" type="PanelContainer" parent="Center/Composition/Cabinet/Interior/ReelFrame/ReelRow" unique_id=228218333]
+custom_minimum_size = Vector2(330, 300)
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_telje")
+
+[node name="ReelMiddle" type="Control" parent="Center/Composition/Cabinet/Interior/ReelFrame/ReelRow/Window1" unique_id=1232568723]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(330, 300)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("4_abty8")
+reel_position = 4.0
+symbol_font = ExtResource("1_epily")
+
+[node name="Payline" type="ColorRect" parent="Center/Composition/Cabinet/Interior/ReelFrame/ReelRow/Window1/ReelMiddle" unique_id=183268842]
+layout_mode = 0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -1.0
+offset_bottom = 1.0
+mouse_filter = 2
+color = Color(0.7294118, 0.57254905, 0.34117648, 0.2)
+
+[node name="Window2" type="PanelContainer" parent="Center/Composition/Cabinet/Interior/ReelFrame/ReelRow" unique_id=1010354941]
+custom_minimum_size = Vector2(330, 300)
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_t368d")
+
+[node name="ReelRight" type="Control" parent="Center/Composition/Cabinet/Interior/ReelFrame/ReelRow/Window2" unique_id=1929526065]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(330, 300)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("4_abty8")
+reel_position = 3.0
+symbol_font = ExtResource("1_epily")
+
+[node name="Payline" type="ColorRect" parent="Center/Composition/Cabinet/Interior/ReelFrame/ReelRow/Window2/ReelRight" unique_id=356404917]
+layout_mode = 0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -1.0
+offset_bottom = 1.0
+mouse_filter = 2
+color = Color(0.7294118, 0.57254905, 0.34117648, 0.2)
+
+[node name="ResultBox" type="VBoxContainer" parent="Center/Composition/Cabinet/Interior" unique_id=1220381423]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ResultTitle" type="Label" parent="Center/Composition/Cabinet/Interior/ResultBox" unique_id=1211079119]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9411765, 0.8235294, 1)
+theme_override_font_sizes/font_size = 29
+text = "下一份好运，会是什么？"
+horizontal_alignment = 1
+
+[node name="ResultDetail" type="Label" parent="Center/Composition/Cabinet/Interior/ResultBox" unique_id=1246508740]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.77254903, 0.81960785, 0.8117647, 1)
+theme_override_font_sizes/font_size = 18
+text = "点击下方按钮，开启本次幸运时刻"
+horizontal_alignment = 1
+
+[node name="ActionRow" type="HBoxContainer" parent="Center/Composition" unique_id=221753205]
+layout_mode = 2
+theme_override_constants/separation = 22
+alignment = 1
+
+[node name="SpinButton" type="Button" parent="Center/Composition/ActionRow" unique_id=1443724842]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 76)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95686275, 0.8666667, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.95686275, 0.8666667, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_y1ffr")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_cdcnj")
+theme_override_styles/hover = SubResource("StyleBoxFlat_5y75x")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_c7foo")
+text = "转动一次"
+
+[node name="Footnote" type="Label" parent="Center/Composition" unique_id=1917985500]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.44705883, 0.48235294, 0.47843137, 1)
+theme_override_font_sizes/font_size = 18
+text = "三个相同赢得三连 · 任意一对也有惊喜"
+horizontal_alignment = 1
+
+[node name="BottomNote" type="Label" parent="." unique_id=1124729]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -56.0
+offset_right = 400.0
+offset_bottom = -26.0
+theme_override_colors/font_color = Color(0.54901963, 0.5294118, 0.4862745, 1)
+theme_override_font_sizes/font_size = 18
+text = "每一次停转，都是新的幸运。"
+horizontal_alignment = 1
+
+[node name="RulesShade" type="ColorRect" parent="." unique_id=1721794460]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.12, 0.16, 0.6)
+
+[node name="RulesPanel" type="PanelContainer" parent="." unique_id=1091081489]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -300.0
+offset_right = 340.0
+offset_bottom = 300.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bj5of")
+
+[node name="Rules" type="VBoxContainer" parent="RulesPanel" unique_id=190842815]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="RulesPanel/Rules" unique_id=1946411012]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.14509805, 0.22352941, 0.29411766, 1)
+theme_override_font_sizes/font_size = 34
+text = "玩法说明"
+horizontal_alignment = 1
+
+[node name="Intro" type="Label" parent="RulesPanel/Rules" unique_id=1589369766]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.39607844, 0.4509804, 0.43137255, 1)
+theme_override_font_sizes/font_size = 20
+text = "仅判定中间横线的三个图案
+每个转轴的五种图案等概率出现"
+horizontal_alignment = 1
+
+[node name="Table" type="Label" parent="RulesPanel/Rules" unique_id=2073433479]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.14509805, 0.22352941, 0.29411766, 1)
+theme_override_constants/line_spacing = 10
+theme_override_font_sizes/font_size = 23
+text = "樱桃三连     ×5
+柠檬三连     ×8
+铃铛三连     ×12
+钻石三连     ×20
+幸运七三连     ×50
+任意一对     ×1"
+horizontal_alignment = 1
+
+[node name="Notice" type="Label" parent="RulesPanel/Rules" unique_id=189474801]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.54509807, 0.46666667, 0.34901962, 1)
+theme_override_font_sizes/font_size = 18
+text = "倍率仅供独立演示，不结算金币。"
+horizontal_alignment = 1
+
+[node name="CloseRulesButton" type="Button" parent="RulesPanel/Rules" unique_id=2104273085]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "知道了"

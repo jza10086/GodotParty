@@ -2,6 +2,16 @@
 
 独立城市冒险棋盘原型，沿用 Godot 4.7 Forward+ 与原版协议画质；没有正式游戏包 manifest，F5 仍进入框架。
 
+## 独立 2D 老虎机场景
+
+打开 `slot_machine/slot_machine.tscn`，按 F6 独立试玩。点击“转动一次”，三个转轴依次减速停下；只判定中间横线。五种图案等概率，三连倍率为樱桃 5、柠檬 8、铃铛 12、钻石 20、幸运七 50；任意一对为 1，其他为 0。右上角可查看玩法。倍率仅用于演示，不扣款、不结算金币，尚未接入地图事件或联机。
+
+场景使用原生 Control、容器和可编辑 StyleBox；转轴图案由 `slot_reel.gd` 绘制，复用协议字体，无新增外部素材。Inspector 可调整 `spin_duration`、`stop_interval` 和 `allow_random_spins`。
+
+后续事件可在场景进入树后调用 `play_result(PackedInt32Array([a, b, c]))` 播放指定结果，图案 ID 0–4 分别为樱桃、柠檬、铃铛、钻石、幸运七；将 `allow_random_spins` 预设为 false 可禁用本地随机按钮。`start_spin(seed)` 用于可复现的独立随机试玩。转动期间再次调用返回 false；完成时发出 `spin_finished(symbols, multiplier)`，由未来的事件控制器决定是否及如何结算。
+
+针对性自动检查：`godot --headless --path F:/GodotProjects/GodotParty --script res://tmp/test/millionaire_slot/slot_machine_test.gd --log-file F:/GodotProjects/GodotParty/tmp/test/millionaire_slot/runtime.log`。覆盖组合规则、重复请求拒绝、指定结果快照、停轮一致性、完成信号次数、种子复现和外部结果模式。测试脚本与截图位于本地忽略目录 `tmp/test/millionaire_slot/`，不是发布依赖。
+
 ## 查看与编辑
 
 打开 map_editor.tscn，按 F6 运行地图编辑器。默认载入 map_preview.tscn；右侧面板操作笔刷，地图修改只发生在运行进程。所有棋盘脚本均不使用 @tool，旧 Godot 编辑器插件已删除。每格 1m×1m，地图场景 Cells 下的作者 Cell 是唯一来源。
