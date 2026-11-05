@@ -96,6 +96,20 @@ static func schema() -> Dictionary:
 				"values": ["LighTech", "Concept 3"],
 				"control": "select"
 			},
+			"ui.player_cursor_transparency": {
+				"type": "int",
+				"default": 50,
+				"title": "他人鼠标透明度",
+				"description": "控制其他玩家指针和姓名的透明度；0% 完全不透明，100% 完全透明。",
+				"audience": "local",
+				"apply": "immediate",
+				"overridable": true,
+				"min": 0,
+				"max": 100,
+				"step": 1,
+				"suffix": "%",
+				"control": "number"
+			},
 			"ui.player_cursors": {
 				"type": "bool",
 				"default": true,
@@ -153,6 +167,9 @@ static func schema() -> Dictionary:
 					},
 					{
 						"field": "ui.player_cursors"
+					},
+					{
+						"field": "ui.player_cursor_transparency"
 					}
 				]
 			}

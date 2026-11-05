@@ -47,6 +47,7 @@ func _process(delta: float) -> void:
 			"x": clampf(point.x, 0, 1), "y": clampf(point.y, 0, 1)
 		}))
 	var show_others: bool = active and bool(api.config.get_common(&"ui.player_cursors"))
+	var remote_alpha: float = 1.0 - float(api.config.get_common(&"ui.player_cursor_transparency")) / 100.0
 	var now: int = Time.get_ticks_msec()
 	var show_local: bool = false
 	for player: Dictionary in api.get_players():
@@ -64,6 +65,7 @@ func _process(delta: float) -> void:
 			visual.visible = show_local
 			visual.position = point * size
 			continue
+		visual.modulate.a = remote_alpha
 		var data: Dictionary = points.get(id, {})
 		var shown: bool = show_others and player.connected and data.get("visible", false) and now - stamps.get(id, 0) <= EXPIRY_MSEC
 		if shown:
@@ -151,5 +153,5 @@ func _draw() -> void:
 			continue
 		var visual: Node2D = _visuals[id]
 		var label_position: Vector2 = visual.position + Vector2(30, 31)
-		draw_string_outline(font, label_position, player.name, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, 6, Color("#141820"))
-		draw_string(font, label_position, player.name, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color.WHITE)
+		draw_string_outline(font, label_position, player.name, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, 6, Color(Color("#141820"), visual.modulate.a))
+		draw_string(font, label_position, player.name, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color(1.0, 1.0, 1.0, visual.modulate.a))

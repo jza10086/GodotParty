@@ -166,6 +166,8 @@ board_area.add_child(cursors)
 
 协议公共偏好 `ui.player_cursors`（默认开，可被小游戏覆盖，立即生效）控制本机是否显示其他玩家鼠标；不影响本机彩色指针及发送自己位置。组件 `enabled` 则由游戏在离开交互阶段时关闭显示并发布隐藏状态。组件的生命周期限于本次活动，释放时断开消息连接并恢复系统指针。
 
+「界面 → 他人鼠标透明度」（`ui.player_cursor_transparency`）默认 50%，范围 0–100%，0% 完全不透明、100% 完全透明。应用后立即调整其他玩家的指针、姓名及姓名描边；本机指针保持不透明。该偏好仅影响本机显示，可按小游戏覆盖，不改变位置同步或其他玩家的显示设置。
+
 公开资源 `ranked_round` 为原版五款街机小游戏复用的 Control 基类，提供 standard 生命周期、受发送者身份与单调序号约束的逻辑行动、主机快照、一次性结果提交和基础布局；不定义玩法和奖励。游戏入口场景继承协议的 ranked_round.tscn，根节点挂载对应的子类脚本。子类通过 build_game/start_game/tick_game/handle_action/make_snapshot/render_game 实现各自玩法。state 使用可靠快照；大型星潮状态另作压缩，视觉短时外推不改变裁定。清单应声明 state（reliable/instance）及需要时的 private_view（reliable/instance）。
 
 ## 加载与结算场景
