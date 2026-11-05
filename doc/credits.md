@@ -68,7 +68,7 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 阿瓦隆远征成功音效：Kenney，Music Jingles（CC0，原文件 jingles_PIZZA01.ogg） https://opengameart.org/content/85-short-music-jingles
 阿瓦隆远征失败音效：Till Behrend，Glass Break（TinyWorlds 经作者许可发布，CC0，原文件 glass_breaking.wav） https://opengameart.org/content/glass-break
 
-模型：IRON RANGE 坦克与训练目标，Quaternius Animated Tanks Pack https://quaternius.com/packs/animatedtanks.html
+模型：雷霆战争训练目标，Quaternius Animated Tanks Pack https://quaternius.com/packs/animatedtanks.html
 模型：山脊竞速，Kenney Car Kit https://kenney.nl/assets/car-kit
 模型：山脊竞速，Kenney Racing Kit https://kenney.nl/assets/racing-kit
 模型：山脊竞速，Kenney Nature Kit https://kenney.nl/assets/nature-kit
@@ -80,3 +80,4 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 光标视觉参考（自行重绘）：LighTech RE https://zhutix.com/ico/lightech-re-cursor/
 光标视觉参考（自行重绘）：LighTech Editor https://zhutix.com/ico/lightech-editor-cursor/
 光标视觉参考（自行重绘）：Cursor Concept 3 https://zhutix.com/ico/cursor-concept-3-cus/
+模型：雷霆战争 M1 Abrams，用户提供的 AstraBlender 原创模型（本地源文件） F:/AstraBlender/Projects/1_Blender工程/MainBattleTanks/M1_Abrams.blend
