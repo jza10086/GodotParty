@@ -26,12 +26,12 @@ func apply_color(value: Color) -> void:
 	color = value
 
 ## Cache the same small transparent image used by the OS cursor and the scene.
-## Neutral hairlines preserve contrast for the protocol's black and white colors.
+## A thin dark edge separates the player-colored border from the background.
 static func texture_for(theme_name: String, tint: Color) -> ImageTexture:
 	var key: String = theme_name + ":" + tint.to_html()
 	if not _textures.has(key):
 		var path: String = SHAPES[theme_name]
-		var svg: String = '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="42" viewBox="0 0 36 42"><g fill="none" stroke-linejoin="round"><path d="%s" stroke="#f5f5f5" stroke-width="5"/><path d="%s" stroke="#141820" stroke-width="4"/><path d="%s" stroke="#%s" stroke-width="2.7"/></g></svg>' % [path, path, path, tint.to_html(false)]
+		var svg: String = '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="42" viewBox="0 0 36 42"><g fill="none" stroke-linejoin="round"><path d="%s" stroke="#141820" stroke-width="4"/><path d="%s" stroke="#%s" stroke-width="2.7"/></g></svg>' % [path, path, tint.to_html(false)]
 		var image: Image = Image.new()
 		var error: Error = image.load_svg_from_string(svg)
 		if error != OK:

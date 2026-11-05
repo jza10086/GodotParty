@@ -149,7 +149,7 @@ Millionaire 当前仍是独立 F6 视觉原型：读取同一资料槽的协议�
 
 ## 共享玩家鼠标
 
-公开资源 `player_cursor` 为 `appearance/player_cursor.tscn`（Node2D）：透明中心、彩色边缘的空心箭头，场景原点 `(0, 0)` 为热点。提供 `LighTech`（默认，直边尖角）与 `Concept 3`（圆润轮廓）两种自行绘制的主题。`apply_color(Color)` 为单个实例的边缘染色，使用上面的协议八色；中性细描边保证黑白指针在不同背景上可见。Inspector 的 `cursor_theme` / `color` 可预览外观。
+公开资源 `player_cursor` 为 `appearance/player_cursor.tscn`（Node2D）：透明中心、彩色边缘的空心箭头，场景原点 `(0, 0)` 为热点。提供 `LighTech`（默认，直边尖角）与 `Concept 3`（圆润轮廓）两种自行绘制的主题。`apply_color(Color)` 为单个实例的边缘染色，使用上面的协议八色；彩色边缘仅保留深色细描边，没有额外白色描边。Inspector 的 `cursor_theme` / `color` 可预览外观。
 
 公共设置「界面 → 光标主题」（`ui.cursor_theme`）在应用后立即生效，属于本地偏好，可按游戏覆盖，不同步给其他玩家。它同时控制本机显示的多人指针与协议内的默认箭头。`settings_runtime.gd` 在大厅和活动的设置作用域内安装本机玩家颜色的原生光标，离开协议时恢复系统箭头；仍保留控件的文本、拖动等专用鼠标形状及游戏的鼠标捕获行为。原生光标和多人场景复用同一透明图像，主题不影响网络坐标或点击规则。画质仍由 `graphics_settings.gd` 实现，独立地图预览的画质调用不安装光标。
 
