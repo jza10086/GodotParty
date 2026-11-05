@@ -90,3 +90,7 @@
 	path = games/minigame/godot_party_default_multi_snake_game
 	url = git@github.com:jza10086/MultiSnakeGame.git
 	branch = main
+[submodule "games/minigame/godot_party_default_west_showdown"]
+	path = games/minigame/godot_party_default_west_showdown
+	url = git@github.com:jza10086/WestShowdown.git
+	branch = main
