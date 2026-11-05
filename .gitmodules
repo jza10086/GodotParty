@@ -86,3 +86,7 @@
 	path = games/minigame/godot_party_default_3d_chess
 	url = git@github.com:jza10086/3DChess.git
 	branch = main
+[submodule "games/minigame/godot_party_default_multi_snake_game"]
+	path = games/minigame/godot_party_default_multi_snake_game
+	url = git@github.com:jza10086/MultiSnakeGame.git
+	branch = main
