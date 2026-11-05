@@ -81,3 +81,5 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 光标视觉参考（自行重绘）：LighTech Editor https://zhutix.com/ico/lightech-editor-cursor/
 光标视觉参考（自行重绘）：Cursor Concept 3 https://zhutix.com/ico/cursor-concept-3-cus/
 模型：雷霆战争 M1 Abrams，用户提供的 AstraBlender 原创模型（本地源文件） F:/AstraBlender/Projects/1_Blender工程/MainBattleTanks/M1_Abrams.blend
+
+坦克：火炮大战，Kenney Tanks（CC0，侧视车体、履带与炮管） https://kenney.nl/assets/tanks
