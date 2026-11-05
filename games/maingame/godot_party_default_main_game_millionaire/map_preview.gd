@@ -14,6 +14,12 @@ var board: Resource
 @export_group("场景美术")
 ## 相机垂直视野；这是地图构图参数，不随用户画质档位变化。
 @export_range(30.0, 90.0, 1.0) var field_of_view: float = 45.0
+@export var map_title: String = "城市冒险棋盘"
+@export var map_description: String = "35 × 29 米城市棋盘  |  旧城 · 公园 · 湖畔 · 工业角  |  两处路线选择"
+@export_range(10.0, 90.0) var overview_distance: float = 61.0
+@export var overview_target: Vector3 = Vector3(0, 0.2, 2.0)
+@export_range(-180.0, 180.0) var overview_yaw: float = 35.0
+@export_range(20.0, 85.0) var overview_pitch: float = 48.0
 @export_group("")
 const Graphics = preload("res://games/protocols/godot_party_default_protocol/graphics_settings.gd")
 var _graphics: RefCounted
@@ -61,11 +67,11 @@ func _build_hud() -> void:
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(column)
 	var title: Label = Label.new()
-	title.text = "GodotPartyDefaultMainGameMillionaire"
+	title.text = map_title
 	title.add_theme_font_size_override("font_size", 28)
 	column.add_child(title)
 	var subtitle: Label = Label.new()
-	subtitle.text = "35 × 29 米城市棋盘  |  旧城 · 公园 · 湖畔 · 工业角  |  两处路线选择"
+	subtitle.text = map_description
 	subtitle.add_theme_font_size_override("font_size", 16)
 	subtitle.modulate = Color("#b3c6d0")
 	column.add_child(subtitle)
@@ -79,13 +85,13 @@ func _build_hud() -> void:
 	column.add_child(_status)
 
 func _reset_camera() -> void:
-	_target = Vector3(0, 0.2, 2.0)
+	_target = overview_target
 	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	camera.fov = field_of_view
 	camera.v_offset = 0.3
-	_distance = 61.0
-	_yaw = deg_to_rad(35)
-	_pitch = deg_to_rad(48)
+	_distance = overview_distance
+	_yaw = deg_to_rad(overview_yaw)
+	_pitch = deg_to_rad(overview_pitch)
 	_refresh_camera()
 
 ## 原版协议登记点：正式运行时由设置作用域自动调用，不需要游戏自行应用画质。
