@@ -22,7 +22,7 @@
 | [霓虹回响](../games/minigame/gp_rhythm_game/README.md) | 1–8 | 已接入；本地音频时钟判定、实时准确率榜、曲终结果提交；另有原生制谱与校准工具。 | 验收整曲、长按、设备延迟补偿和曲终等待；后续扩展正式房间的谱面选择与公开可分发曲库。 | 独立子仓 MusicGame；正式入口默认原创双轨长按练习曲；两组本地限定 Bad Apple 曲目不随公开仓库发布。 |
 | [拾光拼图](../games/minigame/godot_party_default_jigsaw_puzzle/README.md) | 1–8 | 最新代码已有 3D 多人比赛、主机动作/快照、连续小回合及总分提交；最新框架完整流程待验收。 | 优先核对准备页、局内回合与协议结算页的衔接；验收 1/4/8 人、首位完成后的倒计时、全员超时与断线；更新落后的 README。 | 独立子仓 JigsawPuzzle；当前为外围各自拼图、中央展示记忆答案，默认 3 轮；包装入口直接启动比赛并提交结果，未使用通用 `round_pages.gd`，不能套用旧单人接入结论。 |
 | [方向密码](../games/minigame/direction_password/README.md) | 1 | 单人玩法已接入；六轮结果、得分与正确率进入框架结算。 | 验收连续六轮、错误输入、超时与结果显示；整理规则说明和本地输入设置。 | 独立子仓 MemoryGame；未新增多人玩法，当前池按 1 人限制。 |
-| [灯塔群岛](../games/minigame/godot_party_default_lighthouse_isles/README.md) | 1 | 单人玩法已接入；检查点、完赛用时、坠落数和个人纪录可提交/保存。 | 验收整条路线、检查点复位、坠落与终点触发；调整相机与跳跃手感。 | 独立子仓 3DPlatformer；保持单人流程，未实现远端角色或竞速同步。 |
+| [极速追逐](../games/minigame/godot_party_default_lighthouse_isles/README.md) | 1 | 单人玩法已接入；检查点、完赛用时、坠落数和个人纪录可提交/保存。 | 验收整条路线、检查点复位、坠落与终点触发；调整相机与跳跃手感。 | 独立子仓 3DPlatformer；保持单人流程，未实现远端角色或竞速同步。 |
 | [IRON RANGE · 坦克训练场](../games/minigame/godot_party_default_tank_range/README.md) | 1 | 单人玩法已接入；目标全部击毁后提交用时和命中数。 | 验收六个目标、最后一发计数、炮弹碰撞和镜头；明确成绩面板的指标含义。 | 独立子仓 3DTankBattle；是单人训练场，与“铁鹰防线”是不同游戏。 |
 | [山脊竞速](../games/minigame/godot_party_default_car_racing/README.md) | 1 | 单人玩法已接入；三圈完赛计时、框架结算及个人纪录已实现。 | 验收检查点顺序、圈数、偏离赛道与重置；检查车辆操控和相机。 | 独立子仓 CarRacing；未实现多车联网比赛。 |
 | [COASTLINE · 海岸飞行](../games/minigame/godot_party_default_flight/README.md) | 1 | 单人玩法已接入；成功或坠毁可提交飞行结果与航标数量。 | 验收完整航线、航标穿越、坠毁终止与返回轮换；调整飞行控制和状态提示。 | 独立子仓 FlightGame；当前结算展示结果和经过航标数，未定义多人对抗规则。 |
