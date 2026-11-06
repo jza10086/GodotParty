@@ -3,7 +3,7 @@ extends Node3D
 const Author = preload("res://games/maingame/godot_party_default_main_game_millionaire/editor/board_authoring.gd")
 const Cell = preload("res://games/maingame/godot_party_default_main_game_millionaire/editor/board_cell.gd")
 const Routes = preload("res://games/maingame/godot_party_default_main_game_millionaire/editor/board_routes.gd")
-const KINDS: Array[String] = ["start", "property", "junction", "event", "shop", "diamond", "decor"]
+const KINDS: Array[String] = ["start", "property", "junction", "event", "shop", "diamond", "road", "decor"]
 var _dock: VBoxContainer
 var _enabled: CheckButton
 var _brush: OptionButton
@@ -46,7 +46,7 @@ var _stroke_last: Vector2i
 
 const AFTER_GUI_INPUT_PASS: int = 0
 const AFTER_GUI_INPUT_STOP: int = 1
-const DEFAULT_MAP: String = "res://games/maingame/godot_party_default_main_game_millionaire/map_preview.tscn"
+const DEFAULT_MAP: String = "res://games/maingame/godot_party_default_main_game_millionaire/maps/city_board.tscn"
 var _history: UndoRedo = UndoRedo.new()
 var _map: Node3D
 var _path: String = DEFAULT_MAP
@@ -74,7 +74,7 @@ func _build_ui() -> void:
 	_enabled.text = "启用棋盘笔刷"
 	panel.add_child(_enabled)
 	_brush = _option(panel, "笔刷", ["放置", "删除", "复制（吸取后放置）"])
-	_kind = _option(panel, "地格", ["起点", "地产（双格）", "分叉 / 汇流", "事件", "商店（双格）", "钻石", "装饰"])
+	_kind = _option(panel, "地格", ["出生点", "地产（双格）", "分叉 / 汇流", "事件", "商店（双格）", "钻石", "免费道路（0 行动力）", "装饰"])
 	_turn = _option(panel, "方向：起点 / 建筑侧 / 路口唯一端或第一出口", ["+X 右", "+Z 下", "−X 左", "−Z 上"])
 	_junction = _option(panel, "路口规则", ["T 型单入口", "T 型单出口", "十字单出口（三进一出）", "十字单入口（一进三出）", "十字双出入口（两进两出）"])
 	_exit_layout = _option(panel, "双出口布局（指定方向为第一出口）", ["相邻：指定方向及顺时针侧", "相对：指定方向及反方向"])

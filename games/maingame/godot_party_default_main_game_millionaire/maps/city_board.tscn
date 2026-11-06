@@ -1,0 +1,4220 @@
+[gd_scene format=4 uid="uid://cpdsl1y4cbacv"]
+
+[ext_resource type="Script" uid="uid://rs1rjfh313aa" path="res://games/maingame/godot_party_default_main_game_millionaire/map_preview.gd" id="1_ftsb6"]
+[ext_resource type="Script" uid="uid://b6nabc2j62p1" path="res://games/maingame/godot_party_default_main_game_millionaire/editor/board_authoring.gd" id="2_65jmd"]
+[ext_resource type="Script" uid="uid://boxrnwohu5k67" path="res://games/maingame/godot_party_default_main_game_millionaire/editor/board_cell.gd" id="3_w4woh"]
+
+[sub_resource type="Environment" id="Environment_5f4uq"]
+background_mode = 1
+background_color = Color(0.8627451, 0.89411765, 0.9137255, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.8980392, 0.9372549, 0.972549, 1)
+ambient_light_energy = 0.75
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gq1wf"]
+shading_mode = 0
+albedo_color = Color(0.38431373, 0.6039216, 0.6627451, 1)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_pcig8"]
+_surfaces = [{
+"aabb": AABB(-26.5, 0.06, -18.5, 52, 1e-05, 38),
+"format": 34359738369,
+"primitive": 1,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 184,
+"vertex_data": PackedByteArray("AADUwY/CdT0AAJTBAADUwY/CdT0AAJxBAADMwY/CdT0AAJTBAADMwY/CdT0AAJxBAADEwY/CdT0AAJTBAADEwY/CdT0AAJxBAAC8wY/CdT0AAJTBAAC8wY/CdT0AAJxBAAC0wY/CdT0AAJTBAAC0wY/CdT0AAJxBAACswY/CdT0AAJTBAACswY/CdT0AAJxBAACkwY/CdT0AAJTBAACkwY/CdT0AAJxBAACcwY/CdT0AAJTBAACcwY/CdT0AAJxBAACUwY/CdT0AAJTBAACUwY/CdT0AAJxBAACMwY/CdT0AAJTBAACMwY/CdT0AAJxBAACEwY/CdT0AAJTBAACEwY/CdT0AAJxBAAB4wY/CdT0AAJTBAAB4wY/CdT0AAJxBAABowY/CdT0AAJTBAABowY/CdT0AAJxBAABYwY/CdT0AAJTBAABYwY/CdT0AAJxBAABIwY/CdT0AAJTBAABIwY/CdT0AAJxBAAA4wY/CdT0AAJTBAAA4wY/CdT0AAJxBAAAowY/CdT0AAJTBAAAowY/CdT0AAJxBAAAYwY/CdT0AAJTBAAAYwY/CdT0AAJxBAAAIwY/CdT0AAJTBAAAIwY/CdT0AAJxBAADwwI/CdT0AAJTBAADwwI/CdT0AAJxBAADQwI/CdT0AAJTBAADQwI/CdT0AAJxBAACwwI/CdT0AAJTBAACwwI/CdT0AAJxBAACQwI/CdT0AAJTBAACQwI/CdT0AAJxBAABgwI/CdT0AAJTBAABgwI/CdT0AAJxBAAAgwI/CdT0AAJTBAAAgwI/CdT0AAJxBAADAv4/CdT0AAJTBAADAv4/CdT0AAJxBAAAAv4/CdT0AAJTBAAAAv4/CdT0AAJxBAAAAP4/CdT0AAJTBAAAAP4/CdT0AAJxBAADAP4/CdT0AAJTBAADAP4/CdT0AAJxBAAAgQI/CdT0AAJTBAAAgQI/CdT0AAJxBAABgQI/CdT0AAJTBAABgQI/CdT0AAJxBAACQQI/CdT0AAJTBAACQQI/CdT0AAJxBAACwQI/CdT0AAJTBAACwQI/CdT0AAJxBAADQQI/CdT0AAJTBAADQQI/CdT0AAJxBAADwQI/CdT0AAJTBAADwQI/CdT0AAJxBAAAIQY/CdT0AAJTBAAAIQY/CdT0AAJxBAAAYQY/CdT0AAJTBAAAYQY/CdT0AAJxBAAAoQY/CdT0AAJTBAAAoQY/CdT0AAJxBAAA4QY/CdT0AAJTBAAA4QY/CdT0AAJxBAABIQY/CdT0AAJTBAABIQY/CdT0AAJxBAABYQY/CdT0AAJTBAABYQY/CdT0AAJxBAABoQY/CdT0AAJTBAABoQY/CdT0AAJxBAAB4QY/CdT0AAJTBAAB4QY/CdT0AAJxBAACEQY/CdT0AAJTBAACEQY/CdT0AAJxBAACMQY/CdT0AAJTBAACMQY/CdT0AAJxBAACUQY/CdT0AAJTBAACUQY/CdT0AAJxBAACcQY/CdT0AAJTBAACcQY/CdT0AAJxBAACkQY/CdT0AAJTBAACkQY/CdT0AAJxBAACsQY/CdT0AAJTBAACsQY/CdT0AAJxBAAC0QY/CdT0AAJTBAAC0QY/CdT0AAJxBAAC8QY/CdT0AAJTBAAC8QY/CdT0AAJxBAADEQY/CdT0AAJTBAADEQY/CdT0AAJxBAADMQY/CdT0AAJTBAADMQY/CdT0AAJxBAADUwY/CdT0AAJTBAADMQY/CdT0AAJTBAADUwY/CdT0AAIzBAADMQY/CdT0AAIzBAADUwY/CdT0AAITBAADMQY/CdT0AAITBAADUwY/CdT0AAHjBAADMQY/CdT0AAHjBAADUwY/CdT0AAGjBAADMQY/CdT0AAGjBAADUwY/CdT0AAFjBAADMQY/CdT0AAFjBAADUwY/CdT0AAEjBAADMQY/CdT0AAEjBAADUwY/CdT0AADjBAADMQY/CdT0AADjBAADUwY/CdT0AACjBAADMQY/CdT0AACjBAADUwY/CdT0AABjBAADMQY/CdT0AABjBAADUwY/CdT0AAAjBAADMQY/CdT0AAAjBAADUwY/CdT0AAPDAAADMQY/CdT0AAPDAAADUwY/CdT0AANDAAADMQY/CdT0AANDAAADUwY/CdT0AALDAAADMQY/CdT0AALDAAADUwY/CdT0AAJDAAADMQY/CdT0AAJDAAADUwY/CdT0AAGDAAADMQY/CdT0AAGDAAADUwY/CdT0AACDAAADMQY/CdT0AACDAAADUwY/CdT0AAMC/AADMQY/CdT0AAMC/AADUwY/CdT0AAAC/AADMQY/CdT0AAAC/AADUwY/CdT0AAAA/AADMQY/CdT0AAAA/AADUwY/CdT0AAMA/AADMQY/CdT0AAMA/AADUwY/CdT0AACBAAADMQY/CdT0AACBAAADUwY/CdT0AAGBAAADMQY/CdT0AAGBAAADUwY/CdT0AAJBAAADMQY/CdT0AAJBAAADUwY/CdT0AALBAAADMQY/CdT0AALBAAADUwY/CdT0AANBAAADMQY/CdT0AANBAAADUwY/CdT0AAPBAAADMQY/CdT0AAPBAAADUwY/CdT0AAAhBAADMQY/CdT0AAAhBAADUwY/CdT0AABhBAADMQY/CdT0AABhBAADUwY/CdT0AAChBAADMQY/CdT0AAChBAADUwY/CdT0AADhBAADMQY/CdT0AADhBAADUwY/CdT0AAEhBAADMQY/CdT0AAEhBAADUwY/CdT0AAFhBAADMQY/CdT0AAFhBAADUwY/CdT0AAGhBAADMQY/CdT0AAGhBAADUwY/CdT0AAHhBAADMQY/CdT0AAHhBAADUwY/CdT0AAIRBAADMQY/CdT0AAIRBAADUwY/CdT0AAIxBAADMQY/CdT0AAIxBAADUwY/CdT0AAJRBAADMQY/CdT0AAJRBAADUwY/CdT0AAJxBAADMQY/CdT0AAJxB")
+}]
+
+[node name="city_board" type="Node3D" unique_id=1637752768 node_paths=PackedStringArray("camera", "seam_grid", "tile_labels")]
+script = ExtResource("1_ftsb6")
+camera = NodePath("Camera")
+seam_grid = NodePath("SeamGrid")
+tile_labels = NodePath("Numbers")
+map_title = "城市路网 · 功能地图"
+map_description = "外环 · 内环 · 贯穿通道  |  6 处分叉  |  64 房产 · 9 事件 · 5 商店 · 8 钻石 · 1 出生点"
+overview_distance = 58.0
+overview_target = Vector3(0, 0.2, 0.5)
+overview_yaw = 0.0
+overview_pitch = 72.0
+
+[node name="Cells" type="Node3D" parent="." unique_id=714202252]
+script = ExtResource("2_65jmd")
+
+[node name="A" type="Node3D" parent="Cells" unique_id=1990648998]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "A",
+"junction_mode": "split",
+"kind": "junction",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 1
+}
+
+[node name="B" type="Node3D" parent="Cells" unique_id=605121273]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "B",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 0
+}
+
+[node name="C" type="Node3D" parent="Cells" unique_id=443188462]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "C",
+"junction_mode": "split",
+"kind": "junction",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 2
+}
+
+[node name="D" type="Node3D" parent="Cells" unique_id=1105662962]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "D",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 0
+}
+
+[node name="E" type="Node3D" parent="Cells" unique_id=876186406]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "E",
+"junction_mode": "merge",
+"kind": "junction",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 0
+}
+
+[node name="F" type="Node3D" parent="Cells" unique_id=1519191057]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "F",
+"junction_mode": "split",
+"kind": "junction",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 3
+}
+
+[node name="G" type="Node3D" parent="Cells" unique_id=1155413869]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 14)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "G",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 0
+}
+
+[node name="H" type="Node3D" parent="Cells" unique_id=1098170415]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "H",
+"junction_mode": "merge",
+"kind": "junction",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 2
+}
+
+[node name="K" type="Node3D" parent="Cells" unique_id=608613754]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "K",
+"junction_mode": "merge",
+"kind": "junction",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 2
+}
+
+[node name="L" type="Node3D" parent="Cells" unique_id=628396193]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "L",
+"junction_mode": "cross_balanced",
+"kind": "junction",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 0
+}
+
+[node name="M" type="Node3D" parent="Cells" unique_id=213232006]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "M",
+"junction_mode": "split",
+"kind": "junction",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 2
+}
+
+[node name="N" type="Node3D" parent="Cells" unique_id=45949199]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "N",
+"junction_mode": "merge",
+"kind": "junction",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 1
+}
+
+[node name="O" type="Node3D" parent="Cells" unique_id=1093451065]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "O",
+"junction_mode": "cross_balanced",
+"kind": "junction",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "anchor",
+"turn": 1
+}
+
+[node name="OuterAB_01" type="Node3D" parent="Cells" unique_id=1438970174]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterAB_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterAB",
+"turn": 0
+}
+
+[node name="OuterAB_02" type="Node3D" parent="Cells" unique_id=1772729844]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 3)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterAB_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterAB",
+"turn": 2
+}
+
+[node name="OuterAB_03" type="Node3D" parent="Cells" unique_id=9332314]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 2)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterAB_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterAB",
+"turn": 0
+}
+
+[node name="OuterAB_04" type="Node3D" parent="Cells" unique_id=1395334191]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 1)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterAB_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterAB",
+"turn": 0
+}
+
+[node name="OuterAB_05" type="Node3D" parent="Cells" unique_id=486572383]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-b.glb",
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterAB_05",
+"kind": "shop",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterAB",
+"turn": 2
+}
+
+[node name="OuterAB_06" type="Node3D" parent="Cells" unique_id=410508183]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -1)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterAB_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterAB",
+"turn": 2
+}
+
+[node name="OuterAB_07" type="Node3D" parent="Cells" unique_id=1194009043]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -2)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterAB_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterAB",
+"turn": 0
+}
+
+[node name="OuterAB_08" type="Node3D" parent="Cells" unique_id=2059851777]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -3)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterAB_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterAB",
+"turn": 0
+}
+
+[node name="OuterAB_09" type="Node3D" parent="Cells" unique_id=858227487]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterAB_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterAB",
+"turn": 0
+}
+
+[node name="OuterBC_01" type="Node3D" parent="Cells" unique_id=1290923491]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_02" type="Node3D" parent="Cells" unique_id=502983923]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterBC_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 2
+}
+
+[node name="OuterBC_03" type="Node3D" parent="Cells" unique_id=538680811]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_04" type="Node3D" parent="Cells" unique_id=694650794]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_05" type="Node3D" parent="Cells" unique_id=1912631188]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_06" type="Node3D" parent="Cells" unique_id=1733058098]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterBC_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 3
+}
+
+[node name="OuterBC_07" type="Node3D" parent="Cells" unique_id=152940579]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_08" type="Node3D" parent="Cells" unique_id=452856850]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_09" type="Node3D" parent="Cells" unique_id=1626086349]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_09",
+"kind": "event",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_10" type="Node3D" parent="Cells" unique_id=1529905263]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_10",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_11" type="Node3D" parent="Cells" unique_id=1158404433]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, -11)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_12" type="Node3D" parent="Cells" unique_id=97355058]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_13" type="Node3D" parent="Cells" unique_id=1265139003]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, -13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_14" type="Node3D" parent="Cells" unique_id=800424934]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -13)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterBC_14",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 3
+}
+
+[node name="OuterBC_15" type="Node3D" parent="Cells" unique_id=1489357366]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, -13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_15",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_16" type="Node3D" parent="Cells" unique_id=376602715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterBC_17" type="Node3D" parent="Cells" unique_id=1783288330]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, -13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterBC_17",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterBC",
+"turn": 0
+}
+
+[node name="OuterCD_01" type="Node3D" parent="Cells" unique_id=769804298]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -14)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterCD_02" type="Node3D" parent="Cells" unique_id=984402695]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -15)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterCD_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 2
+}
+
+[node name="OuterCD_03" type="Node3D" parent="Cells" unique_id=1939712336]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterCD_04" type="Node3D" parent="Cells" unique_id=422164501]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterCD_05" type="Node3D" parent="Cells" unique_id=1464832965]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterCD_06" type="Node3D" parent="Cells" unique_id=1200555521]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterCD_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 3
+}
+
+[node name="OuterCD_07" type="Node3D" parent="Cells" unique_id=1885723523]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterCD_08" type="Node3D" parent="Cells" unique_id=1643980560]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterCD_09" type="Node3D" parent="Cells" unique_id=1013269751]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_09",
+"kind": "diamond",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterCD_10" type="Node3D" parent="Cells" unique_id=821163392]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterCD_10",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 3
+}
+
+[node name="OuterCD_11" type="Node3D" parent="Cells" unique_id=1422681227]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterCD_12" type="Node3D" parent="Cells" unique_id=50195782]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterCD_13" type="Node3D" parent="Cells" unique_id=68696867]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterCD_14" type="Node3D" parent="Cells" unique_id=1344273344]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterCD_14",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 3
+}
+
+[node name="OuterCD_15" type="Node3D" parent="Cells" unique_id=799496532]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_15",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterCD_16" type="Node3D" parent="Cells" unique_id=1047812293]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterCD_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterCD",
+"turn": 0
+}
+
+[node name="OuterDE_01" type="Node3D" parent="Cells" unique_id=2084366870]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_02" type="Node3D" parent="Cells" unique_id=642095758]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterDE_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 3
+}
+
+[node name="OuterDE_03" type="Node3D" parent="Cells" unique_id=1746931544]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_04" type="Node3D" parent="Cells" unique_id=667710130]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_05" type="Node3D" parent="Cells" unique_id=622050416]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_06" type="Node3D" parent="Cells" unique_id=452866475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterDE_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 3
+}
+
+[node name="OuterDE_07" type="Node3D" parent="Cells" unique_id=1810448856]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_08" type="Node3D" parent="Cells" unique_id=1443669804]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_09" type="Node3D" parent="Cells" unique_id=1872105359]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-b.glb",
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_09",
+"kind": "shop",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 3
+}
+
+[node name="OuterDE_10" type="Node3D" parent="Cells" unique_id=382427611]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterDE_10",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 3
+}
+
+[node name="OuterDE_11" type="Node3D" parent="Cells" unique_id=369311562]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_12" type="Node3D" parent="Cells" unique_id=177847577]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_13" type="Node3D" parent="Cells" unique_id=1957736356]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_14" type="Node3D" parent="Cells" unique_id=410112063]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterDE_14",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 3
+}
+
+[node name="OuterDE_15" type="Node3D" parent="Cells" unique_id=71515361]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_15",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_16" type="Node3D" parent="Cells" unique_id=112860782]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_17" type="Node3D" parent="Cells" unique_id=1489078654]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_17",
+"kind": "event",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_18" type="Node3D" parent="Cells" unique_id=1070961692]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -15)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterDE_18",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_19" type="Node3D" parent="Cells" unique_id=2090637168]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -14)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_19",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_20" type="Node3D" parent="Cells" unique_id=778943793]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_20",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_21" type="Node3D" parent="Cells" unique_id=1974689001]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_21",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_22" type="Node3D" parent="Cells" unique_id=1479241513]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -11)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterDE_22",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_23" type="Node3D" parent="Cells" unique_id=1320781922]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_23",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_24" type="Node3D" parent="Cells" unique_id=937399383]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_24",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterDE_25" type="Node3D" parent="Cells" unique_id=916096099]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterDE_25",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterDE",
+"turn": 0
+}
+
+[node name="OuterEF_01" type="Node3D" parent="Cells" unique_id=1511333133]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_02" type="Node3D" parent="Cells" unique_id=1039187150]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterEF_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 3
+}
+
+[node name="OuterEF_03" type="Node3D" parent="Cells" unique_id=1596993167]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_04" type="Node3D" parent="Cells" unique_id=1336661508]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_05" type="Node3D" parent="Cells" unique_id=1065988638]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_06" type="Node3D" parent="Cells" unique_id=226541768]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 0, -5)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterEF_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_07" type="Node3D" parent="Cells" unique_id=1630275048]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 0, -4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_08" type="Node3D" parent="Cells" unique_id=693273869]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 0, -3)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_09" type="Node3D" parent="Cells" unique_id=902136970]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 0, -2)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_10" type="Node3D" parent="Cells" unique_id=1153125906]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 0, -1)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_10",
+"kind": "event",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_11" type="Node3D" parent="Cells" unique_id=817646551]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_12" type="Node3D" parent="Cells" unique_id=1444092737]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 0, 1)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_13" type="Node3D" parent="Cells" unique_id=96550164]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, 1)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_14" type="Node3D" parent="Cells" unique_id=126137943]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 1)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_14",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_15" type="Node3D" parent="Cells" unique_id=821939592]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 2)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_15",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_16" type="Node3D" parent="Cells" unique_id=1401587087]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 3)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_17" type="Node3D" parent="Cells" unique_id=1243400120]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_17",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterEF_18" type="Node3D" parent="Cells" unique_id=1855350206]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterEF_18",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterEF",
+"turn": 0
+}
+
+[node name="OuterFG_01" type="Node3D" parent="Cells" unique_id=798903196]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_02" type="Node3D" parent="Cells" unique_id=1538369242]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterFG_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_03" type="Node3D" parent="Cells" unique_id=1751313322]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_04" type="Node3D" parent="Cells" unique_id=1617752018]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_05" type="Node3D" parent="Cells" unique_id=2069662830]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 11)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_06" type="Node3D" parent="Cells" unique_id=2022748678]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 11)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterFG_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 1
+}
+
+[node name="OuterFG_07" type="Node3D" parent="Cells" unique_id=189727771]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, 11)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_08" type="Node3D" parent="Cells" unique_id=1316451510]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, 11)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_09" type="Node3D" parent="Cells" unique_id=1190664498]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 0, 11)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_10" type="Node3D" parent="Cells" unique_id=1290669474]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 11)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_10",
+"kind": "diamond",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_11" type="Node3D" parent="Cells" unique_id=25925950]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_12" type="Node3D" parent="Cells" unique_id=1517750736]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_13" type="Node3D" parent="Cells" unique_id=930571827]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 14)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_14" type="Node3D" parent="Cells" unique_id=1730468011]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, 14)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterFG_14",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 1
+}
+
+[node name="OuterFG_15" type="Node3D" parent="Cells" unique_id=1413132365]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 14)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_15",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_16" type="Node3D" parent="Cells" unique_id=710777724]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 14)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_17" type="Node3D" parent="Cells" unique_id=1049216592]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 14)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_17",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterFG_18" type="Node3D" parent="Cells" unique_id=251107964]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 14)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterFG_18",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 1
+}
+
+[node name="OuterFG_19" type="Node3D" parent="Cells" unique_id=1965231060]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 14)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterFG_19",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterFG",
+"turn": 0
+}
+
+[node name="OuterGH_01" type="Node3D" parent="Cells" unique_id=987808328]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 15)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterGH_02" type="Node3D" parent="Cells" unique_id=1769079591]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 16)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterGH_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterGH_03" type="Node3D" parent="Cells" unique_id=1556374200]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterGH_04" type="Node3D" parent="Cells" unique_id=716519252]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterGH_05" type="Node3D" parent="Cells" unique_id=70769468]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterGH_06" type="Node3D" parent="Cells" unique_id=1816221607]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterGH_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 1
+}
+
+[node name="OuterGH_07" type="Node3D" parent="Cells" unique_id=1908115816]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterGH_08" type="Node3D" parent="Cells" unique_id=1793263737]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterGH_09" type="Node3D" parent="Cells" unique_id=1163829540]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-b.glb",
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_09",
+"kind": "shop",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 1
+}
+
+[node name="OuterGH_10" type="Node3D" parent="Cells" unique_id=1771335506]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterGH_10",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 1
+}
+
+[node name="OuterGH_11" type="Node3D" parent="Cells" unique_id=12851724]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterGH_12" type="Node3D" parent="Cells" unique_id=1247507917]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterGH_13" type="Node3D" parent="Cells" unique_id=2081340485]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterGH_14" type="Node3D" parent="Cells" unique_id=1861797217]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterGH_14",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 1
+}
+
+[node name="OuterGH_15" type="Node3D" parent="Cells" unique_id=800714813]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_15",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterGH_16" type="Node3D" parent="Cells" unique_id=308529422]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterGH_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterGH",
+"turn": 0
+}
+
+[node name="OuterHA_01" type="Node3D" parent="Cells" unique_id=612564695]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_02" type="Node3D" parent="Cells" unique_id=1939083770]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterHA_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 1
+}
+
+[node name="OuterHA_03" type="Node3D" parent="Cells" unique_id=1618943777]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_04" type="Node3D" parent="Cells" unique_id=755193712]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_05" type="Node3D" parent="Cells" unique_id=1194663002]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_06" type="Node3D" parent="Cells" unique_id=1398742336]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterHA_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 1
+}
+
+[node name="OuterHA_07" type="Node3D" parent="Cells" unique_id=359911821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_08" type="Node3D" parent="Cells" unique_id=3126439]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_09" type="Node3D" parent="Cells" unique_id=690765540]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_10" type="Node3D" parent="Cells" unique_id=1937527131]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, 17)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_10",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_11" type="Node3D" parent="Cells" unique_id=1048495213]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, 16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_12" type="Node3D" parent="Cells" unique_id=1460678854]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, 15)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_13" type="Node3D" parent="Cells" unique_id=1161605750]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, 14)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_14" type="Node3D" parent="Cells" unique_id=1376091965]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, 13)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterHA_14",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 2
+}
+
+[node name="OuterHA_15" type="Node3D" parent="Cells" unique_id=426937778]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, 12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_15",
+"kind": "event",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_16" type="Node3D" parent="Cells" unique_id=1358520565]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_17" type="Node3D" parent="Cells" unique_id=1148242810]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, 12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_17",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_18" type="Node3D" parent="Cells" unique_id=2138214909]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 12)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterHA_18",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 1
+}
+
+[node name="OuterHA_19" type="Node3D" parent="Cells" unique_id=1445204958]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 0, 12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_19",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_20" type="Node3D" parent="Cells" unique_id=645867486]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_20",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_21" type="Node3D" parent="Cells" unique_id=1619864202]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0, 12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_21",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_22" type="Node3D" parent="Cells" unique_id=240546369]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_22",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_23" type="Node3D" parent="Cells" unique_id=1935967819]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 11)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_23",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_24" type="Node3D" parent="Cells" unique_id=871633764]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_24",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_25" type="Node3D" parent="Cells" unique_id=864025615]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_25",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_26" type="Node3D" parent="Cells" unique_id=1070841558]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "OuterHA_26",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 2
+}
+
+[node name="OuterHA_27" type="Node3D" parent="Cells" unique_id=417665336]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_27",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="OuterHA_28" type="Node3D" parent="Cells" unique_id=2055010126]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "OuterHA_28",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "OuterHA",
+"turn": 0
+}
+
+[node name="InnerKL_01" type="Node3D" parent="Cells" unique_id=642730621]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_02" type="Node3D" parent="Cells" unique_id=1704212525]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerKL_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 1
+}
+
+[node name="InnerKL_03" type="Node3D" parent="Cells" unique_id=859297094]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_04" type="Node3D" parent="Cells" unique_id=1033967585]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_05" type="Node3D" parent="Cells" unique_id=1978707926]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 3)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_06" type="Node3D" parent="Cells" unique_id=1610114423]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 2)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerKL_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 2
+}
+
+[node name="InnerKL_07" type="Node3D" parent="Cells" unique_id=942982547]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 1)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_08" type="Node3D" parent="Cells" unique_id=686316721]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_09" type="Node3D" parent="Cells" unique_id=1214174823]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -1)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_10" type="Node3D" parent="Cells" unique_id=612247426]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -2)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerKL_10",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 2
+}
+
+[node name="InnerKL_11" type="Node3D" parent="Cells" unique_id=1651098923]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -3)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-b.glb",
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_11",
+"kind": "shop",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 2
+}
+
+[node name="InnerKL_12" type="Node3D" parent="Cells" unique_id=1857730787]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_13" type="Node3D" parent="Cells" unique_id=2129195377]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_14" type="Node3D" parent="Cells" unique_id=1786425125]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_14",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_15" type="Node3D" parent="Cells" unique_id=91744242]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_15",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_16" type="Node3D" parent="Cells" unique_id=940402107]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_17" type="Node3D" parent="Cells" unique_id=259170568]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_17",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_18" type="Node3D" parent="Cells" unique_id=1516744595]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerKL_18",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 3
+}
+
+[node name="InnerKL_19" type="Node3D" parent="Cells" unique_id=1042203964]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_19",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_20" type="Node3D" parent="Cells" unique_id=734460377]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_20",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerKL_21" type="Node3D" parent="Cells" unique_id=419583362]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerKL_21",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerKL",
+"turn": 0
+}
+
+[node name="InnerLM_01" type="Node3D" parent="Cells" unique_id=500024057]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_02" type="Node3D" parent="Cells" unique_id=1700601254]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerLM_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 3
+}
+
+[node name="InnerLM_03" type="Node3D" parent="Cells" unique_id=1668231276]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_04" type="Node3D" parent="Cells" unique_id=1045480093]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_05" type="Node3D" parent="Cells" unique_id=681227094]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_05",
+"kind": "diamond",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_06" type="Node3D" parent="Cells" unique_id=796852289]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_06",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_07" type="Node3D" parent="Cells" unique_id=1592534356]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_08" type="Node3D" parent="Cells" unique_id=464069745]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_09" type="Node3D" parent="Cells" unique_id=1915253608]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_10" type="Node3D" parent="Cells" unique_id=983209255]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_10",
+"kind": "event",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_11" type="Node3D" parent="Cells" unique_id=631706886]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_12" type="Node3D" parent="Cells" unique_id=1486303802]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_13" type="Node3D" parent="Cells" unique_id=1795825809]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerLM_14" type="Node3D" parent="Cells" unique_id=1464965560]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerLM_14",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerLM",
+"turn": 0
+}
+
+[node name="InnerMN_01" type="Node3D" parent="Cells" unique_id=1487359991]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_02" type="Node3D" parent="Cells" unique_id=293346381]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerMN_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 3
+}
+
+[node name="InnerMN_03" type="Node3D" parent="Cells" unique_id=2060582610]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_04" type="Node3D" parent="Cells" unique_id=1714653105]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_05" type="Node3D" parent="Cells" unique_id=1165357939]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_06" type="Node3D" parent="Cells" unique_id=870275709]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -8)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerMN_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_07" type="Node3D" parent="Cells" unique_id=1172449366]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_08" type="Node3D" parent="Cells" unique_id=241880242]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_09" type="Node3D" parent="Cells" unique_id=1014525594]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_09",
+"kind": "event",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_10" type="Node3D" parent="Cells" unique_id=1091974997]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -4)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerMN_10",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_11" type="Node3D" parent="Cells" unique_id=1422753718]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -3)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_12" type="Node3D" parent="Cells" unique_id=695390126]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -2)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_13" type="Node3D" parent="Cells" unique_id=1276653368]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -1)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_14" type="Node3D" parent="Cells" unique_id=1109558287]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerMN_14",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_15" type="Node3D" parent="Cells" unique_id=2118444146]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 1)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_15",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_16" type="Node3D" parent="Cells" unique_id=748357904]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 2)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerMN_17" type="Node3D" parent="Cells" unique_id=1110800537]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 3)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerMN_17",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerMN",
+"turn": 0
+}
+
+[node name="InnerNO_01" type="Node3D" parent="Cells" unique_id=2106732388]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerNO_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 0
+}
+
+[node name="InnerNO_02" type="Node3D" parent="Cells" unique_id=891008904]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerNO_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 0
+}
+
+[node name="InnerNO_03" type="Node3D" parent="Cells" unique_id=2020295075]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerNO_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 0
+}
+
+[node name="InnerNO_04" type="Node3D" parent="Cells" unique_id=1948895847]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerNO_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 0
+}
+
+[node name="InnerNO_05" type="Node3D" parent="Cells" unique_id=913768037]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerNO_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 0
+}
+
+[node name="InnerNO_06" type="Node3D" parent="Cells" unique_id=1991612613]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerNO_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 1
+}
+
+[node name="InnerNO_07" type="Node3D" parent="Cells" unique_id=500914562]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-b.glb",
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerNO_07",
+"kind": "shop",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 1
+}
+
+[node name="InnerNO_08" type="Node3D" parent="Cells" unique_id=925299660]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerNO_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 0
+}
+
+[node name="InnerNO_09" type="Node3D" parent="Cells" unique_id=936283096]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerNO_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 0
+}
+
+[node name="InnerNO_10" type="Node3D" parent="Cells" unique_id=605544935]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerNO_10",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 1
+}
+
+[node name="InnerNO_11" type="Node3D" parent="Cells" unique_id=430124081]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerNO_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 0
+}
+
+[node name="InnerNO_12" type="Node3D" parent="Cells" unique_id=1372807605]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerNO_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 0
+}
+
+[node name="InnerNO_13" type="Node3D" parent="Cells" unique_id=8867897]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerNO_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerNO",
+"turn": 0
+}
+
+[node name="InnerOK_01" type="Node3D" parent="Cells" unique_id=744577638]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_02" type="Node3D" parent="Cells" unique_id=83999563]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerOK_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 1
+}
+
+[node name="InnerOK_03" type="Node3D" parent="Cells" unique_id=876106593]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_04" type="Node3D" parent="Cells" unique_id=961508069]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_05" type="Node3D" parent="Cells" unique_id=812762472]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_06" type="Node3D" parent="Cells" unique_id=1761401861]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerOK_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 2
+}
+
+[node name="InnerOK_07" type="Node3D" parent="Cells" unique_id=2115942205]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_08" type="Node3D" parent="Cells" unique_id=128615624]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_09" type="Node3D" parent="Cells" unique_id=1028447346]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_09",
+"kind": "diamond",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_10" type="Node3D" parent="Cells" unique_id=759992700]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_10",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_11" type="Node3D" parent="Cells" unique_id=1496128669]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_12" type="Node3D" parent="Cells" unique_id=1092678510]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_13" type="Node3D" parent="Cells" unique_id=1110930687]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_14" type="Node3D" parent="Cells" unique_id=797152178]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "InnerOK_14",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 1
+}
+
+[node name="InnerOK_15" type="Node3D" parent="Cells" unique_id=2062100759]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_15",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="InnerOK_16" type="Node3D" parent="Cells" unique_id=1534480226]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "InnerOK_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "InnerOK",
+"turn": 0
+}
+
+[node name="RadialAK_01" type="Node3D" parent="Cells" unique_id=319896695]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_02" type="Node3D" parent="Cells" unique_id=163805]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialAK_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 3
+}
+
+[node name="RadialAK_03" type="Node3D" parent="Cells" unique_id=1986578754]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_04" type="Node3D" parent="Cells" unique_id=641639441]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_05" type="Node3D" parent="Cells" unique_id=1962215514]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_06" type="Node3D" parent="Cells" unique_id=2066832720]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 7)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialAK_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_07" type="Node3D" parent="Cells" unique_id=1567544178]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_08" type="Node3D" parent="Cells" unique_id=1111182335]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_09" type="Node3D" parent="Cells" unique_id=2014689357]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_10" type="Node3D" parent="Cells" unique_id=1527298604]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_10",
+"kind": "event",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_11" type="Node3D" parent="Cells" unique_id=1241728598]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_12" type="Node3D" parent="Cells" unique_id=514444423]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_13" type="Node3D" parent="Cells" unique_id=1423057696]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_14" type="Node3D" parent="Cells" unique_id=868060559]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialAK_14",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 3
+}
+
+[node name="RadialAK_15" type="Node3D" parent="Cells" unique_id=229640304]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_15",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_16" type="Node3D" parent="Cells" unique_id=550992315]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_17" type="Node3D" parent="Cells" unique_id=71876744]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_17",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialAK_18" type="Node3D" parent="Cells" unique_id=1566895050]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialAK_18",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialAK",
+"turn": 0
+}
+
+[node name="RadialCL_01" type="Node3D" parent="Cells" unique_id=2101029836]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialCL_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 0
+}
+
+[node name="RadialCL_02" type="Node3D" parent="Cells" unique_id=142295660]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -11)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialCL_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 0
+}
+
+[node name="RadialCL_03" type="Node3D" parent="Cells" unique_id=824733627]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialCL_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 0
+}
+
+[node name="RadialCL_04" type="Node3D" parent="Cells" unique_id=1124051689]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialCL_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 0
+}
+
+[node name="RadialCL_05" type="Node3D" parent="Cells" unique_id=1355974881]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialCL_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 0
+}
+
+[node name="RadialCL_06" type="Node3D" parent="Cells" unique_id=52773075]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialCL_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 3
+}
+
+[node name="RadialCL_07" type="Node3D" parent="Cells" unique_id=1158115179]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialCL_07",
+"kind": "diamond",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 0
+}
+
+[node name="RadialCL_08" type="Node3D" parent="Cells" unique_id=877416770]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialCL_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 0
+}
+
+[node name="RadialCL_09" type="Node3D" parent="Cells" unique_id=545675168]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialCL_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 0
+}
+
+[node name="RadialCL_10" type="Node3D" parent="Cells" unique_id=159053396]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialCL_10",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 0
+}
+
+[node name="RadialCL_11" type="Node3D" parent="Cells" unique_id=1982580230]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialCL_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 0
+}
+
+[node name="RadialCL_12" type="Node3D" parent="Cells" unique_id=1804669913]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialCL_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialCL",
+"turn": 0
+}
+
+[node name="RadialME_01" type="Node3D" parent="Cells" unique_id=768397666]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_02" type="Node3D" parent="Cells" unique_id=1722489089]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -11)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialME_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 2
+}
+
+[node name="RadialME_03" type="Node3D" parent="Cells" unique_id=964024384]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_04" type="Node3D" parent="Cells" unique_id=2115206719]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_05" type="Node3D" parent="Cells" unique_id=1722745948]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_06" type="Node3D" parent="Cells" unique_id=1268395153]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialME_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 3
+}
+
+[node name="RadialME_07" type="Node3D" parent="Cells" unique_id=1694293778]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_08" type="Node3D" parent="Cells" unique_id=811954600]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_09" type="Node3D" parent="Cells" unique_id=976692960]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_10" type="Node3D" parent="Cells" unique_id=2038070443]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialME_10",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 3
+}
+
+[node name="RadialME_11" type="Node3D" parent="Cells" unique_id=2139458237]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_11",
+"kind": "diamond",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_12" type="Node3D" parent="Cells" unique_id=1487918346]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, -12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_13" type="Node3D" parent="Cells" unique_id=1606507211]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, -11)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_14" type="Node3D" parent="Cells" unique_id=1395980106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, -10)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialME_14",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_15" type="Node3D" parent="Cells" unique_id=1846097658]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, -9)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_15",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_16" type="Node3D" parent="Cells" unique_id=1437613297]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, -8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_17" type="Node3D" parent="Cells" unique_id=598930918]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_17",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_18" type="Node3D" parent="Cells" unique_id=60988075]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialME_18",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 3
+}
+
+[node name="RadialME_19" type="Node3D" parent="Cells" unique_id=1384683566]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_19",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialME_20" type="Node3D" parent="Cells" unique_id=1313066330]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, -7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialME_20",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialME",
+"turn": 0
+}
+
+[node name="RadialFN_01" type="Node3D" parent="Cells" unique_id=1871879153]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialFN_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialFN",
+"turn": 0
+}
+
+[node name="RadialFN_02" type="Node3D" parent="Cells" unique_id=1292731107]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialFN_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialFN",
+"turn": 1
+}
+
+[node name="RadialFN_03" type="Node3D" parent="Cells" unique_id=110922117]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialFN_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialFN",
+"turn": 0
+}
+
+[node name="RadialFN_04" type="Node3D" parent="Cells" unique_id=527386106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialFN_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialFN",
+"turn": 0
+}
+
+[node name="RadialFN_05" type="Node3D" parent="Cells" unique_id=285907102]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialFN_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialFN",
+"turn": 0
+}
+
+[node name="RadialFN_06" type="Node3D" parent="Cells" unique_id=281806677]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialFN_06",
+"kind": "event",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialFN",
+"turn": 0
+}
+
+[node name="RadialFN_07" type="Node3D" parent="Cells" unique_id=1464421769]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialFN_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialFN",
+"turn": 0
+}
+
+[node name="RadialFN_08" type="Node3D" parent="Cells" unique_id=646283341]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialFN_08",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialFN",
+"turn": 0
+}
+
+[node name="RadialFN_09" type="Node3D" parent="Cells" unique_id=1710954002]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialFN_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialFN",
+"turn": 0
+}
+
+[node name="RadialFN_10" type="Node3D" parent="Cells" unique_id=1210384278]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialFN_10",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialFN",
+"turn": 1
+}
+
+[node name="RadialFN_11" type="Node3D" parent="Cells" unique_id=1399841778]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialFN_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialFN",
+"turn": 0
+}
+
+[node name="RadialOH_01" type="Node3D" parent="Cells" unique_id=2039484958]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 10)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialOH_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="RadialOH_02" type="Node3D" parent="Cells" unique_id=197425936]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 11)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialOH_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="RadialOH_03" type="Node3D" parent="Cells" unique_id=204172213]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 12)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialOH_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="RadialOH_04" type="Node3D" parent="Cells" unique_id=2140218779]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialOH_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="RadialOH_05" type="Node3D" parent="Cells" unique_id=2132218691]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialOH_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="RadialOH_06" type="Node3D" parent="Cells" unique_id=1841980463]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 13)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialOH_06",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 1
+}
+
+[node name="RadialOH_07" type="Node3D" parent="Cells" unique_id=196729340]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialOH_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="RadialOH_08" type="Node3D" parent="Cells" unique_id=593821509]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialOH_08",
+"kind": "diamond",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="RadialOH_09" type="Node3D" parent="Cells" unique_id=901997756]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialOH_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="RadialOH_10" type="Node3D" parent="Cells" unique_id=878100970]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 13)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "RadialOH_10",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 1
+}
+
+[node name="RadialOH_11" type="Node3D" parent="Cells" unique_id=1798207762]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 13)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialOH_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="RadialOH_12" type="Node3D" parent="Cells" unique_id=975022327]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 14)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialOH_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="RadialOH_13" type="Node3D" parent="Cells" unique_id=573502181]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 15)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialOH_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="RadialOH_14" type="Node3D" parent="Cells" unique_id=865951842]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 16)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "RadialOH_14",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "RadialOH",
+"turn": 0
+}
+
+[node name="DiagonalLO_01" type="Node3D" parent="Cells" unique_id=942213545]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_01",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_02" type="Node3D" parent="Cells" unique_id=2063304430]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -4)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "DiagonalLO_02",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_03" type="Node3D" parent="Cells" unique_id=1361745988]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -3)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_03",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_04" type="Node3D" parent="Cells" unique_id=1807410775]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -2)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_04",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_05" type="Node3D" parent="Cells" unique_id=486675959]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -1)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_05",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_06" type="Node3D" parent="Cells" unique_id=987661736]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_06",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_07" type="Node3D" parent="Cells" unique_id=1738198248]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_07",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_08" type="Node3D" parent="Cells" unique_id=1328090497]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_08",
+"kind": "event",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_09" type="Node3D" parent="Cells" unique_id=736304792]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_09",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_10" type="Node3D" parent="Cells" unique_id=1415498657]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "DiagonalLO_10",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 3
+}
+
+[node name="DiagonalLO_11" type="Node3D" parent="Cells" unique_id=1726069280]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_11",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_12" type="Node3D" parent="Cells" unique_id=1740715459]
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_12",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_13" type="Node3D" parent="Cells" unique_id=1908312511]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_13",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_14" type="Node3D" parent="Cells" unique_id=1685133944]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_14",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_15" type="Node3D" parent="Cells" unique_id=1362389713]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_15",
+"kind": "diamond",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_16" type="Node3D" parent="Cells" unique_id=1050643037]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_16",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_17" type="Node3D" parent="Cells" unique_id=256068603]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 3)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_17",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_18" type="Node3D" parent="Cells" unique_id=1057635034]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 4)
+script = ExtResource("3_w4woh")
+data = {
+&"asset": "res://games/maingame/godot_party_default_main_game_millionaire/assets/suburban/building-type-a.glb",
+&"color": Color(0.72156864, 0.8235294, 0.8745098, 1),
+"id": "DiagonalLO_18",
+"kind": "property",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_19" type="Node3D" parent="Cells" unique_id=1410443087]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_19",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_20" type="Node3D" parent="Cells" unique_id=1766189619]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 6)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_20",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_21" type="Node3D" parent="Cells" unique_id=793076913]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 7)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_21",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="DiagonalLO_22" type="Node3D" parent="Cells" unique_id=1110826647]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 8)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.92941177, 0.81960785, 0.654902, 1),
+"id": "DiagonalLO_22",
+"kind": "road",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "DiagonalLO",
+"turn": 0
+}
+
+[node name="START" type="Node3D" parent="Cells" unique_id=546129978]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23, 0, 5)
+script = ExtResource("3_w4woh")
+data = {
+&"color": Color(0.9098039, 0.70980394, 0.64705884, 1),
+"id": "START",
+"kind": "start",
+&"layer_0": Color(0.48235294, 0.5372549, 0.6117647, 1),
+"street": "arrival",
+"turn": 0
+}
+
+[node name="Camera" type="Camera3D" parent="." unique_id=1224705919]
+current = true
+far = 180.0
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1093110339]
+transform = Transform3D(0.90630776, 0.37314978, -0.19840728, 0, 0.4694716, 0.88294756, 0.42261827, -0.8002222, 0.42548576, 0, 0, 0)
+light_color = Color(1, 0.9647059, 0.9098039, 1)
+shadow_enabled = true
+directional_shadow_max_distance = 110.0
+
+[node name="World" type="WorldEnvironment" parent="." unique_id=1055580116]
+environment = SubResource("Environment_5f4uq")
+
+[node name="Numbers" type="Node3D" parent="." unique_id=698190083]
+visible = false
+
+[node name="SeamGrid" type="MeshInstance3D" parent="." unique_id=1416121893]
+visible = false
+material_override = SubResource("StandardMaterial3D_gq1wf")
+mesh = SubResource("ArrayMesh_pcig8")

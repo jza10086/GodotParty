@@ -76,7 +76,7 @@ func _build_hud() -> void:
 	subtitle.modulate = Color("#b3c6d0")
 	column.add_child(subtitle)
 	var help: Label = Label.new()
-	help.text = "单行棋盘 | 路口免费 · 地产/事件停留结算 · 商店/钻石经过可交易 | MMB旋转 Shift+MMB平移 滚轮缩放 G网格 N编号 R重置"
+	help.text = "单行棋盘 | 青色 0 道路/路口免费 · 地产/事件停留结算 · 商店/钻石经过可交易 | MMB旋转 Shift+MMB平移 滚轮缩放 G网格 N编号 R重置"
 	help.add_theme_font_size_override("font_size", 16)
 	column.add_child(help)
 	_status = Label.new()
