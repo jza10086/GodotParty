@@ -8,12 +8,12 @@ func find_tile(id: String) -> Dictionary:
 			return tile.duplicate(true)
 	return {}
 
-## 功能格进入消耗一点；出生点、路口和连接用免费道路不消耗行动力。
+## 普通道路和功能格进入消耗一点；出生点、路口不消耗行动力。
 func cost(tile: Dictionary) -> int:
-	return 0 if tile.kind in ["start", "junction", "road"] else 1
+	return 0 if tile.kind in ["start", "junction"] else 1
 
 ## 纯移动裁定，不买卖资产、不抽事件。交易结束由调用方继续本次剩余行动。
-## 行动力用完停在付费格；不能再进入免费道路或路口，也不允许常规移动回起点。
+## 行动力用完立即停止；不能再进入免费路口，也不允许常规移动回起点。
 func step(from_id: String, to_id: String, remaining: int) -> Dictionary:
 	var source: Dictionary = find_tile(from_id)
 	var target: Dictionary = find_tile(to_id)

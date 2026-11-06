@@ -38,16 +38,6 @@ func build(definition: Resource) -> void:
 		var origin: Vector3 = Vector3(0, 0.055, 0)
 		if tile.kind == "start":
 			_build_flag(markers)
-		if tile.kind == "road":
-			var zero: Label3D = Label3D.new()
-			zero.name = "FreeRoad"
-			zero.text = "0"
-			zero.position = origin
-			zero.rotation.x = -PI / 2
-			zero.font_size = 48
-			zero.pixel_size = 0.004
-			zero.modulate = Color("#65dfee")
-			markers.add_child(zero)
 		if tile.kind == "event":
 			var label: Label3D = Label3D.new()
 			label.name = "Event"
@@ -93,7 +83,7 @@ func build(definition: Resource) -> void:
 			marker.name = "To_" + tile.id + "_" + target_id
 			marker.mesh = arrow
 			marker.material_override = _material(Color("#65dfee")) if tile.kind == "road" else junction_color
-			marker.position = origin + direction * (0.34 if tile.kind == "road" else 0.23)
+			marker.position = origin if tile.kind == "road" else origin + direction * 0.23
 			marker.rotation.y = atan2(-direction.x, -direction.z)
 			marker.scale = Vector3.ONE * (0.50 if tile.kind == "road" else 0.85)
 			marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
