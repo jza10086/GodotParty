@@ -52,8 +52,8 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 字体：Source Han Serif SC Regular 2.003（Adobe 思源宋体简体中文，SIL OFL 1.1，许可随协议保留） https://github.com/adobe-fonts/source-han-serif
 
 原型：AuctionMaster 仓库竞拍及物品插图 https://github.com/jza10086/AuctionMaster
-物资插图：秘仓竞拍 100 张写实透明 PNG（内置 imagegen 原创生成，Pillow 处理透明边缘；未使用其他游戏资产；逐图提示词见来源文件） games/minigame/godot_party_default_auction_master/assets/items/realistic/generation_prompts.json
-旧版物资插图：秘仓竞拍 40 张原创 SVG（本项目程序绘制，已停用但保留源文件） games/minigame/godot_party_default_auction_master/assets/items/
+物资插图：竞拍大师 100 张写实透明 PNG（内置 imagegen 原创生成，Pillow 处理透明边缘；未使用其他游戏资产；逐图提示词见来源文件） games/minigame/godot_party_default_auction_master/assets/items/realistic/generation_prompts.json
+旧版物资插图：竞拍大师 40 张原创 SVG（本项目程序绘制，已停用但保留源文件） games/minigame/godot_party_default_auction_master/assets/items/
 玩法参考：BidKing：竞拍之王（暗标竞拍与藏品估值方向；未使用其资产） https://store.steampowered.com/app/4128580/?l=schinese
 原型：SnakeGame 贪吃蛇规则和程序化棋盘 https://github.com/jza10086/SnakeGame
 原型：StarWave 星潮弹幕、程序化表现与背景着色器 https://github.com/jza10086/StarWave
