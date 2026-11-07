@@ -10,6 +10,7 @@
 3D 商业建筑：Kenney City Kit Commercial（CC0） https://kenney.nl/assets/city-kit-commercial
 3D 工业建筑：Kenney City Kit Industrial（CC0） https://kenney.nl/assets/city-kit-industrial
 3D 住宅与树木：Kenney City Kit Suburban（CC0） https://kenney.nl/assets/city-kit-suburban
+3D 城市花园植被与雕塑：Kenney Nature Kit（CC0，许可证随素材保留） https://kenney.nl/assets/nature-kit
 
 3D 骰子：KayKit Board Game Bits 1.0（CC0，D6_A 白色六面骰） https://kaylousberg.itch.io/board-game-bits
 UI：GodotPartyUI 大富翁 HUD https://github.com/jza10086/GodotPartyUI
