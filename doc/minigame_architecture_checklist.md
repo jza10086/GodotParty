@@ -127,10 +127,12 @@
 
 包：`godot_party_default_fruit_samurai`。定位：[game.gd](../games/minigame/godot_party_default_fruit_samurai/game.gd)、[scripts/main.gd](../games/minigame/godot_party_default_fruit_samurai/scripts/main.gd)、[scripts/hud_skin.gd](../games/minigame/godot_party_default_fruit_samurai/scripts/hud_skin.gd)。
 
-- [ ] 入口复制了云间跃行的 IS_PLATFORM 常量分支，删去本包永远不会执行的分支，直接声明 Fruit 玩法依赖；不为去重引入新的通用挑战框架。
-- [ ] 处理 `_send_progress()`、`_publish()` 的 Error，停止时解除连接并结束切割状态。保持本地灵敏切割、房主有界成绩汇总。
-- [ ] `_create_decor()` 的四个固定水果、`hud_skin.configure()` 的固定文字/装饰/布局/样式迁成场景或皮肤子场景。运行时抛出的水果、切片和刀光继续动态生成。
-- [ ] 八声音池接作用域音频；已知类型的 Variant 换为具体类型。HUD 展示用的测试注入与 `--hud-capture` 从正式玩法整理到预览/临时验收入口。
+- [x] 入口复制了云间跃行的 IS_PLATFORM 常量分支，删去本包永远不会执行的分支，直接声明 Fruit 玩法依赖；不为去重引入新的通用挑战框架。
+- [x] 处理 `_send_progress()`、`_publish()` 的 Error，停止时解除连接并结束切割状态。保持本地灵敏切割、房主有界成绩汇总。
+- [x] `_create_decor()` 的四个固定水果、`hud_skin.configure()` 的固定文字/装饰/布局/样式迁成场景或皮肤子场景。运行时抛出的水果、切片和刀光继续动态生成。
+- [x] 八声音池接作用域音频；已知类型的 Variant 换为具体类型。HUD 展示用的测试注入与 `--hud-capture` 从正式玩法整理到预览/临时验收入口。
+
+本包 M07 已落地：固定装饰、菜单、四种 HUD 与八声音池已保存为场景，音效使用协议作用域 Cue；保留 1–8 人和现有消息/成绩格式。2026-11-07 使用系统 Godot 4.7.2 完成定向运行检查（输入遮挡、连击、低动态、跨轮重置、音频清理、发送失败与重复停止），查看四种皮肤的 1920×1080 渲染；真实本机 ENet 双端连续两轮的 45/60 分成绩、排名、结算与订阅清理通过。共享 G01 仍待统一迁移，本包未修改协议；真人手感、听感和跨机器联机未验收。
 
 验证：四种现有皮肤和低动态效果、划动输入遮挡、跨轮切割清理、双端成绩和音频停止。
 
