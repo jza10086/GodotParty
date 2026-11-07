@@ -29,7 +29,7 @@
 - [ ] 停止时解除本类建立的连接并清理页面，支持中途取消和重复停止。不要靠节点稍后被释放来表达生命周期契约。
 - [ ] 状态文字、默认成绩列等固定文案使用协议翻译资源；保留现有 `standing_row.tscn` 复用方式。
 
-直接使用排名基类：桌球、连连看、贪吃蛇、星潮、竞拍大师、合成大西八。其他 round_pages 使用方包括 3D 国际象棋、记忆拼图、阿瓦隆、水果武士、云间跃行、心理博弈、蛇蛇大作战、雷霆战争、霓虹回响及 solo_round。海战棋、炮火争锋直接组合 gate，不能被误纳入同一入口迁移。
+直接使用排名基类：桌球、连连看、贪吃蛇、星潮、竞拍大师、合成大西八。其他 round_pages 使用方包括 3D 国际象棋、记忆拼图、阿瓦隆、水果武士、云间跃行、心理博弈、蛇蛇大作战、雷霆战争、霓虹节拍及 solo_round。海战棋、炮火争锋直接组合 gate，不能被误纳入同一入口迁移。
 
 验证：选一个排名类、一个自有控制器、一个带持续音频的调用方覆盖准备→运行→结算→取消；涉及公共行为变化时补受影响双端和跨轮检查。客户端、观战房主都必须继续处理协调消息；输入阻止不等于游戏计时暂停。
 
@@ -45,13 +45,13 @@
 
 验证：一个本机参赛者和一个观战房主，确认唯一成绩提交、退出取消、连续两轮无重复 InputMap 事件；再按各游戏操作特点验证门控。没有运行模拟的观战端不要求凭空出现本机玩法画面。
 
-### G03 音频接入边界　B，霓虹回响单独安排
+### G03 音频接入边界　B，霓虹节拍单独安排
 
 参考 [音频组件文档](../games/protocols/godot_party_default_protocol/doc/audio.md)。普通音频主要分布在贪吃蛇、星潮、水果武士、云间跃行、山脊竞速、海岸飞行、极速追逐、雷霆战争；原型还包括铁鹰、海战棋旧原型和火炮旧原型。
 
 - [ ] 普通声音保存 Cue 与固定播放器场景，通过入口公开目标、setup 准备作用域、停止时回收；保留原声音、循环、音高和播放节奏。
 - [ ] 不复制空白模板的测试面板到正式游戏。已有 sound/muted 偏好与协议音量的组合规则必须写清，不能建立两套互相覆盖的音量来源。
-- [ ] 霓虹回响保留自己的播放时钟、按键时间采样、长按音和校准；只统一配置与作用域音量/资源生命周期。若公共接口不足以承载专用播放器，先单独设计公开接入点，再迁移；不能访问协议 `_audio_mixer` 等私有状态。
+- [ ] 霓虹节拍保留自己的播放时钟、按键时间采样、长按音和校准；只统一配置与作用域音量/资源生命周期。若公共接口不足以承载专用播放器，先单独设计公开接入点，再迁移；不能访问协议 `_audio_mixer` 等私有状态。
 - [ ] 心理博弈的麦克风与搭档语音继续使用 PartyVoice，不能替换成 GameAudio 的预录配音队列。
 
 ## 逐包任务
@@ -110,14 +110,16 @@
 
 验证：按键连发、菜单关闭后不补发旧输入、暂存/下一块、两种多盘模式往返、选盘与状态隔离、正式成绩。
 
-### M06 霓虹回响　A　依赖 G01，专用音频按 G03
+### M06 霓虹节拍　A　依赖 G01，专用音频按 G03
 
-包：`gp_rhythm_game`。定位：[rhythm_backend.gd](../games/minigame/gp_rhythm_game/rhythm_backend.gd) 的 SETTINGS_PATH、DEFAULTS、`_load_settings()`、`_save_settings()`；[music_game.gd](../games/minigame/gp_rhythm_game/music_game.gd) 的 `_ready()`；`party_round.gd`。
+包：`gp_rhythm_game`。定位：[rhythm_backend.gd](../games/minigame/gp_rhythm_game/rhythm_backend.gd) 的 `preview_settings_path()`、DEFAULTS、`_load_settings()`、`_save_settings()`；[music_game.gd](../games/minigame/gp_rhythm_game/music_game.gd) 的 `_ready()`；`party_round.gd`。
 
-- [ ] 正式偏好从旧 `user://party/prototypes/rhythm_1k.json` 与私有 `core/config/party_json_config.gd` 迁到包声明和 PartyConfig；同步正式调用方。F6/作者工具的设置边界明确，不能让演奏场景悄悄读写旧用户文件。
-- [ ] 固定 Track、TapPreview、四声道反馈与确定数量的播放器池保存为场景。保留现有节奏时钟、延迟校准、键源释放与长按子判定，不强行改为通用播放句柄驱动判分。
-- [ ] 正式层不要直接改 `backend._key_sources` 或读 `_best_combo`；提供有实际语义的释放输入/成绩读取方法。停止时覆盖播放、process_frame 连接和正式网络连接。
-- [ ] 排名、完成、等待与观战文字统一模板。作者工具放作者功能目录，保留谱面编辑器 SubViewport 和校准试听；`calibration_test` 是用户可用校准功能，不能仅因文件名带 test 就删除或移动到不可发行的临时目录。
+- [x] 正式偏好从旧 `user://party/prototypes/rhythm_1k.json` 与私有 `core/config/party_json_config.gd` 迁到包声明和 PartyConfig；同步正式调用方。F6/作者工具的设置边界明确，不能让演奏场景悄悄读写旧用户文件。
+- [x] 固定 Track、TapPreview、四声道反馈与确定数量的播放器池保存为场景。保留现有节奏时钟、延迟校准、键源释放与长按子判定，不强行改为通用播放句柄驱动判分。
+- [x] 正式层不要直接改 `backend._key_sources` 或读 `_best_combo`；提供有实际语义的释放输入/成绩读取方法。停止时覆盖播放、process_frame 连接和正式网络连接。
+- [x] 排名、完成、等待与观战文字统一模板。作者工具放作者功能目录，保留谱面编辑器 SubViewport 和校准试听；`calibration_test` 是用户可用校准功能，不能仅因文件名带 test 就删除或移动到不可发行的临时目录。
+
+本包 M06 代码改造已落地：正式使用 `settings.gd` / PartyConfig，作者设置独立保存，固定播放器见 `ui/playback_audio.tscn`。共享 G01、G03 未在本包会话中修改，仍待统一处理。已通过定向运行检查：声明/翻译、PartyConfig 注入、JSON 按键、固定播放器、输入释放、重复停止清理与原生预览初始化；未重跑跨进程联机与真机听感验收。
 
 验证：真实音频设备上的短音/长按/校准、菜单与失焦释放、试听结束清理；两端准备至结算以及观战房主。音频时间精度需要人工听感/操作验收。
 
