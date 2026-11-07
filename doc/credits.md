@@ -77,13 +77,13 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 特效贴图：海战棋炮击闪光，Kenney Particle Pack（CC0） https://godotengine.org/asset-library/asset/784
 模型：海战棋本地试用，Atomic Realm《Sea Assets – Ships》Demo https://atomicrealm.itch.io/ https://atomicrealm.itch.io/sea-assets
 字体：山脊竞速、拾光拼图、铁鹰防线、海战棋与纸牌会客厅的 Noto CJK 子集 https://github.com/notofonts/noto-cjk
-字体：火炮大战原型，DejaVu https://dejavu-fonts.github.io/
+字体：炮火争锋原型，DejaVu https://dejavu-fonts.github.io/
 光标视觉参考（自行重绘）：LighTech RE https://zhutix.com/ico/lightech-re-cursor/
 光标视觉参考（自行重绘）：LighTech Editor https://zhutix.com/ico/lightech-editor-cursor/
 光标视觉参考（自行重绘）：Cursor Concept 3 https://zhutix.com/ico/cursor-concept-3-cus/
 模型：雷霆战争 M1 Abrams，用户提供的 AstraBlender 原创模型（本地源文件） F:/AstraBlender/Projects/1_Blender工程/MainBattleTanks/M1_Abrams.blend
 
-坦克：火炮大战，Kenney Tanks（CC0，侧视车体、履带与炮管） https://kenney.nl/assets/tanks
+坦克：炮火争锋，Kenney Tanks（CC0，侧视车体、履带与炮管） https://kenney.nl/assets/tanks
 
 音频：空白模板示例旋律、提示、撞击和环境音，本项目程序合成 games/minigame/godot_party_default_blank/examples/audio/samples/
 配音：空白模板中文示例文本，本机 Windows Microsoft Huihui 离线合成 games/minigame/godot_party_default_blank/examples/audio/samples/voice_a.wav、voice_b.wav
