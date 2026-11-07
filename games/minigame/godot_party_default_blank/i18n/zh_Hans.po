@@ -254,3 +254,126 @@ msgstr "航标  {current} / {total}"
 
 msgid "game.next_beacon"
 msgstr "前往下一航标"
+
+msgid "音频实验室"
+msgstr "音频实验室"
+
+msgid "收起"
+msgstr "收起"
+
+msgid "F6 预览音量仅本次有效；正式游戏点应用保存。"
+msgstr "F6 预览音量仅本次有效；正式游戏点应用保存。"
+
+msgid "音乐 A · 循环"
+msgstr "音乐 A · 循环"
+
+msgid "音乐 B · 淡切"
+msgstr "音乐 B · 淡切"
+
+msgid "暂停音乐"
+msgstr "暂停音乐"
+
+msgid "继续音乐"
+msgstr "继续音乐"
+
+msgid "淡出音乐"
+msgstr "淡出音乐"
+
+msgid "短音效"
+msgstr "短音效"
+
+msgid "撞击音效"
+msgstr "撞击音效"
+
+msgid "连发 20 次"
+msgstr "连发 20 次"
+
+msgid "环境循环"
+msgstr "环境循环"
+
+msgid "停止环境"
+msgstr "停止环境"
+
+msgid "配音 · 中断插播"
+msgstr "配音 · 中断插播"
+
+msgid "配音 · 加入队列"
+msgstr "配音 · 加入队列"
+
+msgid "忙碌时忽略"
+msgstr "忙碌时忽略"
+
+msgid "跳过当前配音"
+msgstr "跳过当前配音"
+
+msgid "清空并停止配音"
+msgstr "清空并停止配音"
+
+msgid "暂停游戏音频"
+msgstr "暂停游戏音频"
+
+msgid "继续游戏音频"
+msgstr "继续游戏音频"
+
+msgid "停止全部"
+msgstr "停止全部"
+
+msgid "UI 音效（暂停可播）"
+msgstr "UI 音效（暂停可播）"
+
+msgid "分类音量"
+msgstr "分类音量"
+
+msgid "游戏总音量"
+msgstr "游戏总音量"
+
+msgid "100%"
+msgstr "100%"
+
+msgid "游戏音效"
+msgstr "游戏音效"
+
+msgid "预录配音"
+msgstr "预录配音"
+
+msgid "环境声音"
+msgstr "环境声音"
+
+msgid "游戏界面音效"
+msgstr "游戏界面音效"
+
+msgid "应用本游戏音量"
+msgstr "应用本游戏音量"
+
+msgid "恢复继承 / 预览默认"
+msgstr "恢复继承 / 预览默认"
+
+msgid "欢迎来到音频测试。"
+msgstr "欢迎来到音频测试。"
+
+msgid "音乐 0 · 音效 0 · 配音 0 · 排队 0 · 环境 0 · UI 0 · 压低 0 dB"
+msgstr "音乐 0 · 音效 0 · 配音 0 · 排队 0 · 环境 0 · UI 0 · 压低 0 dB"
+
+msgid "播放事件将在这里显示。"
+msgstr "播放事件将在这里显示。"
+
+msgid "音频测试"
+msgstr "音频测试"
+
+msgid "audio.hint_preview"
+msgstr "F6 预览音量立即生效，仅本次有效。配音是预录示例，不是玩家语音。"
+
+msgid "audio.hint_formal"
+msgstr "音量先调整，点应用保存为本游戏偏好；恢复继承使用协议设置。配音不是玩家语音。"
+
+msgid "audio.status"
+msgstr "音乐 {music} · 音效 {sfx} · 配音 {dialogue} · 排队 {queued} · 环境 {ambience} · UI {ui} · 压低 {duck} dB"
+
+msgid "audio.ended"
+msgstr "播放 #{id} 结束：{reason}"
+
+msgid "audio.voice_a"
+msgstr "欢迎来到音频测试。播放配音时，背景音乐会自动降低音量。"
+
+msgid "audio.voice_b"
+msgstr "注意，这是插播提示。你可以中断、排队或跳过这段配音。"

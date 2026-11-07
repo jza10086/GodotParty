@@ -6,6 +6,12 @@ static func schema() -> Dictionary:
 		"schema_format": 3,
 		"settings_version": 1,
 		"fields": {
+			"audio.master": {"type": "float", "default": 1.0, "title": "游戏总音量", "audience": "local", "apply": "immediate", "overridable": true, "min": 0.0, "max": 1.0, "step": 0.01, "display_scale": 100.0, "suffix": "%", "control": "number"},
+			"audio.music": {"type": "float", "default": 1.0, "title": "背景音乐", "audience": "local", "apply": "immediate", "overridable": true, "min": 0.0, "max": 1.0, "step": 0.01, "display_scale": 100.0, "suffix": "%", "control": "number"},
+			"audio.sfx": {"type": "float", "default": 1.0, "title": "游戏音效", "audience": "local", "apply": "immediate", "overridable": true, "min": 0.0, "max": 1.0, "step": 0.01, "display_scale": 100.0, "suffix": "%", "control": "number"},
+			"audio.dialogue": {"type": "float", "default": 1.0, "title": "预录配音", "audience": "local", "apply": "immediate", "overridable": true, "min": 0.0, "max": 1.0, "step": 0.01, "display_scale": 100.0, "suffix": "%", "control": "number"},
+			"audio.ambience": {"type": "float", "default": 1.0, "title": "环境声音", "audience": "local", "apply": "immediate", "overridable": true, "min": 0.0, "max": 1.0, "step": 0.01, "display_scale": 100.0, "suffix": "%", "control": "number"},
+			"audio.ui": {"type": "float", "default": 1.0, "title": "游戏界面音效", "audience": "local", "apply": "immediate", "overridable": true, "min": 0.0, "max": 1.0, "step": 0.01, "display_scale": 100.0, "suffix": "%", "control": "number"},
 			"graphics.quality": {
 				"type": "string",
 				"default": "极高",
@@ -122,6 +128,7 @@ static func schema() -> Dictionary:
 			}
 		},
 		"layout": [
+			{"id": "audio", "title": "游戏音频", "expanded": true, "children": [{"field": "audio.master"}, {"field": "audio.music"}, {"field": "audio.sfx"}, {"field": "audio.dialogue"}, {"field": "audio.ambience"}, {"field": "audio.ui"}]},
 			{
 				"id": "graphics",
 				"title": "画面",

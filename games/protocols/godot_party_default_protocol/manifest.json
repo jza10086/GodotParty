@@ -43,7 +43,10 @@
     "briefing_gate": "briefing/briefing_gate.gd",
     "briefing_view": "briefing/briefing_view.tscn",
     "settlement_view": "settlement/settlement_view.tscn",
-    "settlement_gate": "settlement/settlement_gate.gd"
+    "settlement_gate": "settlement/settlement_gate.gd",
+    "game_audio": "audio/game_audio.tscn",
+    "audio_cue": "audio/audio_cue.gd",
+    "audio_handle": "audio/audio_handle.gd"
   },
   "appearance_resources": {
     "avatar_silver_lavender": {

@@ -84,3 +84,24 @@ msgstr "控制其他玩家指针和姓名的透明度；0% 完全不透明，100
 
 msgid "%"
 msgstr "%"
+
+msgid "游戏总音量"
+msgstr "游戏总音量"
+
+msgid "背景音乐"
+msgstr "背景音乐"
+
+msgid "游戏音效"
+msgstr "游戏音效"
+
+msgid "预录配音"
+msgstr "预录配音"
+
+msgid "环境声音"
+msgstr "环境声音"
+
+msgid "游戏界面音效"
+msgstr "游戏界面音效"
+
+msgid "游戏音频"
+msgstr "游戏音频"

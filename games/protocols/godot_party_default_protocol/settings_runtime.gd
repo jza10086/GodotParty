@@ -1,7 +1,10 @@
 extends "res://games/protocols/godot_party_default_protocol/graphics_settings.gd"
-## Owns protocol-local pointer appearance alongside the existing graphics effects.
+## Owns protocol-local graphics, pointer appearance and per-activation game audio buses.
 ## One settings activation owns the native arrow; leaving restores the engine cursor.
 const Cursor: Script = preload("res://games/protocols/godot_party_default_protocol/appearance/player_cursor.gd")
+const AudioMixer = preload("res://games/protocols/godot_party_default_protocol/audio/audio_mixer.gd")
+var _audio_mixer: AudioMixer
+var _audio_target: PartyGameAudio
 var _api: PartyAPI
 var _cursor_installed: bool = false
 
@@ -13,14 +16,36 @@ func enter() -> Dictionary:
 	var report: Dictionary = super.enter()
 	if not report.ok:
 		return report
+	_audio_mixer = AudioMixer.new()
+	_audio_mixer.open(_api.scope_id)
+	_audio_mixer.apply(_api.config)
 	_api.players_changed.connect(_players_changed)
-	return _apply_cursor(report)
+	report = _apply_cursor(report)
+	if report.ok:
+		var applied: PackedStringArray = report.get("applied", PackedStringArray())
+		applied.append_array(AudioMixer.KEYS)
+		report["applied"] = applied
+	return report
 
 func attach_view(view_root: Node) -> Dictionary:
+	if is_instance_valid(_audio_target):
+		_audio_target.close_scope()
+	_audio_target = null
+	if view_root.has_method("godot_party_audio_target"):
+		_audio_target = view_root.godot_party_audio_target()
+		if _audio_target == null:
+			return {"ok": false, "message": "音频挂点必须返回 PartyGameAudio"}
+		_audio_target.bind_buses(_audio_mixer.buses)
 	return super.attach_view(view_root)
 
 func apply(common_keys: PackedStringArray, own_keys: PackedStringArray) -> Dictionary:
-	return _apply_cursor(super.apply(common_keys, own_keys))
+	var report: Dictionary = _apply_cursor(super.apply(common_keys, own_keys))
+	if report.ok and _active:
+		_audio_mixer.apply(_api.config)
+		var applied: PackedStringArray = report.get("applied", PackedStringArray())
+		applied.append_array(AudioMixer.KEYS)
+		report["applied"] = applied
+	return report
 
 func _apply_cursor(report: Dictionary) -> Dictionary:
 	if not report.ok or not _active:
@@ -46,6 +71,11 @@ func _players_changed() -> void:
 		_api.fail("cursor_failed", report.message)
 
 func leave() -> void:
+	if is_instance_valid(_audio_target):
+		_audio_target.close_scope()
+	_audio_target = null
+	if _audio_mixer != null:
+		_audio_mixer.close()
 	if _active:
 		_api.players_changed.disconnect(_players_changed)
 	if _cursor_installed:

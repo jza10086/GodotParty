@@ -27,9 +27,17 @@ var _press_order: Array[String] = []
 func party_setup(value: PartyAPI, config: Dictionary) -> void:
 	api = value
 	request = config.duplicate(true)
+	$GameAudio.prepare_scope()
 	api.net.message_received.connect(_message)
 
+func godot_party_audio_target() -> PartyGameAudio:
+	return $GameAudio
+
+func _audio_input_allowed() -> bool:
+	return api == null or (phase == Phase.RUNNING and not api.input.input_blocked)
+
 func _ready() -> void:
+	%AudioPanel.configure(%GameAudio, api, _audio_input_allowed)
 	_graphics.orbit_camera.input_allowed = _camera_input_allowed
 	_navigation.input_allowed = _controls_allowed
 	# Keep both sample HUDs below the framework's session menu on canvas 0.
@@ -94,7 +102,7 @@ func _camera_input_allowed() -> bool:
 	return _graphics.visible and _controls_allowed()
 
 func _controls_allowed() -> bool:
-	return api == null or (phase == Phase.RUNNING and not api.input.input_blocked)
+	return _audio_input_allowed() and not %AudioPanel.is_expanded()
 
 func party_start() -> void:
 	_briefing.transport_started()
@@ -185,6 +193,7 @@ func _open_settlement(result: Dictionary) -> void:
 		api.fail("settlement_missing", "原版协议缺少结算场景。")
 		return
 	_result = result.duplicate(true)
+	%GameAudio.stop_all()
 	phase = Phase.SETTLING
 	_game_hud.hide()
 	_navigation.hud.hide()
@@ -207,6 +216,7 @@ func _submit_result() -> void:
 		api.fail("result_rejected", error_string(error))
 
 func party_stop(_reason: StringName) -> void:
+	$GameAudio.close_scope()
 	if is_instance_valid(_cursors):
 		_cursors.enabled = false
 		_cursors.hide()

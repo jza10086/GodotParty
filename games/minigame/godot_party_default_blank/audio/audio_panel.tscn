@@ -1,0 +1,462 @@
+[gd_scene format=3 uid="uid://dgocxe1n7dgh3"]
+
+[ext_resource type="Script" uid="uid://degiclkh7h65s" path="res://games/minigame/godot_party_default_blank/audio/audio_panel.gd" id="1_oxktj"]
+[ext_resource type="Resource" uid="uid://kk7ethomsrcg" path="res://games/minigame/godot_party_default_blank/audio/music_a.tres" id="2_m6qlp"]
+[ext_resource type="Resource" uid="uid://dmw84talmohk8" path="res://games/minigame/godot_party_default_blank/audio/music_b.tres" id="3_6chu3"]
+[ext_resource type="Resource" uid="uid://4r35m7p5mod0" path="res://games/minigame/godot_party_default_blank/audio/click.tres" id="4_f101n"]
+[ext_resource type="Resource" uid="uid://cbjiy164a0hxm" path="res://games/minigame/godot_party_default_blank/audio/impact.tres" id="5_c6u7r"]
+[ext_resource type="Resource" uid="uid://cvw3npgqsnbwb" path="res://games/minigame/godot_party_default_blank/audio/ambience.tres" id="6_dohf2"]
+[ext_resource type="Resource" uid="uid://xmmyo5wvxso3" path="res://games/minigame/godot_party_default_blank/audio/voice_a.tres" id="7_y0hmb"]
+[ext_resource type="Resource" uid="uid://du76yqjxuai30" path="res://games/minigame/godot_party_default_blank/audio/voice_b.tres" id="8_q3ke3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oxktj"]
+bg_color = Color(0.055, 0.07, 0.095, 0.97)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.4, 0.5, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="AudioPanel" type="Control" unique_id=737810235]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_oxktj")
+music_a = ExtResource("2_m6qlp")
+music_b = ExtResource("3_6chu3")
+click = ExtResource("4_f101n")
+impact = ExtResource("5_c6u7r")
+ambience = ExtResource("6_dohf2")
+voice_a = ExtResource("7_y0hmb")
+voice_b = ExtResource("8_q3ke3")
+
+[node name="Popup" type="CenterContainer" parent="." unique_id=172697979]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Panel" type="PanelContainer" parent="Popup" unique_id=1005020573]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1080, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oxktj")
+
+[node name="Margin" type="MarginContainer" parent="Popup/Panel" unique_id=559273590]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="Rows" type="VBoxContainer" parent="Popup/Panel/Margin" unique_id=2145087069]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Heading" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=598378329]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Popup/Panel/Margin/Rows/Heading" unique_id=1666111032]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+text = "音频实验室"
+
+[node name="Close" type="Button" parent="Popup/Panel/Margin/Rows/Heading" unique_id=667955218]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 44)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "收起"
+
+[node name="Hint" type="Label" parent="Popup/Panel/Margin/Rows" unique_id=437365725]
+unique_name_in_owner = true
+layout_mode = 2
+text = "F6 预览音量仅本次有效；正式游戏点应用保存。"
+autowrap_mode = 2
+
+[node name="MusicRow" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=2068134643]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MusicA" type="Button" parent="Popup/Panel/Margin/Rows/MusicRow" unique_id=1618287690]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "音乐 A · 循环"
+
+[node name="MusicB" type="Button" parent="Popup/Panel/Margin/Rows/MusicRow" unique_id=1282800475]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "音乐 B · 淡切"
+
+[node name="MusicPause" type="Button" parent="Popup/Panel/Margin/Rows/MusicRow" unique_id=1191762594]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "暂停音乐"
+
+[node name="MusicResume" type="Button" parent="Popup/Panel/Margin/Rows/MusicRow" unique_id=395935638]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "继续音乐"
+
+[node name="MusicStop" type="Button" parent="Popup/Panel/Margin/Rows/MusicRow" unique_id=1361362971]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "淡出音乐"
+
+[node name="EffectsRow" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=1822021084]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Click" type="Button" parent="Popup/Panel/Margin/Rows/EffectsRow" unique_id=1471952806]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "短音效"
+
+[node name="Impact" type="Button" parent="Popup/Panel/Margin/Rows/EffectsRow" unique_id=1009090201]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "撞击音效"
+
+[node name="Burst" type="Button" parent="Popup/Panel/Margin/Rows/EffectsRow" unique_id=168583683]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "连发 20 次"
+
+[node name="AmbienceStart" type="Button" parent="Popup/Panel/Margin/Rows/EffectsRow" unique_id=1501598968]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "环境循环"
+
+[node name="AmbienceStop" type="Button" parent="Popup/Panel/Margin/Rows/EffectsRow" unique_id=623971909]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "停止环境"
+
+[node name="VoiceRow" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=1276215829]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="VoiceReplace" type="Button" parent="Popup/Panel/Margin/Rows/VoiceRow" unique_id=352337380]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "配音 · 中断插播"
+
+[node name="VoiceQueue" type="Button" parent="Popup/Panel/Margin/Rows/VoiceRow" unique_id=617696760]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "配音 · 加入队列"
+
+[node name="VoiceIgnore" type="Button" parent="Popup/Panel/Margin/Rows/VoiceRow" unique_id=623850134]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "忙碌时忽略"
+
+[node name="VoiceSkip" type="Button" parent="Popup/Panel/Margin/Rows/VoiceRow" unique_id=1057300203]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "跳过当前配音"
+
+[node name="VoiceClear" type="Button" parent="Popup/Panel/Margin/Rows/VoiceRow" unique_id=859138545]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "清空并停止配音"
+
+[node name="TransportRow" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=810681664]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PauseAll" type="Button" parent="Popup/Panel/Margin/Rows/TransportRow" unique_id=2033832482]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "暂停游戏音频"
+
+[node name="ResumeAll" type="Button" parent="Popup/Panel/Margin/Rows/TransportRow" unique_id=166352358]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "继续游戏音频"
+
+[node name="StopAll" type="Button" parent="Popup/Panel/Margin/Rows/TransportRow" unique_id=1580421966]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "停止全部"
+
+[node name="UIClick" type="Button" parent="Popup/Panel/Margin/Rows/TransportRow" unique_id=1969804441]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI 音效（暂停可播）"
+
+[node name="VolumeHeading" type="Label" parent="Popup/Panel/Margin/Rows" unique_id=1952050543]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "分类音量"
+
+[node name="MasterRow" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=557034772]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="MasterName" type="Label" parent="Popup/Panel/Margin/Rows/MasterRow" unique_id=136732858]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+text = "游戏总音量"
+
+[node name="MasterVolume" type="HSlider" parent="Popup/Panel/Margin/Rows/MasterRow" unique_id=335887258]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="MasterValue" type="Label" parent="Popup/Panel/Margin/Rows/MasterRow" unique_id=1667980427]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+text = "100%"
+horizontal_alignment = 2
+
+[node name="MusicVolumeRow" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=1495741449]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="MusicName" type="Label" parent="Popup/Panel/Margin/Rows/MusicVolumeRow" unique_id=1612100749]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+text = "背景音乐"
+
+[node name="MusicVolume" type="HSlider" parent="Popup/Panel/Margin/Rows/MusicVolumeRow" unique_id=232056361]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="MusicValue" type="Label" parent="Popup/Panel/Margin/Rows/MusicVolumeRow" unique_id=2060523097]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+text = "100%"
+horizontal_alignment = 2
+
+[node name="SfxRow" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=430464963]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="SfxName" type="Label" parent="Popup/Panel/Margin/Rows/SfxRow" unique_id=1660169308]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+text = "游戏音效"
+
+[node name="SfxVolume" type="HSlider" parent="Popup/Panel/Margin/Rows/SfxRow" unique_id=997386540]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="SfxValue" type="Label" parent="Popup/Panel/Margin/Rows/SfxRow" unique_id=862729107]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+text = "100%"
+horizontal_alignment = 2
+
+[node name="DialogueRow" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=1863432730]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="DialogueName" type="Label" parent="Popup/Panel/Margin/Rows/DialogueRow" unique_id=45738471]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+text = "预录配音"
+
+[node name="DialogueVolume" type="HSlider" parent="Popup/Panel/Margin/Rows/DialogueRow" unique_id=2045140439]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="DialogueValue" type="Label" parent="Popup/Panel/Margin/Rows/DialogueRow" unique_id=809037597]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+text = "100%"
+horizontal_alignment = 2
+
+[node name="AmbienceRow" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=1653079453]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="AmbienceName" type="Label" parent="Popup/Panel/Margin/Rows/AmbienceRow" unique_id=1294587366]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+text = "环境声音"
+
+[node name="AmbienceVolume" type="HSlider" parent="Popup/Panel/Margin/Rows/AmbienceRow" unique_id=646442890]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="AmbienceValue" type="Label" parent="Popup/Panel/Margin/Rows/AmbienceRow" unique_id=1713763084]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+text = "100%"
+horizontal_alignment = 2
+
+[node name="UiRow" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=238610279]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="UiName" type="Label" parent="Popup/Panel/Margin/Rows/UiRow" unique_id=671634002]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+text = "游戏界面音效"
+
+[node name="UiVolume" type="HSlider" parent="Popup/Panel/Margin/Rows/UiRow" unique_id=951020434]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="UiValue" type="Label" parent="Popup/Panel/Margin/Rows/UiRow" unique_id=407064948]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+text = "100%"
+horizontal_alignment = 2
+
+[node name="VolumeActions" type="HBoxContainer" parent="Popup/Panel/Margin/Rows" unique_id=32641390]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Apply" type="Button" parent="Popup/Panel/Margin/Rows/VolumeActions" unique_id=791815189]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "应用本游戏音量"
+
+[node name="Reset" type="Button" parent="Popup/Panel/Margin/Rows/VolumeActions" unique_id=1745570649]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "恢复继承 / 预览默认"
+
+[node name="Subtitle" type="Label" parent="Popup/Panel/Margin/Rows" unique_id=1353826688]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "欢迎来到音频测试。"
+autowrap_mode = 2
+
+[node name="Status" type="Label" parent="Popup/Panel/Margin/Rows" unique_id=1201624238]
+unique_name_in_owner = true
+layout_mode = 2
+text = "音乐 0 · 音效 0 · 配音 0 · 排队 0 · 环境 0 · UI 0 · 压低 0 dB"
+autowrap_mode = 2
+
+[node name="LastEvent" type="Label" parent="Popup/Panel/Margin/Rows" unique_id=687214329]
+unique_name_in_owner = true
+layout_mode = 2
+text = "播放事件将在这里显示。"
+autowrap_mode = 2
+
+[node name="Toggle" type="Button" parent="." unique_id=1066906729]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -230.0
+offset_top = 90.0
+offset_right = -28.0
+offset_bottom = 142.0
+size_flags_horizontal = 3
+text = "音频测试"

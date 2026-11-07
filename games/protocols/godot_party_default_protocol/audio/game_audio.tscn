@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://dkvs0ys861xvk"]
+
+[ext_resource type="Script" uid="uid://bmot5jtlt7nq7" path="res://games/protocols/godot_party_default_protocol/audio/game_audio.gd" id="1_0hpv7"]
+
+[node name="GameAudio" type="Node" unique_id=1528834399]
+script = ExtResource("1_0hpv7")
+
+[node name="MusicA" type="AudioStreamPlayer" parent="." unique_id=1366817709]
+
+[node name="MusicB" type="AudioStreamPlayer" parent="." unique_id=720402372]
+
+[node name="Dialogue" type="AudioStreamPlayer" parent="." unique_id=610894187]
+
+[node name="Effects" type="Node" parent="." unique_id=1447082672]
+
+[node name="Voice1" type="AudioStreamPlayer" parent="Effects" unique_id=1723034357]
+
+[node name="Voice2" type="AudioStreamPlayer" parent="Effects" unique_id=988141247]
+
+[node name="Voice3" type="AudioStreamPlayer" parent="Effects" unique_id=767191504]
+
+[node name="Voice4" type="AudioStreamPlayer" parent="Effects" unique_id=197586700]
+
+[node name="Voice5" type="AudioStreamPlayer" parent="Effects" unique_id=1586377869]
+
+[node name="Voice6" type="AudioStreamPlayer" parent="Effects" unique_id=776464014]
+
+[node name="Voice7" type="AudioStreamPlayer" parent="Effects" unique_id=463345910]
+
+[node name="Voice8" type="AudioStreamPlayer" parent="Effects" unique_id=1545644605]
+
+[node name="Voice9" type="AudioStreamPlayer" parent="Effects" unique_id=1490242392]
+
+[node name="Voice10" type="AudioStreamPlayer" parent="Effects" unique_id=1074592259]
+
+[node name="Voice11" type="AudioStreamPlayer" parent="Effects" unique_id=481945472]
+
+[node name="Voice12" type="AudioStreamPlayer" parent="Effects" unique_id=437471230]
+
+[node name="Ambience" type="Node" parent="." unique_id=220502774]
+
+[node name="Voice1" type="AudioStreamPlayer" parent="Ambience" unique_id=369260954]
+
+[node name="Voice2" type="AudioStreamPlayer" parent="Ambience" unique_id=1891179978]
+
+[node name="Voice3" type="AudioStreamPlayer" parent="Ambience" unique_id=1125279739]
+
+[node name="Voice4" type="AudioStreamPlayer" parent="Ambience" unique_id=1223526395]
+
+[node name="UI" type="Node" parent="." unique_id=1601837273]
+
+[node name="Voice1" type="AudioStreamPlayer" parent="UI" unique_id=640920682]
+
+[node name="Voice2" type="AudioStreamPlayer" parent="UI" unique_id=713229608]
+
+[node name="Voice3" type="AudioStreamPlayer" parent="UI" unique_id=1747878936]
+
+[node name="Voice4" type="AudioStreamPlayer" parent="UI" unique_id=1365619326]

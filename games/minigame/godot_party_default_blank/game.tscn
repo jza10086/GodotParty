@@ -5,6 +5,9 @@
 [ext_resource type="PackedScene" path="res://games/minigame/godot_party_default_blank/graphics_lab.tscn" id="graphics"]
 [ext_resource type="PackedScene" path="res://games/minigame/godot_party_default_blank/navigation_2d.tscn" id="navigation"]
 
+[ext_resource type="PackedScene" path="res://games/protocols/godot_party_default_protocol/audio/game_audio.tscn" id="audio"]
+[ext_resource type="PackedScene" path="res://games/minigame/godot_party_default_blank/audio/audio_panel.tscn" id="audio_panel"]
+
 [node name="BlankGame" type="Control" unique_id=188628939 groups=["party_minimal_hud"]]
 layout_mode = 3
 anchors_preset = 15
@@ -126,3 +129,9 @@ unique_name_in_owner = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+
+[node name="GameAudio" parent="." instance=ExtResource("audio")]
+unique_name_in_owner = true
+
+[node name="AudioPanel" parent="GameHUD" instance=ExtResource("audio_panel")]
+unique_name_in_owner = true

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="PartyAudioCue" format=3 uid="uid://xmmyo5wvxso3"]
+
+[ext_resource type="Script" uid="uid://b8e8ifodc3mml" path="res://games/protocols/godot_party_default_protocol/audio/audio_cue.gd" id="1_p7aog"]
+[ext_resource type="AudioStream" uid="uid://dfkae63l1v5fj" path="res://games/minigame/godot_party_default_blank/audio/samples/voice_a.wav" id="2_26mwh"]
+
+[resource]
+script = ExtResource("1_p7aog")
+stream = ExtResource("2_26mwh")
+loop_mode = 2
+subtitle_key = &"audio.voice_a"

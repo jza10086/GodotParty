@@ -170,6 +170,10 @@ board_area.add_child(cursors)
 
 公开资源 `ranked_round` 为原版五款街机小游戏复用的 Control 基类，提供 standard 生命周期、受发送者身份与单调序号约束的逻辑行动、主机快照、一次性结果提交和基础布局；不定义玩法和奖励。游戏入口场景继承协议的 ranked_round.tscn，根节点挂载对应的子类脚本。子类通过 build_game/start_game/tick_game/handle_action/make_snapshot/render_game 实现各自玩法。state 使用可靠快照；大型星潮状态另作压缩，视觉短时外推不改变裁定。清单应声明 state（reliable/instance）及需要时的 private_view（reliable/instance）。
 
+## 游戏音频
+
+公开资源 `game_audio`、`audio_cue`、`audio_handle` 提供场景化音频、可配置音效与独立播放句柄。协议设置 runtime 为每个作用域管理六条音频总线和本地音量偏好；场景通过 `godot_party_audio_target()` 显式接入。完整生命周期、循环/中断/切歌/配音队列和调用示例见 [游戏音频组件](audio.md)，空白模板提供音频测试面板及示例素材。
+
 ## 加载与结算场景
 
 协议公开 `briefing_view` / `briefing_gate` 与 `settlement_view` / `settlement_gate`；主游戏或小游戏按需挂载，不改变未接入游戏。
