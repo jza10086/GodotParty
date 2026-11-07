@@ -87,3 +87,5 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 
 音频：空白模板示例旋律、提示、撞击和环境音，本项目程序合成 games/minigame/godot_party_default_blank/examples/audio/samples/
 配音：空白模板中文示例文本，本机 Windows Microsoft Huihui 离线合成 games/minigame/godot_party_default_blank/examples/audio/samples/voice_a.wav、voice_b.wav
+
+视觉参考截图：炮火争锋事件，ShellShock Live 官方商店与更新截图、Steam 社区实机截图（仅保留于 private_assets，不随项目发行） https://store.steampowered.com/app/326460/ShellShock_Live/ https://store.steampowered.com/news/posts/?appids=326460&enddate=1645653731 https://steamcommunity.com/sharedfiles/filedetails/?id=2069384920
