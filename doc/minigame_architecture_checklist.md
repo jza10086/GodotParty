@@ -243,12 +243,16 @@
 
 包：`godot_party_default_jigsaw_puzzle`。定位：[scripts/main.gd](../games/minigame/godot_party_default_jigsaw_puzzle/scripts/main.gd) 的 `_ready()`、`start_match()`、`_apply_view()`；[scripts/picture_library.gd](../games/minigame/godot_party_default_jigsaw_puzzle/scripts/picture_library.gd)。
 
-- [ ] F6 自动配置 preview 后仍创建 PartyInput 获取正式 storage，随后 `picture_stats.record()` 写正式图片使用次数。预览改用本次内存统计或显式预览存储；正式持久化只由正式入口注入，不能把测试目录变成正式代码依赖。
-- [ ] 入口已经是清楚的协议边界，保留逻辑动作信号、私有本机输入、host 规则和快照检查，不再叠一层通用管理器。
-- [ ] `puzzle_state.gd` 等残留 `:=` 改显式类型。相机 zoom 的基准构图改可编辑参数，保留根据本机席位计算的动态聚焦。
-- [ ] 桌面、中央答案和八席槽位保留；拼片内容与席位归属继续随对局更新。
+- [x] F6 自动配置 preview 后仍创建 PartyInput 获取正式 storage，随后 `picture_stats.record()` 写正式图片使用次数。预览改用本次内存统计或显式预览存储；正式持久化只由正式入口注入，不能把测试目录变成正式代码依赖。
+- [x] 入口已经是清楚的协议边界，保留逻辑动作信号、私有本机输入、host 规则和快照检查，不再叠一层通用管理器。
+- [x] `puzzle_state.gd` 等残留 `:=` 改显式类型。相机 zoom 的基准构图改可编辑参数，保留根据本机席位计算的动态聚焦。
+- [x] 桌面、中央答案和八席槽位保留；拼片内容与席位归属继续随对局更新。
 
 验证：F6 不改变正式统计，正式三轮计数仍准确；交换、旋转、断线、观战房主和最终结算。
+
+实施记录（2026-11-07，子仓提交 `e595c01`）：包内四项已完成。F6 使用内存统计，正式入口显式打开并注入持久化统计；保持原协议边界，补显式停止、监听解除及中文动态文字模板。相机远景沿用场景 Camera 的构图和 FOV，近景缩放参数可在 Inspector 编辑。未改变玩法、人数、网络字段或统计格式。
+
+验证记录：F6 三轮隔离与停止检查、正式双端三轮统计/结算/清理检查、规则检查、旁观主机加八个 ENet 客户端检查均通过；1920×1080 远近景检查及八席三档缩放点击定位通过。人工八人操作和跨机器/外网联机未验收。G01 尚未迁移，协议现有整树禁用行为不属于本次已完成项，待共享改造后补验收。
 
 ### M19 身份派对　A/B　依赖 G01
 
