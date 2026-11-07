@@ -38,6 +38,8 @@ func attach_view(view_root: Node) -> Dictionary:
 	if not _active or not view_root.has_method("godot_party_graphics_targets"):
 		return {"ok": true, "unsupported": KEYS}
 	var targets: Dictionary = view_root.godot_party_graphics_targets()
+	if targets.is_empty():
+		return {"ok": true, "unsupported": KEYS}
 	if not targets.get("world") is WorldEnvironment or not targets.get("sun") is DirectionalLight3D:
 		return {"ok": false, "message": "原版画质需要 WorldEnvironment 和 DirectionalLight3D"}
 	_world = targets.world

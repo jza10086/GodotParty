@@ -7,7 +7,7 @@
 
 `games/minigame/godot_party_default_blank/game.tscn` 是可复制的场景示例：原生 Node3D 展台与可切换的 Node2D 航道直接显示，CanvasLayer 叠加 HUD。固定模型、二维物件、灯光、相机和控件优先保存在场景文件中。使用 1920×1080 检查画面；HUD 使用锚点与容器，装饰与标签不拦截指针。原版排名回合的 `ranked_round.tscn` 预置全幅 Stage、CanvasLayer HUD 和按需展开的详情。继承场景可直接编辑标题、提示和固定操作。
 
-使用框架菜单的全幅小游戏在入口根节点加入公开 UI 组 `party_minimal_hud`。该作用域处于前台时，框架默认收起顶部会话工具栏；玩家按 Esc 展开/收起菜单，保留本地设置、房间规则、排名及离开入口。菜单展开时 `api.input.input_blocked` 为 true，游戏的鼠标与键盘入口必须遵守它；计时和联网继续运行。模态页优先处理返回，退出该作用域后工具栏自动恢复。游戏应自行显示 Esc 操作提示，不访问框架私有 UI 节点。保有独立暂停菜单的单人场景继续由自身菜单处理 Esc，不能只添加组标记而让同一按键同时切换两个菜单。
+使用框架菜单的全幅小游戏在入口根节点加入公开 UI 组 `party_minimal_hud`。该作用域处于前台时，框架默认收起顶部会话工具栏；玩家按 Esc 展开/收起菜单，保留本地设置、房间规则、排名及离开入口。菜单展开时 `api.input.input_blocked` 为 true，游戏的鼠标与键盘入口必须遵守它；计时和联网继续运行。模态页优先处理返回，退出该作用域后工具栏自动恢复。游戏应自行显示 Esc 操作提示，不访问框架私有 UI 节点。单人场景正式接入该菜单时，Esc 只由框架处理，独立暂停可使用其他声明动作；F6 可保留自身 Esc 暂停。不能让同一按键同时切换两个菜单。
 
 ## 主游戏房间入口
 
@@ -44,6 +44,8 @@ func party_stop(_reason: StringName) -> void:
 
 setup 在入树前同步执行，不访问 @onready。异步初始化在入树后开始，完成后显式 mark_ready。
 finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，房主玩法自行决定如何采用。
+
+采用原版 `solo_round` 的单参赛者游戏须实现 `solo_setup(input, text_source)`、`solo_start()`、可重复的 `solo_stop()` 与画质/音频目标方法，并发出 `completed(metrics)`。入口在准备阶段创建本机玩法、注入依赖并转发协议挂点，观战端不运行模拟；正式开始等待公共准备页完成。F6 输入只读包内默认绑定，正式使用 PartyInput。完整边界见协议文档的[单参赛者接入](../../games/protocols/godot_party_default_protocol/doc/README.md#单参赛者接入)。
 
 ## 最小清单
 
@@ -92,7 +94,7 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 
 3D 世界和活动相机直接使用主视口，HUD 放入 CanvasLayer；二维玩法使用原生 Node2D/Control。SubViewport 仅用于确实需要独立纹理的内容，不作为普通游戏主画面的默认容器。静态参数只保留一个来源：相机姿态/FOV、灯光方向/能量、环境和材质由原生节点编辑，启动脚本不能再用一组镜像字段覆盖。
 
-原版协议的画质入口是 `godot_party_graphics_targets()`，返回 `world` 与 `sun`，仅需要协议处理模型采样时才返回 `materials_root`。正式对局不自行覆盖同一视口的抗锯齿或渲染比例。空白展台保留的实验性画质字段只用于 F6，离开预览恢复视口；正式画质由协议 settings runtime 的 enter/attach/apply/leave 管理。效果开关可能改变，游戏自己的构图与美术参数保留。详见原版协议 [画质与接入](../../games/protocols/godot_party_default_protocol/doc/README.md)。
+原版协议的画质入口是 `godot_party_graphics_targets()`，返回 `world` 与 `sun`（纯二维或本端不创建玩法时可返回空字典），仅需要协议处理模型采样时才返回 `materials_root`。正式对局不自行覆盖同一视口的抗锯齿或渲染比例。空白展台保留的实验性画质字段只用于 F6，离开预览恢复视口；正式画质由协议 settings runtime 的 enter/attach/apply/leave 管理。效果开关可能改变，游戏自己的构图与美术参数保留。详见原版协议 [画质与接入](../../games/protocols/godot_party_default_protocol/doc/README.md)。
 
 ## 可编辑 HUD 与本地化
 

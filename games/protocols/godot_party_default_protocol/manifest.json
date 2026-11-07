@@ -40,6 +40,7 @@
     "ranked_round_scene": "ranked_round.tscn",
     "round_pages": "round_pages.gd",
     "solo_round": "solo_round.gd",
+    "solo_controls": "solo_controls.gd",
     "briefing_gate": "briefing/briefing_gate.gd",
     "briefing_view": "briefing/briefing_view.tscn",
     "settlement_view": "settlement/settlement_view.tscn",

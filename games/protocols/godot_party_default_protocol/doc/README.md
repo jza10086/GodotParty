@@ -184,3 +184,20 @@ board_area.add_child(cursors)
 - 纯view可单独使用：加载view提供`configure`/`set_state`与`ready_requested`；结算view提供`configure(presentation, players)`与`set_countdown`，不拥有网络或计时。
 
 空白模板是接入示例：自己持有加载和结算页面；在线参赛者各按一次结束按钮，房主按收到有效点击的顺序生成并广播排名，所有端自动看完结算后才`finish()`一次。页面使用已有主菜单背景/主题/面板，不引入外部资产。正式游戏可以复用公开组件 `round_pages`。在初始化完成后调用 `prepare(game, api, request, start_play)`，在 party_start 调用 transport_started()。房主将游戏原结果交给 present(result)，公共页面按 columns 展示 rankings 中的指标，完整结果仅由房主提交。单人包可以直接使用 `solo_round`，为 gameplay 指定发出 completed(metrics) 的场景，为 columns 声明成绩列，并在清单中声明单人。
+
+## 单参赛者接入
+
+`solo_round` 只支持一位参赛者本机模拟、房主验证成绩。五个调用方为方向密码、山脊竞速、海岸飞行、极速追逐和圆角俄罗斯方块。`party_setup` 在入树前仅为本机在线参赛者实例化 gameplay，注入依赖；观战端不创建模拟，但仍处理准备、成绩与结算消息。
+
+玩法场景约定：
+
+- `solo_setup(input: PartyInput, text_source: RefCounted)`：入树前保存输入与翻译；有音频时调用固定 GameAudio 的 `prepare_scope()`。初始化阶段不启动计时、输入、模拟或声音。
+- `solo_start()`：公共准备页确认完成后开始玩法。技术 `mark_ready()` / `party_start()` 不代表玩家已确认开始。
+- `solo_stop()`：可重复调用，显式停止输入、模拟与声音，隐藏自身 HUD；覆盖准备中取消、结算和退出。不禁用包含网络协调的整棵场景树。
+- `solo_graphics_targets() -> Dictionary`：返回实际 `world` / `sun`，纯二维场景返回 `{}`。
+- `solo_audio_target() -> PartyGameAudio`：返回场景内组件；无音频返回 `null`，无需空组件。
+- `completed(metrics: Dictionary)`：只完成一次本局。入口保留 columns、record_metric 和现有消息/成绩结构，验证成功后保存本机纪录并上报；正式结算后的重玩由轮换发起新作用域。
+
+入口转发画质与音频挂点，协议在视图入树后 attach；此时本机玩法已经存在。返回空字典或 null 是明确的无目标状态，非空但不满足类型/资源契约的目标仍报错。输入偏好由 PartyInput 绑定的 PartyConfig 提供，画质和音量由协议 settings runtime 应用，无需向玩法复制第二份偏好。
+
+`solo_controls` 统一正式 PartyInput 与 F6 默认绑定：正式绑定在包内 schema 3 声明，可由用户设置覆盖；F6 只读同一 schema 的默认键鼠绑定，不增删全局 InputMap，也不读写正式设置或纪录。正式 Esc 只交给框架菜单，输入屏蔽期间模拟和计时继续；独立预览可保留自身 Esc 暂停。玩法允许的地图暂停或 P 暂停仍由玩法控制。

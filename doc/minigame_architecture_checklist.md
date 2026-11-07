@@ -35,13 +35,15 @@
 
 ### G02 单人正式接入边界　A
 
-证据：[solo_round.gd](../games/protocols/godot_party_default_protocol/solo_round.gd) 在 `_play()` 中才实例化玩法，未向玩法注入输入/偏好/画质接入，也没有 `godot_party_graphics_targets()`；其五个调用方是方向密码、山脊竞速、海岸飞行、极速追逐、圆角俄罗斯方块。多个玩法通过 `get_parent() is SoloRound` 只取翻译，输入仍由自己的全局 InputMap 或物理按键控制。
+原审查证据：[solo_round.gd](../games/protocols/godot_party_default_protocol/solo_round.gd) 在 `_play()` 中才实例化玩法，未向玩法注入输入/偏好/画质接入，也没有 `godot_party_graphics_targets()`；其五个调用方是方向密码、山脊竞速、海岸飞行、极速追逐、圆角俄罗斯方块。多个玩法通过 `get_parent() is SoloRound` 只取翻译，输入仍由自己的全局 InputMap 或物理按键控制。
 
-- [ ] 为这些调用方确定一个小而明确的接入约定，直接注入需要的 PartyInput、翻译、偏好和开始/停止控制；可以使用包内入口，不新建通用插件注册框架。
-- [ ] 初始化、技术 ready、真正开始与停止分别可定位。处理玩法实例化时机和协议画质/音频 attach 时机，不能只在子场景增加 hook、却让框架仍只看到不转发的 SoloRound。
-- [ ] 正式模式使用已声明动作与 `api.input`；F6 输入走清楚隔离的预览边界。固定依赖不再通过父节点类型猜测。
-- [ ] 三维调用方登记实际 World/Sun；把画质交给协议。接入正式 Esc 菜单及 `party_minimal_hud` 时同步处理原暂停菜单，避免双重响应。
-- [ ] 保留当前单参赛者语义：观战端不运行该玩家的模拟，观战房主仍负责收结果。不要为了统一外观顺带新增多人玩法。
+- [x] 为这些调用方确定一个小而明确的接入约定，直接注入需要的 PartyInput、翻译、偏好和开始/停止控制；可以使用包内入口，不新建通用插件注册框架。
+- [x] 初始化、技术 ready、真正开始与停止分别可定位。处理玩法实例化时机和协议画质/音频 attach 时机，不能只在子场景增加 hook、却让框架仍只看到不转发的 SoloRound。
+- [x] 正式模式使用已声明动作与 `api.input`；F6 输入走清楚隔离的预览边界。固定依赖不再通过父节点类型猜测。
+- [x] 三维调用方登记实际 World/Sun；把画质交给协议。接入正式 Esc 菜单及 `party_minimal_hud` 时同步处理原暂停菜单，避免双重响应。
+- [x] 保留当前单参赛者语义：观战端不运行该玩家的模拟，观战房主仍负责收结果。不要为了统一外观顺带新增多人玩法。
+
+实施记录（2026-11-07）：G02 及五个调用方已统一迁移。SoloRound 直接组合准备/结算 gate；输入由 PartyInput 与包内 schema 提供，协议作用域负责画质/音量。无本机模拟的观战端允许空画质/音频目标。五包定向检查、真实大厅连续五局、本机 ENet 双进程六局（含极速追逐重复轮）及运行中取消通过；重复完成只上报一次，无遗留 InputMap 或音频总线。1920×1080 五包预览通过；未进行跨机器联机和真人操作/听感验收。G01 以及其余包的 G03 迁移仍待完成。
 
 验证：一个本机参赛者和一个观战房主，确认唯一成绩提交、退出取消、连续两轮无重复 InputMap 事件；再按各游戏操作特点验证门控。没有运行模拟的观战端不要求凭空出现本机玩法画面。
 
@@ -60,7 +62,7 @@
 
 包：`direction_password`。定位：[direction_password.gd](../games/minigame/direction_password/direction_password.gd) 的 `_ready()`、`_unhandled_key_input()`、`activate_primary()`、`enter_direction()`。
 
-- [ ] 从父节点探测改为显式注入；正式方向、撤销、确认动作使用 PartyInput，按钮和键盘共用阶段/菜单门控。当前只有本地键码匹配，没有正式输入上下文。
+- [x] 从父节点探测改为显式注入；正式方向、撤销、确认动作使用 PartyInput，按钮和键盘共用阶段/菜单门控。当前只有本地键码匹配，没有正式输入上下文。
 - [ ] 保留两排八个答案槽和六行成绩，补齐仍散落的阶段/反馈文字模板；预览继续使用已有 DEFAULT_TEXT。
 - [ ] 规则、六轮流程和计分留在现有 `direction_password_rules.gd`/玩法中，不为了 312 行脚本再拆控制器。
 
@@ -70,7 +72,7 @@
 
 包：`godot_party_default_car_racing`。定位：[scripts/main.gd](../games/minigame/godot_party_default_car_racing/scripts/main.gd) 的 `_setup_inputs()`；[scripts/arcade_car.gd](../games/minigame/godot_party_default_car_racing/scripts/arcade_car.gd) 的 `_ready()`、`_physics_process()`；`scenes/car.tscn`。
 
-- [ ] 用正式输入注入替换运行时添加/删除全局动作，保留 F6 独立操作；处理原 Esc 暂停和框架菜单，菜单打开时车辆不能继续采纳驾驶输入。
+- [x] 用正式输入注入替换运行时添加/删除全局动作，保留 F6 独立操作；处理原 Esc 暂停和框架菜单，菜单打开时车辆不能继续采纳驾驶输入。
 - [ ] 四个车轮 pivot 目前仍在 `_ready()` 查名、创建并 reparent；保存到车辆子场景并显式引用。固定发动机播放器入场景/音频组件。
 - [ ] 清理本包业务代码中的 `:=` 和未声明类型；场景专用类型只在确有共享需求时保留全局 `class_name`。
 - [ ] 港区场景和赛道 Curve3D 保留。`harbor_scenery.gd` 的生成器当前未发现正式场景引用，先确认作者工具用途再归档/删除，不能把它误报为当前重复生成。道路网格根据曲线生成继续保留。
@@ -81,8 +83,8 @@
 
 包：`godot_party_default_flight`。定位：[scripts/main.gd](../games/minigame/godot_party_default_flight/scripts/main.gd) 的 `_bind_inputs()`、`_make_audio()`、`_physics_process()`、`_capture_mouse()`、`_set_paused()`。
 
-- [ ] 分离正式输入与 F6 输入，覆盖轴轮询、鼠标捕获、失焦、菜单及释放后重新允许输入的流程；保持已有键鼠混合控制优先级。
-- [ ] 螺旋桨循环通过 Cue/作用域音频管理；当前直接修改 load 得到的共享 AudioStreamWAV 的循环参数，改为资源配置或修改前复制。
+- [x] 分离正式输入与 F6 输入，覆盖轴轮询、鼠标捕获、失焦、菜单及释放后重新允许输入的流程；保持已有键鼠混合控制优先级。
+- [x] 螺旋桨循环通过 Cue/作用域音频管理；当前直接修改 load 得到的共享 AudioStreamWAV 的循环参数，改为资源配置或修改前复制。
 - [ ] 清晰划分飞行模拟、场景协调和 HUD；优先保留已经独立的 `flight_model.gd`、`mouse_flight_input.gd`，不重复建立控制器层。
 - [ ] 补正式画质挂点、显式类型及导航/状态文字模板；机场、飞机和航标继续使用现有场景。
 
@@ -92,10 +94,12 @@
 
 包：`godot_party_default_lighthouse_isles`，原清单称灯塔群岛。定位：[scripts/main.gd](../games/minigame/godot_party_default_lighthouse_isles/scripts/main.gd) 的 `_setup_inputs()`、`_course_forward()`、`_build_sounds()`、`_play_sound()`；`scripts/player.gd`。
 
-- [ ] 正式移动、跳跃、地图、重试和暂停统一走输入上下文；保留检查点/坠落规则。
-- [ ] 将已确定的 course 依赖声明成具体脚本类型，直接调用 `camera_forward_at()`，移除相应 `has_method` 猜测与静默备用方向。
-- [ ] 固定合成声音导出为资源，普通播放使用作用域池；不再每次 `_play_sound()` 创建播放器。
-- [ ] 统一显式类型；相机可调参数放 Inspector，固定关卡和移动平台初始位置保持已有场景。
+- [x] 正式移动、跳跃、地图、重试和暂停统一走输入上下文；保留检查点/坠落规则。
+- [x] 将已确定的 course 依赖声明成具体脚本类型，直接调用 `camera_forward_at()`，移除相应 `has_method` 猜测与静默备用方向。
+- [x] 固定合成声音导出为资源，普通播放使用作用域池；不再每次 `_play_sound()` 创建播放器。
+- [x] 统一显式类型；相机可调参数放 Inspector，固定关卡和移动平台初始位置保持已有场景。
+
+实施记录（2026-11-07）：M04 四项已落地，五个固定音效为 Cue 资源；相机编辑值、顺序存档/重试、四个平台运动、总览切换、输入改键/屏蔽及唯一完成/退出已做定向运行检查。1920×1080 画面已查看；未重跑正常输入全路线通关，原型历史通关记录不作为本次验收。
 
 验证：跳跃/检查点/重试、四个平台运动、总览切换、菜单输入屏蔽、通关与退出。
 
@@ -103,7 +107,7 @@
 
 包：`godot_party_default_russian_block`。定位：[scripts/main.gd](../games/minigame/godot_party_default_russian_block/scripts/main.gd)、[scripts/party.gd](../games/minigame/godot_party_default_russian_block/scripts/party.gd)、`scripts/battle_session.gd`。
 
-- [ ] 正式经典模式的横移、软降、硬降、旋转、暂存全部改为声明动作；连续物理键轮询也必须遵守输入门控，不能只改事件回调。
+- [x] 正式经典模式的横移、软降、硬降、旋转、暂存全部改为声明动作；连续物理键轮询也必须遵守输入门控，不能只改事件回调。
 - [ ] 经典玩法、独立多盘演示和正式 Party 接入明确分开；保留现有多盘预览，不把同屏演示自动宣布为已接入的在线多人模式。
 - [ ] 补齐 `:=`/未类型变量；固定方块外观、幽灵材质做资源或可编辑子场景，数量和格位仍按实时棋盘数据实例化。已有 2D 预览槽、棋盘和主视口渲染保留。
 - [ ] `party.gd.capture()` 当前写包内 `screenshots/`。验收截图移至根 `tmp/test/`，测试专用入口与正式业务分开；若保留用户截图功能，应另定义用户输出契约。

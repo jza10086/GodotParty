@@ -105,3 +105,6 @@ msgstr "游戏界面音效"
 
 msgid "游戏音频"
 msgstr "游戏音频"
+
+msgid "solo.result_title"
+msgstr "本轮结算"

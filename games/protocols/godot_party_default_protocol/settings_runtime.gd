@@ -33,9 +33,8 @@ func attach_view(view_root: Node) -> Dictionary:
 	_audio_target = null
 	if view_root.has_method("godot_party_audio_target"):
 		_audio_target = view_root.godot_party_audio_target()
-		if _audio_target == null:
-			return {"ok": false, "message": "音频挂点必须返回 PartyGameAudio"}
-		_audio_target.bind_buses(_audio_mixer.buses)
+		if _audio_target != null:
+			_audio_target.bind_buses(_audio_mixer.buses)
 	return super.attach_view(view_root)
 
 func apply(common_keys: PackedStringArray, own_keys: PackedStringArray) -> Dictionary:

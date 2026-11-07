@@ -291,7 +291,14 @@ func _apply_pause() -> void:
 ## Register a fixed native spatial source. The game controls play; this component owns routing/pause/cleanup.
 func route_spatial(player: Node, category: Category = Category.SFX) -> void:
 	assert(player is AudioStreamPlayer2D or player is AudioStreamPlayer3D, "Spatial routing requires a native 2D/3D audio player.")
-	assert(not _buses.is_empty(), "Attach audio buses before registering a spatial player.")
+	_route_native(player, category)
+
+## Register a fixed non-spatial source whose pitch/gain is driven by gameplay.
+func route_player(player: AudioStreamPlayer, category: Category = Category.SFX) -> void:
+	_route_native(player, category)
+
+func _route_native(player: Node, category: Category) -> void:
+	assert(not _buses.is_empty(), "Attach audio buses before registering a native player.")
 	player.bus = _buses[Mixer.CHANNELS[category]]
 	player.set_meta("party_audio_category", category)
 	if not _spatial.has(player):

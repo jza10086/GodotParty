@@ -27,6 +27,8 @@ func party_stop(reason: StringName) -> void:
     %GameAudio.close_scope()
 ```
 
+无音频玩法或没有本机模拟的观战端可以从 `godot_party_audio_target()` 返回 `null`；不要求创建空组件。有目标时必须返回实际 PartyGameAudio。
+
 F6 未调用 `prepare_scope()` 时，组件自动建立临时预览总线，退出时移除。不写用户配置。正式运行由协议 runtime 拥有总线，离开作用域先停止声音，再移除对应总线。主游戏与前台小游戏的总线彼此独立；主游戏隐藏视图时按自身玩法决定暂停或停止。
 
 ## 播放、切换与等待
@@ -77,6 +79,8 @@ if reason == PartyAudioHandle.EndReason.COMPLETED:
 %GameAudio.route_spatial(%EngineSound, PartyGameAudio.Category.SFX)
 %EngineSound.play()
 ```
+
+固定的非空间原生播放器（例如持续调音高的发动机）使用 `route_player(player: AudioStreamPlayer, category)`；同样先路由再播放。素材/循环来自导出的 Cue 时，用 `cue.playback_stream()` 获取流，原生播放器应用 cue 的基础 volume_db/pitch_scale，玩法只叠加自身连续变化；不得修改共享 AudioStream。
 
 绑定后使用该作用域的分类总线，参与暂停、分类停止和退出清理；其空间衰减、循环和播放由原生节点控制，不进入二维音效池，不返回播放句柄。不要让空间声源先 autoplay，再绑定总线。
 
