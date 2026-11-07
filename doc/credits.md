@@ -85,5 +85,5 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 
 坦克：火炮大战，Kenney Tanks（CC0，侧视车体、履带与炮管） https://kenney.nl/assets/tanks
 
-音频：空白模板示例旋律、提示、撞击和环境音，本项目程序合成 games/minigame/godot_party_default_blank/audio/samples/
-配音：空白模板中文示例文本，本机 Windows Microsoft Huihui 离线合成 games/minigame/godot_party_default_blank/audio/samples/voice_a.wav、voice_b.wav
+音频：空白模板示例旋律、提示、撞击和环境音，本项目程序合成 games/minigame/godot_party_default_blank/examples/audio/samples/
+配音：空白模板中文示例文本，本机 Windows Microsoft Huihui 离线合成 games/minigame/godot_party_default_blank/examples/audio/samples/voice_a.wav、voice_b.wav

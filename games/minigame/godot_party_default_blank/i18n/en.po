@@ -255,111 +255,6 @@ msgstr "Beacon  {current} / {total}"
 msgid "game.next_beacon"
 msgstr "Next beacon"
 
-msgid "音频实验室"
-msgstr "Audio Lab"
-
-msgid "收起"
-msgstr "Close"
-
-msgid "F6 预览音量仅本次有效；正式游戏点应用保存。"
-msgstr "Preview volume is temporary; Apply saves in-game preferences."
-
-msgid "音乐 A · 循环"
-msgstr "Music A · Loop"
-
-msgid "音乐 B · 淡切"
-msgstr "Music B · Crossfade"
-
-msgid "暂停音乐"
-msgstr "Pause music"
-
-msgid "继续音乐"
-msgstr "Resume music"
-
-msgid "淡出音乐"
-msgstr "Fade out"
-
-msgid "短音效"
-msgstr "Click SFX"
-
-msgid "撞击音效"
-msgstr "Impact SFX"
-
-msgid "连发 20 次"
-msgstr "Burst ×20"
-
-msgid "环境循环"
-msgstr "Ambient loop"
-
-msgid "停止环境"
-msgstr "Stop ambience"
-
-msgid "配音 · 中断插播"
-msgstr "Voice · Replace"
-
-msgid "配音 · 加入队列"
-msgstr "Voice · Queue"
-
-msgid "忙碌时忽略"
-msgstr "Ignore if busy"
-
-msgid "跳过当前配音"
-msgstr "Skip voice"
-
-msgid "清空并停止配音"
-msgstr "Clear voices"
-
-msgid "暂停游戏音频"
-msgstr "Pause gameplay"
-
-msgid "继续游戏音频"
-msgstr "Resume gameplay"
-
-msgid "停止全部"
-msgstr "Stop all"
-
-msgid "UI 音效（暂停可播）"
-msgstr "UI click (while paused)"
-
-msgid "分类音量"
-msgstr "Channel volumes"
-
-msgid "游戏总音量"
-msgstr "Game master"
-
-msgid "100%"
-msgstr "100%"
-
-msgid "游戏音效"
-msgstr "SFX"
-
-msgid "预录配音"
-msgstr "Dialogue"
-
-msgid "环境声音"
-msgstr "Ambience"
-
-msgid "游戏界面音效"
-msgstr "Game UI"
-
-msgid "应用本游戏音量"
-msgstr "Apply game volumes"
-
-msgid "恢复继承 / 预览默认"
-msgstr "Restore inherited / preview default"
-
-msgid "欢迎来到音频测试。"
-msgstr "Welcome to the audio test."
-
-msgid "音乐 0 · 音效 0 · 配音 0 · 排队 0 · 环境 0 · UI 0 · 压低 0 dB"
-msgstr "Music 0 · SFX 0 · Voice 0 · Queue 0 · Ambient 0 · UI 0 · Duck 0 dB"
-
-msgid "播放事件将在这里显示。"
-msgstr "Playback events appear here."
-
-msgid "音频测试"
-msgstr "Audio test"
-
 msgid "audio.hint_preview"
 msgstr "F6 preview volumes apply immediately and are temporary. Dialogue is prerecorded, separate from player voice chat."
 
@@ -377,3 +272,105 @@ msgstr "Welcome to the audio test. Background music becomes quieter during dialo
 
 msgid "audio.voice_b"
 msgstr "Attention: this is an announcement. You can interrupt, queue or skip this voice line."
+
+msgid "game.preview"
+msgstr "Scene preview"
+
+msgid "game.preview_controls"
+msgstr "Wheel: zoom · Middle drag: orbit\nShift + middle drag: pan"
+
+msgid "audio.title"
+msgstr "Audio Lab"
+
+msgid "audio.close"
+msgstr "Close"
+
+msgid "audio.toggle"
+msgstr "Audio test"
+
+msgid "audio.music_a"
+msgstr "Music A · Loop"
+
+msgid "audio.music_b"
+msgstr "Music B · Crossfade"
+
+msgid "audio.music_pause"
+msgstr "Pause music"
+
+msgid "audio.music_resume"
+msgstr "Resume music"
+
+msgid "audio.music_stop"
+msgstr "Fade out"
+
+msgid "audio.click"
+msgstr "Click SFX"
+
+msgid "audio.impact"
+msgstr "Impact SFX"
+
+msgid "audio.burst"
+msgstr "Burst ×20"
+
+msgid "audio.ambience_start"
+msgstr "Ambient loop"
+
+msgid "audio.ambience_stop"
+msgstr "Stop ambience"
+
+msgid "audio.voice_replace"
+msgstr "Voice · Replace"
+
+msgid "audio.voice_queue"
+msgstr "Voice · Queue"
+
+msgid "audio.voice_ignore"
+msgstr "Ignore if busy"
+
+msgid "audio.voice_skip"
+msgstr "Skip voice"
+
+msgid "audio.voice_clear"
+msgstr "Clear voices"
+
+msgid "audio.pause_all"
+msgstr "Pause gameplay"
+
+msgid "audio.resume_all"
+msgstr "Resume gameplay"
+
+msgid "audio.stop_all"
+msgstr "Stop all"
+
+msgid "audio.ui_click"
+msgstr "UI click (while paused)"
+
+msgid "audio.volume_heading"
+msgstr "Channel volumes"
+
+msgid "audio.master"
+msgstr "Game master"
+
+msgid "audio.music"
+msgstr "Background music"
+
+msgid "audio.sfx"
+msgstr "SFX"
+
+msgid "audio.dialogue"
+msgstr "Dialogue"
+
+msgid "audio.ambience"
+msgstr "Ambience"
+
+msgid "audio.ui"
+msgstr "Game UI"
+
+msgid "audio.apply"
+msgstr "Apply game volumes"
+
+msgid "audio.reset"
+msgstr "Restore inherited / preview default"
+
+msgid "audio.event_hint"
+msgstr "Playback events appear here."

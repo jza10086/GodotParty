@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="PartyAudioCue" format=3 uid="uid://du76yqjxuai30"]
 
 [ext_resource type="Script" uid="uid://b8e8ifodc3mml" path="res://games/protocols/godot_party_default_protocol/audio/audio_cue.gd" id="1_kfsst"]
-[ext_resource type="AudioStream" uid="uid://djyqwh1nnbath" path="res://games/minigame/godot_party_default_blank/audio/samples/voice_b.wav" id="2_ynyj1"]
+[ext_resource type="AudioStream" uid="uid://djyqwh1nnbath" path="samples/voice_b.wav" id="2_ynyj1"]
 
 [resource]
 script = ExtResource("1_kfsst")

@@ -3,6 +3,8 @@ extends Camera3D
 ## Local orbit camera. Forward pointer events from the playfield to handle_input().
 ## Only center picking needs physics bodies; focus_on() can track any Node3D.
 
+## Optional authored focus; preserves the camera transform on startup.
+@export var initial_focus: Node3D
 @export_flags_3d_physics var focus_mask: int = 1
 @export_range(0.05, 1.0, 0.01) var degrees_per_pixel: float = 0.25
 @export_range(1.01, 2.0, 0.01) var zoom_ratio: float = 1.18
@@ -19,7 +21,7 @@ var _dragging: bool = false
 var _events: Array[InputEventMouse] = []
 
 func _ready() -> void:
-	_center = global_position - global_basis.z.normalized() * 10.0
+	_center = initial_focus.global_position if initial_focus != null else global_position - global_basis.z.normalized() * 10.0
 	set_physics_process(not Engine.is_editor_hint())
 	if not Engine.is_editor_hint():
 		get_window().focus_exited.connect(_cancel_drag)

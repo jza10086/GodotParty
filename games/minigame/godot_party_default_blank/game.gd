@@ -1,9 +1,7 @@
 extends Control
-## Self-contained example: load, confirm, play, present the local result, then finish once.
-## Core readiness stays technical; the parent receives only the final standard result.
-## 同一场景在编辑器、F6 画面预览与正式联机中实例化；调校资源在 graphics_lab.tscn 中编辑。
-const NavigationDemo = preload("res://games/minigame/godot_party_default_blank/navigation_2d.gd")
-const GraphicsLabView = preload("res://games/minigame/godot_party_default_blank/graphics_lab.gd")
+## Formal entry: protocol readiness, authoritative press order and final publication.
+## DemoHub owns editable demonstrations, input presentation and local audio controls.
+const DemoHub = preload("examples/demo_hub.gd")
 enum Phase { PREPARING, RUNNING, SETTLING, SUBMITTED, STOPPED }
 const PRESS_TOPIC: StringName = &"blank/press"
 const RESULT_TOPIC: StringName = &"blank/result"
@@ -15,49 +13,32 @@ var _settlement: Control
 var _cursors: Control
 var _result: Dictionary = {}
 var _press_order: Array[String] = []
-@onready var finish_button: Button = %Finish
-@onready var _content: CenterContainer = $GameHUD/Content
-@onready var _graphics: GraphicsLabView = %GraphicsLab
-@onready var _navigation: NavigationDemo = %Navigation2D
-@onready var _game_hud: CanvasLayer = $GameHUD
-@onready var _details_3d: Control = $GameHUD/HUD
-@onready var _switch: Button = %SwitchView
+@onready var _demo: DemoHub = %DemoHub
 @onready var _pages: Control = %ProtocolPages
 
 func party_setup(value: PartyAPI, config: Dictionary) -> void:
 	api = value
 	request = config.duplicate(true)
-	$GameAudio.prepare_scope()
+	%DemoHub.configure(api.i18n, api.config, _input_allowed)
 	api.net.message_received.connect(_message)
 
 func godot_party_audio_target() -> PartyGameAudio:
-	return $GameAudio
+	return %DemoHub.audio_target()
 
-func _audio_input_allowed() -> bool:
-	return api == null or (phase == Phase.RUNNING and not api.input.input_blocked)
+func godot_party_graphics_targets() -> Dictionary:
+	return %DemoHub.graphics_targets()
+
+func _input_allowed() -> bool:
+	return phase == Phase.RUNNING and not api.input.input_blocked
+
+func _demo_failed(error: Error) -> void:
+	api.fail("audio_settings_failed", error_string(error))
 
 func _ready() -> void:
-	%AudioPanel.configure(%GameAudio, api, _audio_input_allowed)
-	_graphics.orbit_camera.input_allowed = _camera_input_allowed
-	_navigation.input_allowed = _controls_allowed
-	# Keep both sample HUDs below the framework's session menu on canvas 0.
-	_navigation.hud.layer = -3
-	_switch.pressed.connect(_switch_view)
-	_game_hud.visible = api == null
 	if api == null:
-		# F6 只预览画面；正式流程仍由大厅注入 API。
-		_content.hide()
-		%Status.text = "画面预览"
-		%Controls.text = "滚轮缩放 · 中键拖动旋转\nShift＋中键平移"
 		return
-	_navigation.localize(api.i18n)
-	_switch.text = api.i18n.text(&"game.show_2d")
-	%Title.text = api.i18n.text(&"空白小游戏")
-	%Status.text = api.i18n.text(&"game.hud_ready")
-	%Controls.text = api.i18n.text(&"game.hud_controls")
-	finish_button.text = api.i18n.text(&"game.finish")
-	finish_button.tooltip_text = api.i18n.text(&"game.settings_hint") + "\n" + api.i18n.text(&"game.locale", {"locale": api.i18n.effective_locale()})
-	_content.hide()
+	_demo.finish_requested.connect(_press_finish)
+	_demo.failed.connect(_demo_failed)
 	var cursor_scene: PackedScene = api.load_asset({"package_id": api.protocol_id, "resource_key": "player_cursors"}) as PackedScene
 	if cursor_scene == null:
 		api.fail("cursors_missing", "原版协议缺少玩家鼠标场景。")
@@ -80,52 +61,30 @@ func _ready() -> void:
 	await get_tree().process_frame
 	if not api.is_open():
 		return
-	finish_button.pressed.connect(_press_finish)
 	api.players_changed.connect(_try_settle)
 	var error: Error = api.mark_ready()
 	if error != OK:
 		api.fail("load_failed", error_string(error))
-
-func _switch_view() -> void:
-	if not _controls_allowed():
-		return
-	var show_2d: bool = not _navigation.visible
-	_navigation.visible = show_2d
-	_graphics.visible = not show_2d
-	_details_3d.visible = not show_2d
-	if api == null:
-		_switch.text = "查看 3D 展台" if show_2d else "查看 2D 航道"
-	else:
-		_switch.text = api.i18n.text(&"game.show_3d" if show_2d else &"game.show_2d")
-
-func _camera_input_allowed() -> bool:
-	return _graphics.visible and _controls_allowed()
-
-func _controls_allowed() -> bool:
-	return _audio_input_allowed() and not %AudioPanel.is_expanded()
 
 func party_start() -> void:
 	_briefing.transport_started()
 
 func _begin_play() -> void:
 	phase = Phase.RUNNING
-	_game_hud.show()
-	%Status.text = api.i18n.text(&"game.hud_playing")
-	_content.show()
 	_cursors.enabled = true
 	_cursors.show()
+	var can_finish: bool = false
 	for player: Dictionary in api.get_players():
 		if player.connected and player.is_local:
-			finish_button.disabled = false
+			can_finish = true
 			break
+	_demo.begin_play(can_finish)
 	_try_settle()
 
 func _press_finish() -> void:
-	if phase != Phase.RUNNING or api.input.input_blocked or finish_button.disabled:
+	if phase != Phase.RUNNING or api.input.input_blocked or _demo.finish_button.disabled:
 		return
-	finish_button.disabled = true
-	finish_button.text = api.i18n.text(&"game.waiting")
-	%Status.text = api.i18n.text(&"game.waiting")
+	_demo.wait_for_players()
 	var error: Error = api.net.send_to_host(PRESS_TOPIC, {})
 	if error != OK:
 		api.fail("press_send_failed", error_string(error))
@@ -193,14 +152,10 @@ func _open_settlement(result: Dictionary) -> void:
 		api.fail("settlement_missing", "原版协议缺少结算场景。")
 		return
 	_result = result.duplicate(true)
-	%GameAudio.stop_all()
 	phase = Phase.SETTLING
-	_game_hud.hide()
-	_navigation.hud.hide()
+	_demo.stop_demo()
 	_cursors.enabled = false
 	_cursors.hide()
-	finish_button.disabled = true
-	_content.hide()
 	_settlement = gate_script.new()
 	_settlement.configure(api, {"title": api.i18n.text(&"game.results"), "rows": _result.rankings}, request.request_id)
 	_settlement.continued.connect(_submit_result)
@@ -216,7 +171,7 @@ func _submit_result() -> void:
 		api.fail("result_rejected", error_string(error))
 
 func party_stop(_reason: StringName) -> void:
-	$GameAudio.close_scope()
+	%DemoHub.audio_target().close_scope()
 	if is_instance_valid(_cursors):
 		_cursors.enabled = false
 		_cursors.hide()
@@ -229,6 +184,5 @@ func party_stop(_reason: StringName) -> void:
 	if api.players_changed.is_connected(_try_settle):
 		api.players_changed.disconnect(_try_settle)
 	phase = Phase.STOPPED
-	set_process(false)
 	if is_node_ready():
-		finish_button.disabled = true
+		_demo.stop_demo()

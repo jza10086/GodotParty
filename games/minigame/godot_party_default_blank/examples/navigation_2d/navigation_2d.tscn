@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://games/minigame/godot_party_default_blank/navigation_2d.gd" id="script"]
+[ext_resource type="Script" path="navigation_2d.gd" id="script"]
 
 [node name="Navigation2D" type="Node2D"]
 script = ExtResource("script")
@@ -60,6 +60,7 @@ polygon = PackedVector2Array(1,-8,10,0,1,8,-12,8,-12,-8)
 color = Color(0.18,0.39,0.43,1)
 
 [node name="DemoHUD" type="CanvasLayer" parent="."]
+layer = -3
 unique_name_in_owner = true
 
 [node name="Readout" type="VBoxContainer" parent="DemoHUD"]

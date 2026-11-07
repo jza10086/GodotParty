@@ -5,7 +5,7 @@
 ## 接入场景与生命周期
 
 1. 在游戏场景实例化 `game_audio.tscn`，命名 `GameAudio`，启用唯一名称。
-2. 在 Inspector 新建 `PartyAudioCue` 资源并指定 AudioStream；把音效资源通过 `@export` 暴露给游戏脚本。示例资源位于空白模板的 `audio/`。
+2. 在 Inspector 新建 `PartyAudioCue` 资源并指定 AudioStream；把音效资源通过 `@export` 暴露给游戏脚本。示例资源位于空白模板的 `examples/audio/`。
 3. 正式游戏 `party_setup` 在入树前调用 `prepare_scope()`，通过以下方法暴露挂点。协议设置 runtime 会在视图入树后绑定该作用域的音频总线，因此正式播放从游戏开始阶段发起。
 
 ```gdscript

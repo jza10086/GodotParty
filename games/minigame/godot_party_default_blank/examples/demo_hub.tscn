@@ -1,0 +1,128 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="demo_hub.gd" id="1_vtvuq"]
+
+[ext_resource type="PackedScene" path="graphics/graphics_lab.tscn" id="graphics"]
+[ext_resource type="PackedScene" path="navigation_2d/navigation_2d.tscn" id="navigation"]
+
+[ext_resource type="PackedScene" path="res://games/protocols/godot_party_default_protocol/audio/game_audio.tscn" id="audio"]
+[ext_resource type="PackedScene" path="audio/audio_panel.tscn" id="audio_panel"]
+
+[node name="DemoHub" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_vtvuq")
+
+[node name="GraphicsLab" parent="." instance=ExtResource("graphics")]
+unique_name_in_owner = true
+
+[node name="MapCanvas" type="CanvasLayer" parent="."]
+layer = -4
+
+[node name="Navigation2D" parent="MapCanvas" instance=ExtResource("navigation")]
+unique_name_in_owner = true
+visible = false
+
+[node name="GameHUD" type="CanvasLayer" parent="."]
+layer = -2
+
+[node name="SwitchView" type="Button" parent="GameHUD"]
+unique_name_in_owner = true
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -230.0
+offset_right = -28.0
+offset_top = 24.0
+offset_bottom = 76.0
+text = "查看 2D 航道"
+
+[node name="Content" type="CenterContainer" parent="GameHUD"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = -92.0
+offset_right = 288.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Finish" type="Button" parent="GameHUD/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+disabled = true
+text = "结束游戏"
+
+[node name="HUD" type="Control" parent="GameHUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="GameHUD/HUD"]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 28.0
+offset_top = 24.0
+offset_right = 420.0
+offset_bottom = 62.0
+theme_override_colors/font_color = Color(0.96, 0.95, 0.91, 1)
+theme_override_colors/font_outline_color = Color(0.06, 0.12, 0.16, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 26
+text = "空白小游戏"
+
+[node name="Status" type="Label" parent="GameHUD/HUD"]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 28.0
+offset_top = 64.0
+offset_right = 500.0
+offset_bottom = 100.0
+theme_override_colors/font_color = Color(0.96, 0.95, 0.91, 1)
+theme_override_colors/font_outline_color = Color(0.06, 0.12, 0.16, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 22
+text = "等待开局"
+
+[node name="Controls" type="Label" parent="GameHUD/HUD"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -580.0
+offset_top = -126.0
+offset_right = -28.0
+offset_bottom = -28.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.96, 0.95, 0.91, 1)
+theme_override_colors/font_outline_color = Color(0.06, 0.12, 0.16, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 22
+text = "滚轮缩放 · 中键拖动旋转 · Shift＋中键平移
+点击「结束游戏」完成本轮
+Esc：菜单"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+
+[node name="GameAudio" parent="." instance=ExtResource("audio")]
+unique_name_in_owner = true
+
+[node name="AudioPanel" parent="GameHUD" instance=ExtResource("audio_panel")]
+unique_name_in_owner = true

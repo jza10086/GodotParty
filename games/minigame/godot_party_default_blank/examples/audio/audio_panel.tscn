@@ -1,13 +1,13 @@
 [gd_scene format=3 uid="uid://dgocxe1n7dgh3"]
 
-[ext_resource type="Script" uid="uid://degiclkh7h65s" path="res://games/minigame/godot_party_default_blank/audio/audio_panel.gd" id="1_oxktj"]
-[ext_resource type="Resource" uid="uid://kk7ethomsrcg" path="res://games/minigame/godot_party_default_blank/audio/music_a.tres" id="2_m6qlp"]
-[ext_resource type="Resource" uid="uid://dmw84talmohk8" path="res://games/minigame/godot_party_default_blank/audio/music_b.tres" id="3_6chu3"]
-[ext_resource type="Resource" uid="uid://4r35m7p5mod0" path="res://games/minigame/godot_party_default_blank/audio/click.tres" id="4_f101n"]
-[ext_resource type="Resource" uid="uid://cbjiy164a0hxm" path="res://games/minigame/godot_party_default_blank/audio/impact.tres" id="5_c6u7r"]
-[ext_resource type="Resource" uid="uid://cvw3npgqsnbwb" path="res://games/minigame/godot_party_default_blank/audio/ambience.tres" id="6_dohf2"]
-[ext_resource type="Resource" uid="uid://xmmyo5wvxso3" path="res://games/minigame/godot_party_default_blank/audio/voice_a.tres" id="7_y0hmb"]
-[ext_resource type="Resource" uid="uid://du76yqjxuai30" path="res://games/minigame/godot_party_default_blank/audio/voice_b.tres" id="8_q3ke3"]
+[ext_resource type="Script" uid="uid://degiclkh7h65s" path="audio_panel.gd" id="1_oxktj"]
+[ext_resource type="Resource" uid="uid://kk7ethomsrcg" path="music_a.tres" id="2_m6qlp"]
+[ext_resource type="Resource" uid="uid://dmw84talmohk8" path="music_b.tres" id="3_6chu3"]
+[ext_resource type="Resource" uid="uid://4r35m7p5mod0" path="click.tres" id="4_f101n"]
+[ext_resource type="Resource" uid="uid://cbjiy164a0hxm" path="impact.tres" id="5_c6u7r"]
+[ext_resource type="Resource" uid="uid://cvw3npgqsnbwb" path="ambience.tres" id="6_dohf2"]
+[ext_resource type="Resource" uid="uid://xmmyo5wvxso3" path="voice_a.tres" id="7_y0hmb"]
+[ext_resource type="Resource" uid="uid://du76yqjxuai30" path="voice_b.tres" id="8_q3ke3"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oxktj"]
 bg_color = Color(0.055, 0.07, 0.095, 0.97)

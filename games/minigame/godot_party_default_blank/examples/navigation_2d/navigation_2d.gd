@@ -7,7 +7,7 @@ extends Node2D
 var input_allowed: Callable
 var _index: int = 0
 var _motion: Tween
-const DEFAULT_BEACON_STATUS: String = "航标  {current} / {total}"
+const DEFAULT_TEXT: Translation = preload("../../i18n/zh_Hans.po")
 var _i18n: RefCounted
 
 func _ready() -> void:
@@ -15,20 +15,20 @@ func _ready() -> void:
 	_sync_visibility()
 	if not Engine.is_editor_hint():
 		%NextBeacon.pressed.connect(_advance)
-		_refresh_status()
+		localize(_i18n)
 
 func _sync_visibility() -> void:
 	hud.visible = is_visible_in_tree()
 
 func localize(i18n: RefCounted) -> void:
 	_i18n = i18n
-	%DemoTitle.text = i18n.text(&"game.channel")
-	%NextBeacon.text = i18n.text(&"game.next_beacon")
+	%DemoTitle.text = _text(&"game.channel")
+	%NextBeacon.text = _text(&"game.next_beacon")
 	_refresh_status()
 
 func _refresh_status() -> void:
 	var values: Dictionary = {"current": _index + 1, "total": _beacons.size()}
-	%BeaconStatus.text = DEFAULT_BEACON_STATUS.format(values) if _i18n == null else _i18n.text(&"game.beacon_status", values)
+	%BeaconStatus.text = _text(&"game.beacon_status", values)
 
 func _advance() -> void:
 	if input_allowed.is_valid() and not input_allowed.call():
@@ -41,3 +41,10 @@ func _advance() -> void:
 	_motion = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	_motion.tween_property(_boat, "position", destination, 0.55)
 	_refresh_status()
+
+func _text(key: StringName, params: Dictionary = {}) -> String:
+	return String(DEFAULT_TEXT.get_message(key)).format(params) if _i18n == null else _i18n.text(key, params)
+
+func stop_motion() -> void:
+	if _motion != null:
+		_motion.kill()
