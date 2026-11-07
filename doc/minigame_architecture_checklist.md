@@ -330,7 +330,10 @@
 包：`godot_party_default_west_showdown`。定位：[manifest.json](../games/minigame/godot_party_default_west_showdown/manifest.json)、`game.tscn`。
 
 - 当前只有空 Node3D 场景和 `playable:false`、空 adapters，没有已有玩法可重构。
-- [ ] 保持未开放；后续真正开发时按标准模板建立入口、可编辑世界/HUD、作用域依赖与协议实现。不要为了通过“架构统一”检查添加空管理器、伪造生命周期或提前开放。
+- [x] 已核对并保持未开放；没有添加空管理器、伪造生命周期或提前开放。
+- 后续真正开发时按标准模板建立入口、可编辑世界/HUD、作用域依赖与协议实现；这些属于后续玩法开发，本次未实施。
+
+2026-11-07 核对完成：子仓仍为 `825f2f7`，无代码或资源改动，主仓仅更新本条状态。已静态检查清单 JSON、入口/中文翻译路径及场景文本：保留空 Node3D、`playable:false`、空 adapters 和原有 2–8 人声明。未运行游戏或联机/视觉验收；当前没有可玩内容，相关验收留待实际开发。
 
 ## 建议分批与会话交接
 
