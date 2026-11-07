@@ -230,14 +230,16 @@
 
 ### M17 海战棋　B
 
-包：`godot_party_default_battleship_chess`。定位：[party_round.gd](../games/minigame/godot_party_default_battleship_chess/party_round.gd)、[battle_view.gd](../games/minigame/godot_party_default_battleship_chess/battle_view.gd) 的 `_text3d()`、`_rebuild_ships()`。
+包：`godot_party_default_battleship_chess`。定位：[party_round.gd](../games/minigame/godot_party_default_battleship_chess/party_round.gd)、[battle_view.gd](../games/minigame/godot_party_default_battleship_chess/battle_view.gd) 的 `_rebuild_ships()`、[ship_display.tscn](../games/minigame/godot_party_default_battleship_chess/ship_display.tscn)。
 
-- [ ] 保留现有 gate 组合、逐接收者视图、观战房主和投票/抢选规则，不迁回 ranked_round。
-- [ ] 舰船 holder、名字牌、水线 Plane/ShaderMaterial 目前运行时逐件构造；做成舰船展示子场景，以舰型/舰长/沉没状态更新导出资源与参数。已存在的海面、格网、标记和弹着场景保留。
-- [ ] `view` 已注入翻译但准备说明、结果等仍散在入口，补稳定模板。接收结果边界和延迟弹着→结算取消链单独核对，保留 `_stopped` 检查。
-- [ ] `prototype/` 是另一个运行根，含大量旧 `:=`/程序化 UI；单独标明为旧原型，整理可分后续批次，不把它当正式入口，更不能以格式清理覆盖当前私有视图规则。
+- [x] 保留独立 gate 组合、逐接收者私有视图和观战房主权威计算；沿用当前共同回合、个人抢选、哑弹及个人分数规则，未修改纯规则文件或消息格式。
+- [x] 舰船 holder、名字牌、水线 Plane/ShaderMaterial 保存到 `ship_display.tscn`；导出五组完好/残骸资源，按舰型、舰长、朝向和沉没状态配置。水线资源按场景实例独立，名字牌样式可直接编辑；保留海面、格网、标记及弹着实现。
+- [x] 准备操作说明、HUD、规则和结算展示补稳定键与命名占位模板；独立视图使用同一默认 Translation。接收最终视图时先验证协议结果及所需成绩列；结算展示只修改副本。停止清理本包信号、HUD、输入和弹着，延迟结算保留 `_stopped` 检查。
+- [x] README 明确 `prototype/` 为由 `.gdignore` 隔离的旧原型，非正式入口；本批未改动旧原型。
 
-验证：敌舰信息不可见、我方舰船归属、目标选择、弹着后结算和中途退出；涉及私有视图时检查参与者与观战房主。
+2026-11-07 已实施，子模块提交 `57e09c7`。Godot 4.7.2 定向验证：既有三客户端真实大厅联机通过（私有视图、布阵归属、抢选、齐射和结算）；1920×1080 实际渲染/鼠标操作检查通过并查看截图；五组残骸切换、水线实例隔离、名字牌编辑值和默认翻译检查通过。结果边界/生命周期自动检查覆盖非房主消息、无效结果、观战房主无隐藏舰船节点、末轮弹着后结算、延迟期间取消、重复停止及唯一提交，均通过。
+
+检查脚本及输出在 `tmp/test/battleship/`：`preview.gd`、`network.gd`、`architecture_display.gd`、`architecture_lifecycle.gd`。观战房主本批为定向 API/视图检查，尚未做完整观战房主多端人工验收；真人操作手感、跨机器/外网和导出包验收仍待进行。原有 `ocean_fields.png.import` 改动未纳入提交。
 
 ### M18 记忆拼图　A/B　依赖 G01
 
