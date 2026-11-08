@@ -374,6 +374,13 @@ func _accept_hello(sender: int, identity: Dictionary) -> void:
 				return
 			value["profile"] = resolved.value
 			value["appearance"] = protocol.get_appearance(value["profile"])
+	# Reject invalid appearance references before they can invalidate the shared room closure.
+	var appearances: Array = _appearances()
+	appearances.append(value.appearance)
+	var closure: Dictionary = catalog.resolve(room.main, room.pools, appearances)
+	if not closure.ok:
+		_send(sender, {"kind": "rejected", "payload": {"message": "加入房间失败：\n" + closure.message}})
+		return
 	players.append(value)
 	_hello_peers.erase(sender)
 	_publish()
@@ -673,6 +680,10 @@ func _auto_profile() -> void:
 	var local_profile: Dictionary = profiles.read(id, protocol)
 	if not local_profile.ok:
 		leave(local_profile.message)
+		return
+	var closure: Dictionary = catalog.resolve(room.main, room.pools, [protocol.get_appearance(local_profile.profile)])
+	if not closure.ok:
+		leave("本机协议资料不可用：\n" + closure.message)
 		return
 	_profile_protocol = id
 	var error: Error = submit_profile(local_profile.name, local_profile.profile)

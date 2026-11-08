@@ -295,7 +295,7 @@ func resolve(main_id: String, pools: Dictionary, appearances: Array = []) -> Dic
 		for ref: Dictionary in references:
 			var pack: Dictionary = packages.get(ref["package_id"], {})
 			if not pack.get("resources", {}).has(ref["resource_key"]):
-				return Data.failure("RESOURCE_MISSING", str(ref))
+				return Data.failure("RESOURCE_MISSING", "玩家形象资源不存在：%s/%s（内容包版本：%s）。请在协议资料中重新选择头像或形象。" % [ref.package_id, ref.resource_key, pack.get("package_version", "未安装")])
 			error = _visit(ref["package_id"], selected, visiting)
 			if not error.is_empty():
 				return Data.failure("DEPENDENCY_MISSING", error)
