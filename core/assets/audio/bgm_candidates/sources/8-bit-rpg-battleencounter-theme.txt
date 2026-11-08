@@ -1,0 +1,14 @@
+8-Bit RPG Battle/Encounter Theme
+Source: https://opengameart.org/content/8-bit-rpg-battleencounter-theme
+Author/uploader: Wolfgang_
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/RPGBattleTheme-Loopable_0.ogg
+Original filename: RPGBattleTheme-Loopable.ogg
+Original published bytes: 2119501
+Local file: audio/8_bit_rpg_battleencounter_theme.ogg
+Source attribution notice:  Copyright/Attribution Notice: Ted Kerr
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

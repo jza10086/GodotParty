@@ -1,0 +1,14 @@
+Technological Messup
+Source: https://opengameart.org/content/technological-messup
+Author/uploader: Centurion_of_war
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/tecnological_messup_v2_0.ogg
+Original filename: tecnological_messup_v2.ogg
+Original published bytes: 3456787
+Local file: audio/technological_messup.ogg
+Source attribution notice:  Copyright/Attribution Notice: not required, but appreciated
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

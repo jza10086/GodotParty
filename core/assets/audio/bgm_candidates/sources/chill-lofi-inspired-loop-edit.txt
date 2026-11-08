@@ -1,0 +1,14 @@
+Chill lofi inspired [loop edit]
+Source: https://opengameart.org/content/chill-lofi-inspired-loop-edit
+Author/uploader: qubodup
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/chilllofir-loop.ogg
+Original filename: chilllofir-loop.ogg
+Original published bytes: 2360833
+Local file: audio/chill_lofi_inspired_loop_edit.ogg
+Source attribution notice:  Copyright/Attribution Notice: (optional) Chill lofi inspired by omfgdude, made loopable by qubodup
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

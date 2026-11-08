@@ -1,0 +1,14 @@
+Exploration Theme
+Source: https://opengameart.org/content/exploration-theme
+Author/uploader: CleytonKauffman
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/exploration_theme.zip
+Original filename: exploration_theme.zip
+Original published bytes: 32456598
+Local file: audio/exploration_theme.ogg
+Source attribution notice:  Copyright/Attribution Notice: Music by Cleyton Kauffman - https://soundcloud.com/cleytonkauffman
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

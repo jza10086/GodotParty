@@ -1,0 +1,14 @@
+A New Day
+Source: https://opengameart.org/content/a-new-day
+Author/uploader: SpiderDave
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/49_0.ogg
+Original filename: 49.ogg
+Original published bytes: 2515216
+Local file: audio/a_new_day.ogg
+Source attribution notice:  Copyright/Attribution Notice: No attribution required. If you want to credit me anyway, credit me as "SpiderDave".
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

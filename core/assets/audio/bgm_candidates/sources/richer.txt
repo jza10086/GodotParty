@@ -1,0 +1,14 @@
+Richer
+Source: https://opengameart.org/content/richer
+Author/uploader: Pro Sensory
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/Richer%20than%20me.wav
+Original filename: Richer than me.wav
+Original published bytes: 28459332
+Local file: audio/richer.wav
+Source attribution notice:  Copyright/Attribution Notice: Just include my name Alex McCulloch. Attribution appreciated but not required.
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

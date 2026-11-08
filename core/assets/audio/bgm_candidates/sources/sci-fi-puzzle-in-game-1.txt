@@ -1,0 +1,14 @@
+Sci-fi Puzzle In-Game 1
+Source: https://opengameart.org/content/sci-fi-puzzle-in-game-1
+Author/uploader: MintoDog
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/sci-fi_puzzle_in-game_1_bpm138_0.ogg
+Original filename: sci-fi_puzzle_in-game_1_bpm138.ogg
+Original published bytes: 4272447
+Local file: audio/sci_fi_puzzle_in_game_1.ogg
+Source attribution notice: Not specified
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

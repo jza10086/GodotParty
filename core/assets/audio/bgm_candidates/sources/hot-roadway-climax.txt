@@ -1,0 +1,14 @@
+Hot Roadway
+Source: https://opengameart.org/content/hot-roadway
+Author/uploader: MintoDog
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/hot_roadway_climax_bpm175_0.ogg
+Original filename: hot_roadway_climax_bpm175.ogg
+Original published bytes: 3517901
+Local file: audio/hot_roadway_climax.ogg
+Source attribution notice: Not specified
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

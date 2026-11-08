@@ -1,0 +1,14 @@
+Hyper Ultra-Racing
+Source: https://opengameart.org/content/hyper-ultra-racing
+Author/uploader: cynicmusic
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/AugustUltraAmbience.wav
+Original filename: AugustUltraAmbience.wav
+Original published bytes: 14063104
+Local file: audio/hyper_ultra_racing.wav
+Source attribution notice:  Copyright/Attribution Notice: http://cynicmusic.com http://pixelsphere.org
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

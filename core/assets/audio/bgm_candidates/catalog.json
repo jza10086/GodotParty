@@ -1,0 +1,943 @@
+[
+  {
+    "id": "puzzling",
+    "title": "Puzzling",
+    "uploader": "Ruskerdax",
+    "source": "https://opengameart.org/content/puzzling",
+    "download_url": "https://opengameart.org/sites/default/files/ruskerdax_-_puzzling.mp3",
+    "original_filename": "ruskerdax_-_puzzling.mp3",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/puzzling.mp3",
+    "bytes": 3843863,
+    "duration_seconds": 119.930875,
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B01",
+    "author": "Ruskerdax",
+    "style_zh": "极简复古电子，DX7 与 TR909",
+    "loop_note_zh": "未标称循环"
+  },
+  {
+    "id": "sci-fi-puzzle-in-game-1",
+    "title": "Sci-fi Puzzle In-Game 1",
+    "uploader": "MintoDog",
+    "source": "https://opengameart.org/content/sci-fi-puzzle-in-game-1",
+    "download_url": "https://opengameart.org/sites/default/files/sci-fi_puzzle_in-game_1_bpm138_0.ogg",
+    "original_filename": "sci-fi_puzzle_in-game_1_bpm138.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/sci_fi_puzzle_in_game_1.ogg",
+    "bytes": 4272447,
+    "duration_seconds": 139.130431,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B02",
+    "author": "MintoDog",
+    "style_zh": "科幻解谜电子，138 BPM",
+    "loop_note_zh": "作者标称可循环"
+  },
+  {
+    "id": "quirky-jazz",
+    "title": "Quirky Jazz",
+    "uploader": "Spring Spring",
+    "source": "https://opengameart.org/content/quirky-jazz",
+    "download_url": "https://opengameart.org/sites/default/files/quirky_jazz_0.mp3",
+    "original_filename": "quirky_jazz.mp3",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "OGA-BY 3.0",
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/quirky_jazz.mp3",
+    "bytes": 11816874,
+    "duration_seconds": 511.454229,
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "48000",
+        "channels": 2,
+        "side_data_list": [
+          {}
+        ]
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B03",
+    "author": "Spring Spring",
+    "style_zh": "俏皮摇摆、合成器与芯片爵士",
+    "loop_note_zh": "未标称循环；源页双许可，选择 CC0"
+  },
+  {
+    "id": "hot-roadway",
+    "title": "Hot Roadway",
+    "uploader": "MintoDog",
+    "source": "https://opengameart.org/content/hot-roadway",
+    "download_url": "https://opengameart.org/sites/default/files/hot_roadway_bpm160_0.ogg",
+    "original_filename": "hot_roadway_bpm160.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/hot_roadway.ogg",
+    "bytes": 3792439,
+    "duration_seconds": 120.0,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B04",
+    "author": "MintoDog",
+    "style_zh": "积极竞速 Techno，160 BPM",
+    "loop_note_zh": "作者标称可循环"
+  },
+  {
+    "id": "hot-roadway-climax",
+    "title": "Hot Roadway (Climax)",
+    "uploader": "MintoDog",
+    "source": "https://opengameart.org/content/hot-roadway",
+    "download_url": "https://opengameart.org/sites/default/files/hot_roadway_climax_bpm175_0.ogg",
+    "original_filename": "hot_roadway_climax_bpm175.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/hot_roadway_climax.ogg",
+    "bytes": 3517901,
+    "duration_seconds": 109.714286,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B05",
+    "author": "MintoDog",
+    "style_zh": "竞速高潮版，175 BPM，增加拍手",
+    "loop_note_zh": "作者标称可循环"
+  },
+  {
+    "id": "detour",
+    "title": "Detour",
+    "uploader": "Zane Little Music",
+    "source": "https://opengameart.org/content/detour",
+    "download_url": "https://opengameart.org/sites/default/files/detour_0.mp3",
+    "original_filename": "detour.mp3",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/detour.mp3",
+    "bytes": 10048009,
+    "duration_seconds": 251.141225,
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B06",
+    "author": "Zane Little Music",
+    "style_zh": "复古竞速 Jazz Funk Fusion",
+    "loop_note_zh": "完整曲；本次不含 Deluxe 版付费素材"
+  },
+  {
+    "id": "battle-theme-0",
+    "title": "Battle Theme",
+    "uploader": "Wolfgang_",
+    "source": "https://opengameart.org/content/battle-theme-0",
+    "download_url": "https://opengameart.org/sites/default/files/Battle.mp3",
+    "original_filename": "Battle.mp3",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/battle_theme_0.mp3",
+    "bytes": 4646747,
+    "duration_seconds": 116.117475,
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B07",
+    "author": "Ted Kerr / Wolfgang_",
+    "style_zh": "紧张管弦战斗",
+    "loop_note_zh": "未标称循环"
+  },
+  {
+    "id": "prepare-to-fight",
+    "title": "Prepare to fight",
+    "uploader": "Basil",
+    "source": "https://opengameart.org/content/prepare-to-fight",
+    "download_url": "https://opengameart.org/sites/default/files/prepare_to_fight.mp3",
+    "original_filename": "prepare_to_fight.mp3",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/prepare_to_fight.mp3",
+    "bytes": 1969049,
+    "duration_seconds": 123.0,
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B08",
+    "author": "Basil",
+    "style_zh": "史诗开战与准备阶段",
+    "loop_note_zh": "未标称循环"
+  },
+  {
+    "id": "battle-theme-a",
+    "title": "Battle Theme A",
+    "uploader": "cynicmusic",
+    "source": "https://opengameart.org/content/battle-theme-a",
+    "download_url": "https://opengameart.org/sites/default/files/battleThemeA.mp3",
+    "original_filename": "battleThemeA.mp3",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/battle_theme_a.mp3",
+    "bytes": 3289143,
+    "duration_seconds": 95.851837,
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "44100",
+        "channels": 2,
+        "side_data_list": [
+          {}
+        ]
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B09",
+    "author": "The Cynic Project / cynicmusic",
+    "style_zh": "弦乐、铜管、史诗战斗",
+    "loop_note_zh": "未标称循环"
+  },
+  {
+    "id": "ninja-theme",
+    "title": "Ninja Theme",
+    "uploader": "Spring Spring",
+    "source": "https://opengameart.org/content/ninja-theme",
+    "download_url": "https://opengameart.org/sites/default/files/ninja%20theme_0.ogg",
+    "original_filename": "ninja theme.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/ninja_theme.ogg",
+    "bytes": 3341474,
+    "duration_seconds": 164.0,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "48000",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B10",
+    "author": "Julie Damsgaard / Spring Spring",
+    "style_zh": "日本筝（Koto）、笛、铃与合成器",
+    "loop_note_zh": "未标称循环"
+  },
+  {
+    "id": "spaghetti-western",
+    "title": "Spaghetti Western",
+    "uploader": "Spring Spring",
+    "source": "https://opengameart.org/content/spaghetti-western",
+    "download_url": "https://opengameart.org/sites/default/files/spagetti%20western_0.ogg",
+    "original_filename": "spagetti western.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/spaghetti_western.ogg",
+    "bytes": 3000533,
+    "duration_seconds": 123.428571,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B11",
+    "author": "Julie Damsgaard / Spring Spring",
+    "style_zh": "诙谐西部、吉他与铜管",
+    "loop_note_zh": "未标称循环"
+  },
+  {
+    "id": "hyper-ultra-racing",
+    "title": "Hyper Ultra-Racing",
+    "uploader": "cynicmusic",
+    "source": "https://opengameart.org/content/hyper-ultra-racing",
+    "download_url": "https://opengameart.org/sites/default/files/AugustUltraAmbience.wav",
+    "original_filename": "AugustUltraAmbience.wav",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/hyper_ultra_racing.wav",
+    "bytes": 14063104,
+    "duration_seconds": 79.699592,
+    "streams": [
+      {
+        "codec_name": "pcm_s16le",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B12",
+    "author": "The Cynic Project / cynicmusic",
+    "style_zh": "高速 Drum & Bass 与电影感氛围",
+    "loop_note_zh": "未标称循环；含人声音色铺底"
+  },
+  {
+    "id": "dark-forest-theme",
+    "title": "Dark Forest Theme",
+    "uploader": "cynicmusic",
+    "source": "https://opengameart.org/content/dark-forest-theme",
+    "download_url": "https://opengameart.org/sites/default/files/GameMusic_ForestTheme_24_0.mp3",
+    "original_filename": "GameMusic_ForestTheme_24.mp3",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/dark_forest_theme.mp3",
+    "bytes": 1942315,
+    "duration_seconds": 93.061859,
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "44100",
+        "channels": 2,
+        "side_data_list": [
+          {}
+        ]
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B13",
+    "author": "The Cynic Project / cynicmusic",
+    "style_zh": "阴暗原声吉他与弦乐",
+    "loop_note_zh": "未标称循环"
+  },
+  {
+    "id": "a-new-day",
+    "title": "A New Day",
+    "uploader": "SpiderDave",
+    "source": "https://opengameart.org/content/a-new-day",
+    "download_url": "https://opengameart.org/sites/default/files/49_0.ogg",
+    "original_filename": "49.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/a_new_day.ogg",
+    "bytes": 2515216,
+    "duration_seconds": 88.615374,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B14",
+    "author": "SpiderDave",
+    "style_zh": "明亮冒险",
+    "loop_note_zh": "未标称循环"
+  },
+  {
+    "id": "happy-adventure-loop",
+    "title": "Happy Adventure (Loop)",
+    "uploader": "TinyWorlds",
+    "source": "https://opengameart.org/content/happy-adventure-loop",
+    "download_url": "https://opengameart.org/sites/default/files/happy_adveture.mp3",
+    "original_filename": "happy_adveture.mp3",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/happy_adventure_loop.mp3",
+    "bytes": 636925,
+    "duration_seconds": 46.785306,
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B15",
+    "author": "TinyWorlds",
+    "style_zh": "轻快复古 Chiptune",
+    "loop_note_zh": "作者标称循环；MP3 接缝须试听；Autotracker 生成后编辑"
+  },
+  {
+    "id": "chill-lofi-inspired-loop-edit",
+    "title": "Chill lofi inspired [loop edit]",
+    "uploader": "qubodup",
+    "source": "https://opengameart.org/content/chill-lofi-inspired-loop-edit",
+    "download_url": "https://opengameart.org/sites/default/files/chilllofir-loop.ogg",
+    "original_filename": "chilllofir-loop.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/chill_lofi_inspired_loop_edit.ogg",
+    "bytes": 2360833,
+    "duration_seconds": 97.216054,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B16",
+    "author": "omfgdude；qubodup 循环编辑",
+    "style_zh": "钢琴、鼓与 Lo-fi Hip Hop",
+    "loop_note_zh": "作者制作的无缝循环编辑版"
+  },
+  {
+    "id": "sherwood",
+    "title": "Sherwood",
+    "uploader": "zesona",
+    "source": "https://opengameart.org/content/sherwood",
+    "download_url": "https://opengameart.org/sites/default/files/sherwood_0.ogg",
+    "original_filename": "sherwood.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/sherwood.ogg",
+    "bytes": 706853,
+    "duration_seconds": 34.905397,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B17",
+    "author": "Chris Murphy / zesona",
+    "style_zh": "柔和轻松背景电子，110 BPM",
+    "loop_note_zh": "作者标称可循环"
+  },
+  {
+    "id": "exploration-theme",
+    "title": "Exploration Theme",
+    "uploader": "CleytonKauffman",
+    "source": "https://opengameart.org/content/exploration-theme",
+    "download_url": "https://opengameart.org/sites/default/files/exploration_theme.zip",
+    "original_filename": "exploration_theme.zip",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/exploration_theme.ogg",
+    "bytes": 5438663,
+    "duration_seconds": 134.4,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": "archives/exploration_theme.zip",
+    "archive_member": "Exploration Theme/Exploration Theme.ogg",
+    "download_status": "downloaded",
+    "number": "B18",
+    "author": "Cleyton Kauffman",
+    "style_zh": "钢琴与渐进合成器，海洋／探索氛围",
+    "loop_note_zh": "作者标称无缝循环；从原 ZIP 提取 OGG"
+  },
+  {
+    "id": "menu-chill-music",
+    "title": "Menu Chill Music",
+    "uploader": "etrock",
+    "source": "https://opengameart.org/content/menu-chill-music",
+    "download_url": "https://opengameart.org/sites/default/files/menu_chill.wav",
+    "original_filename": "menu_chill.wav",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/menu_chill_music.wav",
+    "bytes": 3079184,
+    "duration_seconds": 17.454558,
+    "streams": [
+      {
+        "codec_name": "pcm_s16le",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B19",
+    "author": "etrock",
+    "style_zh": "轻松街机菜单音乐",
+    "loop_note_zh": "作者标称循环"
+  },
+  {
+    "id": "mindstream",
+    "title": "MindStream",
+    "uploader": "DST",
+    "source": "https://opengameart.org/content/mindstream",
+    "download_url": "https://opengameart.org/sites/default/files/DST-MindStream.mp3",
+    "original_filename": "DST-MindStream.mp3",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/mindstream.mp3",
+    "bytes": 10756137,
+    "duration_seconds": 268.852225,
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B20",
+    "author": "DST",
+    "style_zh": "舒缓 Techno 与 Ambient",
+    "loop_note_zh": "源页标有 loop；完整长曲"
+  },
+  {
+    "id": "insistent-background-loop",
+    "title": "Insistent: background loop",
+    "uploader": "yd",
+    "source": "https://opengameart.org/content/insistent-background-loop",
+    "download_url": "https://opengameart.org/sites/default/files/Insistent.ogg",
+    "original_filename": "Insistent.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/insistent_background_loop.ogg",
+    "bytes": 1767874,
+    "duration_seconds": 128.693265,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B21",
+    "author": "yd",
+    "style_zh": "安静、阴暗、悬念氛围",
+    "loop_note_zh": "作者标称循环"
+  },
+  {
+    "id": "medieval-the-old-tower-inn",
+    "title": "Medieval: The Old Tower Inn",
+    "uploader": "RandomMind",
+    "source": "https://opengameart.org/content/medieval-the-old-tower-inn",
+    "download_url": "https://opengameart.org/sites/default/files/Loop_The_Old_Tower_Inn.wav",
+    "original_filename": "Loop_The_Old_Tower_Inn.wav",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/medieval_the_old_tower_inn.wav",
+    "bytes": 8811712,
+    "duration_seconds": 49.951383,
+    "streams": [
+      {
+        "codec_name": "pcm_s16le",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B22",
+    "author": "RandomMind",
+    "style_zh": "平和中世纪民谣／旅店",
+    "loop_note_zh": "下载作者提供的 Loop WAV 版"
+  },
+  {
+    "id": "calm-piano-1-vaporware",
+    "title": "Calm Piano 1 (Vaporware)",
+    "uploader": "cynicmusic",
+    "source": "https://opengameart.org/content/calm-piano-1-vaporware",
+    "download_url": "https://opengameart.org/sites/default/files/003_Vaporware_2.mp3",
+    "original_filename": "003_Vaporware.mp3",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/calm_piano_1_vaporware.mp3",
+    "bytes": 6604773,
+    "duration_seconds": 164.954558,
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "44100",
+        "channels": 2,
+        "side_data_list": [
+          {}
+        ]
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B23",
+    "author": "The Cynic Project / cynicmusic",
+    "style_zh": "舒缓钢琴旋律与氛围铺底",
+    "loop_note_zh": "未标称循环"
+  },
+  {
+    "id": "technological-messup",
+    "title": "Technological Messup",
+    "uploader": "Centurion_of_war",
+    "source": "https://opengameart.org/content/technological-messup",
+    "download_url": "https://opengameart.org/sites/default/files/tecnological_messup_v2_0.ogg",
+    "original_filename": "tecnological_messup_v2.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/technological_messup.ogg",
+    "bytes": 3456787,
+    "duration_seconds": 106.666667,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B24",
+    "author": "Centurion_of_war",
+    "style_zh": "复古合成器、Techno 战斗",
+    "loop_note_zh": "源页标有 loop"
+  },
+  {
+    "id": "8-bit-rpg-battleencounter-theme",
+    "title": "8-Bit RPG Battle/Encounter Theme",
+    "uploader": "Wolfgang_",
+    "source": "https://opengameart.org/content/8-bit-rpg-battleencounter-theme",
+    "download_url": "https://opengameart.org/sites/default/files/RPGBattleTheme-Loopable_0.ogg",
+    "original_filename": "RPGBattleTheme-Loopable.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/8_bit_rpg_battleencounter_theme.ogg",
+    "bytes": 2119501,
+    "duration_seconds": 65.290998,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B25",
+    "author": "Ted Kerr / Wolfgang_",
+    "style_zh": "8-bit NES 战斗",
+    "loop_note_zh": "下载作者提供的 Loopable OGG 版"
+  },
+  {
+    "id": "crowded-pub",
+    "title": "Crowded Pub",
+    "uploader": "Bobjt",
+    "source": "https://opengameart.org/content/crowded-pub",
+    "download_url": "https://opengameart.org/sites/default/files/crowded_pub_2025_1.ogg",
+    "original_filename": "crowded_pub_2025.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/crowded_pub.ogg",
+    "bytes": 1302666,
+    "duration_seconds": 33.98229,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B26",
+    "author": "Bobjt",
+    "style_zh": "欢乐酒馆／西部港口",
+    "loop_note_zh": "2025 鼓点扩展循环版"
+  },
+  {
+    "id": "richer",
+    "title": "Richer",
+    "uploader": "Pro Sensory",
+    "source": "https://opengameart.org/content/richer",
+    "download_url": "https://opengameart.org/sites/default/files/Richer%20than%20me.wav",
+    "original_filename": "Richer than me.wav",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/richer.wav",
+    "bytes": 28459332,
+    "duration_seconds": 161.333832,
+    "streams": [
+      {
+        "codec_name": "pcm_s16le",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B27",
+    "author": "Alex McCulloch / Pro Sensory",
+    "style_zh": "西部吉他与爵士",
+    "loop_note_zh": "未标称循环"
+  },
+  {
+    "id": "happier-tune",
+    "title": "Happier Tune",
+    "uploader": "Gena Sealov",
+    "source": "https://opengameart.org/content/happier-tune",
+    "download_url": "https://opengameart.org/sites/default/files/happier_tune_0.mp3",
+    "original_filename": "happier_tune.mp3",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/happier_tune.mp3",
+    "bytes": 2575801,
+    "duration_seconds": 128.79005,
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B28",
+    "author": "Gena Sealov",
+    "style_zh": "轻快 Synthpop",
+    "loop_note_zh": "作者明确不是循环曲"
+  },
+  {
+    "id": "chill-lofi-inspired",
+    "title": "Chill lofi inspired",
+    "uploader": "omfgdude",
+    "source": "https://opengameart.org/content/chill-lofi-inspired",
+    "download_url": "https://opengameart.org/sites/default/files/ChillLofi.ogg",
+    "original_filename": "ChillLofi.ogg",
+    "license": "CC0-1.0",
+    "source_licenses": [
+      "CC0"
+    ],
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "checked_on": "2026-11-08",
+    "file": "audio/chill_lofi_inspired.ogg",
+    "bytes": 6486377,
+    "duration_seconds": 125.148934,
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "44100",
+        "channels": 2
+      }
+    ],
+    "decode_check": "passed",
+    "archive": null,
+    "archive_member": null,
+    "download_status": "downloaded",
+    "number": "B29",
+    "author": "omfgdude",
+    "style_zh": "Lo-fi Hip Hop 原版",
+    "loop_note_zh": "完整原版；与循环编辑版区分"
+  }
+]

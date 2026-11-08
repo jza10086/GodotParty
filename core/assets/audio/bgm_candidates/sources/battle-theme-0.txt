@@ -1,0 +1,14 @@
+Battle Theme
+Source: https://opengameart.org/content/battle-theme-0
+Author/uploader: Wolfgang_
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/Battle.mp3
+Original filename: Battle.mp3
+Original published bytes: 4646747
+Local file: audio/battle_theme_0.mp3
+Source attribution notice:  Attribution Instructions: You do not have to credit me.
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

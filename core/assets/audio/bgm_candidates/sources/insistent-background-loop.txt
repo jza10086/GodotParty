@@ -1,0 +1,14 @@
+Insistent: background loop
+Source: https://opengameart.org/content/insistent-background-loop
+Author/uploader: yd
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/Insistent.ogg
+Original filename: Insistent.ogg
+Original published bytes: 1767874
+Local file: audio/insistent_background_loop.ogg
+Source attribution notice: Not specified
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

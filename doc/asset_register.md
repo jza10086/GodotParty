@@ -200,3 +200,9 @@
 本次逐目录列举资产文件，交叉阅读来源说明、许可证、生成提示词、生成脚本、内容 manifest 和 `.gitmodules`；读取字体 name 表确认实际字体，不仅按文件名推断。检查了本地 Atomic Realm 许可图片与阿瓦隆 ZIP 目录，在线补查 Wenrexa、MadFireOn、JC Sounds、Godot 标志、Atomic Realm、MERT、Basic Pitch、Demucs 和 Mapperatorinator 等作者页面。已检查所有表内本地证据链接存在、表格四列格式和主资产文件登记覆盖。
 
 本次是资产来源与许可记录检查，没有运行游戏、试听或做画质验收，没有重导入资源，也没有确认某次导出包的最终打包内容。来源不明、许可未确认与历史文件情况均原样保留为待办，不以猜测补齐。
+
+## 后续补充 小游戏 BGM 候选库
+
+| 资产 | 作者 | 来源与位置 | 许可与范围 |
+| --- | --- | --- | --- |
+| 29 个 BGM 音频文件／版本及 1 个原始 ZIP | 逐曲作者见 [BGM 清单](bgm_candidates.md) | OpenGameArt 曲目发布页；`core/assets/audio/bgm_candidates/`；[逐曲记录](../core/assets/audio/bgm_candidates/catalog.json) | CC0 1.0，免费商用／修改／再分发；仅候选库，未接入小游戏。逐曲来源和许可旁档随库保留，不属于项目原创作品。 |

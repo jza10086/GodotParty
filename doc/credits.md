@@ -93,3 +93,37 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 配音：空白模板中文示例文本，本机 Windows Microsoft Huihui 离线合成 games/minigame/godot_party_default_blank/examples/audio/samples/voice_a.wav、voice_b.wav
 
 视觉参考截图：炮火争锋事件，ShellShock Live 官方商店与更新截图、Steam 社区实机截图（仅保留于 private_assets，不随项目发行） https://store.steampowered.com/app/326460/ShellShock_Live/ https://store.steampowered.com/news/posts/?appids=326460&enddate=1645653731 https://steamcommunity.com/sharedfiles/filedetails/?id=2069384920
+
+## 小游戏 BGM 候选音乐
+
+[按小游戏选曲、文件与授权清单](bgm_candidates.md)；本组均选择来源页 CC0 1.0，尚未接入游戏。
+
+候选背景音乐：Puzzling，Ruskerdax（CC0 1.0） https://opengameart.org/content/puzzling
+候选背景音乐：Sci-fi Puzzle In-Game 1，MintoDog（CC0 1.0） https://opengameart.org/content/sci-fi-puzzle-in-game-1
+候选背景音乐：Quirky Jazz，Spring Spring（CC0 1.0） https://opengameart.org/content/quirky-jazz
+候选背景音乐：Hot Roadway，MintoDog（CC0 1.0） https://opengameart.org/content/hot-roadway
+候选背景音乐：Hot Roadway (Climax)，MintoDog（CC0 1.0） https://opengameart.org/content/hot-roadway
+候选背景音乐：Detour，Zane Little Music（CC0 1.0） https://opengameart.org/content/detour
+候选背景音乐：Battle Theme，Ted Kerr / Wolfgang_（CC0 1.0） https://opengameart.org/content/battle-theme-0
+候选背景音乐：Prepare to fight，Basil（CC0 1.0） https://opengameart.org/content/prepare-to-fight
+候选背景音乐：Battle Theme A，The Cynic Project / cynicmusic（CC0 1.0） https://opengameart.org/content/battle-theme-a
+候选背景音乐：Ninja Theme，Julie Damsgaard / Spring Spring（CC0 1.0） https://opengameart.org/content/ninja-theme
+候选背景音乐：Spaghetti Western，Julie Damsgaard / Spring Spring（CC0 1.0） https://opengameart.org/content/spaghetti-western
+候选背景音乐：Hyper Ultra-Racing，The Cynic Project / cynicmusic（CC0 1.0） https://opengameart.org/content/hyper-ultra-racing
+候选背景音乐：Dark Forest Theme，The Cynic Project / cynicmusic（CC0 1.0） https://opengameart.org/content/dark-forest-theme
+候选背景音乐：A New Day，SpiderDave（CC0 1.0） https://opengameart.org/content/a-new-day
+候选背景音乐：Happy Adventure (Loop)，TinyWorlds（CC0 1.0） https://opengameart.org/content/happy-adventure-loop
+候选背景音乐：Chill lofi inspired [loop edit]，omfgdude；qubodup 循环编辑（CC0 1.0） https://opengameart.org/content/chill-lofi-inspired-loop-edit
+候选背景音乐：Sherwood，Chris Murphy / zesona（CC0 1.0） https://opengameart.org/content/sherwood
+候选背景音乐：Exploration Theme，Cleyton Kauffman（CC0 1.0） https://opengameart.org/content/exploration-theme
+候选背景音乐：Menu Chill Music，etrock（CC0 1.0） https://opengameart.org/content/menu-chill-music
+候选背景音乐：MindStream，DST（CC0 1.0） https://opengameart.org/content/mindstream
+候选背景音乐：Insistent: background loop，yd（CC0 1.0） https://opengameart.org/content/insistent-background-loop
+候选背景音乐：Medieval: The Old Tower Inn，RandomMind（CC0 1.0） https://opengameart.org/content/medieval-the-old-tower-inn
+候选背景音乐：Calm Piano 1 (Vaporware)，The Cynic Project / cynicmusic（CC0 1.0） https://opengameart.org/content/calm-piano-1-vaporware
+候选背景音乐：Technological Messup，Centurion_of_war（CC0 1.0） https://opengameart.org/content/technological-messup
+候选背景音乐：8-Bit RPG Battle/Encounter Theme，Ted Kerr / Wolfgang_（CC0 1.0） https://opengameart.org/content/8-bit-rpg-battleencounter-theme
+候选背景音乐：Crowded Pub，Bobjt（CC0 1.0） https://opengameart.org/content/crowded-pub
+候选背景音乐：Richer，Alex McCulloch / Pro Sensory（CC0 1.0） https://opengameart.org/content/richer
+候选背景音乐：Happier Tune，Gena Sealov（CC0 1.0） https://opengameart.org/content/happier-tune
+候选背景音乐：Chill lofi inspired，omfgdude（CC0 1.0） https://opengameart.org/content/chill-lofi-inspired

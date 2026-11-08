@@ -1,0 +1,14 @@
+MindStream
+Source: https://opengameart.org/content/mindstream
+Author/uploader: DST
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/DST-MindStream.mp3
+Original filename: DST-MindStream.mp3
+Original published bytes: 10756137
+Local file: audio/mindstream.mp3
+Source attribution notice: Not specified
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

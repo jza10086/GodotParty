@@ -1,0 +1,14 @@
+Medieval: The Old Tower Inn
+Source: https://opengameart.org/content/medieval-the-old-tower-inn
+Author/uploader: RandomMind
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/Loop_The_Old_Tower_Inn.wav
+Original filename: Loop_The_Old_Tower_Inn.wav
+Original published bytes: 8811712
+Local file: audio/medieval_the_old_tower_inn.wav
+Source attribution notice: Not specified
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

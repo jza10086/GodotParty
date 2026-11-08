@@ -1,0 +1,14 @@
+Ninja Theme
+Source: https://opengameart.org/content/ninja-theme
+Author/uploader: Spring Spring
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/ninja%20theme_0.ogg
+Original filename: ninja theme.ogg
+Original published bytes: 3341474
+Local file: audio/ninja_theme.ogg
+Source attribution notice:  Copyright/Attribution Notice: Produced by Julie Damsgaard/Spring Spring/Spring Enterprises @ https://spring-enterprises.neocities.org
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.

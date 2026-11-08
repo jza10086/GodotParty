@@ -1,0 +1,14 @@
+Menu Chill Music
+Source: https://opengameart.org/content/menu-chill-music
+Author/uploader: etrock
+License(s) displayed by source: CC0
+Selected license: CC0 1.0 Universal
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Checked: 2026-11-08
+Download: https://opengameart.org/sites/default/files/menu_chill.wav
+Original filename: menu_chill.wav
+Original published bytes: 3079184
+Local file: audio/menu_chill_music.wav
+Source attribution notice: Not specified
+Changes: original audio bytes; filename normalized. Archive member extracted only where specified in catalog.json.
+No runtime integration.
