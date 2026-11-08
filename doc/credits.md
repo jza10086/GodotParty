@@ -1,3 +1,7 @@
+[完整资产登记表（作者、来源、许可及待核实项）](asset_register.md)
+
+以下保留历史引入记录；当前在库范围及已移除素材以资产登记表为准。
+
 界面组件与箭头图标：GodotPartyUI https://github.com/jza10086/GodotPartyUI
 中文字体：Noto Sans CJK SC（许可证：core/ui/components/assets/FONT-LICENSE.txt） https://github.com/notofonts/noto-cjk
 音游界面字体：NotoSansSC-UI.otf（复用原版协议 font_sans，许可证：games/minigame/gp_rhythm_game/assets/fonts/NOTO-SANS-LICENSE.txt） https://github.com/notofonts/noto-cjk
