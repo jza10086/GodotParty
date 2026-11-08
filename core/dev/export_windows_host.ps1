@@ -5,6 +5,7 @@ param(
 )
 # Build the core from a clean copy. User data and content never enter the EXE.
 $ErrorActionPreference = 'Stop'
+Get-Command $GodotPath -CommandType Application -ErrorAction Stop | Out-Null
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 if (!$BuildRoot) { $BuildRoot = Join-Path $projectRoot ('tmp/exports/host_' + [guid]::NewGuid().ToString('N')) }
 if (!$OutputDirectory) { $OutputDirectory = Join-Path $BuildRoot 'bin' }
@@ -33,15 +34,30 @@ $projectText = $projectText -replace '(?ms)^\[autoload\].*?(?=^\[)', '' -replace
 $projectText = $projectText -replace '(?m)^export/convert_text_resources_to_binary=.*\r?\n', ''
 $projectText = $projectText -replace '(?m)^\[editor\]', "[editor]`nexport/convert_text_resources_to_binary=false"
 if ($projectText -notmatch '(?m)^\[editor\]') { $projectText += "`n[editor]`nexport/convert_text_resources_to_binary=false`n" }
-[IO.File]::WriteAllText((Join-Path $sourceRoot 'project.godot'), $projectText, $utf8)
+$projectFile = Join-Path $sourceRoot 'project.godot'
+# Startup themes load before the first import. Their textures/fonts do not exist yet
+# in this clean copy; restore the real theme immediately after importing its assets.
+$importProjectText = $projectText -replace '(?m)^theme/custom(?:_font)?=.*\r?\n', ''
+[IO.File]::WriteAllText($projectFile, $importProjectText, $utf8)
 foreach ($step in @('import','export')) {
     $log = Join-Path $BuildRoot ($step + '.log')
     if ($step -eq 'import') {
-        & $GodotPath --headless --path $sourceRoot --log-file (Join-Path $BuildRoot 'import-engine.log') --import *> $log
+        $engineArguments = @('--headless', '--path', $sourceRoot, '--log-file', (Join-Path $BuildRoot 'import-engine.log'), '--import')
     } else {
-        & $GodotPath --headless --path $sourceRoot --log-file (Join-Path $BuildRoot 'export-engine.log') --export-release 'Windows Desktop' (Join-Path $OutputDirectory 'GodotParty.exe') *> $log
+        $engineArguments = @('--headless', '--path', $sourceRoot, '--log-file', (Join-Path $BuildRoot 'export-engine.log'), '--export-release', 'Windows Desktop', (Join-Path $OutputDirectory 'GodotParty.exe'))
     }
-    if ($LASTEXITCODE -ne 0 -or (Select-String -LiteralPath $log -Pattern 'SCRIPT ERROR|ERROR:')) { throw "Core $step failed. See $log" }
+    try {
+        # Windows PowerShell 5 treats native stderr as ErrorRecords. Capture all of it
+        # before checking the process result instead of aborting at the first line.
+        $exitCode = & {
+            $ErrorActionPreference = 'Continue'
+            & $GodotPath @engineArguments 2>&1 | ForEach-Object { $_.ToString() } | Set-Content -LiteralPath $log -Encoding UTF8 -ErrorAction Stop
+            $LASTEXITCODE
+        }
+    } finally {
+        if ($step -eq 'import') { [IO.File]::WriteAllText($projectFile, $projectText, $utf8) }
+    }
+    if ($exitCode -ne 0 -or (Select-String -LiteralPath $log -Pattern 'SCRIPT ERROR|ERROR:')) { throw "Core $step failed. See $log" }
 }
 $notices = Join-Path $OutputDirectory 'core/notices'
 New-Item -ItemType Directory $notices -Force | Out-Null
