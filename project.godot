@@ -44,6 +44,10 @@ export/convert_text_resources_to_binary=false
 
 enabled=PackedStringArray("res://addons/godot_mcp_toolkit/plugin.cfg", "res://addons/godot_party_tools/plugin.cfg")
 
+[gui]
+
+theme/custom="res://core/ui/ambient_reveal/ambient_theme.tres"
+
 [input]
 
 ui_accept={

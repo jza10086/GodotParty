@@ -2,6 +2,8 @@
 
 正式入口为 `res://core/app/party_main.tscn`。在编辑器中打开此场景即可查看背景、PartyUI、游戏操作栏、加载说明和屏幕键盘。主页可从 PartyUI 实例打开对应子场景编辑。大厅内容由房间选定的主游戏提供。主菜单、房间列表、共用大厅、框架弹窗和本机设置使用从 GodotUICase 移入的 Ambient Reveal。运行所需的主题、字体、图标、着色器和交互音效在 `core/ui/ambient_reveal/`。
 
+Ambient Reveal 是项目主主题，项目设置 gui/theme/custom 指向 ambient_reveal/ambient_theme.tres，供没有单独指定 Theme 的控件使用。旧 UI 仅保留 source/ui/theme/party_theme.tres 的蓝白轻 Godot 风格及其 ui_config.tres 配置；soft、sage 配色、背景和专用插画已移除。
+
 `GPPartyTheme.create()` 返回共享的 `ambient_theme.tres`。调整外观时可在编辑器直接打开 `ambient_reveal/components/` 内的预制体。需要悬停、焦点和按下反馈的动态控件也实例化这些预制体。按钮使用透明的默认表面，鼠标悬停或键盘聚焦时显出圆角边缘。菜单交互音效使用 CoreUI 音频总线。
 
 框架控件的禁用、可用、聚焦边框由主题直接引用 theme/frames/ 中的三份 StyleBoxFlat 资源。可用和禁用框均为无描边的同色背景，禁用只将文字设为灰色并退出焦点导航；聚焦、悬停使用柔和的细边框。输入框使用原生 normal、read_only 和 focus 样式，单行、多行和数字输入光标以 0.53 秒间隔持续闪烁；无常态背景的按钮在悬停或聚焦时逐渐显出聚焦框。面板的屏幕采样只参与底色混合，轮廓由主题绘制。小游戏列表行的选中样式和设置页内边距在 ambient_theme.tres 中，设置输入及其原生弹出菜单的字号在 settings/field_theme.tres 中。开关的静止状态使用主题图标，过渡时由 Tween 驱动滑块材质。

@@ -1,35 +1,7 @@
 @tool
 class_name PartyUIConfig
 extends Resource
-## Runtime appearance preset; the authored palette remains the default.
-var visual_style: String = "classic"
-var _classic_colors: Dictionary[String, Color] = {}
-
-## Change colors as one notification; returning to classic restores authored values.
-func apply_visual_style(style: String) -> void:
-	if style not in ["classic", "soft", "sage"]:
-		push_error("未知界面风格：" + style)
-		return
-	var selected: String = style
-	if visual_style == selected:
-		return
-	var palette: Dictionary[String, Color] = preload("res://core/ui/soft/soft_palette.gd").COLORS
-	if selected == "sage":
-		palette = preload("res://core/ui/sage/sage_palette.gd").COLORS
-	set_block_signals(true)
-	# Only the authored classic palette is a restoration point, never another preset.
-	if visual_style == "classic":
-		for key: String in palette:
-			_classic_colors[key] = get(key)
-	if selected == "classic":
-		for key: String in _classic_colors:
-			set(key, _classic_colors[key])
-	else:
-		for key: String in palette:
-			set(key, palette[key])
-	visual_style = selected
-	set_block_signals(false)
-	emit_changed()
+## Blue-and-white legacy theme configuration; the main UI uses Ambient Reveal.
 
 ## 统一界面视觉配置：在 Inspector 打开 ui_config.tres，使用中文设置项编辑。
 ## 中文属性只负责编辑显示；英文属性继续保存资源并提供脚本 API，旧配置无需迁移。

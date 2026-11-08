@@ -79,14 +79,6 @@ func _flat(key: String, color: Color, minimum: Vector2 = Vector2.ZERO) -> StyleB
 	if style.content_margin_bottom != minimum.y / 2.0: style.content_margin_bottom = minimum.y / 2.0
 	return style
 
-## Subtle filled fields stay distinguishable from the paper panels in sage mode.
-func _input_surface() -> StyleBoxFlat:
-	if configuration.visual_style != "sage":
-		return CARD
-	var field: StyleBoxFlat = _flat("sage_input", configuration.muted_surface, Vector2(24, 12))
-	field.set_corner_radius_all(10)
-	return field
-
 func _icon(key: String, color: Color) -> GradientTexture2D:
 	if not _icons.has(key):
 		var texture := GradientTexture2D.new()
@@ -153,7 +145,7 @@ func rebuild() -> void:
 		var is_check: bool = type in ["CheckButton", "CheckBox"]
 		for state in ["normal", "hover", "pressed", "hover_pressed", "disabled", "focus"]:
 			var resting: bool = state == "normal" or (is_check and state == "pressed")
-			_put_stylebox(state, type, FOCUS if state == "focus" else (MUTED if state == "disabled" else ((_input_surface() if type == "OptionButton" else CARD) if resting else HOVER)))
+			_put_stylebox(state, type, FOCUS if state == "focus" else (MUTED if state == "disabled" else (CARD if resting else HOVER)))
 		for item in ["font_color", "font_focus_color"]: _put_color(item, type, c.text)
 		for item in ["font_hover_color", "font_hover_pressed_color"]: _put_color(item, type, c.text_hover)
 		_put_color("font_pressed_color", type, c.text if is_check else c.text_hover)
@@ -189,7 +181,7 @@ func rebuild() -> void:
 		_put_color("selection_color", type, c.selection)
 		_put_color("caret_color", type, c.text)
 	for type in ["LineEdit", "TextEdit"]:
-		_put_stylebox("normal", type, _input_surface())
+		_put_stylebox("normal", type, CARD)
 		_put_stylebox("read_only", type, MUTED)
 		_put_stylebox("focus", type, FOCUS)
 	_put_constant("minimum_character_width", "LineEdit", 6)

@@ -13,7 +13,7 @@
 ## 当前需要补齐的记录
 
 - **来源链缺口**：U01–U05 单列，分别是 MIDI、Blackjack 字体、生成参考图、截图对应关系和独立 DLL 构建出处。
-- **来源已知但许可未完整确认**：S09/S10 的歌曲与原谱、S12 的本机配音、T12 的 DDPM，以及没有 LICENSE 的本项目内容包；I01–I03 的输出分发声明亦未补齐。
+- **来源已知但许可未完整确认**：S09/S10 的歌曲与原谱、S12 的本机配音、T12 的 DDPM，以及没有 LICENSE 的本项目内容包；I02–I03 的输出分发声明亦未补齐。
 - **许可不可混用**：MCP 标志不是 MIT（A21）；Atomic Realm 禁止素材再分发（L01）；MERT 权重有 NC 限制（T11）；JC Sounds 为需署名的 CC BY 4.0（S01）。这些是登记发现，本次没有搬动、删除或替换资产。
 - **原模型许可待补**：G07/G13 已定位 GPT 制作的本地 Blender 源工程，但源模型的独立分发许可未见声明。
 
@@ -77,7 +77,7 @@
 
 | 资产名称 | 作者 | 来源 | 许可协议 |
 | --- | --- | --- | --- |
-| **I01 · 森系手帖主菜单角色（1 张）<br>当前目录 1 文件** | GPT（图像生成 / OpenAI ImageGen）；参考图由用户提供 | `core/ui/sage/sage_character.png`；[2026-10-23 生成记录](../doc/credits.md)。 | 未单独声明项目分发许可；生成记录不等于 CC0／MIT。参考图原作者与权利链见 U03。 |
+| **I01 · 森系手帖主菜单角色（已移除）** | GPT（图像生成 / OpenAI ImageGen）；参考图由用户提供 | 已随 sage 主题从当前工程移除；[2026-10-23 生成记录](../doc/credits.md)。 | 未单独声明项目分发许可；生成记录不等于 CC0／MIT。参考图原作者与权利链见 U03。 |
 | **I02 · Bot 头像套装 V2 正面摆正版（6 张）<br>当前目录 6 文件** | GPT（图像生成）；用户提供角色参考与成品 | [生成方式与逐图名单](../games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars_2d/avatar_sources/bot_avatars_upright/README.md)；同目录 6 张 PNG。 | 未单独声明项目分发许可；角色参照来自上一组头像，来源链见 U03。 |
 | **I03 · 竞拍大师写实物资图（100 张透明 PNG）<br>当前目录 100 文件** | GPT（图像生成 / 内置 ImageGen）；Pillow 后处理为代码加工 | [生成说明](../games/minigame/godot_party_default_auction_master/SOURCE.md)；[逐图提示词与文件名](../games/minigame/godot_party_default_auction_master/assets/items/realistic/generation_prompts.json)；同目录 PNG。 | 包根有 MIT 通用许可，未见图片专用授权声明，图片适用范围待确认；不自行补为 CC0。 |
 
@@ -85,7 +85,7 @@
 
 | 资产名称 | 作者 | 来源 | 许可协议 |
 | --- | --- | --- | --- |
-| **G01 · 框架 UI 主题、几何图标、背景与鼠标指示（含保留旧主题）<br>当前目录 51 文件** | GPT（代码生成） | `core/ui/ambient_reveal/`、`core/ui/source/`、`core/ui/components/`、`core/ui/soft/`、`core/ui/sage/`、`core/ui/settings/`；来源为本项目、GodotPartyUI 与本地 GodotUICase；已将字体、官方图标、音效与 ImageGen 图片分列。 | 未见本包独立许可证；不据此推定 MIT 或 CC0。 |
+| **G01 · 框架 UI 主题、几何图标、背景与鼠标指示（含保留旧主题）<br>当前目录 51 文件** | GPT（代码生成） | `core/ui/ambient_reveal/`、`core/ui/source/`、`core/ui/components/`、`core/ui/settings/`；来源为本项目、GodotPartyUI 与本地 GodotUICase；已将字体、官方图标、音效与 ImageGen 图片分列。 | 未见本包独立许可证；不据此推定 MIT 或 CC0。 |
 | **G02 · 默认协议形象、Cube、颜色标记与程序音色资源** | GPT（代码生成） | `games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars_2d/`、`avatars/`、`briefing/`、`audio/audio_cue.gd`；[形象说明](../games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars/ATTRIBUTION.md)；不含 I02 与 F01/F05。 | 未见本包独立许可证；不据此推定 MIT 或 CC0。 |
 | **G03 · 大富翁地图网格、道路组合、地块标记、老虎机与 UI<br>当前目录 1 文件** | GPT（代码生成） | `games/maingame/godot_party_default_main_game_millionaire/map_grid.gdshader`、`board_markers.gd`、`maps/`、`editor/`、`slot_machine/`；下载的城市模型另列 A01–A07/A14。 | 未见本包独立许可证；不据此推定 MIT 或 CC0。 |
 | **G04 · 竞拍大师旧版 40 张 SVG、仓库／货架与 UI<br>当前目录 41 文件** | GPT（代码生成） | `games/minigame/godot_party_default_auction_master/assets/items/*.svg`、`warehouse_view.gd`、场景；[来源说明](../games/minigame/godot_party_default_auction_master/SOURCE.md)。SVG 为停用保留源文件。 | 包内 MIT；与 I03 图像生成物分开登记。 |
@@ -180,7 +180,7 @@
 | --- | --- | --- | --- |
 | **U01 · Bad Apple!! feat.nomico full.mid 及由其编排的谱面** | MIDI 编曲／制作者不明；用户提供 | 现有说明指向 `C:/Users/81010/Downloads/Bad Apple!! feat.nomico full.mid`；[输入与限制说明](../games/minigame/gp_rhythm_game/charts/bad_apple_full/SOURCE.md)；项目内保留转换／编排结果而非原 MIDI。 | 来源说明明确未标作者与再发行许可；不能登记为项目原创，需补原始发布页／授权。 |
 | **U02 · Blackjack 53 张 PNG 中烘焙的点数字体** | 原始字体作者待确认；几何卡面为 GPT（代码生成） | [生成器](../games/minigame/godot_party_default_card_game/tools/generate_blackjack_art.py) 可选 DejaVu Sans Bold、Arial Bold 或 --font 指定字体；未发现现存 PNG 对应的实际执行参数。 | 仅凭生成器默认候选无法确认实际字体与许可；补当时生成命令或字体来源。牌面本体仍已列 G08。 |
-| **U03 · 森系角色与 Bot 头像使用的参考图／上一组头像** | 输入参考图原作者待确认；输出为 GPT（图像生成） | I01 现有记录仅写用户提供参考图；I02 README 仅写上一组头像。本项目未附可核对的原始来源与输入授权记录。 | 输入来源／许可未确认；与输出的图像生成方式分开登记。 |
+| **U03 · 森系角色与 Bot 头像使用的参考图／上一组头像** | 输入参考图原作者待确认；输出为 GPT（图像生成） | I01 已移除，其历史记录仅写用户提供参考图；I02 README 仅写上一组头像。本项目未附可核对的原始来源与输入授权记录。 | 输入来源／许可未确认；与输出的图像生成方式分开登记。 |
 | **U04 · 5 张 ShellShock Live 截图的逐图原页及社区作者** | 官方截图权利方 kChamp Games；社区上传者未逐图对应 | L02 已有三个汇总来源 URL，但未逐一说明 `black_holes_gameplay.jpg`、`portal_gameplay.jpg` 等的原图页／作者。 | 未确认可再发行授权；仅本地参考。 |
 | **U05 · 独立 libsndfile_x64.dll 的构建出处／版本** | libsndfile 项目；该二进制打包者不明 | `tmp/audio_tools/libsndfile_x64.dll`；S07 说明记录通过 libsndfile 转码，但此 DLL 目录没有来源／版本／许可旁档。 | 上游 LGPL 说明不足以证明该具体二进制的完整组件清单；本机工具，未作为游戏资产。 |
 
