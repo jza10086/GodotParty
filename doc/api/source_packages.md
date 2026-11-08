@@ -6,7 +6,7 @@
 
 玩家安装目录见 [配置与预设](configuration.md)。协议、maingame、minigame 分别放入对应根文件夹，每包单独目录，包含 content.pck 和 content.pck.json；形象包放入所属协议 avatars/。替换版本时只替换这两个生成文件，保留 config/。安装、删除、更新及来源切换后重新启动，不做热替换。
 
-编辑器 Tools → GodotParty 支持源码 ZIP 和 PCK 导出；导出前完成资源导入。单独导出选择任意 PCK 文件名后，可由主界面内容包安装器复制到标准 content.pck 名称；手动安装必须将文件及描述中的 artifact 统一为 content.pck。批量导出脚本 core/dev/export_content.gd 自动生成标准目录。
+编辑器 Tools → GodotParty 支持源码 ZIP 和 PCK 导出；导出前完成资源导入。两种导出均跳过含 .gdignore 的目录及其整个子树，不收集其中的旧原型、资源和导入映射。单独导出选择任意 PCK 文件名后，可由主界面内容包安装器复制到标准 content.pck 名称；手动安装必须将文件及描述中的 artifact 统一为 content.pck。批量导出脚本 core/dev/export_content.gd 自动生成标准目录。
 
 描述格式 3 包含构建信息、包 ID/版本/类别、文件路径索引、UID 索引和 script_classes 类型清单，形象包另含 owner_protocol；不含文件哈希。框架检查目录归属、声明路径、UID 和类型名冲突、核心/引擎版本、挂载后清单及依赖版本。协议 PCK 不重复包含 avatars 子包。房间比较包版本与配置快照；相同版本号不证明文件字节相同，作者修改内容后必须更新 package_version。
 

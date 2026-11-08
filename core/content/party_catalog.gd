@@ -413,8 +413,11 @@ func _build_channels() -> void:
 	if channel_count > 80:
 		errors.append("CHANNEL_CAPACITY: more than 80 logical channels")
 
+## Match Godot's ignored-directory boundary, including archived prototypes and their import remaps.
 static func files(root: String) -> Array[String]:
 	var result: Array[String] = []
+	if FileAccess.file_exists(root.path_join(".gdignore")):
+		return result
 	for file: String in DirAccess.get_files_at(root):
 		if file.begins_with(".") or file.contains("~") or file.get_extension().to_lower() in ["tmp", "bak", "pending"]:
 			continue
