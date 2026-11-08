@@ -160,6 +160,8 @@ func _query(scope_id: String, key: String, argument: Dictionary) -> Variant:
 		return record.get("round_presentation", {}).duplicate(true)
 	if key == "asset":
 		return catalog.asset(argument, record["room"]["closure"])
+	if key == "external_path":
+		return catalog.external_path(scope.package, argument.path)
 	if key == "appearances":
 		return record.get("appearances", {}).duplicate(true)
 	var result: Array[Dictionary] = []

@@ -78,7 +78,7 @@
 | 资产名称 | 作者 | 来源 | 许可协议 |
 | --- | --- | --- | --- |
 | **I01 · 森系手帖主菜单角色（1 张）<br>当前目录 1 文件** | GPT（图像生成 / OpenAI ImageGen）；参考图由用户提供 | `core/ui/sage/sage_character.png`；[2026-10-23 生成记录](../doc/credits.md)。 | 未单独声明项目分发许可；生成记录不等于 CC0／MIT。参考图原作者与权利链见 U03。 |
-| **I02 · Bot 头像套装 V2 正面摆正版（6 张）<br>当前目录 6 文件** | GPT（图像生成）；用户提供角色参考与成品 | [生成方式与逐图名单](../games/protocols/godot_party_default_protocol/appearance/avatar_sources/bot_avatars_upright/README.md)；同目录 6 张 PNG。 | 未单独声明项目分发许可；角色参照来自上一组头像，来源链见 U03。 |
+| **I02 · Bot 头像套装 V2 正面摆正版（6 张）<br>当前目录 6 文件** | GPT（图像生成）；用户提供角色参考与成品 | [生成方式与逐图名单](../games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars_2d/avatar_sources/bot_avatars_upright/README.md)；同目录 6 张 PNG。 | 未单独声明项目分发许可；角色参照来自上一组头像，来源链见 U03。 |
 | **I03 · 竞拍大师写实物资图（100 张透明 PNG）<br>当前目录 100 文件** | GPT（图像生成 / 内置 ImageGen）；Pillow 后处理为代码加工 | [生成说明](../games/minigame/godot_party_default_auction_master/SOURCE.md)；[逐图提示词与文件名](../games/minigame/godot_party_default_auction_master/assets/items/realistic/generation_prompts.json)；同目录 PNG。 | 包根有 MIT 通用许可，未见图片专用授权声明，图片适用范围待确认；不自行补为 CC0。 |
 
 ## GPT 代码生成的程序美术、模型与合成音效
@@ -86,7 +86,7 @@
 | 资产名称 | 作者 | 来源 | 许可协议 |
 | --- | --- | --- | --- |
 | **G01 · 框架 UI 主题、几何图标、背景与鼠标指示（含保留旧主题）<br>当前目录 51 文件** | GPT（代码生成） | `core/ui/ambient_reveal/`、`core/ui/source/`、`core/ui/components/`、`core/ui/soft/`、`core/ui/sage/`、`core/ui/settings/`；来源为本项目、GodotPartyUI 与本地 GodotUICase；已将字体、官方图标、音效与 ImageGen 图片分列。 | 未见本包独立许可证；不据此推定 MIT 或 CC0。 |
-| **G02 · 默认协议形象、Cube、颜色标记与程序音色资源** | GPT（代码生成） | `games/protocols/godot_party_default_protocol/appearance/`、`avatars/`、`briefing/`、`audio/audio_cue.gd`；[形象说明](../games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars/ATTRIBUTION.md)；不含 I02 与 F01/F05。 | 未见本包独立许可证；不据此推定 MIT 或 CC0。 |
+| **G02 · 默认协议形象、Cube、颜色标记与程序音色资源** | GPT（代码生成） | `games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars_2d/`、`avatars/`、`briefing/`、`audio/audio_cue.gd`；[形象说明](../games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars/ATTRIBUTION.md)；不含 I02 与 F01/F05。 | 未见本包独立许可证；不据此推定 MIT 或 CC0。 |
 | **G03 · 大富翁地图网格、道路组合、地块标记、老虎机与 UI<br>当前目录 1 文件** | GPT（代码生成） | `games/maingame/godot_party_default_main_game_millionaire/map_grid.gdshader`、`board_markers.gd`、`maps/`、`editor/`、`slot_machine/`；下载的城市模型另列 A01–A07/A14。 | 未见本包独立许可证；不据此推定 MIT 或 CC0。 |
 | **G04 · 竞拍大师旧版 40 张 SVG、仓库／货架与 UI<br>当前目录 41 文件** | GPT（代码生成） | `games/minigame/godot_party_default_auction_master/assets/items/*.svg`、`warehouse_view.gd`、场景；[来源说明](../games/minigame/godot_party_default_auction_master/SOURCE.md)。SVG 为停用保留源文件。 | 包内 MIT；与 I03 图像生成物分开登记。 |
 | **G05 · 3d桌球球号贴图（16 张）、球房／台面／球杆与合成反馈<br>当前目录 16 文件** | GPT（代码生成） | `games/minigame/godot_party_default_billiards/assets/balls/ball_00.png`–`ball_15.png`、`game.gd` 与场景；[程序资产说明](../games/minigame/godot_party_default_billiards/ART_SOURCES.md)。木材见 A16，球号字形见 F08。 | 未见本包独立许可证；不据此推定 MIT 或 CC0。 |

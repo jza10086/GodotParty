@@ -2,6 +2,7 @@
 extends RefCounted
 
 const Paths = preload("res://core/config/party_paths.gd")
+const External = preload("res://core/content/party_external_files.gd")
 const Data = preload("res://core/runtime/party_data.gd")
 const Schema = preload("res://core/config/party_schema.gd")
 const Localization = preload("res://core/i18n/party_localization.gd")
@@ -67,6 +68,9 @@ func register_manifest(path: String) -> Error:
 	return OK
 
 func validate_manifest(manifest: Dictionary) -> String:
+	var external_issue: String = External.validate(manifest.get("external_files", []))
+	if not external_issue.is_empty():
+		return external_issue
 	for obsolete: String in ["fields", "defaults", "input_actions"]:
 		if manifest.has(obsolete):
 			return "Superseded configuration declaration: " + obsolete
@@ -188,6 +192,21 @@ func path(id: String, relative: String) -> String:
 	if not packages.has(id) or not Data.relative_path(relative):
 		return ""
 	return String(packages[id]["_root"]).path_join(relative)
+
+## Loose data resolves beside source packages in-editor and installed PCKs in releases.
+func external_path(id: String, relative: String) -> String:
+	var manifest: Dictionary = packages[id]
+	if not External.safe_path(relative) or not External.contains(manifest.get("external_files", []), relative):
+		push_error("Undeclared external path: " + id + "/" + relative)
+		return ""
+	var source: String = ProjectSettings.globalize_path(manifest._root)
+	if OS.has_feature("editor") and source.is_absolute_path() and FileAccess.file_exists(source.path_join("manifest.json")):
+		return source.path_join(relative)
+	var installation: String = Paths.application_root()
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--party-pack-dir="):
+			installation = argument.trim_prefix("--party-pack-dir=")
+	return installation.path_join(Paths.package_relative(manifest)).path_join(relative)
 
 func load_entry(id: String) -> Resource:
 	var manifest: Dictionary = packages.get(id, {})
@@ -397,10 +416,12 @@ func _build_channels() -> void:
 static func files(root: String) -> Array[String]:
 	var result: Array[String] = []
 	for file: String in DirAccess.get_files_at(root):
+		if file.begins_with(".") or file.contains("~") or file.get_extension().to_lower() in ["tmp", "bak", "pending"]:
+			continue
 		result.append(root.path_join(file))
 	var protocol_root: bool = FileAccess.file_exists(root.path_join("manifest.json")) and Data.read_json(root.path_join("manifest.json")).get("kind") == "protocols"
 	for directory: String in DirAccess.get_directories_at(root):
-		if not directory.begins_with(".") and not (protocol_root and directory == "avatars"):
+		if not directory.begins_with(".") and not (directory == "config" and FileAccess.file_exists(root.path_join("manifest.json"))) and not (protocol_root and directory == "avatars"):
 			result.append_array(files(root.path_join(directory)))
 	result.sort()
 	return result

@@ -52,7 +52,7 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 离线制谱扩散模型：HibikiDad osu-mania-beatmap-generator / DDPM_Beatmap_Cond_Model_01 https://github.com/HibikiDad/osu-mania-beatmap-generator
 离线制谱生成模型：Mapperatorinator v32 / gamemode=3（MIT） https://huggingface.co/OliBomby/Mapperatorinator-v32
 
-2D 头像：Bot 头像套装 V2 正面摆正版（用户提供；源说明记载为内置图像生成工具生成） games/protocols/godot_party_default_protocol/appearance/avatar_sources/bot_avatars_upright/README.md
+2D 头像：Bot 头像套装 V2 正面摆正版（用户提供；源说明记载为内置图像生成工具生成） games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars_2d/avatar_sources/bot_avatars_upright/README.md
 
 字体：Source Han Serif SC Regular 2.003（Adobe 思源宋体简体中文，SIL OFL 1.1，许可随协议保留） https://github.com/adobe-fonts/source-han-serif
 

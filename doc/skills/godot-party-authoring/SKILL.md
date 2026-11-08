@@ -65,6 +65,8 @@ For GodotPartyDefault content, read games/protocols/godot_party_default_protocol
 
 - Default-protocol graphics: read games/protocols/godot_party_default_protocol/doc/README.md. Reuse its settings runtime and view registration; do not duplicate quality exports or write the same viewport/global rendering properties from games. Lighting composition stays in game scenes; frame limit and VSync stay in core.
 
-- Default-protocol appearance: the default 3D reference is godot_party_default_avatars/character_3d (Cube); the protocol owns its 2D avatar resources. Load appearances through PartyAPI, then apply the player's color. Games own movement, collision and networking. The default Cube has no animation API or native runtime dependency.
+- Default-protocol appearance: the default 3D reference is godot_party_default_avatars/character_3d (Cube); the protocol depends on godot_party_default_avatars_2d for its six 2D avatars. Load appearances through PartyAPI, then apply the player's color. Games own movement, collision and networking. The default Cube has no animation API or native runtime dependency.
 
 - Portable layout and presets: read doc/api/configuration.md. Avatar packs belong to their protocol and declare owner_protocol. Core retains player_id only; protocol profile.json owns display names/appearance. Install protocols, maingame and minigame in distinct root folders. Preset filenames are their names; load edits drafts, explicit Apply commits. Never calculate file hashes.
+
+- Visual export lives in Project → Tools → GodotParty：导出可玩包. Declare loose payloads in manifest external_files (directory paths end in /), and resolve them with api.get_external_path. See doc/api/source_packages.md. Personal config/ is excluded from publication.

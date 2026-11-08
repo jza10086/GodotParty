@@ -37,3 +37,5 @@ load_asset 只解析当前依赖集合，失败返回 null；游戏或协议负�
 协议可提供同步的 `resolve_player_config(value: Dictionary, player_id: String, players: Array) -> Dictionary`，返回 `{ok, value, message}` 或 `{ok: false, message}`。房主在新玩家入房和资料提交时调用，传入独立的权威玩家快照；不提供此钩子的协议使用原值。结果仍须通过 `validate_player_config`。core 不解释颜色等字段。
 
 协议面板 context 在普通大厅房主端提供 `room_players()` 快照和 `assign_room_profile(player_id, assignment)` 回调。协议实现 `assign_player_config(player_id, assignment, players)`，返回 `{ok, profiles}`；profiles 按玩家 ID 索引完整资料。框架整批验证、应用并广播，不写入被分配玩家的本机偏好。活动/恢复期间、客户端均不可调用。面板不应长期缓存玩家列表；提交时以房主当前名单为准。
+
+原版协议 1.0.1 的 2D 头像公开资源属于 godot_party_default_avatars_2d；3D Cube 仍属于 godot_party_default_avatars。两个包都通过协议依赖激活。旧的协议内头像引用需要在资料页重新选择，未提供迁移或旧资源别名。

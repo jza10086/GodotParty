@@ -52,7 +52,7 @@ func _reference(value: Variant) -> bool:
 
 ## Profile values are independent snapshots; the color is opaque sRGB RRGGBB.
 func default_player_config() -> Dictionary:
-	return {"color": COLORS[2], "avatar_2d": {"package_id": ID, "resource_key": "avatar_silver_lavender"}, "character_3d": {"package_id": "godot_party_default_avatars", "resource_key": "character_3d"}}
+	return {"color": COLORS[2], "avatar_2d": {"package_id": "godot_party_default_avatars_2d", "resource_key": "avatar_silver_lavender"}, "character_3d": {"package_id": "godot_party_default_avatars", "resource_key": "character_3d"}}
 
 func validate_player_config(value: Dictionary) -> Dictionary:
 	if not _keys(value, ["color", "avatar_2d", "character_3d"]) or not value.color is String:

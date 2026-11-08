@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "core_api_major": 4,
-  "package_version": "1.0.0",
+  "package_version": "1.0.1",
   "id": "godot_party_default_protocol",
   "name": "GodotPartyDefaultProtocol",
   "kind": "protocols",
@@ -22,16 +22,11 @@
   },
   "player_config_panel": "profile_panel.tscn",
   "dependencies": {
-    "godot_party_default_avatars": "1.0.0"
+    "godot_party_default_avatars": "1.0.0",
+    "godot_party_default_avatars_2d": "1.0.0"
   },
   "resources": {
     "contract": "protocol.gd",
-    "avatar_silver_lavender": "appearance/avatar_silver_lavender.tscn",
-    "avatar_honey_blonde": "appearance/avatar_honey_blonde.tscn",
-    "avatar_sage_green": "appearance/avatar_sage_green.tscn",
-    "avatar_dusty_rose": "appearance/avatar_dusty_rose.tscn",
-    "avatar_powder_blue": "appearance/avatar_powder_blue.tscn",
-    "avatar_chestnut": "appearance/avatar_chestnut.tscn",
     "font_sans": "fonts/NotoSansSC-UI.otf",
     "font_serif": "fonts/SourceHanSerifSC-Regular.otf",
     "player_cursor": "appearance/player_cursor.tscn",
@@ -48,38 +43,6 @@
     "game_audio": "audio/game_audio.tscn",
     "audio_cue": "audio/audio_cue.gd",
     "audio_handle": "audio/audio_handle.gd"
-  },
-  "appearance_resources": {
-    "avatar_silver_lavender": {
-      "protocol": "godot_party_default_protocol",
-      "slot": "avatar_2d",
-      "name": "银紫短发"
-    },
-    "avatar_honey_blonde": {
-      "protocol": "godot_party_default_protocol",
-      "slot": "avatar_2d",
-      "name": "蜂蜜金双马尾"
-    },
-    "avatar_sage_green": {
-      "protocol": "godot_party_default_protocol",
-      "slot": "avatar_2d",
-      "name": "鼠尾草绿长发"
-    },
-    "avatar_dusty_rose": {
-      "protocol": "godot_party_default_protocol",
-      "slot": "avatar_2d",
-      "name": "灰粉短发"
-    },
-    "avatar_powder_blue": {
-      "protocol": "godot_party_default_protocol",
-      "slot": "avatar_2d",
-      "name": "浅蓝侧编发"
-    },
-    "avatar_chestnut": {
-      "protocol": "godot_party_default_protocol",
-      "slot": "avatar_2d",
-      "name": "栗棕低马尾"
-    }
   },
   "config_schema": "settings.gd",
   "settings_runtime": "settings_runtime.gd",

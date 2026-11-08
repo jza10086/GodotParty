@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmtdw6upe7brn"
-path="res://.godot/imported/bot-avatar-upright-02-honey-blonde.png-ce75194cb1aa35acf215252edf9ad57b.ctex"
+uid="uid://bc4fp0oa4pkhu"
+path="res://.godot/imported/bot-avatar-upright-01-silver-lavender.png-3bcfbe374f98c53d15bde4c41b0f56f1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://games/protocols/godot_party_default_protocol/appearance/avatar_sources/bot_avatars_upright/bot-avatar-upright-02-honey-blonde.png"
-dest_files=["res://.godot/imported/bot-avatar-upright-02-honey-blonde.png-ce75194cb1aa35acf215252edf9ad57b.ctex"]
+source_file="res://games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars_2d/avatar_sources/bot_avatars_upright/bot-avatar-upright-01-silver-lavender.png"
+dest_files=["res://.godot/imported/bot-avatar-upright-01-silver-lavender.png-3bcfbe374f98c53d15bde4c41b0f56f1.ctex"]
 
 [params]
 

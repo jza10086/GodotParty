@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cqovd4mjax13a"
-path="res://.godot/imported/bot-avatar-upright-03-sage-green.png-9a44cfa649da02e54e30cf64d31ed1b3.ctex"
+uid="uid://i6cbfm015ojr"
+path="res://.godot/imported/bot-avatar-upright-05-powder-blue.png-ced626fe1f1d8f63a71c92a6c79e2112.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://games/protocols/godot_party_default_protocol/appearance/avatar_sources/bot_avatars_upright/bot-avatar-upright-03-sage-green.png"
-dest_files=["res://.godot/imported/bot-avatar-upright-03-sage-green.png-9a44cfa649da02e54e30cf64d31ed1b3.ctex"]
+source_file="res://games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars_2d/avatar_sources/bot_avatars_upright/bot-avatar-upright-05-powder-blue.png"
+dest_files=["res://.godot/imported/bot-avatar-upright-05-powder-blue.png-ced626fe1f1d8f63a71c92a6c79e2112.ctex"]
 
 [params]
 

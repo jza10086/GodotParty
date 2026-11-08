@@ -1,6 +1,7 @@
 ## Source and PCK packaging share manifests. Mounting never replaces framework files.
 extends RefCounted
 const Paths = preload("res://core/config/party_paths.gd")
+const External = preload("res://core/content/party_external_files.gd")
 const Data = preload("res://core/runtime/party_data.gd")
 const Catalog = preload("res://core/content/party_catalog.gd")
 var last_error: String = ""
@@ -14,10 +15,20 @@ func export_source(catalog: RefCounted, id: String, output: String) -> Error:
 		return _error(issue)
 	var manifest: Dictionary = catalog.packages[id]
 	var root: String = manifest["_root"]
+	var payload: Dictionary = External.inventory(root, manifest.get("external_files", []))
+	if not payload.ok:
+		return _error(payload.error)
 	var writer: ZIPPacker = ZIPPacker.new()
 	var error: Error = writer.open(output)
 	if error != OK:
 		return error
+	for directory: String in payload.directories:
+		error = writer.start_file(directory + "/")
+		if error == OK:
+			error = writer.close_file()
+		if error != OK:
+			writer.close()
+			return error
 	for path: String in Catalog.files(root):
 		error = writer.start_file(path.trim_prefix(root + "/"))
 		if error == OK:
@@ -39,9 +50,15 @@ func export_pack(catalog: RefCounted, id: String, output: String) -> Error:
 		return _error(issue)
 	var manifest: Dictionary = catalog.packages[id]
 	var root: String = manifest["_root"]
+	var payload: Dictionary = External.inventory(root, manifest.get("external_files", []))
+	if not payload.ok:
+		return _error(payload.error)
 	var paths: Dictionary = {}
 	var uid_index: Dictionary = {}
 	for path: String in Catalog.files(root):
+		var relative: String = path.trim_prefix(root + "/")
+		if External.contains(manifest.get("external_files", []), relative.trim_suffix(".import").trim_suffix(".uid")):
+			continue
 		paths[path] = path
 		if path.ends_with(".import"):
 			var imported: ConfigFile = ConfigFile.new()
@@ -63,11 +80,6 @@ func export_pack(catalog: RefCounted, id: String, output: String) -> Error:
 			var uid: int = ResourceLoader.get_resource_uid(path)
 			if uid != ResourceUID.INVALID_ID:
 				uid_index[ResourceUID.id_to_text(uid)] = path
-		if path.ends_with(".gd"):
-			var source: String = FileAccess.get_file_as_string(path)
-			for line: String in source.split("\n"):
-				if "res://core/" in line and not "res://core/api/" in line and not "res://core/ui/" in line:
-					return _error("Nonportable host-internal reference: " + path)
 	var packer: PCKPacker = PCKPacker.new()
 	var error: Error = packer.pck_start(output)
 	if error != OK:
@@ -84,8 +96,13 @@ func export_pack(catalog: RefCounted, id: String, output: String) -> Error:
 	if error != OK:
 		return error
 	var description: Dictionary = {"format": 2, "engine": Engine.get_version_info()["string"], "core": Data.VERSION, "id": id, "version": manifest["package_version"], "kind": manifest["kind"], "artifact": output.get_file(), "files": index, "uids": uid_index}
+	description.external_files = payload.files
+	description.external_directories = payload.directories
 	if manifest.kind == "avatars":
 		description.owner_protocol = manifest.owner_protocol
+	error = External.copy_payload(root, output.get_base_dir(), payload.files, payload.directories)
+	if error != OK:
+		return _error("Cannot copy external payload: " + error_string(error))
 
 	var file: FileAccess = FileAccess.open(output + ".json", FileAccess.WRITE)
 	if file == null:
@@ -120,6 +137,19 @@ func validate_descriptor(description: Dictionary) -> String:
 		return "Missing package file/UID index"
 	if description.get("core") != Data.VERSION or description.get("engine") != Engine.get_version_info()["string"]:
 		return "Package requires another core/engine build"
+	var loose: Variant = description.get("external_files", [])
+	var folders: Variant = description.get("external_directories", [])
+	if not loose is Array or not folders is Array:
+		return "Invalid external payload index"
+	var external_seen: Dictionary = {}
+	for entry: Variant in loose + folders:
+		if not entry is String or not External.safe_path(entry) or external_seen.has(entry.to_lower()):
+			return "Invalid/conflicting external payload path"
+		external_seen[entry.to_lower()] = true
+	for file: String in loose:
+		for entry: String in external_seen:
+			if entry.begins_with(file.to_lower() + "/"):
+				return "External file conflicts with directory"
 	var root: String = "res://games/" + Paths.package_relative(description)
 	var seen: Dictionary = {}
 	for path: Variant in description.files:
@@ -148,6 +178,9 @@ func mount_directory(directory: String, choices: Dictionary = {}) -> Error:
 		var expected: String = directory.path_join(Paths.package_relative(description))
 		if descriptor_path.get_base_dir().simplify_path() != expected.simplify_path() or description.get("artifact") != "content.pck":
 			return _error("Package installed under the wrong folder: " + descriptor_path)
+		issue = _check_payload(expected, description)
+		if not issue.is_empty():
+			return _error(issue)
 		var id: String = description.id
 		var root: String = "res://games/" + Paths.package_relative(description)
 		if FileAccess.file_exists(root.path_join("manifest.json")):
@@ -186,11 +219,17 @@ func install(source: String, directory: String) -> Error:
 		return _error(issue)
 	if not FileAccess.file_exists(source):
 		return ERR_FILE_NOT_FOUND
+	issue = _check_payload(source.get_base_dir(), description)
+	if not issue.is_empty():
+		return _error(issue)
 	var destination: String = directory.path_join(Paths.package_relative(description))
 	var target: String = destination.path_join("content.pck")
 	if FileAccess.file_exists(target) or FileAccess.file_exists(target + ".json"):
 		return _error("已安装此包；请退出后替换 content.pck 和 content.pck.json，保留 config")
 	var error: Error = DirAccess.make_dir_recursive_absolute(destination)
+	if error != OK:
+		return error
+	error = External.copy_payload(source.get_base_dir(), destination, description.get("external_files", []), description.get("external_directories", []), true)
 	if error != OK:
 		return error
 	error = DirAccess.copy_absolute(source, target + ".pending")
@@ -289,6 +328,10 @@ func import_source(archive: String, destination: String = "res://games", replace
 	var stage: String = "res://tmp/content_stage_" + Data.token()
 	for path: String in entries:
 		if path.ends_with("/"):
+			error = DirAccess.make_dir_recursive_absolute(stage.path_join(path))
+			if error != OK:
+				reader.close()
+				return error
 			continue
 		var output: String = stage.path_join(path)
 		error = DirAccess.make_dir_recursive_absolute(output.get_base_dir())
@@ -307,6 +350,9 @@ func import_source(archive: String, destination: String = "res://games", replace
 			reader.close()
 			return error
 	reader.close()
+	var payload: Dictionary = External.inventory(stage, manifest.get("external_files", []))
+	if not payload.ok:
+		return _error(payload.error)
 	error = DirAccess.make_dir_recursive_absolute(target.get_base_dir())
 	if error != OK:
 		return error
@@ -322,6 +368,15 @@ func import_source(archive: String, destination: String = "res://games", replace
 		if restore_error != OK:
 			last_error = "Previous package preserved at " + backup
 	return error
+
+func _check_payload(directory: String, description: Dictionary) -> String:
+	for relative: String in description.get("external_files", []):
+		if not FileAccess.file_exists(directory.path_join(relative)):
+			return "Missing external file: " + directory.path_join(relative)
+	for relative: String in description.get("external_directories", []):
+		if not DirAccess.dir_exists_absolute(directory.path_join(relative)):
+			return "Missing external directory: " + directory.path_join(relative)
+	return ""
 
 func _error(message: String) -> Error:
 	last_error = message

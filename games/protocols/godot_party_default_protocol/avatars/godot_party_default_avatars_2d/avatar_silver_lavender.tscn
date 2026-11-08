@@ -1,0 +1,6 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars_2d/avatar_2d.gd" id="1"]
+[ext_resource type="Texture2D" path="res://games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars_2d/avatar_sources/bot_avatars_upright/bot-avatar-upright-01-silver-lavender.png" id="2"]
+[node name="GodotPartyDefaultAvatar" type="Node2D"]
+script = ExtResource("1")
+portrait = ExtResource("2")

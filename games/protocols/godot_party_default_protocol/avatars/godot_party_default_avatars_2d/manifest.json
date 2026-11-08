@@ -1,0 +1,49 @@
+{
+  "manifest_version": 2,
+  "core_api_major": 4,
+  "package_version": "1.0.0",
+  "id": "godot_party_default_avatars_2d",
+  "name": "原版 · 2D 头像",
+  "kind": "avatars",
+  "owner_protocol": "godot_party_default_protocol",
+  "resources": {
+    "avatar_silver_lavender": "avatar_silver_lavender.tscn",
+    "avatar_honey_blonde": "avatar_honey_blonde.tscn",
+    "avatar_sage_green": "avatar_sage_green.tscn",
+    "avatar_dusty_rose": "avatar_dusty_rose.tscn",
+    "avatar_powder_blue": "avatar_powder_blue.tscn",
+    "avatar_chestnut": "avatar_chestnut.tscn"
+  },
+  "appearance_resources": {
+    "avatar_silver_lavender": {
+      "protocol": "godot_party_default_protocol",
+      "slot": "avatar_2d",
+      "name": "银紫短发"
+    },
+    "avatar_honey_blonde": {
+      "protocol": "godot_party_default_protocol",
+      "slot": "avatar_2d",
+      "name": "蜂蜜金双马尾"
+    },
+    "avatar_sage_green": {
+      "protocol": "godot_party_default_protocol",
+      "slot": "avatar_2d",
+      "name": "鼠尾草绿长发"
+    },
+    "avatar_dusty_rose": {
+      "protocol": "godot_party_default_protocol",
+      "slot": "avatar_2d",
+      "name": "灰粉短发"
+    },
+    "avatar_powder_blue": {
+      "protocol": "godot_party_default_protocol",
+      "slot": "avatar_2d",
+      "name": "浅蓝侧编发"
+    },
+    "avatar_chestnut": {
+      "protocol": "godot_party_default_protocol",
+      "slot": "avatar_2d",
+      "name": "栗棕低马尾"
+    }
+  }
+}
