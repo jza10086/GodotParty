@@ -195,7 +195,7 @@ board_area.add_child(cursors)
 - `solo_start()`：公共准备页确认完成后开始玩法。技术 `mark_ready()` / `party_start()` 不代表玩家已确认开始。
 - `solo_stop()`：可重复调用，显式停止输入、模拟与声音，隐藏自身 HUD；覆盖准备中取消、结算和退出。不禁用包含网络协调的整棵场景树。
 - `solo_graphics_targets() -> Dictionary`：返回实际 `world` / `sun`，纯二维场景返回 `{}`。
-- `solo_audio_target() -> PartyGameAudio`：返回场景内组件；无音频返回 `null`，无需空组件。
+- `solo_audio_target() -> GameAudio`：返回场景内组件；无音频返回 `null`，无需空组件。用 `const GameAudio = preload("res://games/protocols/godot_party_default_protocol/audio/game_audio.gd")` 声明类型，独立 PCK 不依赖编辑器的全局类型缓存。
 - `completed(metrics: Dictionary)`：只完成一次本局。入口保留 columns、record_metric 和现有消息/成绩结构，验证成功后保存本机纪录并上报；正式结算后的重玩由轮换发起新作用域。
 
 入口转发画质与音频挂点，协议在视图入树后 attach；此时本机玩法已经存在。返回空字典或 null 是明确的无目标状态，非空但不满足类型/资源契约的目标仍报错。输入偏好由 PartyInput 绑定的 PartyConfig 提供，画质和音量由协议 settings runtime 应用，无需向玩法复制第二份偏好。

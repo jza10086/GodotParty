@@ -4,6 +4,7 @@ extends Control
 const Briefing = preload("res://games/protocols/godot_party_default_protocol/briefing/briefing_gate.gd")
 const Settlement = preload("res://games/protocols/godot_party_default_protocol/settlement/settlement_gate.gd")
 const Contract = preload("res://games/protocols/godot_party_default_protocol/protocol.gd")
+const GameAudio = preload("res://games/protocols/godot_party_default_protocol/audio/game_audio.gd")
 const Store = preload("res://core/config/party_config_store.gd")
 const REPORT: StringName = &"godot_party_default/solo_completed"
 const RESULT: StringName = &"godot_party_default/round_result"
@@ -82,7 +83,7 @@ func _play() -> void:
 func godot_party_graphics_targets() -> Dictionary:
 	return _gameplay.solo_graphics_targets() if _gameplay != null else {}
 
-func godot_party_audio_target() -> PartyGameAudio:
+func godot_party_audio_target() -> GameAudio:
 	return _gameplay.solo_audio_target() if _gameplay != null else null
 
 func _stop_gameplay() -> void:

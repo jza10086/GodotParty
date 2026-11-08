@@ -14,6 +14,8 @@
 
 dependencies 是包 ID 到精确 package_version 的映射。小游戏 adapters 的依赖只在选中接入时激活。公开资源通过 package_id/resource_key 引用。不要预加载未选协议或依赖另一份 core；普通内容只引用公开 core/api、core/ui 契约。内容使用普通 Godot 脚本能力，加载检查不是安全沙箱。
 
+内容包中的脚本类型使用显式 `const GameAudio = preload("res://games/protocols/godot_party_default_protocol/audio/game_audio.gd")` 一类引用，再以 `GameAudio` 标注类型。`class_name` 可用于编辑器注册资源，但独立 PCK 不会向已导出的核心自动注册这些全局类型名；不得依赖开发工程的全局脚本缓存解析包内或依赖包的类型。
+
 ## 可视化 Windows 导出
 
 编辑器打开“项目 → 工具 → GodotParty：导出可玩包”。界面只需勾选核心、协议及形象包、主游戏、小游戏，再选择输出目录。点击开始导出后显示进度、错误和构建日志目录。
