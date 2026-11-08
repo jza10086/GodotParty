@@ -1,106 +1,135 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cujh3a3wvkaey"]
 
-[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
-[ext_resource type="Script" path="res://core/ui/connectivity/listener_panel.gd" id="r1"]
+[ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
+[ext_resource type="Script" uid="uid://byncgqhffw13n" path="res://core/ui/connectivity/listener_panel.gd" id="r1"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r2"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="r3"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r4"]
-[ext_resource type="Script" path="res://core/network/connectivity/probe_listener.gd" id="r5"]
+[ext_resource type="Script" uid="uid://d05rex8fcfw33" path="res://core/network/connectivity/probe_listener.gd" id="r5"]
 
-[node name="ListenerPanel" type="VBoxContainer"]
+[node name="ListenerPanel" type="VBoxContainer" unique_id=1676522073]
 theme = ExtResource("ambient")
-script = ExtResource("r1")
 theme_override_constants/separation = 16
+script = ExtResource("r1")
 
-[node name="MainText1" parent="." type="Label"]
+[node name="MainText1" type="Label" parent="." unique_id=222970445]
 unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 text = "独立网络探测 · 不创建游戏房间。先开始监听，再让其他设备使用相同协议和端口访问。"
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="MainOptions" parent="." type="HBoxContainer"]
+[node name="MainOptions" type="HBoxContainer" parent="." unique_id=474212181]
+layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Transport" parent="MainOptions" instance=ExtResource("r2")]
+[node name="Transport" parent="MainOptions" unique_id=1981138424 instance=ExtResource("r2")]
 unique_name_in_owner = true
+layout_mode = 2
 
-
-[node name="Family" parent="MainOptions" instance=ExtResource("r2")]
+[node name="Family" parent="MainOptions" unique_id=1114147772 instance=ExtResource("r2")]
 unique_name_in_owner = true
+layout_mode = 2
 
-
-[node name="MainText13" parent="MainOptions" type="Label"]
+[node name="MainText13" type="Label" parent="MainOptions" unique_id=960545010]
 unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 text = "端口"
 autowrap_mode = 3
+
+[node name="Port" parent="MainOptions" unique_id=2072380777 instance=ExtResource("r3")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Start" parent="MainOptions" unique_id=1621458918 instance=ExtResource("r4")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="Port" parent="MainOptions" instance=ExtResource("r3")]
-unique_name_in_owner = true
-
-
-[node name="Start" parent="MainOptions" instance=ExtResource("r4")]
-unique_name_in_owner = true
 text = "开始监听"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="Stop" parent="MainOptions" instance=ExtResource("r4")]
+[node name="Stop" parent="MainOptions" unique_id=1564903403 instance=ExtResource("r4")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "停止"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="AddressLabel" parent="." type="Label"]
+[node name="AddressLabel" type="Label" parent="." unique_id=2019357719]
 unique_name_in_owner = true
-text = ""
+layout_mode = 2
+size_flags_horizontal = 3
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="Addresses" parent="." instance=ExtResource("r2")]
+[node name="Addresses" parent="." unique_id=597860775 instance=ExtResource("r2")]
 unique_name_in_owner = true
+layout_mode = 2
 
+[node name="ShareHostnameLabel" type="Label" parent="." unique_id=1874891637]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "分享域名（可选，仅用于复制链接；需自行指向此监听服务）"
+autowrap_mode = 3
 
-[node name="MainActions" parent="." type="HBoxContainer"]
+[node name="ShareHostname" type="LineEdit" parent="." unique_id=111839501 instance=ExtResource("r3")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("ambient")
+placeholder_text = "例如 game.example.com；留空使用本机 IP"
+max_length = 254
+caret_blink = true
+caret_blink_interval = 0.53
+
+[node name="MainActions" type="HBoxContainer" parent="." unique_id=2117580453]
+layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="AddressRefresh" parent="MainActions" instance=ExtResource("r4")]
+[node name="AddressRefresh" parent="MainActions" unique_id=962709124 instance=ExtResource("r4")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "刷新地址"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="Copy" parent="MainActions" instance=ExtResource("r4")]
+[node name="Copy" parent="MainActions" unique_id=102993552 instance=ExtResource("r4")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "复制客户端链接"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="Web" parent="MainActions" instance=ExtResource("r4")]
+[node name="Web" parent="MainActions" unique_id=1095389310 instance=ExtResource("r4")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "复制网页链接"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="Status" parent="." type="Label"]
+[node name="Status" type="Label" parent="." unique_id=884038997]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "尚未开始"
 autowrap_mode = 3
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,150)
 
-[node name="Notice" parent="." type="Label"]
+[node name="Notice" type="Label" parent="." unique_id=705360577]
 unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 text = "UDP：使用极简客户端。TCP：使用客户端，或在浏览器中打开复制的 http:// 链接。"
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="MainText35" parent="." type="Label"]
+[node name="MainText35" type="Label" parent="." unique_id=555804465]
 unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 text = "本机绑定成功 ≠ 外网可达。只有远端收到匹配回复，才证明本次双向探测通过。关闭此窗口会释放端口；正式游戏目前仍使用 ENet/UDP。"
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="Listener" parent="." type="Node"]
+[node name="Listener" type="Node" parent="." unique_id=825020053]
 unique_name_in_owner = true
 script = ExtResource("r5")

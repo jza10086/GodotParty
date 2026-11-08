@@ -1,161 +1,182 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bse0vkwlfbm0a"]
 
-[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
-[ext_resource type="Script" path="res://core/ui/connectivity/client_panel.gd" id="r1"]
+[ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
+[ext_resource type="Script" uid="uid://c4ko67pa1nwmr" path="res://core/ui/connectivity/client_panel.gd" id="r1"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r2"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="r3"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r4"]
-[ext_resource type="Script" path="res://core/network/connectivity/probe_client.gd" id="r5"]
-[ext_resource type="Script" path="res://core/network/connectivity/outbound_probe.gd" id="r6"]
+[ext_resource type="Script" uid="uid://b61pc3ft4gy7q" path="res://core/network/connectivity/probe_client.gd" id="r5"]
+[ext_resource type="Script" uid="uid://c54k4g50oc0jh" path="res://core/network/connectivity/outbound_probe.gd" id="r6"]
 
-[node name="ClientPanel" type="VBoxContainer"]
+[node name="ClientPanel" type="VBoxContainer" unique_id=284452566]
 theme = ExtResource("ambient")
-script = ExtResource("r1")
 theme_override_constants/separation = 16
+script = ExtResource("r1")
 
-[node name="MainText1" parent="." type="Label"]
+[node name="MainText1" type="Label" parent="." unique_id=254245415]
 unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 text = "主动连接目标设备进行探测。请先在另一台 PC 打开“监听测试”，使用相同协议和端口。"
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="MainOptions" parent="." type="HBoxContainer"]
+[node name="MainOptions" type="HBoxContainer" parent="." unique_id=697074300]
+layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="MainText5" parent="MainOptions" type="Label"]
+[node name="MainText5" type="Label" parent="MainOptions" unique_id=314566088]
 unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 text = "协议"
 autowrap_mode = 3
+
+[node name="Transport" parent="MainOptions" unique_id=1735879633 instance=ExtResource("r2")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MainText10" type="Label" parent="MainOptions" unique_id=2026183216]
+unique_name_in_owner = true
+layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="Transport" parent="MainOptions" instance=ExtResource("r2")]
-unique_name_in_owner = true
-
-
-[node name="MainText10" parent="MainOptions" type="Label"]
-unique_name_in_owner = true
 text = "端口"
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="Port" parent="MainOptions" instance=ExtResource("r3")]
+[node name="Port" parent="MainOptions" unique_id=482977977 instance=ExtResource("r3")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 56)
+layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(160,56)
-placeholder_text = "1–65535"
 text = "7777"
+placeholder_text = "1–65535"
 
-[node name="MainText14" parent="." type="Label"]
+[node name="MainText14" type="Label" parent="." unique_id=320848692]
 unique_name_in_owner = true
-text = "目标 IPv4 / IPv6 地址"
+layout_mode = 2
+size_flags_horizontal = 3
+text = "目标域名 / IPv4 / IPv6 地址"
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="Address" parent="." instance=ExtResource("r3")]
+[node name="Address" parent="." unique_id=705436172 instance=ExtResource("r3")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
-placeholder_text = "192.168.1.10 或 2001:db8::1"
-text = ""
+placeholder_text = "example.com、192.168.1.10 或 2001:db8::1"
 
-[node name="MainActions" parent="." type="HBoxContainer"]
+[node name="MainActions" type="HBoxContainer" parent="." unique_id=1604620286]
+layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Paste" parent="MainActions" instance=ExtResource("r4")]
+[node name="Paste" parent="MainActions" unique_id=1075168899 instance=ExtResource("r4")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "粘贴地址 / 链接"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="Start" parent="MainActions" instance=ExtResource("r4")]
+[node name="Start" parent="MainActions" unique_id=1624000106 instance=ExtResource("r4")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "开始测试"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="Stop" parent="MainActions" instance=ExtResource("r4")]
+[node name="Stop" parent="MainActions" unique_id=129339020 instance=ExtResource("r4")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "停止"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="Notice" parent="." type="Label"]
+[node name="Notice" type="Label" parent="." unique_id=631387765]
 unique_name_in_owner = true
-text = "通常每秒探测一次，单次最多等待 3 秒。TCP 每次重新连接，耗时包含建连时间。"
+layout_mode = 2
+size_flags_horizontal = 3
+text = "域名解析最多等待 3 秒；解析后固定目标 IP，单次探测最多等待 3 秒。TCP 耗时包含建连时间。"
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="Result" parent="." type="Label"]
+[node name="Result" type="Label" parent="." unique_id=1417072863]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "尚未开始"
 autowrap_mode = 3
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,150)
 
-[node name="Copy" parent="." instance=ExtResource("r4")]
+[node name="Copy" parent="." unique_id=2038479217 instance=ExtResource("r4")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "复制测试结果"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="MainText29" parent="." type="Label"]
+[node name="MainText29" type="Label" parent="." unique_id=608827592]
 unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 text = "仅匹配的 GPTEST/1 回复计为成功；普通 UDP/TCP 服务不一定支持此协议。UDP 校验对方 IP、端口、序号和随机标识。此测试不加入游戏房间，关闭窗口会停止。"
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="Probe" parent="." type="Node"]
+[node name="Probe" type="Node" parent="." unique_id=1139524791]
 unique_name_in_owner = true
 script = ExtResource("r5")
 
-[node name="Divider" parent="." type="HSeparator"]
+[node name="Divider" type="HSeparator" parent="." unique_id=80921454]
+layout_mode = 2
 
-
-[node name="OutboundText1" parent="." type="Label"]
+[node name="OutboundText1" type="Label" parent="." unique_id=785912521]
 unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 text = "本机 IP 出站可用性检测"
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="OutboundText2" parent="." type="Label"]
+[node name="OutboundText2" type="Label" parent="." unique_id=2066946306]
 unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 text = "分别使用 IPv4 / IPv6 连接 aliyun.com、www.baidu.com 的 TCP 443；任一目标成功即显示该地址族出站可用。"
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="OutboundActions" parent="." type="HBoxContainer"]
+[node name="OutboundActions" type="HBoxContainer" parent="." unique_id=1799168085]
+layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="OutboundStart" parent="OutboundActions" instance=ExtResource("r4")]
+[node name="OutboundStart" parent="OutboundActions" unique_id=752813430 instance=ExtResource("r4")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "检测 IPv4 / IPv6 出站"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="OutboundStop" parent="OutboundActions" instance=ExtResource("r4")]
+[node name="OutboundStop" parent="OutboundActions" unique_id=938037838 instance=ExtResource("r4")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "停止出站检测"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="OutboundCopy" parent="OutboundActions" instance=ExtResource("r4")]
+[node name="OutboundCopy" parent="OutboundActions" unique_id=592381153 instance=ExtResource("r4")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "复制出站结果"
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0,56)
 
-[node name="OutboundResult" parent="." type="Label"]
+[node name="OutboundResult" type="Label" parent="." unique_id=125528550]
 unique_name_in_owner = true
-text = ""
+layout_mode = 2
+size_flags_horizontal = 3
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="OutboundText15" parent="." type="Label"]
+[node name="OutboundText15" type="Label" parent="." unique_id=1875930258]
 unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 text = "DNS 和每次建连最多各等待 4 秒。使用系统默认出站路由，不逐个绑定网卡；仅检测 TCP 出站，不代表 UDP 或入站直连可用。"
 autowrap_mode = 3
-size_flags_horizontal = 3
 
-[node name="Outbound" parent="." type="Node"]
+[node name="Outbound" type="Node" parent="." unique_id=1283120916]
 unique_name_in_owner = true
 script = ExtResource("r6")

@@ -6,6 +6,9 @@ const TIMEOUT_MS: int = 3000
 var active: bool = false
 var transport: String = "UDP"
 var host: String = ""
+var resolved_address: String = ""
+var _dns_query: int = IP.RESOLVER_INVALID_ID
+var _dns_deadline: int = 0
 var port: int = 0
 var attempts: int = 0
 var successes: int = 0
@@ -26,9 +29,9 @@ var _next_at: int = 0
 
 func start(kind: String, address: String, destination_port: int) -> Error:
 	stop()
-	host = Protocol.address(address)
+	host = Protocol.target_address(address)
 	if kind not in ["UDP", "TCP"] or host.is_empty() or destination_port < 1 or destination_port > 65535:
-		status = "请填写有效的单播 IPv4 / IPv6 和 1–65535 端口（不支持带接口的链路本地 IPv6）"
+		status = "请填写有效的域名或单播 IPv4 / IPv6 和 1–65535 端口（不支持链路本地 IPv6）"
 		return ERR_INVALID_PARAMETER
 	transport = kind
 	port = destination_port
@@ -41,10 +44,20 @@ func start(kind: String, address: String, destination_port: int) -> Error:
 	total_ms = 0
 	_next_at = 0
 	active = true
-	status = "开始探测，等待匹配回复"
+	resolved_address = Protocol.address(host)
+	if resolved_address.is_empty():
+		_dns_query = IP.resolve_hostname_queue_item(host, IP.TYPE_ANY)
+		if _dns_query == IP.RESOLVER_INVALID_ID:
+			_dns_failed("无法创建 DNS 查询")
+			return ERR_CANT_CREATE
+		_dns_deadline = Time.get_ticks_msec() + TIMEOUT_MS
+		status = "正在解析域名：" + host
+	else:
+		status = "开始探测，等待匹配回复"
 	return OK
 
 func stop(reason: String = "已停止") -> void:
+	_release_dns()
 	if not _expected.is_empty():
 		canceled += 1
 	_close_socket()
@@ -57,6 +70,9 @@ func _process(_delta: float) -> void:
 	if not active:
 		return
 	var now: int = Time.get_ticks_msec()
+	if _dns_query != IP.RESOLVER_INVALID_ID:
+		_poll_dns(now)
+		return
 	if _expected.is_empty():
 		if now >= _next_at:
 			_begin_probe(now)
@@ -74,6 +90,31 @@ func _process(_delta: float) -> void:
 	elif _tcp != null:
 		_poll_tcp(now)
 
+## Resolve once per test session and keep the actual destination visible in reports.
+## DNS failure ends this session; restarting is an explicit user action.
+func _poll_dns(now: int) -> void:
+	var state: IP.ResolverStatus = IP.get_resolve_item_status(_dns_query)
+	if state == IP.RESOLVER_STATUS_DONE:
+		resolved_address = Protocol.address(IP.get_resolve_item_address(_dns_query))
+		_release_dns()
+		if resolved_address.is_empty():
+			_dns_failed("DNS 结果不是受支持的单播 IPv4 / IPv6")
+			return
+		status = "域名已解析：" + resolved_address
+	elif state in [IP.RESOLVER_STATUS_ERROR, IP.RESOLVER_STATUS_NONE]:
+		_dns_failed("DNS 解析失败：" + host)
+	elif now >= _dns_deadline:
+		_dns_failed("DNS 解析超时（3 秒）：" + host)
+
+func _release_dns() -> void:
+	if _dns_query != IP.RESOLVER_INVALID_ID:
+		IP.erase_resolve_item(_dns_query)
+		_dns_query = IP.RESOLVER_INVALID_ID
+
+func _dns_failed(message: String) -> void:
+	errors += 1
+	stop(message)
+
 func _begin_probe(now: int) -> void:
 	attempts += 1
 	_started_at = now
@@ -84,7 +125,7 @@ func _begin_probe(now: int) -> void:
 	var error: Error = OK
 	if transport == "UDP":
 		_udp = PacketPeerUDP.new()
-		error = _udp.connect_to_host(host, port)
+		error = _udp.connect_to_host(resolved_address, port)
 		if error == OK:
 			error = _udp.put_packet(request.to_ascii_buffer())
 	else:
@@ -92,7 +133,7 @@ func _begin_probe(now: int) -> void:
 		_outgoing = (request + "\n").to_ascii_buffer()
 		_offset = 0
 		_incoming.clear()
-		error = _tcp.connect_to_host(host, port)
+		error = _tcp.connect_to_host(resolved_address, port)
 	if error != OK:
 		_fail("无法发起探测：" + error_string(error))
 
@@ -154,7 +195,10 @@ func _close_socket() -> void:
 
 func report() -> String:
 	var average: String = "—" if successes == 0 else str(roundi(float(total_ms) / successes)) + " ms"
-	return "%s\n%s\n探测 %d · 成功 %d · 超时 %d · 错误 %d · 取消 %d\n最近 %s · 平均 %s\n%s" % [Protocol.share(transport, host, port), "运行中" if active else "已停止", attempts, successes, timeouts, errors, canceled, "—" if last_ms < 0 else str(last_ms) + " ms", average, status]
+	var target: String = Protocol.share(transport, host, port)
+	if not resolved_address.is_empty() and host != resolved_address:
+		target += " → " + Protocol.endpoint(resolved_address, port)
+	return "%s\n%s\n探测 %d · 成功 %d · 超时 %d · 错误 %d · 取消 %d\n最近 %s · 平均 %s\n%s" % [target, "运行中" if active else "已停止", attempts, successes, timeouts, errors, canceled, "—" if last_ms < 0 else str(last_ms) + " ms", average, status]
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_PAUSED:

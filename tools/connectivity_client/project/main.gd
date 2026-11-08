@@ -51,9 +51,9 @@ func _ready() -> void:
 	_transport.add_item("TCP")
 	_transport.custom_minimum_size.y = 72
 	box.add_child(_transport)
-	_label(box, "主机 IPv4 / IPv6 地址")
-	_address = _field(box, "192.168.1.10 或 2001:db8::1", "")
-	_address.max_length = 64
+	_label(box, "主机域名 / IPv4 / IPv6 地址")
+	_address = _field(box, "example.com 或 192.168.1.10 / 2001:db8::1", "")
+	_address.max_length = 254
 	_address.virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_URL
 	_label(box, "端口")
 	_port = _field(box, "1–65535", "7777")
@@ -65,7 +65,7 @@ func _ready() -> void:
 	box.add_child(actions)
 	_start = _button(actions, "开始测试", _begin)
 	_stop = _button(actions, "停止", func() -> void: _probe.stop(); _refresh())
-	_notice = _label(box, "每次最多等待 3 秒。TCP 每次重新连接；RTT 包含连接时间。")
+	_notice = _label(box, "DNS 解析最多等待 3 秒，随后每次探测最多 3 秒。TCP RTT 包含建连时间。")
 	_result = _label(box, "尚未开始")
 	_button(box, "复制测试结果", func() -> void:
 		DisplayServer.clipboard_set(_probe.report())
@@ -104,7 +104,7 @@ func _button(parent: Node, text: String, callback: Callable) -> Button:
 func _paste_address() -> void:
 	var parsed: Dictionary = Protocol.parse_share(DisplayServer.clipboard_get())
 	if parsed.is_empty():
-		_notice.text = "剪贴板格式无效。请复制 IP 或 udp://地址:端口 / tcp://[IPv6]:端口。"
+		_notice.text = "剪贴板格式无效。请复制 IP、域名或 udp://主机:端口 / tcp://[IPv6]:端口。"
 		return
 	_address.text = parsed.address
 	if parsed.has("port"):
@@ -136,7 +136,7 @@ func _refresh() -> void:
 	_transport.disabled = _probe.active
 	_address.editable = not _probe.active
 	_port.editable = not _probe.active
-	_result.text = _probe.report() if _probe.attempts > 0 else _probe.status
+	_result.text = _probe.report() if _probe.attempts > 0 or _probe.errors > 0 else _probe.status
 
 func _fit_safe_area() -> void:
 	var left: float = 0.0

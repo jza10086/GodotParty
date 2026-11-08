@@ -57,3 +57,5 @@ gh run download RUN_ID --repo jza10086/GodotParty --name GodotParty-Connectivity
 云端检查会实际实例化客户端，确认默认字体是内置 FontFile、系统回退已关闭、源码文字全部有字形，并检查中文、英文、IPv4/IPv6 文本的非零排版尺寸；还会确认构建退出状态、Godot 错误日志、IPA 的 Payload 结构、真机 ARM64、iPhone/iPad 设备类型和本地网络用途说明。它不代表真机绘制或真实网络验收；SideStore 安装、文字显示、横竖屏/键盘、权限与 UDP/TCP 收发仍需 iPhone/iPad 实测。
 
 参考：[Godot iOS 导出](https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_ios.html)、[SideStore 安装要求](https://docs.sidestore.io/docs/installation/prerequisites)、[SideStore 安装步骤](https://docs.sidestore.io/docs/installation/install)、[SideStore 免费账号限制](https://docs.sidestore.io/docs/faq)。
+
+域名支持：地址框可填写 ASCII / Punycode 域名（含 localhost），也可粘贴 `udp://域名:端口`、`tcp://域名:端口` 或 `http://域名:端口/`。DNS 异步解析最多 3 秒，解析失败会停止；报告同时显示实际 IP。每次开始测试固定首个解析结果，探测 RTT 不包含 DNS 时间。

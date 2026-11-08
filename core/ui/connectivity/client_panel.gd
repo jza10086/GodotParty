@@ -27,7 +27,7 @@ func _ready() -> void:
 	_port = %Port
 	_port.max_length = 5
 	_address = %Address
-	_address.max_length = 64
+	_address.max_length = 254
 	_paste = %Paste
 	_paste.pressed.connect(_paste_address)
 	_start = %Start
@@ -55,7 +55,7 @@ func apply_address(value: String) -> bool:
 		return false
 	var parsed: Dictionary = Protocol.parse_share(value)
 	if parsed.is_empty():
-		_notice.text = "地址格式无效，请粘贴 IP 或 udp://地址:端口 / tcp://[IPv6]:端口"
+		_notice.text = "地址格式无效，请粘贴 IP、域名或 udp://主机:端口 / tcp://[IPv6]:端口"
 		return false
 	_address.text = parsed.address
 	if parsed.has("port"):
@@ -100,8 +100,8 @@ func _refresh() -> void:
 	_transport.disabled = _probe.active
 	_address.editable = not _probe.active
 	_port.editable = not _probe.active
-	_copy.disabled = _probe.attempts == 0
-	_result.text = _probe.report() if _probe.attempts > 0 else _probe.status
+	_copy.disabled = _probe.attempts == 0 and _probe.errors == 0
+	_result.text = _probe.report() if _probe.attempts > 0 or _probe.errors > 0 else _probe.status
 	if _outbound != null:
 		_outbound_start.disabled = _outbound.active
 		_outbound_stop.disabled = not _outbound.active

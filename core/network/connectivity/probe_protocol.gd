@@ -11,7 +11,9 @@ static func parse_port(value: String) -> int:
 	return port if port >= 1 and port <= 65535 else 0
 
 static func address(value: String) -> String:
-	var text: String = value.strip_edges().trim_prefix("[").trim_suffix("]")
+	var text: String = value.strip_edges()
+	if text.begins_with("[") and text.ends_with("]") and text.contains(":"):
+		text = text.substr(1, text.length() - 2)
 	if not text.is_valid_ip_address() or text in ["0.0.0.0", "::"] or text.contains("%"):
 		return ""
 	# Scoped IPv6 link-local destinations need an interface selector, which this tool omits.
@@ -21,16 +23,38 @@ static func address(value: String) -> String:
 		return ""
 	return text
 
+## ASCII / Punycode DNS hostname, without a scheme, port or path.
+static func hostname(value: String) -> String:
+	var text: String = value.strip_edges().to_lower()
+	var name: String = text.trim_suffix(".")
+	if name.is_empty() or name.length() > 253:
+		return ""
+	var has_letter: bool = false
+	for label: String in name.split("."):
+		if label.is_empty() or label.length() > 63 or label.begins_with("-") or label.ends_with("-"):
+			return ""
+		for character: String in label:
+			if character >= "a" and character <= "z":
+				has_letter = true
+			elif not (character >= "0" and character <= "9") and character != "-":
+				return ""
+	return text if has_letter else ""
+
+## Connection targets accept DNS names; bind addresses remain literal unicast IPs.
+static func target_address(value: String) -> String:
+	var ip: String = address(value)
+	return ip if not ip.is_empty() else hostname(value)
+
 static func endpoint(host: String, port: int) -> String:
 	return "[%s]:%d" % [host, port] if host.contains(":") else "%s:%d" % [host, port]
 
 static func share(transport: String, host: String, port: int) -> String:
 	return transport.to_lower() + "://" + endpoint(host, port)
 
-## Paste accepts a literal IP or udp://IP:port / tcp://[IPv6]:port / http://IP:port.
+## Paste accepts an IP / hostname, host:port, or udp:// / tcp:// / http:// endpoints.
 static func parse_share(value: String) -> Dictionary:
 	var text: String = value.strip_edges()
-	var host: String = address(text)
+	var host: String = target_address(text)
 	if not host.is_empty():
 		return {"address": host}
 	var scheme: String = ""
@@ -42,7 +66,7 @@ static func parse_share(value: String) -> Dictionary:
 	var split: int = text.rfind(":")
 	if split < 0 or (text.count(":") > 1 and not text.begins_with("[")):
 		return {}
-	host = address(text.left(split))
+	host = target_address(text.left(split))
 	var port: int = parse_port(text.substr(split + 1))
 	if host.is_empty() or port == 0:
 		return {}

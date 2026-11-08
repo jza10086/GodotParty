@@ -11,6 +11,7 @@ var _start: Button
 var _stop: Button
 var _addresses: OptionButton
 var _address_label: Label
+var _share_hostname: LineEdit
 var _address_refresh: Button
 var _copy: Button
 var _web: Button
@@ -34,6 +35,7 @@ func _ready() -> void:
 	_stop = %Stop
 	_stop.pressed.connect(stop)
 	_address_label = %AddressLabel
+	_share_hostname = %ShareHostname
 	_addresses = %Addresses
 	_addresses.clip_text = true
 	_addresses.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -117,6 +119,11 @@ func _copy_endpoint(web: bool) -> void:
 	if host.is_empty() or not _listener.active:
 		_notice.text = "请先开始监听并选择可用地址"
 		return
+	if not _share_hostname.text.strip_edges().is_empty():
+		host = Protocol.hostname(_share_hostname.text)
+		if host.is_empty():
+			_notice.text = "分享域名无效，请只填写域名，不含协议、端口或路径"
+			return
 	var text: String = "http://" + Protocol.endpoint(host, _listener.port) + "/" if web else Protocol.share(_listener.transport, host, _listener.port)
 	DisplayServer.clipboard_set(text)
 	_notice.text = "已复制：" + text
