@@ -32,6 +32,7 @@ Paths are relative to the project root.
 - finish OK accepts a candidate, not a durable reward. Main-game reducers are pure; never award again from round_committed.
 - Economy belongs to the main game. Ranking is not a wallet settlement. Never invent resources or claim compatibility without implementing protocol semantics.
 - One main game binds one protocol. A minigame can have multiple adapters, but only the selected adapter and its dependencies activate. Never preload an absent optional protocol.
+- Independent PCKs support direct `class_name` references: the exporter records package-owned types and the loader registers the merged core/content types before parsing content. Use globally unique names for shared types, declare cross-package dependencies, and finish editor imports before export. Validate changed types through room creation and affected game entries in an exported EXE; see doc/api/source_packages.md for descriptor upgrades.
 - Appearance data and its editor belong to the protocol. Do not assume color, portrait or first/third-person fields unless its DOC defines them.
 - Identity is player_id; peer_id is transport routing. Returned player/settings data are snapshots.
 - Main controller/state persist across a foreground minigame; the view is released and rebuilt. Old scope callbacks must not mutate new games.

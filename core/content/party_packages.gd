@@ -2,6 +2,8 @@
 extends RefCounted
 const Paths = preload("res://core/config/party_paths.gd")
 const External = preload("res://core/content/party_external_files.gd")
+const ScriptClasses = preload("res://core/content/party_script_classes.gd")
+const DESCRIPTOR_FORMAT: int = 3
 const Data = preload("res://core/runtime/party_data.gd")
 const Catalog = preload("res://core/content/party_catalog.gd")
 var last_error: String = ""
@@ -95,7 +97,8 @@ func export_pack(catalog: RefCounted, id: String, output: String) -> Error:
 	error = packer.flush()
 	if error != OK:
 		return error
-	var description: Dictionary = {"format": 2, "engine": Engine.get_version_info()["string"], "core": Data.VERSION, "id": id, "version": manifest["package_version"], "kind": manifest["kind"], "artifact": output.get_file(), "files": index, "uids": uid_index}
+	var description: Dictionary = {"format": DESCRIPTOR_FORMAT, "engine": Engine.get_version_info()["string"], "core": Data.VERSION, "id": id, "version": manifest["package_version"], "kind": manifest["kind"], "artifact": output.get_file(), "files": index, "uids": uid_index}
+	description.script_classes = ScriptClasses.collect(paths)
 	description.external_files = payload.files
 	description.external_directories = payload.directories
 	if manifest.kind == "avatars":
@@ -131,7 +134,9 @@ static func descriptors(directory: String) -> Array[String]:
 	return result
 
 func validate_descriptor(description: Dictionary) -> String:
-	if description.get("format") != 2 or Paths.package_relative(description).is_empty() or not description.get("version") is String or description.version.is_empty():
+	if description.get("format") != DESCRIPTOR_FORMAT:
+		return "Unsupported package descriptor; re-export core and content together"
+	if Paths.package_relative(description).is_empty() or not description.get("version") is String or description.version.is_empty():
 		return "Invalid installed package descriptor"
 	if not description.get("files") is Array or description.files.is_empty() or not description.get("uids") is Dictionary:
 		return "Missing package file/UID index"
@@ -164,12 +169,15 @@ func validate_descriptor(description: Dictionary) -> String:
 		var path: Variant = description.uids[uid_text]
 		if not uid_text is String or ResourceUID.text_to_id(uid_text) == ResourceUID.INVALID_ID or not path is String or not seen.has(path) or not path.begins_with(root + "/"):
 			return "Invalid resource UID index"
-	return ""
+	return ScriptClasses.validate(description.get("script_classes"), root, description.files)
 
 ## Restart after installing/updating. Structural checks do not prove byte-for-byte equality.
 func mount_directory(directory: String, choices: Dictionary = {}) -> Error:
 	last_error = ""
 	var paths: Dictionary = {}
+	var uids: Dictionary = {}
+	var planned: Dictionary = {}
+	var existing_classes: Array[Dictionary] = ProjectSettings.get_global_class_list()
 	for descriptor_path: String in descriptors(directory):
 		var description: Dictionary = Data.read_json(descriptor_path)
 		var issue: String = validate_descriptor(description)
@@ -189,7 +197,7 @@ func mount_directory(directory: String, choices: Dictionary = {}) -> Error:
 				continue
 			if choice != "pck":
 				return _error("SOURCE_SELECTION_REQUIRED: " + id + " has source and PCK; select source or pck and restart")
-		if mounted.has(id):
+		if mounted.has(id) or planned.has(id):
 			return _error("Duplicate installed package: " + id)
 		for path: String in description.files:
 			if paths.has(path):
@@ -197,8 +205,18 @@ func mount_directory(directory: String, choices: Dictionary = {}) -> Error:
 			paths[path] = id
 		for uid_text: String in description.uids:
 			var uid: int = ResourceUID.text_to_id(uid_text)
-			if ResourceUID.has_id(uid) and ResourceUID.get_id_path(uid) != description.uids[uid_text]:
+			if (ResourceUID.has_id(uid) and ResourceUID.get_id_path(uid) != description.uids[uid_text]) or (uids.has(uid_text) and uids[uid_text] != description.uids[uid_text]):
 				return _error("UID conflict: " + uid_text)
+			uids[uid_text] = description.uids[uid_text]
+		planned[id] = description
+	var merged: Dictionary = ScriptClasses.merge(existing_classes, planned)
+	if not merged.ok:
+		return _error(merged.error)
+	# Mount every resource first. No content script is parsed before its dependencies and types exist.
+	for id: String in planned:
+		var description: Dictionary = planned[id]
+		var expected: String = directory.path_join(Paths.package_relative(description))
+		var root: String = "res://games/" + Paths.package_relative(description)
 		if not ProjectSettings.load_resource_pack(expected.path_join("content.pck"), false):
 			return _error("Cannot mount " + expected)
 		var manifest: Dictionary = Data.read_json(root.path_join("manifest.json"))
@@ -209,6 +227,25 @@ func mount_directory(directory: String, choices: Dictionary = {}) -> Error:
 			if not ResourceUID.has_id(uid):
 				ResourceUID.add_id(uid, description.uids[uid_text])
 		mounted[id] = description
+	if planned.is_empty():
+		return OK
+	var catalog: RefCounted = Catalog.new()
+	if catalog.scan() != OK:
+		return _error(str(catalog.errors))
+	for id: String in planned:
+		for dependency: String in catalog.packages[id].get("dependencies", {}):
+			var version: String = catalog.packages[id].dependencies[dependency]
+			if catalog.get_package(dependency).get("package_version") != version:
+				return _error(id + ": missing/conflicting dependency " + dependency + " " + version)
+	if merged.has_content_classes:
+		var error: Error = ScriptClasses.register(directory, merged.classes)
+		if error != OK:
+			return _error("Cannot register content script classes: " + error_string(error))
+	for id: String in planned:
+		for entry: Dictionary in planned[id].script_classes:
+			var script: Script = load(entry.path)
+			if script == null or (not script.can_instantiate() and not script.is_abstract()) or script.get_global_name() != entry["class"]:
+				return _error(id + ": cannot load registered class " + entry["class"] + " at " + entry.path)
 	return OK
 
 ## Install into its declared category; updating a running installation is deliberately refused.

@@ -8,13 +8,17 @@
 
 编辑器 Tools → GodotParty 支持源码 ZIP 和 PCK 导出；导出前完成资源导入。单独导出选择任意 PCK 文件名后，可由主界面内容包安装器复制到标准 content.pck 名称；手动安装必须将文件及描述中的 artifact 统一为 content.pck。批量导出脚本 core/dev/export_content.gd 自动生成标准目录。
 
-描述格式 2 包含构建信息、包 ID/版本/类别、文件路径索引、UID 索引，形象包另含 owner_protocol；不含文件哈希。框架检查目录归属、声明路径、UID 冲突、核心/引擎版本、挂载后清单及依赖版本。协议 PCK 不重复包含 avatars 子包。房间比较包版本与配置快照；相同版本号不证明文件字节相同，作者修改内容后必须更新 package_version。
+描述格式 3 包含构建信息、包 ID/版本/类别、文件路径索引、UID 索引和 script_classes 类型清单，形象包另含 owner_protocol；不含文件哈希。框架检查目录归属、声明路径、UID 和类型名冲突、核心/引擎版本、挂载后清单及依赖版本。协议 PCK 不重复包含 avatars 子包。房间比较包版本与配置快照；相同版本号不证明文件字节相同，作者修改内容后必须更新 package_version。
 
 若同 ID 同时有源码和 PCK，必须在内容包来源中明确选择，或使用 --party-source=<id>:source/pck 后重启。--party-pack-dir=<安装根目录> 支持隔离验收，里面仍使用三个分类目录。源码与 PCK 保持相同 res://games 虚拟路径；用户局部配置不放入 PCK。
 
 dependencies 是包 ID 到精确 package_version 的映射。小游戏 adapters 的依赖只在选中接入时激活。公开资源通过 package_id/resource_key 引用。不要预加载未选协议或依赖另一份 core；普通内容只引用公开 core/api、core/ui 契约。内容使用普通 Godot 脚本能力，加载检查不是安全沙箱。
 
-内容包中的脚本类型使用显式 `const GameAudio = preload("res://games/protocols/godot_party_default_protocol/audio/game_audio.gd")` 一类引用，再以 `GameAudio` 标注类型。`class_name` 可用于编辑器注册资源，但独立 PCK 不会向已导出的核心自动注册这些全局类型名；不得依赖开发工程的全局脚本缓存解析包内或依赖包的类型。
+独立内容包支持直接使用 `class_name` 注册的类型，例如 `var audio: PartyGameAudio`。导出器从已导入的类型信息中只提取本包实际打包的脚本，生成 script_classes；作者不维护第二份注册表。共享组件、资源和核心数据类型才注册全局名称，名称必须在整个安装中唯一。跨包引用须声明相应依赖，不要引用未安装的可选协议。
+
+启动时先校验全部描述和类型继承关系，再挂载普通 PCK、校验清单与依赖，最后合并核心及所选内容的类型注册信息，完成注册后才加载内容脚本。普通 PCK 仍不覆盖框架资源；只有框架生成的注册表 ZIP 覆盖 `.godot/global_script_class_cache.cfg`。这不需要把整个开发工程的缓存塞入核心。生成文件位于安装目录 `tmp/content_classes/<进程ID>.zip`，每次启动重建，全部实例退出后可以删除该缓存目录。
+
+从旧描述格式升级时，须重新导出核心及所有已安装内容包；旧格式会明确拒绝加载。manifest 格式仍为 2。完成这次升级后，普通小游戏更新仍可单独导出并替换其 content.pck 和 content.pck.json；若改变依赖版本，须一起更新对应依赖。退出游戏后更新并重新启动，保留 config/。新增或修改全局类型后，发布验收应覆盖实际导出的 EXE 创建房间和受影响小游戏入口，不能只依赖编辑器运行。
 
 ## 可视化 Windows 导出
 

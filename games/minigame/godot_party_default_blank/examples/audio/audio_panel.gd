@@ -2,21 +2,18 @@ extends Control
 ## Local audio demonstration. Only explicit Apply persists modified category overrides.
 signal failed(error: Error)
 const DEFAULT_TEXT: Translation = preload("../../i18n/zh_Hans.po")
-const GameAudio = preload("res://games/protocols/godot_party_default_protocol/audio/game_audio.gd")
-const Cue = preload("res://games/protocols/godot_party_default_protocol/audio/audio_cue.gd")
-const Handle = preload("res://games/protocols/godot_party_default_protocol/audio/audio_handle.gd")
-@export var music_a: Cue
-@export var music_b: Cue
-@export var click: Cue
-@export var impact: Cue
-@export var ambience: Cue
-@export var voice_a: Cue
-@export var voice_b: Cue
-var audio: GameAudio
+@export var music_a: PartyAudioCue
+@export var music_b: PartyAudioCue
+@export var click: PartyAudioCue
+@export var impact: PartyAudioCue
+@export var ambience: PartyAudioCue
+@export var voice_a: PartyAudioCue
+@export var voice_b: PartyAudioCue
+var audio: PartyGameAudio
 var _i18n: RefCounted
 var _preferences: PartyConfig
 var _input_allowed: Callable
-var _ambience_handle: Handle
+var _ambience_handle: PartyAudioHandle
 var _counter: float = 0.0
 var _dirty: Dictionary[String, float] = {}
 @onready var _sliders: Dictionary[String, HSlider] = {
@@ -27,7 +24,7 @@ var _dirty: Dictionary[String, float] = {}
 	"dialogue": %DialogueValue, "ambience": %AmbienceValue, "ui": %UiValue}
 
 func _ready() -> void:
-	for cue: Cue in [music_a, music_b, click, impact, ambience, voice_a, voice_b]:
+	for cue: PartyAudioCue in [music_a, music_b, click, impact, ambience, voice_a, voice_b]:
 		assert(cue != null and cue.validate() == OK, "Audio demo requires valid cue resources.")
 	%Toggle.pressed.connect(_toggle)
 	%Close.pressed.connect(close)
@@ -37,7 +34,7 @@ func _ready() -> void:
 		_sliders[channel].value_changed.connect(_volume_changed.bind(channel))
 
 ## Inject only the presentation dependencies; the panel does not own PartyAPI.
-func configure(target: GameAudio, i18n: RefCounted, preferences: PartyConfig, allowed: Callable) -> void:
+func configure(target: PartyGameAudio, i18n: RefCounted, preferences: PartyConfig, allowed: Callable) -> void:
 	audio = target
 	_i18n = i18n
 	_preferences = preferences
@@ -51,8 +48,8 @@ func configure(target: GameAudio, i18n: RefCounted, preferences: PartyConfig, al
 		%Impact: audio.play_sfx.bind(impact), %Burst: _burst,
 		%AmbienceStart: _start_ambience, %AmbienceStop: _stop_ambience,
 		%VoiceReplace: audio.play_dialogue.bind(voice_a),
-		%VoiceQueue: audio.play_dialogue.bind(voice_b, GameAudio.DialogueMode.QUEUE),
-		%VoiceIgnore: audio.play_dialogue.bind(voice_b, GameAudio.DialogueMode.IGNORE_IF_BUSY),
+		%VoiceQueue: audio.play_dialogue.bind(voice_b, PartyGameAudio.DialogueMode.QUEUE),
+		%VoiceIgnore: audio.play_dialogue.bind(voice_b, PartyGameAudio.DialogueMode.IGNORE_IF_BUSY),
 		%VoiceSkip: audio.skip_dialogue, %VoiceClear: audio.stop_dialogue,
 		%PauseAll: audio.set_gameplay_paused.bind(true),
 		%ResumeAll: audio.set_gameplay_paused.bind(false),
@@ -169,8 +166,8 @@ func _reset_volumes() -> void:
 func _subtitle(key: StringName) -> void:
 	%Subtitle.text = _text(key) if not key.is_empty() else ""
 
-func _ended(handle: Handle, _cue: Cue, _category: GameAudio.Category, reason: Handle.EndReason) -> void:
-	%LastEvent.text = _text(&"audio.ended", {"id": handle.id, "reason": Handle.EndReason.keys()[reason]})
+func _ended(handle: PartyAudioHandle, _cue: PartyAudioCue, _category: PartyGameAudio.Category, reason: PartyAudioHandle.EndReason) -> void:
+	%LastEvent.text = _text(&"audio.ended", {"id": handle.id, "reason": PartyAudioHandle.EndReason.keys()[reason]})
 
 func _process(delta: float) -> void:
 	if audio == null:
