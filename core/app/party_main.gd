@@ -613,6 +613,16 @@ func _confirm_action(text: String, action: Callable) -> void:
 	dialog.canceled.connect(dialog.queue_free)
 	dialog.popup_centered()
 
+## Keep package/version failures readable even when the join form and toast are compact.
+func show_connection_issue(message: String) -> void:
+	var column: VBoxContainer = _modal("房间内容与配置检查失败")
+	var details: Label = Label.new()
+	details.text = message
+	details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	column.add_child(details)
+	_dialog.get_ok_button().text = "复制详情"
+	_dialog.confirmed.connect(func() -> void: DisplayServer.clipboard_set(message))
+
 func _notice(message: String) -> void:
 	_notice_text = message
 	%GameStatus.text = message

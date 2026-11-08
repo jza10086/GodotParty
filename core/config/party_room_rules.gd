@@ -72,25 +72,34 @@ static func patch(room: Dictionary, catalog: RefCounted, revision: int, edits: A
 	return {"ok": true, "room": next}
 
 
-static func valid_room(room: Dictionary, catalog: RefCounted) -> bool:
+## Explain rejected room settings at the network boundary, before activating the lobby.
+static func room_issue(room: Dictionary, catalog: RefCounted) -> String:
 	var main: Dictionary = catalog.get_package(room.get("main", ""))
-	if main.get("kind") != "maingame" or not room.get("common") is Dictionary or not room.get("common_overrides") is Dictionary or not room.get("rules_revision") is int:
-		return false
+	if main.get("kind") != "maingame":
+		return "缺少或无效的大游戏：" + str(room.get("main", ""))
+	if not room.get("common") is Dictionary or not room.get("common_overrides") is Dictionary or not room.get("rules_revision") is int:
+		return "房间公共配置或规则版本格式无效"
 	var protocol: String = main.protocol.id
 	if room.get("settings_protocol") != protocol:
-		return false
-	if not Schema.values(catalog.schema(protocol), room.common, "room").ok:
-		return false
-	if not catalog.validate_settings(room.main, room.settings).ok:
-		return false
+		return "配置协议不同（收到：%s；所需：%s）" % [str(room.get("settings_protocol")), protocol]
+	var report: Dictionary = Schema.values(catalog.schema(protocol), room.common, "room")
+	if not report.ok:
+		return "%s 公共配置无效：%s" % [protocol, report.message]
+	report = catalog.validate_settings(room.main, room.settings)
+	if not report.ok:
+		return "%s 配置无效：%s" % [room.main, report.message]
 	for game: Variant in room.children:
-		if not game is String or not room.children[game] is Dictionary or not catalog.validate_settings(game, room.children[game]).ok:
-			return false
+		if not game is String or not room.children[game] is Dictionary:
+			return "小游戏配置格式无效：" + str(game)
+		report = catalog.validate_settings(game, room.children[game])
+		if not report.ok:
+			return "%s 配置无效：%s" % [game, report.message]
 	for game: Variant in room.common_overrides:
 		if not game is String or not room.common_overrides[game] is Dictionary:
-			return false
+			return "游戏公共配置覆盖格式无效：" + str(game)
 		if game != room.main and not room.children.has(game):
-			return false
-		if not Schema.values(catalog.schema(protocol), room.common_overrides[game], "room", false, true).ok:
-			return false
-	return true
+			return "公共配置引用了未启用的游戏：" + game
+		report = Schema.values(catalog.schema(protocol), room.common_overrides[game], "room", false, true)
+		if not report.ok:
+			return "%s 公共配置覆盖无效：%s" % [game, report.message]
+	return ""

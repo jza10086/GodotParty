@@ -318,6 +318,8 @@ func refresh() -> void:
 		_connection_notice = app.connection.status
 		if not _connection_notice.is_empty():
 			show_notice(_connection_notice)
+			if _connection_notice.contains("\n"):
+				app.show_connection_issue(_connection_notice)
 
 ## Reuse the source scene feedback panel for actual connection and validation errors.
 func show_notice(message: String) -> void:

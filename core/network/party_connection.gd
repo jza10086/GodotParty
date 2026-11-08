@@ -98,6 +98,7 @@ func _connection_failed() -> void:
 	leave("连接 %s 失败，请检查地址、UDP 端口和防火墙" % format_endpoint(connection_address, connection_port))
 
 var _acks: Dictionary = {}
+var _ack_deadline: int = 0
 var _pending_profile: Dictionary = {}
 var _profile_deadline: int = 0
 var _connection_deadline: int = 0
@@ -213,6 +214,7 @@ func leave(reason: String = "") -> void:
 	room.clear()
 	recovery.clear()
 	_acks.clear()
+	_ack_deadline = 0
 	_hello_peers.clear()
 	_profile_protocol = ""
 	status = reason
@@ -236,9 +238,9 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 		return
 	if packet.get("wire") != Data.WIRE_VERSION:
 		if host:
-			_send(sender, {"kind": "rejected", "payload": {"message": "联机协议不匹配，需要协议 15"}})
+			_send(sender, {"kind": "rejected", "payload": {"message": "联机协议版本不同（当前版本：%s；房主所需版本：%d）" % [str(packet.get("wire")), Data.WIRE_VERSION]}})
 		elif sender == 1:
-			leave("联机协议不匹配，需要协议 15")
+			leave("联机协议版本不同（当前版本：%d；房主所需版本：%s）" % [Data.WIRE_VERSION, str(packet.get("wire"))])
 		return
 	if not packet.get("kind") is String or not packet.get("session") is String:
 		return
@@ -255,10 +257,14 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 	if not payload is Dictionary:
 		return
 	if kind == "profile_offer" and sender == 1 and not host and room.is_empty():
+		var issue: String = catalog.requirements_issue(payload.get("packages"))
+		if not issue.is_empty():
+			leave("加入房间失败：\n" + issue)
+			return
 		var protocol_id: String = str(payload.get("protocol", ""))
 		var script: Resource = catalog.load_entry(protocol_id)
 		if not script is Script:
-			leave("缺少房间协议，无法提交玩家资料")
+			leave("房间协议入口无法加载：" + protocol_id)
 			return
 		var protocol: RefCounted = script.new()
 		if not protocol.has_method("default_player_config") or not protocol.has_method("validate_player_config"):
@@ -272,6 +278,7 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 		identity["protocol"] = protocol_id
 		identity["name"] = local_profile.name
 		identity["profile"] = local_profile.profile
+		_profile_protocol = protocol_id
 		_send(1, {"kind": "hello", "payload": identity})
 		return
 	if kind == "hello" and host:
@@ -282,15 +289,20 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 		return
 	if sender == 1 and kind == "room" and not host:
 		if not _valid_room_snapshot(payload):
+			leave("加入或更新房间失败：房主发送的房间数据格式无效")
 			return
-		session_id = packet.get("session", "")
+		session_id = packet["session"]
+		var issue: String = _room_content_issue(payload)
+		_send(1, {"kind": "ack", "payload": {"revision": payload.room.revision, "matches": issue.is_empty(), "message": issue}})
+		if not issue.is_empty():
+			status = "房间内容与配置检查失败：\n" + issue
+			# Wait for the host's rejection so its UI also receives the specific reason.
+			_connection_deadline = Time.get_ticks_msec() + 10000
+			return
 		players.assign(payload["players"])
 		room = payload["room"].duplicate(true)
 		_connection_deadline = 0
-		var closure: Dictionary = catalog.resolve(room.get("main", ""), room.get("pools", {}), _appearances())
-		var matches: bool = closure.get("ok", false) and closure.get("packages") == room.get("closure")
-		_send(1, {"kind": "ack", "payload": {"revision": room["revision"], "matches": matches}})
-		status = "" if matches else "内容缺失或版本/指纹不同，不能开始"
+		status = ""
 		changed.emit()
 		_auto_profile()
 		return
@@ -300,22 +312,34 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 		if payload.get("operation") is String and payload.get("data") is Dictionary:
 			control_received.emit(sender, payload["operation"], payload["data"])
 	elif host and kind == "ack":
-		if payload.get("revision") == room.get("revision"):
-			_acks[sender] = payload.get("matches", false)
+		if payload.get("revision") != room.get("revision"):
+			return
+		if not payload.get("matches") is bool or not payload.get("message") is String or payload.matches != payload.message.is_empty():
+			status = _player_peer(sender).name + " 的内容确认回执格式无效"
+			_send(sender, {"kind": "rejected", "payload": {"message": status}})
 			changed.emit()
+			return
+		_acks[sender] = {"matches": payload.matches, "message": payload.message}
+		if not payload.matches:
+			status = _player_peer(sender).name + " 检查未通过：\n" + payload.message
+			_send(sender, {"kind": "rejected", "payload": {"message": "加入或更新房间失败：\n" + payload.message}})
+		changed.emit()
 	elif host and kind == "ready" and room.get("phase") == "lobby":
 		_player_peer(sender)["ready"] = payload.get("ready") == true
-		_publish()
+		_publish(false)
 	elif host and kind == "profile":
 		_profile_request(sender, payload)
 	elif not host and sender == 1 and kind == "profile_reply":
 		_profile_response(payload)
 
 func _accept_hello(sender: int, identity: Dictionary) -> void:
+	if not room.has("closure"):
+		_send(sender, {"kind": "rejected", "payload": {"message": "房主内容不可用：\n" + status}})
+		return
 	# Learn the selected protocol before publishing the player, so their own preferred
 	# color participates in allocation rather than an unrelated default placeholder.
 	if recovery.is_empty() and room.get("phase") == "lobby" and _player_peer(sender).is_empty() and identity.get("protocol") != _protocol_id():
-		_send(sender, {"kind": "profile_offer", "payload": {"protocol": _protocol_id()}})
+		_send(sender, {"kind": "profile_offer", "payload": {"protocol": _protocol_id(), "packages": room["closure"]}})
 		return
 	var reason: String = ""
 	if room.get("phase") != "lobby":
@@ -451,7 +475,7 @@ func set_ready(value: bool) -> void:
 		return
 	if host:
 		_player_peer(1)["ready"] = value
-		_publish()
+		_publish(false)
 	else:
 		_send(1, {"kind": "ready", "payload": {"ready": value}})
 
@@ -482,10 +506,16 @@ func start_reason() -> String:
 	if not recovery.is_empty() and players.size() != recovery["players"].size():
 		return "等待原玩家全部到齐"
 	for player: Dictionary in players:
-		if not player["ready"]:
-			return "等待 " + player["name"] + " 准备"
-		if player["peer_id"] != 1 and not _acks.get(player["peer_id"], false):
-			return "等待 " + player["name"] + " 确认内容与配置"
+		if player.peer_id == 1:
+			continue
+		if not _acks.has(player.peer_id):
+			return "正在检查 " + player.name + " 的内容与配置（等待客户端回执）"
+		var report: Dictionary = _acks[player.peer_id]
+		if not report.matches:
+			return player.name + " 检查未通过：" + report.message
+	for player: Dictionary in players:
+		if not player.ready:
+			return "等待 " + player.name + " 准备"
 	return status if not room.has("closure") else ""
 
 func prepare_restore(record: Dictionary) -> Error:
@@ -496,6 +526,10 @@ func prepare_restore(record: Dictionary) -> Error:
 		return ERR_BUSY
 	if record.get("status") != "active" or not record.get("room") is Dictionary or not record.get("appearances") is Dictionary or not _valid_room_snapshot({"players": record.get("players"), "room": record["room"]}):
 		status = "存档结构无效或会话已结束"
+		return ERR_INVALID_DATA
+	var issue: String = _room_content_issue({"players": record.players, "room": record.room})
+	if not issue.is_empty():
+		status = "无法恢复房间：" + issue
 		return ERR_INVALID_DATA
 	var own: Dictionary = Data.player(record.get("players", []), profiles.identity()["player_id"])
 	if own.is_empty() or own.get("peer_id") != 1:
@@ -654,7 +688,8 @@ func _appearances() -> Array:
 		result.append(player.get("appearance", {}))
 	return result
 
-func _publish() -> void:
+## Player readiness changes do not invalidate already accepted content and settings.
+func _publish(require_confirmation: bool = true) -> void:
 	room["revision"] = room.get("revision", 0) + 1
 	var closure: Dictionary = catalog.resolve(room.get("main", ""), room.get("pools", {}), _appearances())
 	if closure.get("ok", false):
@@ -662,7 +697,9 @@ func _publish() -> void:
 	else:
 		room.erase("closure")
 		status = closure.get("message", "")
-	_acks.clear()
+	if require_confirmation:
+		_acks.clear()
+		_ack_deadline = Time.get_ticks_msec() + 10000
 	for player: Dictionary in players:
 		if player["peer_id"] != 1 and player["connected"]:
 			_send(player["peer_id"], {"kind": "room", "payload": {"players": players, "room": room}})
@@ -739,12 +776,21 @@ func _disconnected(peer: int) -> void:
 func _process(_delta: float) -> void:
 	var now: int = Time.get_ticks_msec()
 	if _connection_deadline > 0 and now > _connection_deadline:
-		leave("连接 %s 或握手超时，请检查 UDP 端口和防火墙" % format_endpoint(connection_address, connection_port))
+		leave(status if not status.is_empty() else "连接 %s 或握手超时，请检查 UDP 端口和防火墙" % format_endpoint(connection_address, connection_port))
 	if not _pending_profile.is_empty() and now > _profile_deadline:
 		var id: String = _pending_profile["id"]
 		_pending_profile.clear()
 		profile_reply.emit(id, false, "提交超时，草稿未应用")
 	if host:
+		if _ack_deadline > 0 and now > _ack_deadline:
+			_ack_deadline = 0
+			var timed_out: bool = false
+			for player: Dictionary in players:
+				if player.peer_id != 1 and not _acks.has(player.peer_id):
+					_acks[player.peer_id] = {"matches": false, "message": "10 秒内未收到内容确认回执，请检查该实例是否暂停或断线"}
+					timed_out = true
+			if timed_out:
+				changed.emit()
 		for peer: int in _hello_peers.keys():
 			if now > _hello_peers[peer]:
 				_hello_peers.erase(peer)
@@ -757,6 +803,26 @@ func control_fits(kind: String, payload: Dictionary) -> bool:
 
 func packet_fits(packet: Dictionary) -> bool:
 	return Data.valid(packet) and var_to_bytes(packet).size() <= MAX_PACKET_BYTES
+
+## Validate installed content before reading its configuration or constructing its room UI.
+func _room_content_issue(payload: Dictionary) -> String:
+	var snapshot: Dictionary = payload.room
+	var issue: String = catalog.requirements_issue(snapshot.get("closure"))
+	if not issue.is_empty():
+		return issue
+	var appearances: Array = []
+	for player: Dictionary in payload.players:
+		appearances.append(player.appearance)
+	var resolved: Dictionary = catalog.resolve(snapshot.main, snapshot.pools, appearances)
+	if not resolved.ok:
+		return resolved.message
+	for id: String in resolved.packages:
+		if not snapshot.closure.has(id):
+			return "依赖声明不同：本机额外需要 %s（版本 %s），房主清单未包含该包" % [id, resolved.packages[id].version]
+	for id: String in snapshot.closure:
+		if not resolved.packages.has(id):
+			return "依赖声明不同：房主要求 %s（版本 %s），本机游戏未声明该依赖" % [id, snapshot.closure[id].version]
+	return Rules.room_issue(snapshot, catalog)
 
 ## Reject malformed room snapshots before assigning typed collections or acknowledging a revision.
 func _valid_room_snapshot(payload: Dictionary) -> bool:
@@ -777,8 +843,6 @@ func _valid_room_snapshot(payload: Dictionary) -> bool:
 			return false
 		if snapshot["channels"][key] == snapshot["channel_count"] and not key.ends_with(":native"):
 			return false
-	if not Rules.valid_room(snapshot, catalog):
-		return false
 	var identities: Dictionary = {}
 	var peers: Dictionary = {}
 	if payload["players"].is_empty() or payload["players"].size() > 8:

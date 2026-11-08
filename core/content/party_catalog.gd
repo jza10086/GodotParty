@@ -241,6 +241,27 @@ func _pool_adapter(main: Dictionary, id: String) -> Dictionary:
 		return {}
 	return adapter(id, main.protocol.id)
 
+## Compare the host's declared package versions before loading room settings or scenes.
+## The requirement list is network input; no file fingerprints are computed.
+func requirements_issue(required: Variant) -> String:
+	if not required is Dictionary or required.is_empty():
+		return "房主未提供有效的内容包清单"
+	var issues: Array[String] = []
+	for id: Variant in required:
+		if not id is String or not Data.identifier(id) or not required[id] is Dictionary or not required[id].get("version") is String or required[id].version.is_empty():
+			return "房主内容包清单格式无效"
+		var needed: String = required[id].version
+		if not packages.has(id):
+			issues.append("缺少内容包 %s（当前版本：未安装；所需版本：%s）" % [id, needed])
+			continue
+		var manifest: Dictionary = packages[id]
+		var label: String = "%s（%s）" % [manifest.get("name", id), id]
+		if not manifest.get("package_version") is String:
+			issues.append("%s 版本声明无效（当前值：%s；所需版本：%s）" % [label, str(manifest.get("package_version")), needed])
+		elif manifest.package_version != needed:
+			issues.append("%s 版本不同（当前版本：%s；所需版本：%s）" % [label, manifest.package_version, needed])
+	return "\n".join(issues)
+
 ## Resolves only the selected adapter dependencies, never all advertised protocols.
 func resolve(main_id: String, pools: Dictionary, appearances: Array = []) -> Dictionary:
 	var main: Dictionary = packages.get(main_id, {})
@@ -259,10 +280,10 @@ func resolve(main_id: String, pools: Dictionary, appearances: Array = []) -> Dic
 			return Data.failure("INVALID_POOL", name)
 		for id: Variant in pools[name]:
 			if not id is String:
-				return Data.failure("INVALID_POOL", name)
+				return Data.failure("INVALID_POOL", "小游戏池 %s 含有无效的包 ID" % name)
 			var chosen: Dictionary = _pool_adapter(main, id)
 			if chosen.is_empty():
-				return Data.failure("INVALID_POOL", name)
+				return Data.failure("INVALID_POOL", "小游戏 %s 不适配本房间协议 %s，或不在大游戏允许列表中" % [id, main.protocol.id])
 			error = _visit(id, selected, visiting)
 			if error.is_empty():
 				error = _dependencies(chosen.get("dependencies", {}), selected, visiting)
@@ -286,7 +307,7 @@ func _visit(id: String, selected: Dictionary, visiting: Dictionary) -> String:
 	if selected.has(id):
 		return ""
 	if not packages.has(id):
-		return "Missing package: " + id
+		return "缺少内容包：" + id
 	visiting[id] = true
 	var manifest: Dictionary = packages[id]
 	var issue: String = _prepare_schema(id)
@@ -297,7 +318,7 @@ func _visit(id: String, selected: Dictionary, visiting: Dictionary) -> String:
 		required.append(manifest["entry"])
 	for relative: String in required:
 		if not ResourceLoader.exists(path(id, relative)):
-			return "Missing declared resource: " + id + "/" + relative
+			return "缺少已声明的资源：" + id + "/" + relative
 	var error: String = _dependencies(manifest.get("dependencies", {}), selected, visiting)
 	if not error.is_empty():
 		return error
@@ -308,7 +329,7 @@ func _visit(id: String, selected: Dictionary, visiting: Dictionary) -> String:
 func _dependencies(dependencies: Dictionary, selected: Dictionary, visiting: Dictionary) -> String:
 	for id: String in dependencies:
 		if packages.get(id, {}).get("package_version") != dependencies[id]:
-			return "Missing/conflicting version: " + id + " " + str(dependencies[id])
+			return "%s 依赖版本不符（当前版本：%s；所需版本：%s）" % [id, packages.get(id, {}).get("package_version", "未安装"), dependencies[id]]
 		var error: String = _visit(id, selected, visiting)
 		if not error.is_empty():
 			return error
