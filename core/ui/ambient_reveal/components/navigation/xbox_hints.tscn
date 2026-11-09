@@ -1,225 +1,105 @@
 [gd_scene format=3]
 
-[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient_theme"]
-[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/xbox_dpad.svg" id="dpad"]
-
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 [ext_resource type="Script" path="res://core/ui/ambient_reveal/components/navigation/xbox_hints.gd" id="logic"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/action_prompt.tscn" id="prompt"]
-[ext_resource type="StyleBox" path="res://core/ui/ambient_reveal/theme/materials/prompt_shoulder.tres" id="shoulder"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_dpad.svg" id="dpad"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_stick_l.svg" id="left_stick"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_stick_r.svg" id="right_stick"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/keyboard_arrows.svg" id="arrows"]
 
 [node name="XboxHints" type="PanelContainer"]
 script = ExtResource("logic")
-theme = ExtResource("ambient_theme")
+theme = ExtResource("theme")
 mouse_filter = 2
 
 [node name="Hints" type="HFlowContainer" parent="."]
-visible = false
-layout_mode = 2
 mouse_filter = 2
-theme_override_constants/h_separation = 32
+theme_override_constants/h_separation = 24
 theme_override_constants/v_separation = 8
+visible = false
 
 [node name="Title" type="Label" parent="Hints"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 38)
+custom_minimum_size = Vector2(0, 40)
 vertical_alignment = 1
-text = "Xbox 手柄"
 theme_type_variation = &"AccentLabel"
+text = "Xbox 手柄"
 
 [node name="Navigation" parent="Hints" instance=ExtResource("prompt")]
-theme = null
-action = &"ui_left"
-description = "十字键 / 左摇杆导航"
-pad_icon = ExtResource("dpad")
-
-[node name="Key" parent="Hints/Navigation" index="0"]
-text = ""
-visible = false
-
-[node name="Symbol" parent="Hints/Navigation" index="1"]
-visible = true
-texture = ExtResource("dpad")
-
-[node name="Action" parent="Hints/Navigation" index="2"]
-text = "十字键 / 左摇杆导航"
+action = &""
+description = "移动焦点"
+gamepad = true
+gamepad_icons = Array[Texture2D]([ExtResource("dpad"), ExtResource("left_stick")])
 
 [node name="RightStick" parent="Hints" instance=ExtResource("prompt")]
-theme = null
 action = &""
 description = "移动光标"
-pad_caption = "右摇杆"
-
-[node name="Key" parent="Hints/RightStick" index="0"]
-text = "右摇杆"
-theme_type_variation = &"AccentLabel"
-custom_minimum_size = Vector2(0, 0)
-theme_override_styles/normal = null
-theme_override_colors/font_color = Color(0.96, 0.97, 0.99, 1)
-
-[node name="Action" parent="Hints/RightStick" index="2"]
-text = "移动光标"
-theme_type_variation = &"AccentLabel"
+gamepad = true
+gamepad_icons = Array[Texture2D]([ExtResource("right_stick")])
 
 [node name="Accept" parent="Hints" instance=ExtResource("prompt")]
-theme = null
 action = &"ui_accept"
 description = "确认"
-
-[node name="Key" parent="Hints/Accept" index="0"]
-text = "A"
-theme_override_colors/font_color = Color(0.63, 0.87, 0.58, 1)
-
-[node name="Action" parent="Hints/Accept" index="2"]
-text = "确认"
+gamepad = true
 
 [node name="Back" parent="Hints" instance=ExtResource("prompt")]
-theme = null
 action = &"ui_cancel"
 description = "返回"
-
-[node name="Key" parent="Hints/Back" index="0"]
-text = "B"
-theme_override_colors/font_color = Color(1, 0.58, 0.55, 1)
-
-[node name="Action" parent="Hints/Back" index="2"]
-text = "返回"
+gamepad = true
 
 [node name="Context" parent="Hints" instance=ExtResource("prompt")]
-theme = null
 action = &"ambient_context_menu"
 description = "上下文菜单"
-
-[node name="Key" parent="Hints/Context" index="0"]
-text = "X"
-theme_override_colors/font_color = Color(0.51, 0.76, 1, 1)
-
-[node name="Action" parent="Hints/Context" index="2"]
-text = "上下文菜单"
+gamepad = true
 
 [node name="Home" parent="Hints" instance=ExtResource("prompt")]
-theme = null
 action = &"ambient_home"
-description = "返回首页"
-
-[node name="Key" parent="Hints/Home" index="0"]
-text = "Y"
-theme_override_colors/font_color = Color(1, 0.84, 0.42, 1)
-
-[node name="Action" parent="Hints/Home" index="2"]
-text = "返回首页"
+description = "首个选项"
+gamepad = true
 
 [node name="Previous" parent="Hints" instance=ExtResource("prompt")]
-theme = null
 action = &"ambient_previous_tab"
 description = "上一页"
-
-[node name="Key" parent="Hints/Previous" index="0"]
-text = "LB"
-custom_minimum_size = Vector2(50, 32)
-theme_override_styles/normal = ExtResource("shoulder")
-theme_override_colors/font_color = Color(0.84, 0.91, 0.97, 1)
-
-[node name="Action" parent="Hints/Previous" index="2"]
-text = "上一页"
+gamepad = true
 
 [node name="Next" parent="Hints" instance=ExtResource("prompt")]
-theme = null
 action = &"ambient_next_tab"
 description = "下一页"
-
-[node name="Key" parent="Hints/Next" index="0"]
-text = "RB"
-custom_minimum_size = Vector2(50, 32)
-theme_override_styles/normal = ExtResource("shoulder")
-theme_override_colors/font_color = Color(0.84, 0.91, 0.97, 1)
-
-[node name="Action" parent="Hints/Next" index="2"]
-text = "下一页"
+gamepad = true
 
 [node name="KeyboardHints" type="HFlowContainer" parent="."]
-layout_mode = 2
 mouse_filter = 2
-theme_override_constants/h_separation = 32
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 8
 
 [node name="Title" type="Label" parent="KeyboardHints"]
-custom_minimum_size = Vector2(0, 38)
+custom_minimum_size = Vector2(0, 40)
 vertical_alignment = 1
 theme_type_variation = &"AccentLabel"
 text = "键盘与鼠标"
 
 [node name="Navigate" parent="KeyboardHints" instance=ExtResource("prompt")]
-theme = null
-action = &"ui_left"
+action = &""
 description = "移动焦点"
 gamepad = false
-keyboard_caption = "方向键"
-
-[node name="Key" parent="KeyboardHints/Navigate" index="0"]
-text = "方向键"
-custom_minimum_size = Vector2(0, 0)
-theme_override_styles/normal = null
-theme_override_colors/font_color = Color(0.96, 0.97, 0.99, 1)
-
-[node name="Action" parent="KeyboardHints/Navigate" index="2"]
-text = "移动焦点"
+keyboard_icons = Array[Texture2D]([ExtResource("arrows")])
 
 [node name="Next" parent="KeyboardHints" instance=ExtResource("prompt")]
-theme = null
 action = &"ui_focus_next"
 description = "切换焦点"
 gamepad = false
-keyboard_caption = "Tab / Shift+Tab"
 
-[node name="Key" parent="KeyboardHints/Next" index="0"]
-text = "Tab / Shift+Tab"
-custom_minimum_size = Vector2(0, 0)
-theme_override_styles/normal = null
-theme_override_colors/font_color = Color(0.96, 0.97, 0.99, 1)
-
-[node name="Action" parent="KeyboardHints/Next" index="2"]
-text = "切换焦点"
+[node name="Previous" parent="KeyboardHints" instance=ExtResource("prompt")]
+action = &"ui_focus_prev"
+description = "反向切换焦点"
+gamepad = false
 
 [node name="Accept" parent="KeyboardHints" instance=ExtResource("prompt")]
-theme = null
 action = &"ui_accept"
 description = "确认"
 gamepad = false
-keyboard_caption = "Enter / 空格"
-
-[node name="Key" parent="KeyboardHints/Accept" index="0"]
-text = "Enter / 空格"
-custom_minimum_size = Vector2(0, 0)
-theme_override_styles/normal = null
-theme_override_colors/font_color = Color(0.96, 0.97, 0.99, 1)
-
-[node name="Action" parent="KeyboardHints/Accept" index="2"]
-text = "确认"
 
 [node name="Back" parent="KeyboardHints" instance=ExtResource("prompt")]
-theme = null
 action = &"ui_cancel"
 description = "返回"
 gamepad = false
-keyboard_caption = "Esc"
-
-[node name="Key" parent="KeyboardHints/Back" index="0"]
-text = "Esc"
-custom_minimum_size = Vector2(0, 0)
-theme_override_styles/normal = null
-theme_override_colors/font_color = Color(0.96, 0.97, 0.99, 1)
-
-[node name="Action" parent="KeyboardHints/Back" index="2"]
-text = "返回"
-
-[editable path="Hints/Navigation"]
-[editable path="Hints/RightStick"]
-[editable path="Hints/Accept"]
-[editable path="Hints/Back"]
-[editable path="Hints/Context"]
-[editable path="Hints/Home"]
-[editable path="Hints/Previous"]
-[editable path="Hints/Next"]
-[editable path="KeyboardHints/Navigate"]
-[editable path="KeyboardHints/Next"]
-[editable path="KeyboardHints/Accept"]
-[editable path="KeyboardHints/Back"]

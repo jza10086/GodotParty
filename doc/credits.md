@@ -127,3 +127,5 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 候选背景音乐：Richer，Alex McCulloch / Pro Sensory（CC0 1.0） https://opengameart.org/content/richer
 候选背景音乐：Happier Tune，Gena Sealov（CC0 1.0） https://opengameart.org/content/happier-tune
 候选背景音乐：Chill lofi inspired，omfgdude（CC0 1.0） https://opengameart.org/content/chill-lofi-inspired
+
+输入提示图标：Kenney Input Prompts 1.5A，键鼠与 Xbox SVG（CC0 1.0，许可证位于 core/ui/ambient_reveal/icons/kenney_input/License.txt） https://kenney.nl/assets/input-prompts

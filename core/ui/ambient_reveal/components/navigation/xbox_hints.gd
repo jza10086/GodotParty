@@ -5,12 +5,15 @@ func set_mode(pad: bool, cursor: bool) -> void:
 	$Hints.visible = pad
 	$KeyboardHints.visible = not pad
 	$Hints/Title.text = "Xbox 光标" if cursor else "Xbox 手柄"
-	$Hints/Accept.pad_caption = "A" if cursor else ""
+	var cursor_icons: Array[Texture2D] = []
+	if cursor:
+		cursor_icons.append(preload("res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_button_a.svg"))
+	$Hints/Accept.gamepad_icons = cursor_icons
 	for prompt in [$Hints/Accept, $Hints/Context, $Hints/Home, $Hints/Previous, $Hints/Next]:
 		prompt.set_gamepad(true)
 	$Hints/Context.description = "右键" if cursor else "上下文菜单"
 	set_navigation("左键 / 拖动" if cursor else "确认",
-		"切回焦点导航" if cursor else "十字键 / 左摇杆导航", "返回")
+		"切回焦点导航" if cursor else "移动焦点", "返回")
 
 
 func set_navigation(accept: String, direction: String, back: String) -> void:
@@ -21,7 +24,7 @@ func set_navigation(accept: String, direction: String, back: String) -> void:
 ## Only show shortcuts available on the foreground page.
 func set_context(fold: String, on_header: bool, tabs: bool, back_to_tabs: bool, editing: bool, keyboard: bool, cursor: bool, field: Control) -> void:
 	var accept: String = "左键 / 拖动" if cursor else "确认"
-	var navigation: String = "切回焦点导航" if cursor else "十字键 / 左摇杆导航"
+	var navigation: String = "切回焦点导航" if cursor else "移动焦点"
 	if editing:
 		accept = "完成调节"
 		navigation = "左右调节" if field is HSlider else "上下调节"

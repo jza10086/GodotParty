@@ -61,7 +61,6 @@ func _ready() -> void:
 	for prompt: Control in %ReadyHints.get_node("KeyboardHints").get_children():
 		prompt.visible = prompt == _input_hint
 	_input_hint.description = "准备就绪"
-	_input_hint.keyboard_caption = _accept_hint()
 	_input_hint.set_gamepad(false)
 	var art: PreviewArt = PreviewArt.new()
 	art.name = "OriginalPreviewArt"
@@ -159,7 +158,7 @@ func _render_state() -> void:
 		_rows_hash = new_hash
 		_render_roster()
 	_input_hint.modulate.a = 1.0 if _can_submit_ready() or _countdown >= 0 else 0.45
-	_input_hint.get_node("Key").visible = _countdown < 0
+	_input_hint.get_node("Icons").visible = _countdown < 0
 	if _countdown >= 0:
 		_input_hint.description = "%d 秒后开始" % maxi(0, _countdown)
 	elif _can_submit_ready() and _status.begins_with("准备消息发送失败"):
@@ -267,13 +266,3 @@ func _label(parent: Node, text: String, font_size: int, color: Color) -> Label:
 	label.add_theme_color_override("font_color", color)
 	parent.add_child(label)
 	return label
-
-func _accept_hint() -> String:
-	var keys: PackedStringArray = []
-	for event: InputEvent in InputMap.action_get_events(&"ui_accept"):
-		if event is InputEventKey:
-			var code: Key = event.physical_keycode if event.physical_keycode != KEY_NONE else event.keycode
-			var name_value: String = "空格" if code == KEY_SPACE else ("Enter" if code in [KEY_ENTER, KEY_KP_ENTER] else OS.get_keycode_string(code))
-			if not name_value.is_empty() and not name_value in keys:
-				keys.append(name_value)
-	return " / ".join(keys)

@@ -191,7 +191,7 @@
 - 音游 8 个 Kenney 候选虽然已从选择目录移除，原始文件仍在，按 S02/S05/S06 登记；191 个 FluidR3 WAV 与 12 组 Virtuosity 采样分别记录。
 - 竞拍大师旧 SVG 为 40 张，ImageGen PNG 为 100 张；没有把目录中的其他 Resource 文件混算为图片。
 - `addons/millionaire_board_editor/` 当前为空目录，没有可登记的第三方包；`godot_party_tools` 为本项目工具，不是外部下载插件。
-- GodotPartyUI 上游现在包含 Kenney Input Prompts，但本工程当前扫描未见该包的输入图标资产；不因为同源工程拥有它就列为已导入。
+- 本工程已于 2026-11-09 从 Kenney 官方下载 Input Prompts 1.5A，导入 257 个键鼠和 99 个 Xbox SVG，许可证为 CC0 1.0；来源和原始许可证位于 core/ui/ambient_reveal/icons/kenney_input/。
 - `doc/api/credits.md` 的旧 `ui/LICENSE.txt` 路径与当前布局不符；本表使用实际 `core/ui/ambient_reveal/fonts/SOURCE-HAN-SANS-LICENSE.txt`。
 - 光标的 LighTech RE、LighTech Editor、Cursor Concept 3，及 BidKing、Mario Kart 等仅有视觉／玩法参考记录；未找到其原始资产文件，不将参考作品登记成已使用的下载包。实际重绘归 G 系列；ShellShock 截图和 Atomic Realm 文件因确实在库而单独登记。
 
@@ -206,3 +206,9 @@
 | 资产 | 作者 | 来源与位置 | 许可与范围 |
 | --- | --- | --- | --- |
 | 29 个 BGM 音频文件／版本及 1 个原始 ZIP | 逐曲作者见 [BGM 清单](bgm_candidates.md) | OpenGameArt 曲目发布页；`core/assets/audio/bgm_candidates/`；[逐曲记录](../core/assets/audio/bgm_candidates/catalog.json) | CC0 1.0，免费商用／修改／再分发；仅候选库，未接入小游戏。逐曲来源和许可旁档随库保留，不属于项目原创作品。 |
+
+## 后续补充 输入提示图标
+
+| 资产 | 作者 | 来源与位置 | 许可与范围 |
+| --- | --- | --- | --- |
+| Input Prompts 1.5A，257 个键鼠 SVG、99 个 Xbox SVG | Kenney | [官方页面](https://kenney.nl/assets/input-prompts)；core/ui/ambient_reveal/icons/kenney_input/ | CC0 1.0，原始 License.txt 随资源保留，属于第三方资产。 |
