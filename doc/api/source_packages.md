@@ -12,7 +12,7 @@
 
 若同 ID 同时有源码和 PCK，必须在内容包来源中明确选择，或使用 --party-source=<id>:source/pck 后重启。--party-pack-dir=<安装根目录> 支持隔离验收，里面仍使用三个分类目录。源码与 PCK 保持相同 res://games 虚拟路径；用户局部配置不放入 PCK。
 
-dependencies 是包 ID 到精确 package_version 的映射。小游戏 adapters 的依赖只在选中接入时激活。公开资源通过 package_id/resource_key 引用。不要预加载未选协议或依赖另一份 core；普通内容只引用公开 core/api、core/ui 契约。内容使用普通 Godot 脚本能力，加载检查不是安全沙箱。
+dependencies 是包 ID 到精确 package_version 的映射。升级协议时，须检查全部已安装主游戏、小游戏及适配器的依赖；确认调用契约后同步依赖值，并递增修改过的内容包自身版本，再成套导出。不要只改导出描述文件的版本号，因为实际清单在 PCK 内。小游戏 adapters 的依赖只在选中接入时激活。公开资源通过 package_id/resource_key 引用。不要预加载未选协议或依赖另一份 core；普通内容只引用公开 core/api、core/ui 契约。内容使用普通 Godot 脚本能力，加载检查不是安全沙箱。
 
 独立内容包支持直接使用 `class_name` 注册的类型，例如 `var audio: PartyGameAudio`。导出器从已导入的类型信息中只提取本包实际打包的脚本，生成 script_classes；作者不维护第二份注册表。共享组件、资源和核心数据类型才注册全局名称，名称必须在整个安装中唯一。跨包引用须声明相应依赖，不要引用未安装的可选协议。
 
