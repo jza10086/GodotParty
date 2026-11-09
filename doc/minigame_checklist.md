@@ -1,54 +1,44 @@
 # 当前小游戏清单
 
-更新日期：2026-11-03。范围：`games/minigame/` 下当前登记的全部 22 个内容包，包含 21 个游戏和 1 个内含设置 UI 测试的空白模板。旧原型备份不重复计数；小游戏轮换属于大游戏，不计入本表。
+更新日期：2026-11-09。按 `games/minigame/` 下当前 `manifest.json` 核对，共 27 个小游戏包（含空白小游戏模板）。名称省略统一的 `GodotPartyDefault · ` 前缀；包名称使用完整包 ID。
 
-完成度按已实现的阶段描述，不使用百分比。“已接入”表示有框架入口和结果提交实现，不代表已经完成视觉、手感、外网及发布验收。下一阶段目标是建议待办，不表示本次已实施或已批准新增多人玩法。
+完成度、备注留空，由人工填写。完成度只能填写以下四种状态之一：
 
-人数以当前 manifest 和已知模式限制为准；最终可开局人数还须取协议、大游戏、所有已选小游戏及其配置的交集。未开放包中的人数只是声明范围，不能据此开局。
+| 完成度 | 参考标准 |
+| --- | --- |
+| 完整可玩 | 小游戏完整可玩，仅需后续打磨。 |
+| 初步可玩 | 可以联机正常游戏，音效、UI 等次要系统尚未实现。 |
+| 尚未可玩 | 仅实现初步原型，无法接入联机框架。 |
+| 不可玩 | 几乎空白，仅占位。 |
 
-## 已开放的游戏
+人数取自包声明，不代表已通过开局或联机验收；实际可开局人数还受模式配置、协议与大游戏的人数交集限制。
 
-| 名称 | 当前人数 | 完成度 | 下一阶段目标 | 备注 |
+| 名称 | 包名称 | 声明人数 | 完成度 | 备注 |
 | --- | --- | --- | --- | --- |
-| [竞拍大师](../games/minigame/godot_party_default_auction_master/README.md) | 2–8 | 已接入；密封报价、私密鉴定、成交与金币排名闭环；100 件物资、7 档品质、tag 羁绊已实现。 | 人工走完多仓竞拍；审阅低价物资与高价珍品的出货、估值和羁绊平衡；检查大件布局及私密信息显示。 | 独立子仓 AuctionMaster；物资审阅表为 `doc/auction_inventory.html`；各仓羁绊独立统计。 |
-| [3d桌球](../games/minigame/godot_party_default_billiards/README.md) | 2–8 | 已接入；主机连续碰撞、滑动/滚动、高低杆与左右塞、实体袋角、九球分桌及排名已实现。 | 重点人工验收杆法与袋口手感、3/5/7 人分桌、犯规与 9 号球重摆、跨桌观战及完整赛事。 | 独立子仓 Billiards；采用已确认的简化九球规则，无轮盘淘汰；断线或赛事超时取消，不猜测名次。 |
-| [水果武士](../games/minigame/godot_party_default_fruit_samurai/README.md) | 2–8 | 已接入；各自独立切水果，实时排行榜和统一结算已实现。 | 验收切割、连击、炸弹、个人提前结束及观战榜单；完善操作反馈。 | 独立子仓 FruitSamurai；玩家互不影响；“独立玩法”不等于当前入口支持 1 人，manifest 仍为 2–8 人。 |
-| [连连看](../games/minigame/godot_party_default_matching_game/README.md) | 1–8 | 已接入；全幅透视棋盘、贴图薄棋子、轻抬选中、射线点选、空间连线、主机判分、私密提示、无解重排和玩家鼠标显示已实现。 | 人工验收多人争抢、键鼠手感与各分辨率视觉效果。 | 独立子仓 MatchingGame；单人限时清盘，多人共享棋盘；鼠标按协议玩家颜色区分，不参与得分裁定。 |
-| [云间跃行](../games/minigame/godot_party_default_platformer/README.md) | 2–8 | 已接入；默认 World 1-1、本地关卡模拟、成绩汇总与结算可用；与此前同场竞速目标仍有差距。 | 先验收现有完整关卡与分数结算；后续若启动多人改造，再实现远端角色显示、独立拾取和默认 50% 透明度，并确认竞速排名规则。 | 独立子仓 Platformer；当前按得分排名，不同步逐帧角色位置；不能视为已完成同场竞速。 |
-| [心理博弈](../games/minigame/godot_party_default_psychological_party/README.md) | 2–8 | 已接入；单循环配对、合作/背叛、私密选择、收益排名及搭档语音路由已实现。 | 验收奇数人数轮空、超时、断线及末轮结算；人工检查真实麦克风与每轮搭档路由。 | 独立子仓 PsychologicalPartyGame；语音路由接口成功不代表真实设备听感通过。 |
-| [贪吃蛇](../games/minigame/godot_party_default_snake_game/README.md) | 2–8 | 已接入；独立棋盘、实时榜单、一条生命、限时与统一排名闭环。 | 验收转向手感、三档速度和提前死亡后的等待；检查同分及全员结束。 | 独立子仓 SnakeGame；客户端模拟、主机校验成绩边界；不属于共享棋盘对抗。 |
-| [星潮](../games/minigame/godot_party_default_star_wave/README.md) | 个人 2–8；团队 2/4/6/8 | 已接入；个人共同战场计分、团队双战场生存赛、主机模拟和排名已实现。 | 人工验收弹幕响应、死亡观战、Boss 积分归属和双战场切换；调整个人计分与团队生存平衡。 | 独立子仓 StarWave；个人击杀加分、受伤扣分、Boss 有效伤害加分；团队按生存时间排名，无友伤。 |
-| [阿瓦隆／身份派对](../games/minigame/godot_party_default_identity_party/README.md) | 当前 5–8 | 阿瓦隆已接入；身份过滤、提名、两类投票、刺杀与阵营结算已实现。狼人杀源码保留，未开放。 | 验收各身份看到的信息、投票揭晓、五次拒绝与刺杀结算；核对 5–8 人布局。狼人杀需另行安排开放验收。 | 独立子仓 IdentityTemplate；一个包计数一次；游戏内讨论使用外部语音，不能把狼人杀算作当前可选模式。 |
-| [霓虹节拍](../games/minigame/gp_rhythm_game/README.md) | 1–8 | 已接入；本地音频时钟判定、实时准确率榜、曲终结果提交；另有原生制谱与校准工具。 | 验收整曲、长按、设备延迟补偿和曲终等待；后续扩展正式房间的谱面选择与公开可分发曲库。 | 独立子仓 MusicGame；正式入口默认原创双轨长按练习曲；两组本地限定 Bad Apple 曲目不随公开仓库发布。 |
-| [拾光拼图](../games/minigame/godot_party_default_jigsaw_puzzle/README.md) | 1–8 | 最新代码已有 3D 多人比赛、主机动作/快照、连续小回合及总分提交；最新框架完整流程待验收。 | 优先核对准备页、局内回合与协议结算页的衔接；验收 1/4/8 人、首位完成后的倒计时、全员超时与断线；更新落后的 README。 | 独立子仓 JigsawPuzzle；当前为外围各自拼图、中央展示记忆答案，默认 3 轮；包装入口直接启动比赛并提交结果，未使用通用 `round_pages.gd`，不能套用旧单人接入结论。 |
-| [方向密码](../games/minigame/direction_password/README.md) | 1 | 单人玩法已接入；六轮结果、得分与正确率进入框架结算。 | 验收连续六轮、错误输入、超时与结果显示；整理规则说明和本地输入设置。 | 独立子仓 MemoryGame；未新增多人玩法，当前池按 1 人限制。 |
-| [极速追逐](../games/minigame/godot_party_default_lighthouse_isles/README.md) | 1 | 单人玩法已接入；检查点、完赛用时、坠落数和个人纪录可提交/保存。 | 验收整条路线、检查点复位、坠落与终点触发；调整相机与跳跃手感。 | 独立子仓 3DPlatformer；保持单人流程，未实现远端角色或竞速同步。 |
-| [IRON RANGE · 坦克训练场](../games/minigame/godot_party_default_tank_range/README.md) | 1 | 单人玩法已接入；目标全部击毁后提交用时和命中数。 | 验收六个目标、最后一发计数、炮弹碰撞和镜头；明确成绩面板的指标含义。 | 独立子仓 3DTankBattle；是单人训练场，与“铁鹰防线”是不同游戏。 |
-| [山脊竞速](../games/minigame/godot_party_default_car_racing/README.md) | 1 | 单人玩法已接入；三圈完赛计时、框架结算及个人纪录已实现。 | 验收检查点顺序、圈数、偏离赛道与重置；检查车辆操控和相机。 | 独立子仓 CarRacing；未实现多车联网比赛。 |
-| [COASTLINE · 海岸飞行](../games/minigame/godot_party_default_flight/README.md) | 1 | 单人玩法已接入；成功或坠毁可提交飞行结果与航标数量。 | 验收完整航线、航标穿越、坠毁终止与返回轮换；调整飞行控制和状态提示。 | 独立子仓 FlightGame；当前结算展示结果和经过航标数，未定义多人对抗规则。 |
-| [圆角俄罗斯方块](../games/minigame/godot_party_default_russian_block/README.md) | 1 | 经典单人模式已接入；结束后提交得分、消行数及个人纪录。 | 验收旋转、落块、消行、堆顶结束和长局稳定性；整理难度与输入说明。 | 独立子仓 RussianBlock；原型的其他模式未作为正式框架玩法开放。 |
-| [海战棋](../games/minigame/godot_party_default_battleship_chess/README.md) | 1–8 | 已接入；单人交替操作两队测试，多人随机均分两队、舰船随机均分给队员各自布阵、轮流按票数权重抽签轰炸及队伍排名。 | 跨机器联机、布阵操作及投票节奏待人工验收。 | 独立子仓 BattleshipChess；主机过滤舰位，断线移除选票，整队退出判负。 |
-| [炮火争锋](../games/minigame/godot_party_default_artillery_game/README.md) | 1–8，团队仅偶数 | 混战、团队对抗、单人试射；主机权威弹道与地形、16 种弹药、黑洞与传送等战场事件。 | 跨机器联机与手感平衡待人工验收。 | ArtilleryGame；单人测试须在房间规则选择。 |
-
-## 已登记、尚未开放的游戏
-
-这些包均为 `playable: false`、`adapters: []`；当前框架入口只显示接入状态，原型源码保留在各包 `prototype/` 下。下一步开放多人玩法需要单独的改造任务，不能仅修改可玩标志。
-
-| 名称 | 声明人数 | 完成度 | 下一阶段目标 | 备注 |
-| --- | --- | --- | --- | --- |
-| [铁鹰防线](../games/minigame/godot_party_default_tank_battle/README.md) | 2–8，未开放 | 原型已纳入独立子仓并登记框架入口；尚无可开局的协议适配。 | 明确队伍、胜负和排名契约；后续接入在线玩家、主机权威状态、加载及结果提交，再开放。 | 独立子仓 TankBattle；不能把原型的多人逻辑等同于已适配派对房间。 |
-| [纸牌会客厅](../games/minigame/godot_party_default_card_game/README.md) | 1–8，未开放 | 已使用上游 GodotCardGame 替换旧本地纸牌，原型与状态入口已登记。 | 按已确认方向优先规划 UNO／彩序：对接座次、主机权威操作、私密手牌和 `?` 牌显示，完成后再开放。 | 独立子仓 GodotCardGame；上游本地座次、人机或共用设备逻辑不等于联网支持；21 点与唬牌暂不接入。 |
-
-## 模板与开发辅助包
-
-| 名称 | 当前人数 | 完成度 | 下一阶段目标 | 备注 |
-| --- | --- | --- | --- | --- |
-| [空白小游戏](../games/minigame/godot_party_default_blank/README.md) | 1–8 | 已加入小游戏池；准备、全员点击“结束游戏”、先按先排名及协议结算闭环；已合并设置 UI 控件、继承/覆盖、保存与中英样例，并接入协议多人鼠标显示。 | 维护生命周期与设置样例；复制为实际游戏时删除无关样例字段。 | 包 ID：`godot_party_default_blank`；随主仓管理；房主按首次收到的有效点击排序，退出者不参加排名；原框架测试小游戏已删除。 |
-
-## 统计与核对范围
-
-- 游戏共 21 个：19 个声明可玩，其中 13 个支持多人（包含最新拾光拼图），6 个仅单人；另 2 个仅登记、未开放。
-- 加上内含设置 UI 测试的空白模板，共 22 个当前内容包。21 个游戏由各自 Git 子仓管理，空白模板随主仓管理。
-- 本表基于当前工作区的 manifest、入口、配置和说明核对；包含连连看 3D 改造与已更新的拾光拼图子仓；各包运行验收范围以对应任务记录为准。
-- 初次编写清单仅做文档与静态核对；各包状态不代表本次逐个运行验收。旧接入验证不能覆盖此后修改；尤其拾光拼图的最新多人入口须重新验收。
-- 部分原型 README 仍保留旧启动方法或已归档测试路径；它们不是当前可执行验收清单。正式游戏从主工程大厅及小游戏轮换进入，新增测试统一放在主项目 `tmp/test/`。
+| [方向密码](../games/minigame/direction_password/manifest.json) | `direction_password` | 1 |  |  |
+| [3D 2048](../games/minigame/godot_party_default_2048/manifest.json) | `godot_party_default_2048` | 1–8 |  |  |
+| [3D 国际象棋](../games/minigame/godot_party_default_3d_chess/manifest.json) | `godot_party_default_3d_chess` | 2–8 |  |  |
+| [炮火争锋](../games/minigame/godot_party_default_artillery_game/manifest.json) | `godot_party_default_artillery_game` | 1–8 |  |  |
+| [竞拍大师](../games/minigame/godot_party_default_auction_master/manifest.json) | `godot_party_default_auction_master` | 1–8 |  |  |
+| [海战棋](../games/minigame/godot_party_default_battleship_chess/manifest.json) | `godot_party_default_battleship_chess` | 1–8 |  |  |
+| [3d桌球](../games/minigame/godot_party_default_billiards/manifest.json) | `godot_party_default_billiards` | 2–8 |  |  |
+| [空白小游戏](../games/minigame/godot_party_default_blank/manifest.json) | `godot_party_default_blank` | 1–8 |  |  |
+| [山脊竞速](../games/minigame/godot_party_default_car_racing/manifest.json) | `godot_party_default_car_racing` | 1 |  |  |
+| [纸牌会客厅](../games/minigame/godot_party_default_card_game/manifest.json) | `godot_party_default_card_game` | 1–8 |  |  |
+| [COASTLINE · 海岸飞行](../games/minigame/godot_party_default_flight/manifest.json) | `godot_party_default_flight` | 1 |  |  |
+| [水果武士](../games/minigame/godot_party_default_fruit_samurai/manifest.json) | `godot_party_default_fruit_samurai` | 1–8 |  |  |
+| [阿瓦隆](../games/minigame/godot_party_default_identity_party/manifest.json) | `godot_party_default_identity_party` | 5–8 |  |  |
+| [记忆拼图](../games/minigame/godot_party_default_jigsaw_puzzle/manifest.json) | `godot_party_default_jigsaw_puzzle` | 1–8 |  |  |
+| [极速追逐](../games/minigame/godot_party_default_lighthouse_isles/manifest.json) | `godot_party_default_lighthouse_isles` | 1 |  |  |
+| [连连看](../games/minigame/godot_party_default_matching_game/manifest.json) | `godot_party_default_matching_game` | 1–8 |  |  |
+| [合成大西八](../games/minigame/godot_party_default_merge_big_ssibal/manifest.json) | `godot_party_default_merge_big_ssibal` | 1–8 |  |  |
+| [蛇蛇大作战](../games/minigame/godot_party_default_multi_snake_game/manifest.json) | `godot_party_default_multi_snake_game` | 1–8 |  |  |
+| [云间跃行](../games/minigame/godot_party_default_platformer/manifest.json) | `godot_party_default_platformer` | 2–8 |  |  |
+| [心理博弈](../games/minigame/godot_party_default_psychological_party/manifest.json) | `godot_party_default_psychological_party` | 2–8 |  |  |
+| [圆角俄罗斯方块](../games/minigame/godot_party_default_russian_block/manifest.json) | `godot_party_default_russian_block` | 1 |  |  |
+| [贪吃蛇](../games/minigame/godot_party_default_snake_game/manifest.json) | `godot_party_default_snake_game` | 1–8 |  |  |
+| [星潮](../games/minigame/godot_party_default_star_wave/manifest.json) | `godot_party_default_star_wave` | 1–8 |  |  |
+| [铁鹰防线](../games/minigame/godot_party_default_tank_battle/manifest.json) | `godot_party_default_tank_battle` | 2–8 |  |  |
+| [雷霆战争](../games/minigame/godot_party_default_tank_range/manifest.json) | `godot_party_default_tank_range` | 1–8 |  |  |
+| [西部牛仔对决](../games/minigame/godot_party_default_west_showdown/manifest.json) | `godot_party_default_west_showdown` | 2–8 |  |  |
+| [霓虹节拍](../games/minigame/gp_rhythm_game/manifest.json) | `gp_rhythm_game` | 1–8 |  |  |
