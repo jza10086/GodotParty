@@ -138,3 +138,5 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 音效：雷霆战争发动机 Engine-loop heavy vehicle/tank，Nayckron／qubodup（CC BY 3.0；单声道转换、循环交叠；许可 https://creativecommons.org/licenses/by/3.0/） https://opengameart.org/content/engine-loop-heavy-vehicletank
 音效：雷霆战争炮击与爆炸 Explosions，EZduzziteh（CC0 1.0；混音、剪辑） https://opengameart.org/content/explosions-4
 音效：雷霆战争机械、履带与导弹 Sci-Fi Sounds 1.0，Kenney（CC0 1.0；逐文件修改见小游戏 assets/audio/SOURCES.md） https://kenney.nl/assets/sci-fi-sounds https://opengameart.org/content/sci-fi-sounds
+
+音效：竞拍大师揭示 Equipment Clicks II，LFA（CC0 1.0；剪辑、提亮、高通及短机械叠层；逐文件映射见小游戏 assets/audio/SOURCES.md） https://opengameart.org/content/equipment-clicks-ii
