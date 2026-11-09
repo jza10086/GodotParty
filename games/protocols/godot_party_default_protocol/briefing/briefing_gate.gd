@@ -25,6 +25,9 @@ var _received_revision: int = -1
 var _refresh_in: float = 0.0
 var _last_count: int = -1
 var _notice: String = ""
+var _choice_options: Array[String] = []
+var _choices: Dictionary[String, String] = {}
+var _local_choice: String = ""
 
 ## The game supplies its content; the protocol owns no game-ID table or catalog access.
 static func read_content(manifest_path: String, context: PartyAPI) -> Dictionary:
@@ -48,6 +51,12 @@ static func read_content(manifest_path: String, context: PartyAPI) -> Dictionary
 func configure(context: PartyAPI, content: Dictionary) -> void:
 	api = context
 	_content = content.duplicate(true)
+	_choice_options.assign(content.get("choice_options", []))
+	if not _choice_options.is_empty():
+		_local_choice = content.choice_default
+		assert(_local_choice in _choice_options, "Briefing default choice must be in its options")
+		for player: Dictionary in api.get_players():
+			_choices[player.player_id] = _local_choice
 	api.net.message_received.connect(_message)
 	api.players_changed.connect(_players_changed)
 	api.on_close(stop)
@@ -62,6 +71,7 @@ func _ready() -> void:
 	add_child(view)
 	view.configure(_content)
 	view.ready_requested.connect(confirm_ready)
+	view.choice_selected.connect(select_choice)
 	_refresh()
 
 func update_content(content: Dictionary) -> void:
@@ -85,12 +95,33 @@ func confirm_ready() -> Error:
 	if _closed or _released or _request_pending or not _can_ready():
 		return ERR_UNAVAILABLE
 	_request_pending = true
-	var error: Error = api.net.send_to_host(TOPIC, _envelope("ready"))
+	var payload: Dictionary = _envelope("ready")
+	if not _choice_options.is_empty():
+		payload.choice = _local_choice
+	var error: Error = api.net.send_to_host(TOPIC, payload)
 	if error != OK:
 		_request_pending = false
 		_notice = "准备消息发送失败，请重试：" + error_string(error)
 	_refresh()
 	return error
+
+## Optional single player choice, frozen by the same authoritative confirmation as readiness.
+func select_choice(value: String) -> Error:
+	if _closed or _released or _request_pending or not _can_ready() or value not in _choice_options:
+		return ERR_UNAVAILABLE
+	_local_choice = value
+	var payload: Dictionary = _envelope("choice")
+	payload.choice = value
+	var error: Error = api.net.send_to_host(TOPIC, payload)
+	if error != OK:
+		_local_choice = _choices[_local_id()]
+		_notice = "选项发送失败：" + error_string(error)
+	_refresh()
+	return error
+
+## Only participants have choices; spectators return empty text.
+func get_choice(player_id: String) -> String:
+	return _choices.get(player_id, "")
 
 func stop() -> void:
 	if _closed:
@@ -136,6 +167,8 @@ func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 		if int(sender.get("peer_id", 0)) != 1 or not _valid_state(payload):
 			return
 		_received_revision = payload.revision
+		if not _choice_options.is_empty():
+			_choices.assign(payload.choices)
 		_ready_ids.clear()
 		for id: String in payload.ready:
 			_ready_ids[id] = true
@@ -151,13 +184,22 @@ func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 		return
 	if payload.get("kind") == "hello":
 		_publish()
-	elif payload.get("kind") == "ready" and _stage == "waiting":
+	elif payload.get("kind") in ["ready", "choice"] and _stage == "waiting":
+		if not _choice_options.is_empty() and (not payload.get("choice") is String or payload.choice not in _choice_options):
+			return
+		if payload.kind == "choice" and _choice_options.is_empty():
+			return
 		var preparation: Dictionary = api.get_preparation_status()
 		if int(sender.get("peer_id", 0)) not in preparation.get("ready_peers", []):
 			return
 		for player: Dictionary in api.get_players():
 			if player.connected and player.peer_id == sender.get("peer_id") and player.player_id in sender.get("player_ids", []):
-				_ready_ids[player.player_id] = true
+				if _ready_ids.has(player.player_id):
+					continue
+				if not _choice_options.is_empty():
+					_choices[player.player_id] = payload.choice
+				if payload.kind == "ready":
+					_ready_ids[player.player_id] = true
 		_maybe_countdown()
 		_publish()
 
@@ -173,6 +215,12 @@ func _valid_state(payload: Dictionary) -> bool:
 	var participants: Dictionary = {}
 	for player: Dictionary in api.get_players():
 		participants[player.player_id] = true
+	if not _choice_options.is_empty():
+		if not payload.get("choices") is Dictionary or payload.choices.size() != participants.size():
+			return false
+		for id: String in participants:
+			if not payload.choices.get(id) is String or payload.choices[id] not in _choice_options:
+				return false
 	for id: Variant in payload.ready:
 		if not id is String or not participants.has(id):
 			return false
@@ -185,6 +233,8 @@ func _publish() -> void:
 	_last_count = ceili(_remaining)
 	var payload: Dictionary = _envelope("state")
 	payload.merge({"revision": _revision, "ready": _ready_ids.keys(), "stage": _stage, "remaining": _remaining})
+	if not _choice_options.is_empty():
+		payload.choices = _choices.duplicate()
 	var error: Error = api.net.broadcast(TOPIC, payload)
 	if error != OK:
 		api.fail("briefing_send_failed", error_string(error))
@@ -247,6 +297,7 @@ func _refresh() -> void:
 		row["participant"] = participant_ids.has(player.player_id)
 		row["loaded"] = player.peer_id in preparation.get("ready_peers", [])
 		row["ready"] = _ready_ids.has(player.player_id)
+		row["choice"] = get_choice(player.player_id)
 		row["color"] = Color(api.get_appearance(player.player_id).get("color", "#b8b6ac"))
 		rows.append(row)
 		if player.is_local:
@@ -277,6 +328,7 @@ func _refresh() -> void:
 		if controls != _content.get("controls", []):
 			_content["controls"] = controls
 			view.configure(_content)
+	view.set_choice(_local_choice)
 	view.set_state(rows, _can_ready() and not _request_pending, _ready_ids.has(_local_id()),
 		ceili(_remaining) if _stage in ["countdown", "play"] else -1, status)
 

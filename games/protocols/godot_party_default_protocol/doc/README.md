@@ -1,6 +1,6 @@
 # GodotPartyDefaultProtocol 1.0
 
-包 ID `godot_party_default_protocol`，包版本 1.0.0，契约 1.0，API 4 / 清单 2。显示名称以 GodotPartyDefault 为前缀，文件和包 ID 使用蛇形命名。依赖 `godot_party_default_avatars` 1.0.0。
+包 ID `godot_party_default_protocol`，包版本 1.0.4，契约 1.0，API 4 / 清单 2。显示名称以 GodotPartyDefault 为前缀，文件和包 ID 使用蛇形命名。依赖 `godot_party_default_avatars` 1.0.0。
 
 协议只校验语义、生成展示和纯结算建议，不保存钱包、执行道具效果或决定奖励。金币、钻石、道具实例和已处理请求都由大游戏持久状态管理。所有身份使用框架提供的参与者 player_id，不使用 peer_id；观战者不能提交参赛结果。
 
@@ -179,6 +179,9 @@ board_area.add_child(cursors)
 协议公开 `briefing_view` / `briefing_gate` 与 `settlement_view` / `settlement_gate`；主游戏或小游戏按需挂载，不改变未接入游戏。
 
 - 加载：helper入树前 `configure(api, content)`，content含title/introduction/cover/controls；`read_content(manifest_path, api)`可读取自己的简介和实际绑定。初始化后游戏正常`mark_ready()`，`party_start()`中调用`transport_started()`；等`play_requested`才启动玩法。人工确认使用Enter/空格，观战无需确认；技术准备与人工准备独立，全员满足后默认3秒开始。
+- 可选玩家单选项（包版本 1.0.4）：加载 content 提供固定的 `choice_label`、`choice_options: Array[String]` 和 `choice_default`（必须属于选项）。`round_pages.prepare(game, api, request, start_play, content_overrides = {})` 的最后一个字典覆盖本轮加载页内容；游戏可用它传入由资源生成的选项。未配置选项的游戏不显示下拉框。
+- `briefing_gate.select_choice(value) -> Error` 提交本地选择；`get_choice(player_id) -> String` 读取房主确认的选择，观战者返回空字符串。准备消息同时携带选择，房主校验真实发送者、参与身份和选项后锁定；已准备或开始倒计时后不再接受修改。状态快照包含参与者的 `choices` 字典，沿用 session/scope/revision 校验。游戏在 `play_requested` 后读取所选值并启动实际玩法。
+- 纯加载 view 额外提供 `choice_selected(value)`、`set_choice(value)`；`set_state` 的玩家行可含 `choice` 字符串，面板仅显示该文本，不追加说明标签。是否可选与该玩家是否可准备一致；下拉框打开时 Enter 不会同时触发准备。
 - 结算：helper入树前`configure(api, presentation, result_token)`，presentation为`{title, rows:[{player_id, rank, metrics:{score}}]}`。score是本轮小游戏分数，不是父游戏奖励；作者给定rank，视图稳定处理并列，不按分数重排。所有在线端装好页面后自动回执，默认3秒发出`continued`，没有人工准备/退出按钮。
 - helper不调用`finish()`或发奖。拥有者自行选择提交前展示，或在父游戏持有已提交结果后展示；必须保证节点在展示期间仍存活。同一轮使用唯一token，消息校验session/scope/token/revision和真实发送者，退出时调用`stop()`。
 - 纯view可单独使用：加载view提供`configure`/`set_state`与`ready_requested`；结算view提供`configure(presentation, players)`与`set_countdown`，不拥有网络或计时。

@@ -3,6 +3,7 @@
 extends Control
 
 signal ready_requested()
+signal choice_selected(value: String)
 
 const PANEL_SCENE: PackedScene = preload("res://core/ui/ambient_reveal/components/panel.tscn")
 const LABEL: PackedScene = preload("res://core/ui/ambient_reveal/components/display/label.tscn")
@@ -30,6 +31,7 @@ var _compact: bool = false
 @onready var _introduction: Label = %Introduction
 @onready var _controls: VBoxContainer = %Controls
 @onready var _roster: VBoxContainer = %Roster
+@onready var _choice: OptionButton = %PlayerChoice
 @onready var _input_hint: HBoxContainer = %ReadyHints.get_node("KeyboardHints/Accept")
 
 class PreviewArt extends Control:
@@ -68,6 +70,8 @@ func _ready() -> void:
 	_fallback.add_child(art)
 	art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	art.resized.connect(art.queue_redraw)
+	_choice.get_popup().max_size = Vector2i(1920, 320)
+	_choice.item_selected.connect(func(index: int) -> void: choice_selected.emit(_choice.get_item_text(index)))
 	_video.finished.connect(_sync_video)
 	visibility_changed.connect(_sync_video)
 	tree_exiting.connect(_video.stop)
@@ -95,6 +99,12 @@ func set_state(rows: Array[Dictionary], local_can_ready: bool, local_ready: bool
 	if _initialized:
 		_render_state()
 
+func set_choice(value: String) -> void:
+	for index: int in range(_choice.item_count):
+		if _choice.get_item_text(index) == value:
+			_choice.select(index)
+			return
+
 func focus_ready() -> void:
 	if _initialized and _can_submit_ready() and is_visible_in_tree():
 		grab_focus()
@@ -105,7 +115,7 @@ func _can_submit_ready() -> bool:
 func _shortcut_input(event: InputEvent) -> void:
 	if not is_visible_in_tree() or not _can_submit_ready() or not event is InputEventKey:
 		return
-	if event.echo or not event.is_action_pressed(&"ui_accept"):
+	if _choice.get_popup().visible or event.echo or not event.is_action_pressed(&"ui_accept"):
 		return
 	# A menu, settings page or other dialog owns its keys; never confirm behind it.
 	var focused: Control = get_viewport().gui_get_focus_owner()
@@ -118,6 +128,14 @@ func _render_content() -> void:
 	_title.text = str(_content.get("title", "")).trim_prefix("GodotPartyDefault · ")
 	_title.tooltip_text = _title.text
 	_introduction.text = str(_content.get("introduction", ""))
+	var choice_options: Array = _content.get("choice_options", [])
+	%ChoiceRow.visible = not choice_options.is_empty()
+	%ChoiceTitle.text = str(_content.get("choice_label", ""))
+	var chosen: String = _choice.get_item_text(_choice.selected) if _choice.selected >= 0 else str(_content.get("choice_default", ""))
+	_choice.clear()
+	for option: String in choice_options:
+		_choice.add_item(option)
+	set_choice(chosen)
 	_cover.texture = _content.get("cover") as Texture2D
 	var stream: VideoStream = _content.get("video") as VideoStream
 	if _video.stream != stream:
@@ -157,6 +175,7 @@ func _render_state() -> void:
 	if new_hash != _rows_hash:
 		_rows_hash = new_hash
 		_render_roster()
+	_choice.disabled = not _can_submit_ready()
 	_input_hint.modulate.a = 1.0 if _can_submit_ready() or _countdown >= 0 else 0.45
 	_input_hint.get_node("Icons").visible = _countdown < 0
 	if _countdown >= 0:
@@ -200,6 +219,11 @@ func _player_row(player: Dictionary) -> void:
 	display_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	display_name.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	display_name.tooltip_text = display_name.text
+	var choice_text: String = player.get("choice", "")
+	if not choice_text.is_empty():
+		var choice_label: Label = _label(line, choice_text, 21, ACCENT)
+		choice_label.name = "Choice"
+		choice_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	var state_label: Label = _label(line, state, 21, GREEN if state == "已准备" else (ACCENT if state == "未准备" else MUTED))
 	state_label.name = "State"
 	state_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER

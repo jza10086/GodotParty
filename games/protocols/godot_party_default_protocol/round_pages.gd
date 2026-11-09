@@ -15,7 +15,7 @@ var _host_result: Dictionary
 var _hud_layers: Array[CanvasLayer] = []
 var _previous_mode: Node.ProcessMode
 
-func prepare(game: Node, context: PartyAPI, request: Dictionary, start_play: Callable) -> Error:
+func prepare(game: Node, context: PartyAPI, request: Dictionary, start_play: Callable, content_overrides: Dictionary = {}) -> Error:
 	api = context
 	_request = request.duplicate(true)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -27,7 +27,9 @@ func prepare(game: Node, context: PartyAPI, request: Dictionary, start_play: Cal
 	game.add_child(self)
 	briefing = Briefing.new()
 	var manifest_path: String = game.scene_file_path.get_base_dir().path_join("manifest.json")
-	briefing.configure(api, Briefing.read_content(manifest_path, api))
+	var content: Dictionary = Briefing.read_content(manifest_path, api)
+	content.merge(content_overrides, true)
+	briefing.configure(api, content)
 	briefing.play_requested.connect(func() -> void:
 		for hud: CanvasLayer in _hud_layers:
 			hud.show()

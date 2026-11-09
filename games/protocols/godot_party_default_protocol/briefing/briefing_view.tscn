@@ -197,6 +197,27 @@ theme_override_font_sizes/font_size = 21
 text = ""
 autowrap_mode = 3
 
+[node name="ChoiceRow" type="HBoxContainer" parent="Layout/Center/Content/Columns/RightColumn/InformationPanel/InformationMargin/Information/Rules"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="ChoiceTitle" type="Label" parent="Layout/Center/Content/Columns/RightColumn/InformationPanel/InformationMargin/Information/Rules/ChoiceRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "难度"
+vertical_alignment = 1
+
+[node name="PlayerChoice" type="OptionButton" parent="Layout/Center/Content/Columns/RightColumn/InformationPanel/InformationMargin/Information/Rules/ChoiceRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(210, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_override_font_sizes/font_size = 22
+
 [node name="ControlSection" type="VBoxContainer" parent="Layout/Center/Content/Columns/RightColumn/InformationPanel/InformationMargin/Information"]
 unique_name_in_owner = true
 layout_mode = 2
