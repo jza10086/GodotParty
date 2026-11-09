@@ -1,7 +1,7 @@
 # GodotPartyDefault · 空白小游戏模板
 
 API 4 / manifest 2 / 配置 Schema 3；1–8 人；只实现原版协议 standard 普通局。
-本包是「全幅画面＋简要叠加 HUD」和小游戏接入的参考。每位在线参赛者按一次「结束游戏」，房主按首次收到有效点击的先后排名；全部在线参赛者按完才展示成绩，退出者不排名。第一名得在线完成人数对应的分数，之后逐名减一。协议、网络消息和玩法规则保持原有约定。
+本包是「全幅画面＋简要叠加 HUD」和小游戏接入的参考。每位在线参赛者按一次「结束游戏」，房主按首次收到有效点击的先后排名；全部在线参赛者按完才展示成绩，退出者不排名。第一名得在线完成人数对应的分数，之后逐名减一。结束点击与排名仍遵循原版协议约定；随机池只决定本局初始展示。
 
 ## 目录与职责
 
@@ -15,6 +15,7 @@ examples/
   graphics/                展台、建筑陈列、自由俯视相机
   navigation_2d/           航道、船、航标与二维 HUD
   audio/                   音频测试面板、七个 Cue 与 samples/
+  random_pool/             最少游玩次数优先的随机池与本机统计
 assets/kenney_city/         三个 Kenney City Kit 模型包及许可
 ```
 
@@ -26,7 +27,7 @@ assets/kenney_city/         三个 Kenney City Kit 模型包及许可
 
 正式验证使用主菜单和真实大厅。在「小游戏轮换」里单选「空白小游戏」，总局数设为 1，即可检查准备、按钮名次与结算；其他主游戏若声明小游戏白名单，需要包含本包 ID。
 
-打开 `game.tscn` 按 F6，默认显示 3D 展台；右上角可切换 2D 航道和音频测试。也可以 F6 运行 `examples/demo_hub.tscn`、`examples/graphics/graphics_lab.tscn` 或 `examples/navigation_2d/navigation_2d.tscn`。音频面板是需要注入 GameAudio 的组件，通过 DemoHub 预览。视觉检查统一为 1920×1080。
+打开 `game.tscn` 按 F6，使用内存随机池选定初始 3D 展台或 2D 航道；右上角可切换 2D 航道和音频测试。也可以 F6 运行 `examples/demo_hub.tscn`、`examples/graphics/graphics_lab.tscn` 或 `examples/navigation_2d/navigation_2d.tscn`。音频面板是需要注入 GameAudio 的组件，通过 DemoHub 预览。视觉检查统一为 1920×1080。
 
 固定模型、2D 图形、相机、灯光、碰撞体和 HUD 都直接保存在场景中。打开子场景即可编辑位置、材质、灯光和文字示例；运行时只更新运动、当前状态和确实依赖对局的数据。3D 直接使用主视口，没有 SubViewportContainer。HUD 使用 CanvasLayer，框架菜单之下的演示层为 -4 至 -2，协议页面为 -1。
 
@@ -71,6 +72,43 @@ DemoHub 内预置协议 `audio/game_audio.tscn` 和 `examples/audio/audio_panel.
 F6 调整音量立即生效，仅当前预览有效。正式模式维护草稿，点“应用本游戏音量”只保存修改过的分类，未修改分类仍继承协议。无关配置通知不覆盖草稿；外部修改只刷新未编辑分类。“恢复继承”明确清除六个分类的游戏覆盖。面板收起后不持续刷新播放状态文字。
 
 移植只需要 GameAudio 与实际 Cue，不必复制测试面板。准备作用域、播放、停止、循环、切换、配音队列与句柄示例见 [音频组件](../../protocols/godot_party_default_protocol/doc/audio.md)。
+
+## 通用随机统计模板
+
+`examples/random_pool/least_played_pool.gd` 从记忆拼图的统计机制整理而来，可单独复制到地图、题库、图片等随机内容所在的功能目录。它不依赖 PartyAPI、图片资源或本模板；不注册全局类，也不要求修改 core 或协议。
+
+- `new(content_ids)` 指定非空且不重复的稳定内容 ID，每局建立新实例。
+- `open_file(absolute_path)` 显式启用持久化，仅正式入口调用。路径通过 `api.input.storage_directory()` 和当前 `api.package_id` 组成。未调用时只维护内存计数，F6 不接触正式文件。
+- `choose(rng)` 只从本机累计次数最少的内容中随机选择；同次数时等概率抽取。主机使用 `api.get_seed()` 初始化并持续使用本局 RNG，客机不自行抽取。
+- `history()` 返回本局完整抽取序列的副本；主机在每个内容真正开始时追加选择，再调用 `accept_history(sequence)` 成功记账后广播序列。选择本身不计数，开始后取消也不扣回。
+- 主机、客机和观战端各自在收到主机序列后调用 `accept_history()`。相同或更短的匹配序列不重复记账；跳过中间快照时补记未见后缀；已见前缀冲突或未知 ID 返回错误。网络入口仍负责校验发送者、会话、作用域、阶段与长度上限。
+- `counts()` 返回本端历史的副本。网络只发送选取序列，不发送或覆盖各端累计次数；不同设备保留不同历史，以后成为主机时用自己的次数选取。
+
+最小主机流程（每局只初始化一次 `pool` 与 `rng`）：
+
+```gdscript
+const RandomPool: GDScript = preload("examples/random_pool/least_played_pool.gd")
+const CONTENT_IDS: Array[String] = ["map_a", "map_b", "map_c"]
+var pool: RandomPool = RandomPool.new(CONTENT_IDS)
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+
+# 正式入口在初始化时检查 pool.open_file(...) 的 Error，再准备开局。
+# F6 跳过 open_file()，正式主机 rng.seed = api.get_seed()。
+func choose_next() -> Error:
+    var draws: Array[String] = pool.history()
+    draws.append(pool.choose(rng))
+    var error: Error = pool.accept_history(draws)
+    if error != OK:
+        return error
+    return api.net.broadcast(&"game/draw", {
+        "session": api.session_id, "scope": api.scope_id, "draws": draws})
+```
+
+`game.gd` 是完整联网接入样例：每局准备结束后主机在 `graphics` 和 `navigation_2d` 中选一个初始展示，客户端可以在本端准备页结束前接收并记账，进入运行阶段后再应用。所有端选取一致，原结束按钮排名不变。个人手动切换视图不会新增游玩次数。DemoHub 的 F6 使用同一个组件但不打开文件。
+
+正式统计文件为安装资料根目录的 `minigame/<package_id>/config/random_pool_stats.json`，格式为 `{"version": 1, "plays": {"graphics": 0, "navigation_2d": 0}}`。首次读取不存在的文件不会创建它，首次接受新选择才落盘。完整文件先写入 `.pending` 再替换，写入成功后才更新内存计数与已见序列。损坏、版本错误、内容 ID 集合不符和读写失败会向入口返回 Error 并结束本局，不自动清零。修改内容 ID 集合时须明确安排存档处理，组件不自动迁移；同一安装资料的文件由一个进程写入，多实例测试使用独立 `--party-profile`。
+
+去重只针对一个活动实例内的重复/乱序快照。重新进入新局会新建序列，并在既有累计次数上继续计数；没有增加重连、崩溃恢复或跨设备历史合并协议。现有记忆拼图继续使用自己的图片实现，不产生对空白模板的运行时依赖。
 
 ## 复制为新游戏
 

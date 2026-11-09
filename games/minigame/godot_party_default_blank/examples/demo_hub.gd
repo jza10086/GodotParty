@@ -4,6 +4,8 @@ extends Control
 signal finish_requested()
 signal failed(error: Error)
 const DEFAULT_TEXT: Translation = preload("../i18n/zh_Hans.po")
+const RandomPool: GDScript = preload("random_pool/least_played_pool.gd")
+const RANDOM_DEMOS: Array[String] = ["graphics", "navigation_2d"]
 const GraphicsLab = preload("graphics/graphics_lab.gd")
 const NavigationDemo = preload("navigation_2d/navigation_2d.gd")
 var _i18n: RefCounted
@@ -50,6 +52,17 @@ func _ready() -> void:
 		finish_button.tooltip_text = _text(&"game.settings_hint") + "\n" + _text(&"game.locale", {"locale": _i18n.effective_locale()})
 	_content.hide()
 	_hud.visible = _active
+	if _preferences == null:
+		# Preview never opens a file or creates PartyInput.
+		var pool: RandomPool = RandomPool.new(RANDOM_DEMOS)
+		var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+		rng.randomize()
+		var chosen: String = pool.choose(rng)
+		var error: Error = pool.accept_history([chosen])
+		if error != OK:
+			push_error(error_string(error))
+			return
+		show_demo(chosen)
 
 func _text(key: StringName, params: Dictionary = {}) -> String:
 	return String(DEFAULT_TEXT.get_message(key)).format(params) if _i18n == null else _i18n.text(key, params)
@@ -66,7 +79,11 @@ func _camera_input_allowed() -> bool:
 func _switch_view() -> void:
 	if not _controls_allowed():
 		return
-	var show_2d: bool = not _navigation.visible
+	show_demo("graphics" if _navigation.visible else "navigation_2d")
+
+## The entry supplies a validated draw ID; switching locally does not record a draw.
+func show_demo(id: String) -> void:
+	var show_2d: bool = id == "navigation_2d"
 	_navigation.visible = show_2d
 	_graphics.visible = not show_2d
 	_details.visible = not show_2d

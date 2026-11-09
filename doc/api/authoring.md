@@ -84,6 +84,8 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 
 空白模板同时提供正式接入骨架和可移植演示。`game.gd` 持有 PartyAPI、阶段、网络消息、准备与结算；`examples/demo_hub.tscn` 组合演示；`examples/graphics/`、`examples/navigation_2d/`、`examples/audio/` 分别保存各功能的场景、脚本和专用资源。`adapter.gd` 只检查/转换协议请求与结果，`settings.gd` 声明配置，`i18n/` 保存语言模板。可选的大型美术资源留在包内 `assets/`。
 
+随机题库、地图、图片可参考空白模板的 [随机统计组件](../../games/minigame/godot_party_default_blank/README.md#通用随机统计模板)：主机从本机最少次数项中选取，各端对主机本局序列去重并更新自己的统计；正式入口注入存储路径，F6 只用内存。组件可直接复制，不要求其他游戏依赖空白模板包。
+
 新游戏按实际功能命名目录，不强制照搬 `examples/`，也不机械建立 `scenes/`、`scripts/`、`managers/`。一个场景脚本能清楚表达的流程不再拆转发层。跨场景可替换依赖用带类型的 `@export`；同一场景拥有的固定节点用 `%UniqueNode`。只有共享组件、资源和核心数据类型注册 `class_name`。GDScript 使用显式类型，不使用 `:=`。
 
 入口可直接调用自己的视图；视图通过信号报告玩家意图，并只接收所需的翻译、配置、音频或输入谓词。不要为了标准化，把整套 PartyAPI、网络发送和候选提交分散进每个按钮。空白模板的 `DemoHub.finish_requested` 回到入口后，才发送逻辑动作；网络边界继续验证发送者、会话、作用域、载荷与协议结果。

@@ -1,7 +1,10 @@
 extends Control
 ## Formal entry: protocol readiness, authoritative press order and final publication.
 ## DemoHub owns editable demonstrations, input presentation and local audio controls.
-const DemoHub = preload("examples/demo_hub.gd")
+const DemoHub: GDScript = preload("examples/demo_hub.gd")
+const RandomPool: GDScript = preload("examples/random_pool/least_played_pool.gd")
+const DRAW_TOPIC: StringName = &"blank/draw"
+var _random_pool: RandomPool = RandomPool.new(DemoHub.RANDOM_DEMOS)
 enum Phase { PREPARING, RUNNING, SETTLING, SUBMITTED, STOPPED }
 const PRESS_TOPIC: StringName = &"blank/press"
 const RESULT_TOPIC: StringName = &"blank/result"
@@ -37,6 +40,13 @@ func _demo_failed(error: Error) -> void:
 func _ready() -> void:
 	if api == null:
 		return
+	# Resolve the package path from the formal API; F6 never reaches this branch.
+	var stats_path: String = api.input.storage_directory().path_join(
+		"minigame/%s/config/random_pool_stats.json" % api.package_id)
+	var storage_error: Error = _random_pool.open_file(stats_path)
+	if storage_error != OK:
+		_random_failed(storage_error)
+		return
 	_demo.finish_requested.connect(_press_finish)
 	_demo.failed.connect(_demo_failed)
 	var cursor_scene: PackedScene = api.load_asset({"package_id": api.protocol_id, "resource_key": "player_cursors"}) as PackedScene
@@ -71,6 +81,24 @@ func party_start() -> void:
 
 func _begin_play() -> void:
 	phase = Phase.RUNNING
+	if api.is_host():
+		var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+		rng.seed = api.get_seed()
+		var chosen: Array[String] = [_random_pool.choose(rng)]
+		var error: Error = _random_pool.accept_history(chosen)
+		if error != OK:
+			_random_failed(error)
+			return
+		error = api.net.broadcast(DRAW_TOPIC, {"session": api.session_id,
+			"scope": api.scope_id, "draws": _random_pool.history()}, false)
+		if error != OK:
+			_random_failed(error)
+			return
+	if not _random_pool.history().is_empty():
+		_activate_demo()
+
+func _activate_demo() -> void:
+	_demo.show_demo(_random_pool.history()[0])
 	_cursors.enabled = true
 	_cursors.show()
 	var can_finish: bool = false
@@ -124,6 +152,10 @@ func _try_settle() -> void:
 		api.fail("result_send_failed", error_string(error))
 
 func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
+	if topic == DRAW_TOPIC:
+		if phase in [Phase.PREPARING, Phase.RUNNING]:
+			_receive_draw(sender, payload)
+		return
 	if phase != Phase.RUNNING:
 		return
 	if topic == PRESS_TOPIC:
@@ -143,6 +175,30 @@ func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 		api.fail(checked.code, checked.message)
 		return
 	_open_settlement(payload.result)
+
+## Sender/session/scope and this example's one-draw limit are entry boundaries.
+## The pool separately validates IDs, sequence consistency and persistence.
+func _receive_draw(sender: Dictionary, payload: Variant) -> void:
+	if api.is_host() or sender.get("peer_id") != 1 or not payload is Dictionary:
+		return
+	if payload.get("session") != api.session_id or payload.get("scope") != api.scope_id:
+		return
+	if not payload.get("draws") is Array or payload.draws.size() != 1:
+		_random_failed(ERR_INVALID_DATA)
+		return
+	var first_draw: bool = _random_pool.history().is_empty()
+	var error: Error = _random_pool.accept_history(payload.draws)
+	if error != OK:
+		_random_failed(error)
+		return
+	if first_draw and phase == Phase.RUNNING:
+		_activate_demo()
+
+func _random_failed(error: Error) -> void:
+	party_stop(&"random_pool_failed")
+	var report_error: Error = api.fail("random_pool_failed", error_string(error))
+	if report_error != OK:
+		push_error("Random pool: %s; reporting failed: %s" % [error_string(error), error_string(report_error)])
 
 func _open_settlement(result: Dictionary) -> void:
 	if phase != Phase.RUNNING:
