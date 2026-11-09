@@ -257,7 +257,7 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 	if not payload is Dictionary:
 		return
 	if kind == "profile_offer" and sender == 1 and not host and room.is_empty():
-		var issue: String = catalog.requirements_issue(payload.get("packages"))
+		var issue: String = catalog.requirements_issue(payload.get("requirements"))
 		if not issue.is_empty():
 			leave("加入房间失败：\n" + issue)
 			return
@@ -339,7 +339,7 @@ func _accept_hello(sender: int, identity: Dictionary) -> void:
 	# Learn the selected protocol before publishing the player, so their own preferred
 	# color participates in allocation rather than an unrelated default placeholder.
 	if recovery.is_empty() and room.get("phase") == "lobby" and _player_peer(sender).is_empty() and identity.get("protocol") != _protocol_id():
-		_send(sender, {"kind": "profile_offer", "payload": {"protocol": _protocol_id(), "packages": room["closure"]}})
+		_send(sender, {"kind": "profile_offer", "payload": {"protocol": _protocol_id(), "requirements": room["requirements"]}})
 		return
 	var reason: String = ""
 	if room.get("phase") != "lobby":
@@ -542,8 +542,8 @@ func prepare_restore(record: Dictionary) -> Error:
 	if own.is_empty() or own.get("peer_id") != 1:
 		return ERR_UNAUTHORIZED
 	var resolved: Dictionary = catalog.resolve(record["room"]["main"], record["room"]["pools"], record["appearances"].values())
-	if not resolved.get("ok") or resolved["packages"] != record["room"]["closure"]:
-		status = "恢复所需内容缺失或版本不符"
+	if not resolved.get("ok"):
+		status = "恢复所需内容不可用：" + resolved.message
 		return ERR_INVALID_DATA
 	recovery = record.duplicate(true)
 	room = record["room"].duplicate(true)
@@ -702,6 +702,7 @@ func _appearances() -> Array:
 ## Player readiness changes do not invalidate already accepted content and settings.
 func _publish(require_confirmation: bool = true) -> void:
 	room["revision"] = room.get("revision", 0) + 1
+	room["requirements"] = catalog.connection_requirements()
 	var closure: Dictionary = catalog.resolve(room.get("main", ""), room.get("pools", {}), _appearances())
 	if closure.get("ok", false):
 		room["closure"] = closure["packages"]
@@ -818,7 +819,7 @@ func packet_fits(packet: Dictionary) -> bool:
 ## Validate installed content before reading its configuration or constructing its room UI.
 func _room_content_issue(payload: Dictionary) -> String:
 	var snapshot: Dictionary = payload.room
-	var issue: String = catalog.requirements_issue(snapshot.get("closure"))
+	var issue: String = catalog.requirements_issue(snapshot.get("requirements"))
 	if not issue.is_empty():
 		return issue
 	var appearances: Array = []
@@ -827,12 +828,6 @@ func _room_content_issue(payload: Dictionary) -> String:
 	var resolved: Dictionary = catalog.resolve(snapshot.main, snapshot.pools, appearances)
 	if not resolved.ok:
 		return resolved.message
-	for id: String in resolved.packages:
-		if not snapshot.closure.has(id):
-			return "依赖声明不同：本机额外需要 %s（版本 %s），房主清单未包含该包" % [id, resolved.packages[id].version]
-	for id: String in snapshot.closure:
-		if not resolved.packages.has(id):
-			return "依赖声明不同：房主要求 %s（版本 %s），本机游戏未声明该依赖" % [id, snapshot.closure[id].version]
 	return Rules.room_issue(snapshot, catalog)
 
 ## Reject malformed room snapshots before assigning typed collections or acknowledging a revision.
@@ -844,7 +839,7 @@ func _valid_room_snapshot(payload: Dictionary) -> bool:
 		return false
 	if not snapshot.get("main") is String or not snapshot.get("revision") is int or not snapshot.get("phase") is String:
 		return false
-	for key: String in ["settings", "children", "pools", "channels"]:
+	for key: String in ["settings", "children", "pools", "channels", "closure"]:
 		if not snapshot.get(key) is Dictionary:
 			return false
 	if not snapshot.get("channel_count") is int or snapshot["channel_count"] < 2 or snapshot["channel_count"] > 80:

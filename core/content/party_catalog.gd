@@ -241,25 +241,48 @@ func _pool_adapter(main: Dictionary, id: String) -> Dictionary:
 		return {}
 	return adapter(id, main.protocol.id)
 
-## Compare the host's declared package versions before loading room settings or scenes.
+## Advertise every installed protocol/main/minigame, independently of the selected pool.
+## Raw manifest names are stable across UI languages; IDs identify packages.
+func connection_requirements() -> Dictionary:
+	var required: Dictionary = {}
+	for id: String in ids():
+		var manifest: Dictionary = packages[id]
+		if manifest.kind in ["protocols", "maingame", "minigame"]:
+			required[id] = {"name": manifest.get("name", id), "version": manifest.package_version}
+	return {"framework": {"name": Data.FRAMEWORK_NAME, "version": Data.VERSION}, "packages": required}
+
+## Compare only host-required names and versions. Additional client packages are allowed.
 ## The requirement list is network input; no file fingerprints are computed.
 func requirements_issue(required: Variant) -> String:
-	if not required is Dictionary or required.is_empty():
-		return "房主未提供有效的内容包清单"
+	if not required is Dictionary or not required.get("framework") is Dictionary or not required.get("packages") is Dictionary:
+		return "房主未提供有效的框架与内容包清单"
+	for key: String in ["name", "version"]:
+		if not required.framework.get(key) is String or required.framework[key].is_empty():
+			return "房主框架名称或版本格式无效"
 	var issues: Array[String] = []
-	for id: Variant in required:
-		if not id is String or not Data.identifier(id) or not required[id] is Dictionary or not required[id].get("version") is String or required[id].version.is_empty():
+	if required.framework.name != Data.FRAMEWORK_NAME:
+		issues.append("框架名称不同（当前名称：%s；所需名称：%s）" % [Data.FRAMEWORK_NAME, required.framework.name])
+	if required.framework.version != Data.VERSION:
+		issues.append("框架版本不同（当前版本：%s；所需版本：%s）" % [Data.VERSION, required.framework.version])
+	for id: Variant in required.packages:
+		var entry: Variant = required.packages[id]
+		if not id is String or not Data.identifier(id) or not entry is Dictionary:
 			return "房主内容包清单格式无效"
-		var needed: String = required[id].version
+		for key: String in ["name", "version"]:
+			if not entry.get(key) is String or entry[key].is_empty():
+				return "房主内容包名称或版本格式无效：" + id
+		var label: String = "%s（%s）" % [entry.name, id]
 		if not packages.has(id):
-			issues.append("缺少内容包 %s（当前版本：未安装；所需版本：%s）" % [id, needed])
+			issues.append("缺少内容包 %s（当前版本：未安装；所需版本：%s）" % [label, entry.version])
 			continue
 		var manifest: Dictionary = packages[id]
-		var label: String = "%s（%s）" % [manifest.get("name", id), id]
+		var current_name: String = manifest.get("name", id)
+		if current_name != entry.name:
+			issues.append("%s 名称不同（当前名称：%s；所需名称：%s）" % [id, current_name, entry.name])
 		if not manifest.get("package_version") is String:
-			issues.append("%s 版本声明无效（当前值：%s；所需版本：%s）" % [label, str(manifest.get("package_version")), needed])
-		elif manifest.package_version != needed:
-			issues.append("%s 版本不同（当前版本：%s；所需版本：%s）" % [label, manifest.package_version, needed])
+			issues.append("%s 版本声明无效（当前值：%s；所需版本：%s）" % [label, str(manifest.get("package_version")), entry.version])
+		elif manifest.package_version != entry.version:
+			issues.append("%s 版本不同（当前版本：%s；所需版本：%s）" % [label, manifest.package_version, entry.version])
 	return "\n".join(issues)
 
 ## Resolves only the selected adapter dependencies, never all advertised protocols.

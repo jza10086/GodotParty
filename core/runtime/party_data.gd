@@ -4,6 +4,7 @@ extends RefCounted
 const API_VERSION: int = 4
 const WIRE_VERSION: int = 16
 const VERSION: String = "4.2.0"
+const FRAMEWORK_NAME: String = "GodotParty"
 
 static func valid(value: Variant, depth: int = 0) -> bool:
 	if depth > 32:
