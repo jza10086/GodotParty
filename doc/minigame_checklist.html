@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>当前小游戏清单 · 自动换行</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #f5f7fa; color: #243247; font: 16px/1.65 "Segoe UI", "Microsoft YaHei", sans-serif; }
+main { max-width: 1480px; margin: 32px auto; padding: 28px; background: white; border: 1px solid #dce3ec; border-radius: 10px; }
+h1 { margin: 0 0 16px; font-size: 28px; }
+p { margin: 12px 0; }
+a { color: #175eaa; text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { border-collapse: collapse; width: 100%; table-layout: fixed; margin: 20px 0; }
+th, td { border: 1px solid #ccd6e2; padding: 12px 14px; text-align: left; vertical-align: top; white-space: normal; overflow-wrap: anywhere; word-break: normal; }
+th { background: #eaf0f7; font-weight: 600; }
+tbody tr:nth-child(even) { background: #f8fafc; }
+code { font: .92em/1.65 Consolas, monospace; white-space: normal; overflow-wrap: anywhere; word-break: normal; }
+.legend { max-width: 860px; }
+.legend th:first-child { width: 20%; }
+.source { color: #637086; font-size: 14px; }
+@media (max-width: 700px) { main { margin: 8px; padding: 10px; } th, td { padding: 8px 6px; } }
+@media print { body { background: white; } main { margin: 0; padding: 0; border: 0; max-width: none; } thead { display: table-header-group; } tr { break-inside: avoid; } }
+</style>
+</head><body><main>
+<p class="source">自动换行查看版 · 保留当前人工填写内容。继续编辑请使用 <a href="minigame_checklist.md">Markdown 原稿</a>；此页为生成时的快照。</p>
+<h1>当前小游戏清单</h1>
+<p>更新日期：2026-11-09。按 <code>games/minigame/</code> 下当前 <code>manifest.json</code> 核对，共 27 个小游戏包（含空白小游戏模板）。名称省略统一的 <code>GodotPartyDefault · </code> 前缀；包名称使用完整包 ID。</p>
+<p>完成度、备注留空，由人工填写。完成度只能填写以下四种状态之一：</p>
+<table class="legend">
+<thead><tr><th scope="col">完成度</th><th scope="col">参考标准</th></tr></thead><tbody>
+<tr><td>完整可玩</td><td>小游戏完整可玩，仅需后续打磨。</td></tr>
+<tr><td>初步可玩</td><td>可以联机正常游戏，音效、UI 等次要系统尚未实现。</td></tr>
+<tr><td>尚未可玩</td><td>仅实现初步原型，无法接入联机框架。</td></tr>
+<tr><td>不可玩</td><td>几乎空白，仅占位。</td></tr>
+</tbody></table>
+<p>人数取自包声明，不代表已通过开局或联机验收；实际可开局人数还受模式配置、协议与大游戏的人数交集限制。</p>
+<table class="games">
+<colgroup><col style="width:18%"><col style="width:30%"><col style="width:8%"><col style="width:12%"><col style="width:32%"></colgroup>
+<thead><tr><th scope="col">名称</th><th scope="col">包名称</th><th scope="col">声明人数</th><th scope="col">完成度</th><th scope="col">备注</th></tr></thead><tbody>
+<tr><td><a href="../games/minigame/direction_password/manifest.json">方向密码</a></td><td><code>direction_password</code></td><td>1</td><td>尚未可玩</td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_2048/manifest.json">3D 2048</a></td><td><code>godot_party_default_2048</code></td><td>1–8</td><td>尚未可玩</td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_3d_chess/manifest.json">3D 国际象棋</a></td><td><code>godot_party_default_3d_chess</code></td><td>2–8</td><td>尚未可玩</td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_artillery_game/manifest.json">炮火争锋</a></td><td><code>godot_party_default_artillery_game</code></td><td>1–8</td><td>初步可玩</td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_auction_master/manifest.json">竞拍大师</a></td><td><code>godot_party_default_auction_master</code></td><td>1–8</td><td>完整可玩</td><td>需要优化网络通信</td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_battleship_chess/manifest.json">海战棋</a></td><td><code>godot_party_default_battleship_chess</code></td><td>1–8</td><td>初步可玩</td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_billiards/manifest.json">3d桌球</a></td><td><code>godot_party_default_billiards</code></td><td>2–8</td><td>尚未可玩</td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_blank/manifest.json">空白小游戏</a></td><td><code>godot_party_default_blank</code></td><td>1–8</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_car_racing/manifest.json">山脊竞速</a></td><td><code>godot_party_default_car_racing</code></td><td>1</td><td>不可玩</td><td>需要完整重构</td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_card_game/manifest.json">纸牌会客厅</a></td><td><code>godot_party_default_card_game</code></td><td>1–8</td><td>不可玩</td><td>需要完整重构</td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_flight/manifest.json">COASTLINE · 海岸飞行</a></td><td><code>godot_party_default_flight</code></td><td>1</td><td>不可玩</td><td>需要完整重构</td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_fruit_samurai/manifest.json">水果武士</a></td><td><code>godot_party_default_fruit_samurai</code></td><td>1–8</td><td>尚未可玩</td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_identity_party/manifest.json">阿瓦隆</a></td><td><code>godot_party_default_identity_party</code></td><td>5–8</td><td>初步可玩</td><td>尚未进行多人测试，美术风格有待调整，可以参考王权系列</td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_jigsaw_puzzle/manifest.json">记忆拼图</a></td><td><code>godot_party_default_jigsaw_puzzle</code></td><td>1–8</td><td>初步可玩</td><td>需要优化ui、操作、结算</td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_lighthouse_isles/manifest.json">极速追逐</a></td><td><code>godot_party_default_lighthouse_isles</code></td><td>1</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_matching_game/manifest.json">连连看</a></td><td><code>godot_party_default_matching_game</code></td><td>1–8</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_merge_big_ssibal/manifest.json">合成大西八</a></td><td><code>godot_party_default_merge_big_ssibal</code></td><td>1–8</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_multi_snake_game/manifest.json">蛇蛇大作战</a></td><td><code>godot_party_default_multi_snake_game</code></td><td>1–8</td><td>初步可玩</td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_platformer/manifest.json">云间跃行</a></td><td><code>godot_party_default_platformer</code></td><td>2–8</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_psychological_party/manifest.json">心理博弈</a></td><td><code>godot_party_default_psychological_party</code></td><td>2–8</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_russian_block/manifest.json">圆角俄罗斯方块</a></td><td><code>godot_party_default_russian_block</code></td><td>1</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_snake_game/manifest.json">贪吃蛇</a></td><td><code>godot_party_default_snake_game</code></td><td>1–8</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_star_wave/manifest.json">星潮</a></td><td><code>godot_party_default_star_wave</code></td><td>1–8</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_tank_battle/manifest.json">铁鹰防线</a></td><td><code>godot_party_default_tank_battle</code></td><td>2–8</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_tank_range/manifest.json">雷霆战争</a></td><td><code>godot_party_default_tank_range</code></td><td>1–8</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/godot_party_default_west_showdown/manifest.json">西部牛仔对决</a></td><td><code>godot_party_default_west_showdown</code></td><td>2–8</td><td></td><td></td></tr>
+<tr><td><a href="../games/minigame/gp_rhythm_game/manifest.json">霓虹节拍</a></td><td><code>gp_rhythm_game</code></td><td>1–8</td><td>完整可玩</td><td>优化加载界面选择、分数结算</td></tr>
+</tbody></table>
+</main></body></html>
