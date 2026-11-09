@@ -129,3 +129,7 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 候选背景音乐：Chill lofi inspired，omfgdude（CC0 1.0） https://opengameart.org/content/chill-lofi-inspired
 
 输入提示图标：Kenney Input Prompts 1.5A，键鼠与 Xbox SVG（CC0 1.0，许可证位于 core/ui/ambient_reveal/icons/kenney_input/License.txt） https://kenney.nl/assets/input-prompts
+
+音效：炮火争锋发动机 Engine-loop heavy vehicle/tank，Nayckron／qubodup（CC BY 3.0；仅改名，运行时淡入淡出；许可 https://creativecommons.org/licenses/by/3.0/） https://opengameart.org/content/engine-loop-heavy-vehicletank
+音效：炮火争锋开炮与爆炸 Explosions，EZduzziteh（CC0 1.0） https://opengameart.org/content/explosions-4
+音效：炮火争锋科幻炮弹 Sci-Fi Sounds 1.0，Kenney（CC0 1.0；部分截短并淡出，逐文件映射见小游戏 assets/audio/SOURCES.md） https://kenney.nl/assets/sci-fi-sounds https://opengameart.org/content/sci-fi-sounds
