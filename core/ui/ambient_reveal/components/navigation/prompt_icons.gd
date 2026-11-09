@@ -24,7 +24,7 @@ const MOUSE: Dictionary = {
 	MOUSE_BUTTON_XBUTTON1: "side_back", MOUSE_BUTTON_XBUTTON2: "side_forward",
 }
 const PAD: Dictionary = {
-	JOY_BUTTON_A: "button_a", JOY_BUTTON_B: "button_b", JOY_BUTTON_X: "button_x", JOY_BUTTON_Y: "button_y",
+	JOY_BUTTON_A: "button_color_a", JOY_BUTTON_B: "button_color_b", JOY_BUTTON_X: "button_color_x", JOY_BUTTON_Y: "button_color_y",
 	JOY_BUTTON_BACK: "button_view", JOY_BUTTON_GUIDE: "guide", JOY_BUTTON_START: "button_menu",
 	JOY_BUTTON_LEFT_STICK: "ls", JOY_BUTTON_RIGHT_STICK: "rs",
 	JOY_BUTTON_LEFT_SHOULDER: "lb", JOY_BUTTON_RIGHT_SHOULDER: "rb",

@@ -7,7 +7,7 @@ func set_mode(pad: bool, cursor: bool) -> void:
 	$Hints/Title.text = "Xbox 光标" if cursor else "Xbox 手柄"
 	var cursor_icons: Array[Texture2D] = []
 	if cursor:
-		cursor_icons.append(preload("res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_button_a.svg"))
+		cursor_icons.append(preload("res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_button_color_a.svg"))
 	$Hints/Accept.gamepad_icons = cursor_icons
 	for prompt in [$Hints/Accept, $Hints/Context, $Hints/Home, $Hints/Previous, $Hints/Next]:
 		prompt.set_gamepad(true)

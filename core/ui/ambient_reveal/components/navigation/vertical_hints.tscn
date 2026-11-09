@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/mouse_left.svg" id="mouse"]
 [ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/keyboard_escape.svg" id="esc"]
 [ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_stick_l.svg" id="stick"]
-[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_button_a.svg" id="accept"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_button_color_a.svg" id="accept"]
 [ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_button_menu.svg" id="menu"]
 
 [node name="VerticalHints" type="MarginContainer"]
