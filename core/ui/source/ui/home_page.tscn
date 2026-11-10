@@ -58,6 +58,13 @@ theme_override_font_sizes/font_size = 26
 text = "加入房间"
 alignment = 0
 
+[node name="Content" parent="Menu" instance=ExtResource("ar_button")]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "内容包"
+alignment = 0
+
 [node name="Settings" parent="Menu" unique_id=535242123 instance=ExtResource("ar_button")]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2

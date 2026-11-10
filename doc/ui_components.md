@@ -90,3 +90,7 @@ Schema 由业务 settings.gd 的 schema() 声明，通过 fields 的 type/contro
 纵向预制体为 core/ui/ambient_reveal/components/navigation/vertical_hints.tscn。在全屏 HUD Control 或 CanvasLayer 下实例化，默认使用 24 像素边距贴左下角；Inspector 的 Side 选择 Right 后贴右下角，每行仍保持图标在说明前。Prompts 下预置移动、交互和菜单三行，开启可编辑子节点后可以修改或复制这些 ActionPrompt。示例的 WASD、鼠标左键、Esc 和 Xbox 图标是显示配置，需按游戏实际绑定调整。
 
 Gamepad 可在编辑器中预览手柄图标，Follow Input Device 默认开启，在运行时随键鼠／手柄输入切换，也可关闭后由宿主调用 set_gamepad()。组件不接管游戏输入。主菜单底部提示条和协议准备提示已使用同一套图标组件；在小游戏 HUD 中使用纵向提示时，遵循 party_minimal_hud 的框架提示收起约定。
+
+## 内容包浏览
+
+主菜单的“内容包”打开 `core/ui/content_browser/content_browser.tscn` 固定页面，按协议、主游戏、小游戏分类，并支持名称或 ID 搜索。选中内容包后显示版本和本机配置路径；“配置本机设置”复用偏好设置页，显式应用后写入 JSON。主游戏使用绑定协议，小游戏可选择已安装且适配的协议。无可用协议时只编辑自身设置，保留已有协议覆盖文件。房主规则仍由大厅配置。

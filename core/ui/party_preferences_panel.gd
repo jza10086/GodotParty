@@ -31,7 +31,7 @@ func configure(settings_store: RefCounted, target: String, protocol: String) -> 
 		return
 	revision = data.revision
 	_section("own", store.catalog.schema(target), data.own, {}, "", false)
-	if target != protocol:
+	if not protocol.is_empty() and target != protocol:
 		var layers: Dictionary = store.local_layers(target, protocol)
 		if layers.is_empty():
 			error_label.text = store.last_error

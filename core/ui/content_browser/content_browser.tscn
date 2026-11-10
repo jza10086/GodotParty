@@ -1,0 +1,60 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://core/ui/content_browser/content_browser.gd" id="logic"]
+[ext_resource type="PackedScene" path="res://core/ui/settings/settings_workspace.tscn" id="workspace"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="button"]
+[node name="ContentBrowser" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("logic")
+[node name="Workspace" parent="." instance=ExtResource("workspace")]
+unique_name_in_owner = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 28.0
+offset_right = -40.0
+offset_bottom = -28.0
+[node name="Search" type="LineEdit" parent="Workspace/Tools"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(260, 56)
+placeholder_text = "搜索名称或 ID"
+[node name="ProtocolLabel" type="Label" parent="Workspace/Tools"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "继承协议"
+[node name="Protocol" type="OptionButton" parent="Workspace/Tools"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(460, 56)
+[node name="Protocols" type="VBoxContainer" parent="Workspace/Columns/List/Forms"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+[node name="Empty" type="Label" parent="Workspace/Columns/List/Forms/Protocols"]
+layout_mode = 2
+text = "没有匹配的内容包。"
+[node name="MainGames" type="VBoxContainer" parent="Workspace/Columns/List/Forms"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+[node name="Empty" type="Label" parent="Workspace/Columns/List/Forms/MainGames"]
+layout_mode = 2
+text = "没有匹配的内容包。"
+[node name="MiniGames" type="VBoxContainer" parent="Workspace/Columns/List/Forms"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+[node name="Empty" type="Label" parent="Workspace/Columns/List/Forms/MiniGames"]
+layout_mode = 2
+text = "没有匹配的内容包。"
+[node name="Configure" parent="Workspace/Actions" instance=ExtResource("button")]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(240, 56)
+text = "配置本机设置"

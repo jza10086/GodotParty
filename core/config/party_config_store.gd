@@ -62,8 +62,6 @@ func _with_branch(id: String, protocol: String) -> Dictionary:
 
 ## Fixed-target edit session: expected revision prevents stale dialogs from overwriting changes.
 func commit(id: String, protocol: String, revision: int, edits: Array) -> Error:
-	if catalog.get_package(id).get("kind") != "protocols" and protocol.is_empty():
-		return ERR_INVALID_PARAMETER
 	var old: Dictionary = read(id, protocol)
 	if old.is_empty():
 		return ERR_INVALID_DATA
@@ -101,7 +99,8 @@ func commit(id: String, protocol: String, revision: int, edits: Array) -> Error:
 	if next == old:
 		return OK
 	next.revision = int(old.revision) + 1
-	var error: Error = _persist(id, protocol, next)
+	# Own-only editing must preserve any protocol override files already on disk.
+	var error: Error = write_configs({own_path(id): _encoded(id, int(next.revision), next.own)}) if protocol.is_empty() else _persist(id, protocol, next)
 	if error != OK:
 		last_error = "本机保存失败：" + error_string(error)
 		return error

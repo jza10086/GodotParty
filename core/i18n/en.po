@@ -332,3 +332,39 @@ msgstr "Could not save lab settings: "
 
 msgid "实验设置已保存，下次创建或加入房间时生效。"
 msgstr "Lab settings saved. They apply when you next host or join a room."
+
+msgid "内容包"
+msgstr "Content packages"
+
+msgid "主游戏"
+msgstr "Main games"
+
+msgid "小游戏"
+msgstr "Minigames"
+
+msgid "搜索名称或 ID"
+msgstr "Search name or ID"
+
+msgid "继承协议"
+msgstr "Inherited protocol"
+
+msgid "配置本机设置"
+msgstr "Configure local settings"
+
+msgid "选择内容包，查看说明并配置本机设置。"
+msgstr "Select a package to view details and configure local settings."
+
+msgid "没有匹配的内容包。"
+msgstr "No matching packages."
+
+msgid "仅游戏自身设置（无可用协议）"
+msgstr "Game settings only (no available protocol)"
+
+msgid "配置文件："
+msgstr "Preferences file:"
+
+msgid "协议覆盖文件："
+msgstr "Protocol override file:"
+
+msgid "修改后点击应用保存；房间规则仍在大厅中配置。"
+msgstr "Click Apply to save changes; room rules are configured in the lobby."

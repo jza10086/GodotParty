@@ -23,6 +23,7 @@ const MENU_TEXT: Dictionary = {
 	"Home/Menu/Start:text": "创建房间",
 	"Home/Menu/Join:text": "加入房间",
 	"Home/Menu/Settings:text": "设置",
+	"Home/Menu/Content:text": "内容包",
 	"Home/Menu/Exit:text": "退出",
 	"Home/Menu/ListenTest:text": "监听测试",
 	"Home/Menu/ConnectTest:text": "连接测试",
@@ -80,6 +81,7 @@ func initialize() -> void:
 	_button("Home/Menu/Start", func() -> void: open_modal("Create"))
 	_button("Home/Menu/Join", func() -> void: show_page("Rooms"))
 	_button("Home/Menu/Settings", app._settings_dialog)
+	_button("Home/Menu/Content", app._content_browser_dialog)
 	_button("Home/Menu/ListenTest", app._connectivity_dialog.bind(false))
 	_button("Home/Menu/ConnectTest", app._connectivity_dialog.bind(true))
 	_button("Home/Menu/NetworkLab", app._network_lab_dialog)

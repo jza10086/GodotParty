@@ -572,6 +572,21 @@ func _network_lab_dialog() -> void:
 	_session_menu.hide()
 	%UINavigation.focus_settings_on_open(_settings_page.page)
 
+## Browse installed content without creating a room or changing its protocol.
+func _content_browser_dialog() -> void:
+	if is_instance_valid(_settings_page):
+		return
+	_settings_focus = get_viewport().gui_get_focus_owner()
+	_settings_page = preload("res://core/ui/content_browser/content_browser.tscn").instantiate()
+	%Pages.add_child(_settings_page)
+	_settings_page.configure(catalog, runner.config_store)
+	_settings_page.back_requested.connect(_close_settings)
+	_settings_page.preferences_requested.connect(_preferences_dialog)
+	_frontend.hide()
+	_screen.hide()
+	_session_menu.hide()
+	%UINavigation.focus_settings_on_open(_settings_page.page)
+
 func _settings_dialog() -> void:
 	if is_instance_valid(_settings_page):
 		return

@@ -1,0 +1,10 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="button"]
+[node name="PackageRow" instance=ExtResource("button")]
+custom_minimum_size = Vector2(0, 72)
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+toggle_mode = true
+alignment = 0
+text_overrun_behavior = 3
+text = "内容包"
