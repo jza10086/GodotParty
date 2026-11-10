@@ -38,6 +38,10 @@ function New-AndroidProject([string]$destination) {
         New-Item -ItemType Directory -Path (Split-Path $target) -Force | Out-Null
         Copy-Item -LiteralPath $file.FullName -Destination $target
     }
+    # Stamp only the staged framework; the editor declaration remains pc.
+    $dataFile = Join-Path $destination 'core/runtime/party_data.gd'
+    $dataText = (Get-Content -LiteralPath $dataFile -Raw -Encoding UTF8).Replace('const SYSTEM: String = "pc"', 'const SYSTEM: String = "android"')
+    [IO.File]::WriteAllText($dataFile, $dataText, $utf8)
     New-Item -ItemType Directory -Path (Join-Path $destination 'core/dev') -Force | Out-Null
     foreach ($name in @('party_arguments.gd','export_content.gd','party_export_selection.gd')) {
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination (Join-Path $destination 'core/dev')

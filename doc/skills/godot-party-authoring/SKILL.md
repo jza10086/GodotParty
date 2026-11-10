@@ -40,6 +40,7 @@ Paths are relative to the project root.
 - Use native @rpc or PartyNet with call-site reliability. Do not declare streams/native_channels. Send only necessary data; send discrete data once and animate locally. Never periodically broadcast whole gameplay/world snapshots. Read doc/api/networking.md for channel ownership, native spawning, input rates and interpolation.
 - Source and PCK use the same paths and runtime. Publish only after a clean host without author source/cache can run the package.
 - Same-process content has ordinary Godot abilities. API correctness checks are not a security sandbox.
+- Protocol and game manifests declare supported_systems as text, such as ["windows", "android"]. This metadata does not enforce export, runtime or networking restrictions. Framework SYSTEM stays pc in editor source and is stamped windows/android in the corresponding exporter build copy. See doc/api/authoring.md.
 
 Use typed GDScript without :=. Keep public docs and protocol examples aligned with behavior.
 Run the narrow tests for the changed boundary; separate automated checks from manual editor and external-network acceptance.

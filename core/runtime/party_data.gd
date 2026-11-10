@@ -5,6 +5,8 @@ const API_VERSION: int = 5
 const WIRE_VERSION: int = 17
 const VERSION: String = "5.0.0"
 const FRAMEWORK_NAME: String = "GodotParty"
+## Build target declaration. Editor source stays pc; exporters stamp their staged copy.
+const SYSTEM: String = "pc"
 
 ## Wire messages may use integer entity IDs as map keys; persisted state keeps string keys.
 static func valid(value: Variant, depth: int = 0, integer_keys: bool = false) -> bool:

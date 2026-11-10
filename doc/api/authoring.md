@@ -62,6 +62,7 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
   "kind": "minigame",
   "package_version": "1.0.0",
   "core_api_major": 5,
+  "supported_systems": ["windows"],
   "player_counts": [2, 3, 4, 5, 6, 7, 8],
   "entry": "game.tscn",
   "localization": {
@@ -76,6 +77,10 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 ```
 
 已登记但尚不能从框架开局的原型须声明 `playable: false` 和空的 `adapters` 数组，并提供包内状态场景作为 entry。目录仍可读取这些包，大游戏无法选择它们。可玩包默认 `playable: true`，至少声明一个真正支持的适配器。
+
+协议、主游戏和小游戏用 `supported_systems` 字符串数组声明支持的系统，例如 `["windows", "android"]`。这是作者维护的文本说明，不参与导出筛选、加载拒绝或联机兼容判断，也不表示已经通过真机验收。导出内容包时原样保留声明，不随导出平台自动增加支持项。当前原版协议、小游戏轮换和竞拍大师声明 windows、android，其余现有游戏先声明 windows；作者适配其他系统后再修改。
+
+框架在 `core/runtime/party_data.gd` 的 `SYSTEM` 常量声明本机构建系统：编辑器源码固定为 `pc`，可视化 Windows / Android 导出器按各自预设在隔离构建副本中分别写入 `windows` / `android`。此字段不检测宿主操作系统，不改写原工程，也不改变输入、配置或运行行为。
 
 没有适配脚本时，setup 的 config 就是原协议请求，finish 的字典就是协议结果。
 协议、大游戏和小游戏均须声明 `player_counts`；配置依赖的限制与交集规则见 [可开局人数](player_counts.md)。

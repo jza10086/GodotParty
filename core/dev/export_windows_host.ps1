@@ -20,6 +20,10 @@ foreach ($file in Get-ChildItem -LiteralPath (Join-Path $projectRoot 'core') -Re
     New-Item -ItemType Directory -Path (Split-Path $destination) -Force | Out-Null
     Copy-Item -LiteralPath $file.FullName -Destination $destination
 }
+# Stamp only the staged framework; the editor declaration remains pc.
+$dataFile = Join-Path $sourceRoot 'core/runtime/party_data.gd'
+$dataText = (Get-Content -LiteralPath $dataFile -Raw -Encoding UTF8).Replace('const SYSTEM: String = "pc"', 'const SYSTEM: String = "windows"')
+[IO.File]::WriteAllText($dataFile, $dataText, $utf8)
 # The formal application uses this small argument reader.
 New-Item -ItemType Directory -Path (Join-Path $sourceRoot 'core/dev') -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $projectRoot 'core/dev/party_arguments.gd') -Destination (Join-Path $sourceRoot 'core/dev')
