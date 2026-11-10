@@ -18,31 +18,31 @@
 
 | 小游戏 | 适合风格与使用阶段 | BGM 候选 |
 | --- | --- | --- |
-| [方向密码](../games/minigame/direction_password/manifest.json) | 轻电子、稀疏节奏；展示方向序列时建议低音量 | B01 Puzzling；B02 Sci-fi Puzzle In-Game 1 |
-| [3D 国际象棋／中国象棋](../games/minigame/godot_party_default_3d_chess/manifest.json) | 舒缓钢琴、环境音乐；长时间思考不宜用强鼓点 | B23 Calm Piano 1 (Vaporware)；B18 Exploration Theme |
-| [炮火争锋](../games/minigame/godot_party_default_artillery_game/manifest.json) | 瞄准阶段克制，炮击阶段提高战斗感 | B07 Battle Theme；B24 Technological Messup |
-| [竞拍大师](../games/minigame/godot_party_default_auction_master/manifest.json) | 诙谐爵士用于交易，暗标阶段可用轻悬念 | B03 Quirky Jazz；B21 Insistent: background loop |
-| [海战棋](../games/minigame/godot_party_default_battleship_chess/manifest.json) | 部署／选点用悬念氛围，齐射用管弦战斗 | B21 Insistent: background loop；B09 Battle Theme A |
-| [3d桌球](../games/minigame/godot_party_default_billiards/manifest.json) | 球房爵士、轻 Lo-fi；保留击球音效空间 | B27 Richer；B16 Chill lofi inspired [loop edit]；B29 Chill lofi inspired |
-| [空白小游戏](../games/minigame/godot_party_default_blank/manifest.json) | 模板预览用轻松菜单音乐 | B19 Menu Chill Music；B17 Sherwood |
-| [山脊竞速](../games/minigame/godot_party_default_car_racing/manifest.json) | Techno／Drum & Bass；末圈可换高潮版，休闲比赛可试 Jazz Funk | B04 Hot Roadway；B05 Hot Roadway (Climax)；B12 Hyper Ultra-Racing；B06 Detour |
-| [纸牌会客厅](../games/minigame/godot_party_default_card_game/manifest.json) | 休闲爵士、Lo-fi；原型尚未开放 | B03 Quirky Jazz；B29 Chill lofi inspired |
-| [COASTLINE · 海岸飞行](../games/minigame/godot_party_default_flight/manifest.json) | 宽松的海洋氛围与钢琴，保留航行提示空间 | B18 Exploration Theme；B23 Calm Piano 1 (Vaporware) |
-| [水果武士](../games/minigame/godot_party_default_fruit_samurai/manifest.json) | 东方音色与轻快街机；切割／炸弹提示优先 | B10 Ninja Theme；B15 Happy Adventure (Loop) |
-| [阿瓦隆](../games/minigame/godot_party_default_identity_party/manifest.json) | 森林悬疑用于推理，中世纪民谣用于准备；发言时低音量 | B13 Dark Forest Theme；B22 Medieval: The Old Tower Inn；B21 Insistent: background loop |
-| [记忆拼图](../games/minigame/godot_party_default_jigsaw_puzzle/manifest.json) | 柔和钢琴、Lo-fi；便于观察与记忆 | B23 Calm Piano 1 (Vaporware)；B16 Chill lofi inspired [loop edit] |
-| [极速追逐](../games/minigame/godot_party_default_lighthouse_isles/manifest.json) | 明快电子与竞速节奏 | B04 Hot Roadway；B28 Happier Tune |
-| [连连看](../games/minigame/godot_party_default_matching_game/manifest.json) | 轻盈、规律的休闲电子 | B17 Sherwood；B01 Puzzling |
-| [合成大西八](../games/minigame/godot_party_default_merge_big_ssibal/manifest.json) | 轻松短循环；突出落球与合成音效 | B19 Menu Chill Music；B17 Sherwood |
-| [蛇蛇大作战](../games/minigame/godot_party_default_multi_snake_game/manifest.json) | 持续推进的街机电子；高潮版适合后半局 | B24 Technological Messup；B05 Hot Roadway (Climax) |
-| [云间跃行](../games/minigame/godot_party_default_platformer/manifest.json) | 明亮冒险、轻快 Chiptune | B14 A New Day；B15 Happy Adventure (Loop) |
-| [心理博弈](../games/minigame/godot_party_default_psychological_party/manifest.json) | 安静悬念或电子氛围；讨论阶段降低音量 | B21 Insistent: background loop；B20 MindStream |
-| [圆角俄罗斯方块](../games/minigame/godot_party_default_russian_block/manifest.json) | 稳定电子律动、轻快 Synthpop | B02 Sci-fi Puzzle In-Game 1；B28 Happier Tune |
-| [贪吃蛇](../games/minigame/godot_party_default_snake_game/manifest.json) | 复古电子、轻 Chiptune | B01 Puzzling；B15 Happy Adventure (Loop) |
-| [星潮](../games/minigame/godot_party_default_star_wave/manifest.json) | 复古电子战斗；Boss 可切换高能曲 | B24 Technological Messup；B25 8-Bit RPG Battle/Encounter Theme；B12 Hyper Ultra-Racing |
-| [铁鹰防线](../games/minigame/godot_party_default_tank_battle/manifest.json) | 管弦战斗；准备阶段用开战主题；原型尚未开放 | B09 Battle Theme A；B08 Prepare to fight |
-| [雷霆战争](../games/minigame/godot_party_default_tank_range/manifest.json) | 管弦战斗、史诗动作；保留机炮与导弹提示 | B07 Battle Theme；B09 Battle Theme A；B08 Prepare to fight |
-| [西部牛仔对决](../games/minigame/godot_party_default_west_showdown/manifest.json) | 西部吉他／铜管，酒馆曲用于准备；尚为占位模板 | B11 Spaghetti Western；B27 Richer；B26 Crowded Pub |
+| [方向密码](../games/minigame/gp_direction_code/manifest.json) | 轻电子、稀疏节奏；展示方向序列时建议低音量 | B01 Puzzling；B02 Sci-fi Puzzle In-Game 1 |
+| [3D 国际象棋／中国象棋](../games/minigame/gp_3d_chess/manifest.json) | 舒缓钢琴、环境音乐；长时间思考不宜用强鼓点 | B23 Calm Piano 1 (Vaporware)；B18 Exploration Theme |
+| [炮火争锋](../games/minigame/gp_artillery/manifest.json) | 瞄准阶段克制，炮击阶段提高战斗感 | B07 Battle Theme；B24 Technological Messup |
+| [竞拍大师](../games/minigame/gp_auction_master/manifest.json) | 诙谐爵士用于交易，暗标阶段可用轻悬念 | B03 Quirky Jazz；B21 Insistent: background loop |
+| [海战棋](../games/minigame/gp_battleship/manifest.json) | 部署／选点用悬念氛围，齐射用管弦战斗 | B21 Insistent: background loop；B09 Battle Theme A |
+| [3d桌球](../games/minigame/gp_billiards/manifest.json) | 球房爵士、轻 Lo-fi；保留击球音效空间 | B27 Richer；B16 Chill lofi inspired [loop edit]；B29 Chill lofi inspired |
+| [空白小游戏](../games/minigame/gp_blank/manifest.json) | 模板预览用轻松菜单音乐 | B19 Menu Chill Music；B17 Sherwood |
+| [山脊竞速](../games/minigame/gp_car_racing/manifest.json) | Techno／Drum & Bass；末圈可换高潮版，休闲比赛可试 Jazz Funk | B04 Hot Roadway；B05 Hot Roadway (Climax)；B12 Hyper Ultra-Racing；B06 Detour |
+| [纸牌会客厅](../games/minigame/gp_cards/manifest.json) | 休闲爵士、Lo-fi；原型尚未开放 | B03 Quirky Jazz；B29 Chill lofi inspired |
+| [COASTLINE · 海岸飞行](../games/minigame/gp_flight/manifest.json) | 宽松的海洋氛围与钢琴，保留航行提示空间 | B18 Exploration Theme；B23 Calm Piano 1 (Vaporware) |
+| [水果武士](../games/minigame/gp_fruit_samurai/manifest.json) | 东方音色与轻快街机；切割／炸弹提示优先 | B10 Ninja Theme；B15 Happy Adventure (Loop) |
+| [阿瓦隆](../games/minigame/gp_avalon/manifest.json) | 森林悬疑用于推理，中世纪民谣用于准备；发言时低音量 | B13 Dark Forest Theme；B22 Medieval: The Old Tower Inn；B21 Insistent: background loop |
+| [记忆拼图](../games/minigame/gp_jigsaw/manifest.json) | 柔和钢琴、Lo-fi；便于观察与记忆 | B23 Calm Piano 1 (Vaporware)；B16 Chill lofi inspired [loop edit] |
+| [极速追逐](../games/minigame/gp_chase/manifest.json) | 明快电子与竞速节奏 | B04 Hot Roadway；B28 Happier Tune |
+| [连连看](../games/minigame/gp_matching/manifest.json) | 轻盈、规律的休闲电子 | B17 Sherwood；B01 Puzzling |
+| [合成大西八](../games/minigame/gp_merge_ssibal/manifest.json) | 轻松短循环；突出落球与合成音效 | B19 Menu Chill Music；B17 Sherwood |
+| [蛇蛇大作战](../games/minigame/gp_snake_battle/manifest.json) | 持续推进的街机电子；高潮版适合后半局 | B24 Technological Messup；B05 Hot Roadway (Climax) |
+| [云间跃行](../games/minigame/gp_platformer/manifest.json) | 明亮冒险、轻快 Chiptune | B14 A New Day；B15 Happy Adventure (Loop) |
+| [心理博弈](../games/minigame/gp_psych_party/manifest.json) | 安静悬念或电子氛围；讨论阶段降低音量 | B21 Insistent: background loop；B20 MindStream |
+| [圆角俄罗斯方块](../games/minigame/gp_tetris/manifest.json) | 稳定电子律动、轻快 Synthpop | B02 Sci-fi Puzzle In-Game 1；B28 Happier Tune |
+| [贪吃蛇](../games/minigame/gp_snake/manifest.json) | 复古电子、轻 Chiptune | B01 Puzzling；B15 Happy Adventure (Loop) |
+| [星潮](../games/minigame/gp_star_wave/manifest.json) | 复古电子战斗；Boss 可切换高能曲 | B24 Technological Messup；B25 8-Bit RPG Battle/Encounter Theme；B12 Hyper Ultra-Racing |
+| [铁鹰防线](../games/minigame/gp_tank_battle/manifest.json) | 管弦战斗；准备阶段用开战主题；原型尚未开放 | B09 Battle Theme A；B08 Prepare to fight |
+| [雷霆战争](../games/minigame/gp_tank_war/manifest.json) | 管弦战斗、史诗动作；保留机炮与导弹提示 | B07 Battle Theme；B09 Battle Theme A；B08 Prepare to fight |
+| [西部牛仔对决](../games/minigame/gp_west_duel/manifest.json) | 西部吉他／铜管，酒馆曲用于准备；尚为占位模板 | B11 Spaghetti Western；B27 Richer；B26 Crowded Pub |
 | [霓虹节拍](../games/minigame/gp_rhythm_game/manifest.json) | 菜单可用舒缓电子／Lo-fi；演奏时只播放谱面歌曲 | B20 MindStream；B16 Chill lofi inspired [loop edit]；B02 Sci-fi Puzzle In-Game 1；B04 Hot Roadway；B05 Hot Roadway (Climax) |
 
 霓虹节拍：B02（138 BPM）、B04（160 BPM）、B05（175 BPM）可作为制谱候选，速度来自作者说明／文件名；**本次未制谱，也未测定拍点偏移**。进入演奏时需停止菜单音乐，避免第二条背景音乐干扰判定和听感。

@@ -2,10 +2,10 @@ extends Control
 ## Editor-run Avalon interaction lab. No PartyAPI, lobby or multiplayer peer.
 ## Uses the production UI/session and the real match model with scenario actions.
 const Simulation: Script = preload("res://local_simulation/avalon_simulation.gd")
-const AvalonUI: Script = preload("res://games/minigame/godot_party_default_identity_party/scripts/ui/avalon.gd")
-const AvalonTable: PackedScene = preload("res://games/minigame/godot_party_default_identity_party/scenes/avalon.tscn")
-const Session: Script = preload("res://games/minigame/godot_party_default_identity_party/scripts/session/game_session.gd")
-const FONT: Font = preload("res://games/minigame/godot_party_default_identity_party/assets/fonts/NotoSansSC-Regular.otf")
+const AvalonUI: Script = preload("res://games/minigame/gp_avalon/scripts/ui/avalon.gd")
+const AvalonTable: PackedScene = preload("res://games/minigame/gp_avalon/scenes/avalon.tscn")
+const Session: Script = preload("res://games/minigame/gp_avalon/scripts/session/game_session.gd")
+const FONT: Font = preload("res://games/minigame/gp_avalon/assets/fonts/NotoSansSC-Regular.otf")
 @export var initial_case: String = "intro"
 @export_range(5, 8) var initial_player_count: int = 5
 var simulation: RefCounted

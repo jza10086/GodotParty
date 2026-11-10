@@ -11,7 +11,7 @@ F5 → 创建房间 → 选择「GodotPartyDefault · 小游戏轮换」→ 大�
 | 允许小游戏重复 | 开启 | 顺序循环列表；随机每局独立抽取，可能连续抽中同一项 |
 | 局间间隔 | 0 秒 | 0–30；0 表示直接继续，不弹出阻断流程的单局成绩页 |
 
-大厅可直接勾选[空白小游戏](../../minigame/godot_party_default_blank/README.md)，测试全员点击后的本轮排名。房主子实例发送 `playlist/round_query` 和整数 `nonce` 后，轮换控制器向当前子实例发送 `playlist/round_info`，载荷包含同一 `nonce` 和父游戏已锁定的 `request_id`。
+大厅可直接勾选[空白小游戏](../../minigame/gp_blank/README.md)，测试全员点击后的本轮排名。房主子实例发送 `playlist/round_query` 和整数 `nonce` 后，轮换控制器向当前子实例发送 `playlist/round_info`，载荷包含同一 `nonce` 和父游戏已锁定的 `request_id`。
 
 不允许重复时，顺序取列表前 N 项，随机洗牌后取前 N 项。队列在开始时生成并随大游戏状态保存；恢复存档不重新抽签。房间规则只在开局前调整。每轮默认选择所有仍在线的主游戏参与者，小游戏人数限制继续由框架检查。
 

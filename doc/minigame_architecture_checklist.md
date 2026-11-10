@@ -60,7 +60,7 @@
 
 ### M01 方向密码　A　依赖 G02
 
-包：`direction_password`。定位：[direction_password.gd](../games/minigame/direction_password/direction_password.gd) 的 `_ready()`、`_unhandled_key_input()`、`activate_primary()`、`enter_direction()`。
+包：`gp_direction_code`。定位：[direction_password.gd](../games/minigame/gp_direction_code/direction_password.gd) 的 `_ready()`、`_unhandled_key_input()`、`activate_primary()`、`enter_direction()`。
 
 - [x] 从父节点探测改为显式注入；正式方向、撤销、确认动作使用 PartyInput，按钮和键盘共用阶段/菜单门控。当前只有本地键码匹配，没有正式输入上下文。
 - [ ] 保留两排八个答案槽和六行成绩，补齐仍散落的阶段/反馈文字模板；预览继续使用已有 DEFAULT_TEXT。
@@ -70,7 +70,7 @@
 
 ### M02 山脊竞速　A　依赖 G02、G03
 
-包：`godot_party_default_car_racing`。定位：[scripts/main.gd](../games/minigame/godot_party_default_car_racing/scripts/main.gd) 的 `_setup_inputs()`；[scripts/arcade_car.gd](../games/minigame/godot_party_default_car_racing/scripts/arcade_car.gd) 的 `_ready()`、`_physics_process()`；`scenes/car.tscn`。
+包：`gp_car_racing`。定位：[scripts/main.gd](../games/minigame/gp_car_racing/scripts/main.gd) 的 `_setup_inputs()`；[scripts/arcade_car.gd](../games/minigame/gp_car_racing/scripts/arcade_car.gd) 的 `_ready()`、`_physics_process()`；`scenes/car.tscn`。
 
 - [x] 用正式输入注入替换运行时添加/删除全局动作，保留 F6 独立操作；处理原 Esc 暂停和框架菜单，菜单打开时车辆不能继续采纳驾驶输入。
 - [ ] 四个车轮 pivot 目前仍在 `_ready()` 查名、创建并 reparent；保存到车辆子场景并显式引用。固定发动机播放器入场景/音频组件。
@@ -81,7 +81,7 @@
 
 ### M03 海岸飞行　A　依赖 G02、G03
 
-包：`godot_party_default_flight`。定位：[scripts/main.gd](../games/minigame/godot_party_default_flight/scripts/main.gd) 的 `_bind_inputs()`、`_make_audio()`、`_physics_process()`、`_capture_mouse()`、`_set_paused()`。
+包：`gp_flight`。定位：[scripts/main.gd](../games/minigame/gp_flight/scripts/main.gd) 的 `_bind_inputs()`、`_make_audio()`、`_physics_process()`、`_capture_mouse()`、`_set_paused()`。
 
 - [x] 分离正式输入与 F6 输入，覆盖轴轮询、鼠标捕获、失焦、菜单及释放后重新允许输入的流程；保持已有键鼠混合控制优先级。
 - [x] 螺旋桨循环通过 Cue/作用域音频管理；当前直接修改 load 得到的共享 AudioStreamWAV 的循环参数，改为资源配置或修改前复制。
@@ -92,7 +92,7 @@
 
 ### M04 极速追逐　A　依赖 G02、G03
 
-包：`godot_party_default_lighthouse_isles`，原清单称灯塔群岛。定位：[scripts/main.gd](../games/minigame/godot_party_default_lighthouse_isles/scripts/main.gd) 的 `_setup_inputs()`、`_course_forward()`、`_build_sounds()`、`_play_sound()`；`scripts/player.gd`。
+包：`gp_chase`，原清单称灯塔群岛。定位：[scripts/main.gd](../games/minigame/gp_chase/scripts/main.gd) 的 `_setup_inputs()`、`_course_forward()`、`_build_sounds()`、`_play_sound()`；`scripts/player.gd`。
 
 - [x] 正式移动、跳跃、地图、重试和暂停统一走输入上下文；保留检查点/坠落规则。
 - [x] 将已确定的 course 依赖声明成具体脚本类型，直接调用 `camera_forward_at()`，移除相应 `has_method` 猜测与静默备用方向。
@@ -105,7 +105,7 @@
 
 ### M05 圆角俄罗斯方块　A　依赖 G02
 
-包：`godot_party_default_russian_block`。定位：[scripts/main.gd](../games/minigame/godot_party_default_russian_block/scripts/main.gd)、[scripts/party.gd](../games/minigame/godot_party_default_russian_block/scripts/party.gd)、`scripts/battle_session.gd`。
+包：`gp_tetris`。定位：[scripts/main.gd](../games/minigame/gp_tetris/scripts/main.gd)、[scripts/party.gd](../games/minigame/gp_tetris/scripts/party.gd)、`scripts/battle_session.gd`。
 
 - [x] 正式经典模式的横移、软降、硬降、旋转、暂存全部改为声明动作；连续物理键轮询也必须遵守输入门控，不能只改事件回调。
 - [ ] 经典玩法、独立多盘演示和正式 Party 接入明确分开；保留现有多盘预览，不把同屏演示自动宣布为已接入的在线多人模式。
@@ -129,7 +129,7 @@
 
 ### M07 水果武士　A/B　依赖 G01、G03
 
-包：`godot_party_default_fruit_samurai`。定位：[game.gd](../games/minigame/godot_party_default_fruit_samurai/game.gd)、[scripts/main.gd](../games/minigame/godot_party_default_fruit_samurai/scripts/main.gd)、[scripts/hud_skin.gd](../games/minigame/godot_party_default_fruit_samurai/scripts/hud_skin.gd)。
+包：`gp_fruit_samurai`。定位：[game.gd](../games/minigame/gp_fruit_samurai/game.gd)、[scripts/main.gd](../games/minigame/gp_fruit_samurai/scripts/main.gd)、[scripts/hud_skin.gd](../games/minigame/gp_fruit_samurai/scripts/hud_skin.gd)。
 
 - [x] 入口复制了云间跃行的 IS_PLATFORM 常量分支，删去本包永远不会执行的分支，直接声明 Fruit 玩法依赖；不为去重引入新的通用挑战框架。
 - [x] 处理 `_send_progress()`、`_publish()` 的 Error，停止时解除连接并结束切割状态。保持本地灵敏切割、房主有界成绩汇总。
@@ -142,7 +142,7 @@
 
 ### M08 云间跃行　A/B　依赖 G01、G03
 
-包：`godot_party_default_platformer`。定位：[game.gd](../games/minigame/godot_party_default_platformer/game.gd)、`scripts/world11.gd`、`scripts/world11_player.gd`、`scripts/sound.gd`。
+包：`gp_platformer`。定位：[game.gd](../games/minigame/gp_platformer/game.gd)、`scripts/world11.gd`、`scripts/world11_player.gd`、`scripts/sound.gd`。
 
 - [ ] 移除水果分支和 IS_PLATFORM 开关，使用明确的 world/player 依赖；处理进度/排名发送返回值并清理连接。
 - [ ] 普通声音接作用域组件。保留当前课程场景、出生点和运行时敌人/拾取状态，不重新生成固定地图。
@@ -153,7 +153,7 @@
 
 ### M09 贪吃蛇　B　依赖 G01、G03
 
-包：`godot_party_default_snake_game`。定位：[game.gd](../games/minigame/godot_party_default_snake_game/game.gd)、[sound_bank.gd](../games/minigame/godot_party_default_snake_game/sound_bank.gd)、`board_view.gd`。
+包：`gp_snake`。定位：[game.gd](../games/minigame/gp_snake/game.gd)、[sound_bank.gd](../games/minigame/gp_snake/sound_bank.gd)、`board_view.gd`。
 
 - [ ] 用 Cue 与作用域声音池替换四个动态播放器；将 `_tone()` 中明确的数值/数组/播放器 Variant 改成具体类型。保留现有音色。
 - [ ] 速度枚举和必需配置使用已校验的配置，不再把未知值静默变成“标准”；状态与排行榜的中文拼接转为命名模板。
@@ -163,7 +163,7 @@
 
 ### M10 星潮　B　依赖 G01、G03
 
-包：`godot_party_default_star_wave`。定位：[game.gd](../games/minigame/godot_party_default_star_wave/game.gd)、[visual.gd](../games/minigame/godot_party_default_star_wave/visual.gd)、`arena.gd`、`game_core.gd`。
+包：`gp_star_wave`。定位：[game.gd](../games/minigame/gp_star_wave/game.gd)、[visual.gd](../games/minigame/gp_star_wave/visual.gd)、`arena.gd`、`game_core.gd`。
 
 - [ ] `visual._ready()` 中音频播放器/合成音接作用域；把调用 `visual._play()` 改为明确的反馈入口。
 - [ ] 保留 host arena、本机展示预测与既有 150ms 上限。改善 `render_game()` 按快照 key 对模型 `set()` 的边界：明确允许字段与接收方法，保留网络载荷校验，不把展示状态散写到任意模型属性。
@@ -173,7 +173,7 @@
 
 ### M11 竞拍大师　B　依赖 G01
 
-包：`godot_party_default_auction_master`。定位：[game.gd](../games/minigame/godot_party_default_auction_master/game.gd) 的 `make_snapshot()`、`render_game()`、`_open_catalog()`；`session.gd`、`warehouse_view.gd`。
+包：`gp_auction_master`。定位：[game.gd](../games/minigame/gp_auction_master/game.gd) 的 `make_snapshot()`、`render_game()`、`_open_catalog()`；`session.gd`、`warehouse_view.gd`。
 
 - [x] 私有快照发送的 Error 不得忽略；为 session 的 locked 状态、warehouse 的揭晓进度提供明确读取/更新入口，避免跨模块访问 `_locked`、`_animation_time`。
 - [x] 补齐阶段、报价状态、成交、羁绊等仍直接拼接的文字模板；固定彩虹品质条保存到 `catalog_item.tscn`，按品质显示。
@@ -185,7 +185,7 @@
 
 ### M12 3D 桌球　B　依赖 G01
 
-包：`godot_party_default_billiards`。定位：[game.gd](../games/minigame/godot_party_default_billiards/game.gd) 的 `_table_input()`、`_tip_input()`、`render_game()`；`pool_table.tscn`。
+包：`gp_billiards`。定位：[game.gd](../games/minigame/gp_billiards/game.gd) 的 `_table_input()`、`_tip_input()`、`render_game()`；`pool_table.tscn`。
 
 - [x] 保留 tournament / pool_physics / 场景分离和 30Hz 展示同步；输入与提示标签明确属于视图，网络动作由入口负责。
 - [x] 出杆高低/左右塞、进行中/名次等剩余拼接转模板。选桌、回到本人桌与重置击球点明确遵守菜单和本地弹层的操作门控。
@@ -197,7 +197,7 @@
 
 ### M13 连连看　B　依赖 G01
 
-包：`godot_party_default_matching_game`。定位：[game.gd](../games/minigame/godot_party_default_matching_game/game.gd) 的 `handle_action()`、`_update_controls()`；`board_3d.gd`、`matching_piece.tscn`。
+包：`gp_matching`。定位：[game.gd](../games/minigame/gp_matching/game.gd) 的 `handle_action()`、`_update_controls()`；`board_3d.gd`、`matching_piece.tscn`。
 
 - [x] 私有 hint 发送结果处理失败；提示扣减与失败后的控制流要一致，不默认为发送成功。
 - [x] 观战提示等剩余文案改成翻译键；固定交互面、80 个棋子实例和现有 world/sun 挂点保留。
@@ -209,7 +209,7 @@
 
 ### M14 合成大西八　B　依赖 G01
 
-包：`godot_party_default_merge_big_ssibal`。定位：[game.gd](../games/minigame/godot_party_default_merge_big_ssibal/game.gd)、[arena_view.gd](../games/minigame/godot_party_default_merge_big_ssibal/arena_view.gd)。
+包：`gp_merge_ssibal`。定位：[game.gd](../games/minigame/gp_merge_ssibal/game.gd)、[arena_view.gd](../games/minigame/gp_merge_ssibal/arena_view.gd)。
 
 - [x] 此包已声明中英双语，但 footer、倒计时、排行、下一球和溢出警告仍直接写中文；补稳定键、命名参数及两份翻译。
 - [x] 固定箱体外框、下一球标题和进化图例改为场景可编辑控件；不同玩家的箱体外观做子场景。球体、瞄准线和溢出实时状态继续绘制或按需生成。
@@ -223,7 +223,7 @@
 
 ### M15 蛇蛇大作战　C/B　依赖 G01
 
-包：`godot_party_default_multi_snake_game`。定位：[game.gd](../games/minigame/godot_party_default_multi_snake_game/game.gd)、`snake_world.gd`、`arena_view.gd`。
+包：`gp_snake_battle`。定位：[game.gd](../games/minigame/gp_snake_battle/game.gd)、`snake_world.gd`、`arena_view.gd`。
 
 - [x] 当前 host 模拟、鉴权/序号、世界与视图分层、信号清理已比较明确，无需重拆架构。
 - [x] `_update_hud()` 的排行榜用可编辑玩家行或明确的文本模板，成员变化才增删行，分数/排序变化更新原行；固定字体/Theme 可保存资源并注入。
@@ -235,7 +235,7 @@
 
 ### M16 3D 国际象棋　B　依赖 G01
 
-包：`godot_party_default_3d_chess`。定位：[game.gd](../games/minigame/godot_party_default_3d_chess/game.gd)、[chess_view.gd](../games/minigame/godot_party_default_3d_chess/chess_view.gd) 的 `_ready()`、`configure_mode()`、`_update_camera()`、`_rebuild_markers()`。
+包：`gp_3d_chess`。定位：[game.gd](../games/minigame/gp_3d_chess/game.gd)、[chess_view.gd](../games/minigame/gp_3d_chess/chess_view.gd) 的 `_ready()`、`configure_mode()`、`_update_camera()`、`_rebuild_markers()`。
 
 - [ ] 给视图声明具体脚本类型/可替换引用；必需视图和页面准备完成后的调用按内部契约访问，保留初始化取消时真正需要的判断。
 - [ ] 相机初始方位/距离现在由脚本常量和 `_update_camera()` 重设；改为可编辑模式机位/参数，以这些场景值作为 reset 基准，保留运行中 orbit。
@@ -246,7 +246,7 @@
 
 ### M17 海战棋　B
 
-包：`godot_party_default_battleship_chess`。定位：[party_round.gd](../games/minigame/godot_party_default_battleship_chess/party_round.gd)、[battle_view.gd](../games/minigame/godot_party_default_battleship_chess/battle_view.gd) 的 `_rebuild_ships()`、[ship_display.tscn](../games/minigame/godot_party_default_battleship_chess/ship_display.tscn)。
+包：`gp_battleship`。定位：[party_round.gd](../games/minigame/gp_battleship/party_round.gd)、[battle_view.gd](../games/minigame/gp_battleship/battle_view.gd) 的 `_rebuild_ships()`、[ship_display.tscn](../games/minigame/gp_battleship/ship_display.tscn)。
 
 - [x] 保留独立 gate 组合、逐接收者私有视图和观战房主权威计算；沿用当前共同回合、个人抢选、哑弹及个人分数规则，未修改纯规则文件或消息格式。
 - [x] 舰船 holder、名字牌、水线 Plane/ShaderMaterial 保存到 `ship_display.tscn`；导出五组完好/残骸资源，按舰型、舰长、朝向和沉没状态配置。水线资源按场景实例独立，名字牌样式可直接编辑；保留海面、格网、标记及弹着实现。
@@ -259,7 +259,7 @@
 
 ### M18 记忆拼图　A/B　依赖 G01
 
-包：`godot_party_default_jigsaw_puzzle`。定位：[scripts/main.gd](../games/minigame/godot_party_default_jigsaw_puzzle/scripts/main.gd) 的 `_ready()`、`start_match()`、`_apply_view()`；[scripts/picture_library.gd](../games/minigame/godot_party_default_jigsaw_puzzle/scripts/picture_library.gd)。
+包：`gp_jigsaw`。定位：[scripts/main.gd](../games/minigame/gp_jigsaw/scripts/main.gd) 的 `_ready()`、`start_match()`、`_apply_view()`；[scripts/picture_library.gd](../games/minigame/gp_jigsaw/scripts/picture_library.gd)。
 
 - [x] F6 自动配置 preview 后仍创建 PartyInput 获取正式 storage，随后 `picture_stats.record()` 写正式图片使用次数。预览改用本次内存统计或显式预览存储；正式持久化只由正式入口注入，不能把测试目录变成正式代码依赖。
 - [x] 入口已经是清楚的协议边界，保留逻辑动作信号、私有本机输入、host 规则和快照检查，不再叠一层通用管理器。
@@ -274,7 +274,7 @@
 
 ### M19 身份派对　A/B　依赖 G01
 
-包：`godot_party_default_identity_party`，当前正式名称阿瓦隆。定位：[game.gd](../games/minigame/godot_party_default_identity_party/game.gd)、`identity_match.gd`、`scripts/session/game_session.gd`。
+包：`gp_avalon`，当前正式名称阿瓦隆。定位：[game.gd](../games/minigame/gp_avalon/game.gd)、`identity_match.gd`、`scripts/session/game_session.gd`。
 
 - [x] 无效动作分支的 `send_to_player/send_to_peer` 也要处理 Error；停止时解除监听和清除本机私密展示，避免只禁用 stage 的处理。
 - [x] 入口目前调用 `stage._render()`、`stage._on_error()` 并写 exited；改为明确的展示/退出反馈方法，入口不依赖视图私有实现。
@@ -287,7 +287,7 @@
 
 ### M20 心理博弈　A/B　依赖 G01
 
-包：`godot_party_default_psychological_party`。定位：[game.gd](../games/minigame/godot_party_default_psychological_party/game.gd) 的 `_choose()`、`_send_snapshots()`、`_toggle_microphone()`、`party_stop()`。
+包：`gp_psych_party`。定位：[game.gd](../games/minigame/gp_psych_party/game.gd) 的 `_choose()`、`_send_snapshots()`、`_toggle_microphone()`、`party_stop()`。
 
 - [ ] `_choose()` 当前发送后直接禁用选择按钮，未检查 Error；处理失败后才决定锁定。逐人快照发送也不能忽略返回值。
 - [ ] 麦克风按钮加入明确的正式生命周期/菜单门控。停止时检查端点/路由关闭结果、解除连接，保证作用域总线清理顺序；重复停止不能误操作其它作用域。
@@ -298,7 +298,7 @@
 
 ### M21 炮火争锋　B
 
-包：`godot_party_default_artillery_game`。定位：[game.gd](../games/minigame/godot_party_default_artillery_game/game.gd)、`battle.gd`、`battlefield.gd`。
+包：`gp_artillery`。定位：[game.gd](../games/minigame/gp_artillery/game.gd)、`battle.gd`、`battlefield.gd`。
 
 - [ ] 保留独立 gate、host 模拟和当前载荷校验；入口里的训练 F6 分支明确隔离为本机预览配置，不能影响正式 request/settings。
 - [ ] 角度/力度、弹药详情、回合及结果文字补稳定模板；固定 16 种弹药按钮用显式绑定/资源配置，不再依赖容器子节点顺序隐式决定武器身份。
@@ -309,7 +309,7 @@
 
 ### M22 雷霆战争　A/B　依赖 G01、G03
 
-包：`godot_party_default_tank_range`，旧清单称坦克训练场，当前已有多人坦克战。定位：[scripts/main.gd](../games/minigame/godot_party_default_tank_range/scripts/main.gd)、`scripts/range_target.gd`、`scripts/tank_visual.gd`、`scripts/tank_controller.gd`。
+包：`gp_tank_war`，旧清单称坦克训练场，当前已有多人坦克战。定位：[scripts/main.gd](../games/minigame/gp_tank_war/scripts/main.gd)、`scripts/range_target.gd`、`scripts/tank_visual.gd`、`scripts/tank_controller.gd`。
 
 - [x] 相机／瞄具移入 `tank_camera.gd`，通过显式引用绑定载具；音频移入 `combat_audio.gd` 和固定场景。入口仍协调部署、作用域输入与房主模拟，没有拆分网络状态机。
 - [x] 发动机循环和炮击／命中 Cue 接入协议作用域音频；车辆碰撞、炮口与履带挂点保存在 `vehicles/*.tscn`。三种训练靶保存独立凸碰撞与明确部件配置，残骸通过显式网格引用同步碰撞，不再在 ready 猜名称生成。
@@ -322,7 +322,7 @@
 
 ### M23 纸牌会客厅原型　B，正式接入另立任务
 
-包：`godot_party_default_card_game`，`playable:false`；运行根为 `prototype/project.godot`。定位：[prototype/scripts/blackjack_game.gd](../games/minigame/godot_party_default_card_game/prototype/scripts/blackjack_game.gd) 的 `_open_betting()`、`_apply_fixture()`；`prototype/scripts/table_demo.gd`、`card_session.gd`。
+包：`gp_cards`，`playable:false`；运行根为 `prototype/project.godot`。定位：[prototype/scripts/blackjack_game.gd](../games/minigame/gp_cards/prototype/scripts/blackjack_game.gd) 的 `_open_betting()`、`_apply_fixture()`；`prototype/scripts/table_demo.gd`、`card_session.gd`。
 
 - [ ] 固定下注窗口、菜单、模式控件仍由代码创建，迁到相应场景；按席位数量变化的下注行与卡牌用子场景。保留已有各玩法牌桌、机位和 HUD。
 - [ ] 清理 `:=`、未类型参数/变量、分号压缩流程和无实际用途的 presenter 兼容字段。`--blackjack-fixture` 等测试夹具移到该独立工程根的 `tmp/test/`；验收截图不再写 `res://captures`。
@@ -333,7 +333,7 @@
 
 ### M24 铁鹰防线原型　B，正式接入另立任务
 
-包：`godot_party_default_tank_battle`，`playable:false`；运行根为 `prototype/project.godot`。定位：[prototype/scripts/main.gd](../games/minigame/godot_party_default_tank_battle/prototype/scripts/main.gd)、`network.gd`、`battle.gd`。
+包：`gp_tank_battle`，`playable:false`；运行根为 `prototype/project.godot`。定位：[prototype/scripts/main.gd](../games/minigame/gp_tank_battle/prototype/scripts/main.gd)、`network.gd`、`battle.gd`。
 
 - [ ] 保留 UI/network/battle 分层及“本地菜单不暂停服务器”语义；补显式类型，固定八声音池和声音资源入场景。
 - [ ] 独立原型的输入/连接设置与正式接入分开。未来接入时让 PartyAPI 拥有正式连接，不能再启动一套原型网络；在完成之前不改 playable 或适配器声明。
@@ -343,7 +343,7 @@
 
 ### M25 西部牛仔对决占位　C，当前无需代码改造
 
-包：`godot_party_default_west_showdown`。定位：[manifest.json](../games/minigame/godot_party_default_west_showdown/manifest.json)、`game.tscn`。
+包：`gp_west_duel`。定位：[manifest.json](../games/minigame/gp_west_duel/manifest.json)、`game.tscn`。
 
 - 当前只有空 Node3D 场景和 `playable:false`、空 adapters，没有已有玩法可重构。
 - [x] 已核对并保持未开放；没有添加空管理器、伪造生命周期或提前开放。

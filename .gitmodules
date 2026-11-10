@@ -1,37 +1,37 @@
 [submodule "godot_party_default_auction_master"]
-	path = games/minigame/godot_party_default_auction_master
+	path = games/minigame/gp_auction_master
 	url = git@github.com:jza10086/AuctionMaster.git
 	branch = main
 [submodule "godot_party_default_billiards"]
-	path = games/minigame/godot_party_default_billiards
+	path = games/minigame/gp_billiards
 	url = git@github.com:jza10086/Billiards.git
 	branch = main
 [submodule "godot_party_default_fruit_samurai"]
-	path = games/minigame/godot_party_default_fruit_samurai
+	path = games/minigame/gp_fruit_samurai
 	url = git@github.com:jza10086/FruitSamurai.git
 	branch = main
 [submodule "godot_party_default_identity_party"]
-	path = games/minigame/godot_party_default_identity_party
+	path = games/minigame/gp_avalon
 	url = git@github.com:jza10086/IdentityTemplate.git
 	branch = main
 [submodule "godot_party_default_matching_game"]
-	path = games/minigame/godot_party_default_matching_game
+	path = games/minigame/gp_matching
 	url = git@github.com:jza10086/MatchingGame.git
 	branch = main
 [submodule "godot_party_default_platformer"]
-	path = games/minigame/godot_party_default_platformer
+	path = games/minigame/gp_platformer
 	url = git@github.com:jza10086/Platformer.git
 	branch = main
 [submodule "godot_party_default_psychological_party"]
-	path = games/minigame/godot_party_default_psychological_party
+	path = games/minigame/gp_psych_party
 	url = git@github.com:jza10086/PsychologicalPartyGame.git
 	branch = main
 [submodule "godot_party_default_snake_game"]
-	path = games/minigame/godot_party_default_snake_game
+	path = games/minigame/gp_snake
 	url = git@github.com:jza10086/SnakeGame.git
 	branch = main
 [submodule "godot_party_default_star_wave"]
-	path = games/minigame/godot_party_default_star_wave
+	path = games/minigame/gp_star_wave
 	url = git@github.com:jza10086/StarWave.git
 	branch = main
 [submodule "gp_rhythm_game"]
@@ -39,62 +39,62 @@
 	url = git@github.com:jza10086/MusicGame.git
 	branch = main
 [submodule "direction_password"]
-	path = games/minigame/direction_password
+	path = games/minigame/gp_direction_code
 	url = git@github.com:jza10086/MemoryGame.git
 	branch = main
 [submodule "games/minigame/godot_party_default_jigsaw_puzzle"]
-	path = games/minigame/godot_party_default_jigsaw_puzzle
+	path = games/minigame/gp_jigsaw
 	url = git@github.com:jza10086/JigsawPuzzle.git
 	branch = main
 [submodule "games/minigame/godot_party_default_lighthouse_isles"]
-	path = games/minigame/godot_party_default_lighthouse_isles
+	path = games/minigame/gp_chase
 	url = git@github.com:jza10086/3DPlatformer.git
 	branch = main
 [submodule "games/minigame/godot_party_default_tank_range"]
-	path = games/minigame/godot_party_default_tank_range
+	path = games/minigame/gp_tank_war
 	url = git@github.com:jza10086/3DTankBattle.git
 	branch = main
 [submodule "games/minigame/godot_party_default_car_racing"]
-	path = games/minigame/godot_party_default_car_racing
+	path = games/minigame/gp_car_racing
 	url = git@github.com:jza10086/CarRacing.git
 	branch = main
 [submodule "games/minigame/godot_party_default_flight"]
-	path = games/minigame/godot_party_default_flight
+	path = games/minigame/gp_flight
 	url = git@github.com:jza10086/FlightGame.git
 	branch = main
 [submodule "games/minigame/godot_party_default_russian_block"]
-	path = games/minigame/godot_party_default_russian_block
+	path = games/minigame/gp_tetris
 	url = git@github.com:jza10086/RussianBlock.git
 	branch = main
 [submodule "games/minigame/godot_party_default_tank_battle"]
-	path = games/minigame/godot_party_default_tank_battle
+	path = games/minigame/gp_tank_battle
 	url = git@github.com:jza10086/TankBattle.git
 	branch = main
 [submodule "games/minigame/godot_party_default_battleship_chess"]
-	path = games/minigame/godot_party_default_battleship_chess
+	path = games/minigame/gp_battleship
 	url = git@github.com:jza10086/BattleshipChess.git
 	branch = main
 [submodule "games/minigame/godot_party_default_artillery_game"]
-	path = games/minigame/godot_party_default_artillery_game
+	path = games/minigame/gp_artillery
 	url = git@github.com:jza10086/ArtilleryGame.git
 	branch = main
 [submodule "games/minigame/godot_party_default_card_game"]
-	path = games/minigame/godot_party_default_card_game
+	path = games/minigame/gp_cards
 	url = git@github.com:jza10086/GodotCardGame.git
 	branch = main
 [submodule "games/minigame/godot_party_default_3d_chess"]
-	path = games/minigame/godot_party_default_3d_chess
+	path = games/minigame/gp_3d_chess
 	url = git@github.com:jza10086/3DChess.git
 	branch = main
 [submodule "games/minigame/godot_party_default_multi_snake_game"]
-	path = games/minigame/godot_party_default_multi_snake_game
+	path = games/minigame/gp_snake_battle
 	url = git@github.com:jza10086/MultiSnakeGame.git
 	branch = main
 [submodule "games/minigame/godot_party_default_west_showdown"]
-	path = games/minigame/godot_party_default_west_showdown
+	path = games/minigame/gp_west_duel
 	url = git@github.com:jza10086/WestShowdown.git
 	branch = main
 [submodule "games/minigame/godot_party_default_merge_big_ssibal"]
-	path = games/minigame/godot_party_default_merge_big_ssibal
+	path = games/minigame/gp_merge_ssibal
 	url = git@github.com:jza10086/MergeBigSsibal.git
 	branch = main

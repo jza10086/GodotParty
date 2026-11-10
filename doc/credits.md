@@ -57,8 +57,8 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 字体：Source Han Serif SC Regular 2.003（Adobe 思源宋体简体中文，SIL OFL 1.1，许可随协议保留） https://github.com/adobe-fonts/source-han-serif
 
 原型：AuctionMaster 仓库竞拍及物品插图 https://github.com/jza10086/AuctionMaster
-物资插图：竞拍大师 100 张写实透明 PNG（内置 imagegen 原创生成，Pillow 处理透明边缘；未使用其他游戏资产；逐图提示词见来源文件） games/minigame/godot_party_default_auction_master/assets/items/realistic/generation_prompts.json
-旧版物资插图：竞拍大师 40 张原创 SVG（本项目程序绘制，已停用但保留源文件） games/minigame/godot_party_default_auction_master/assets/items/
+物资插图：竞拍大师 100 张写实透明 PNG（内置 imagegen 原创生成，Pillow 处理透明边缘；未使用其他游戏资产；逐图提示词见来源文件） games/minigame/gp_auction_master/assets/items/realistic/generation_prompts.json
+旧版物资插图：竞拍大师 40 张原创 SVG（本项目程序绘制，已停用但保留源文件） games/minigame/gp_auction_master/assets/items/
 玩法参考：BidKing：竞拍之王（暗标竞拍与藏品估值方向；未使用其资产） https://store.steampowered.com/app/4128580/?l=schinese
 原型：SnakeGame 贪吃蛇规则和程序化棋盘 https://github.com/jza10086/SnakeGame
 原型：StarWave 星潮弹幕、程序化表现与背景着色器 https://github.com/jza10086/StarWave
@@ -89,8 +89,8 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 
 坦克：炮火争锋，Kenney Tanks（CC0，侧视车体、履带与炮管） https://kenney.nl/assets/tanks
 
-音频：空白模板示例旋律、提示、撞击和环境音，本项目程序合成 games/minigame/godot_party_default_blank/examples/audio/samples/
-配音：空白模板中文示例文本，本机 Windows Microsoft Huihui 离线合成 games/minigame/godot_party_default_blank/examples/audio/samples/voice_a.wav、voice_b.wav
+音频：空白模板示例旋律、提示、撞击和环境音，本项目程序合成 games/minigame/gp_blank/examples/audio/samples/
+配音：空白模板中文示例文本，本机 Windows Microsoft Huihui 离线合成 games/minigame/gp_blank/examples/audio/samples/voice_a.wav、voice_b.wav
 
 视觉参考截图：炮火争锋事件，ShellShock Live 官方商店与更新截图、Steam 社区实机截图（仅保留于 private_assets，不随项目发行） https://store.steampowered.com/app/326460/ShellShock_Live/ https://store.steampowered.com/news/posts/?appids=326460&enddate=1645653731 https://steamcommunity.com/sharedfiles/filedetails/?id=2069384920
 

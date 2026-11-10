@@ -2,7 +2,7 @@ extends RefCounted
 ## Offline scenario driver. All playable states are reached via the real rules.
 ## Full-role information is confined to the simulator console and scenario builder.
 const Protocol: Script = preload("res://games/protocols/godot_party_default_protocol/protocol.gd")
-const MatchModel: Script = preload("res://games/minigame/godot_party_default_identity_party/identity_match.gd")
+const MatchModel: Script = preload("res://games/minigame/gp_avalon/identity_match.gd")
 const CASES: Array[Dictionary] = [
 	{"id": "intro", "name": "01 开场序言", "hint": "逐行字幕；空格跳过，重播可重新观看。"},
 	{"id": "proposal", "name": "02 队长选人", "hint": "点击卡片选人、取消、选满及超额选择；确认后进入投票。"},
