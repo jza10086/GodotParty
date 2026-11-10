@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://core/ui/party_touch_escape.gd" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="EscapeStyle"]
+bg_color = Color(0.06, 0.075, 0.1, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.86, 0.94, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+
+[node name="TouchEscape" type="CanvasLayer"]
+layer = 128
+
+[node name="WakeArea" type="MarginContainer" parent="."]
+offset_right = 176.0
+offset_bottom = 128.0
+mouse_filter = 0
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+script = ExtResource("1")
+
+[node name="Escape" type="Button" parent="WakeArea"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(112, 64)
+layout_mode = 2
+mouse_filter = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.96, 0.97, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("EscapeStyle")
+text = "ESC"
+
+[node name="HideTimer" type="Timer" parent="WakeArea"]
+unique_name_in_owner = true
+one_shot = true

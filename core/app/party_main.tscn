@@ -14,6 +14,7 @@
 [ext_resource type="Script" uid="uid://dxq3qc6w4kbl" path="res://core/ui/party_ui_navigation.gd" id="navigation"]
 [ext_resource type="Script" uid="uid://8so0i70ir5ib" path="res://core/ui/network_status.gd" id="network_status"]
 [ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://core/ui/party_touch_escape.tscn" id="touch_escape"]
 
 [node name="party_main" type="Control" unique_id=1685594889]
 layout_mode = 3
@@ -187,6 +188,8 @@ visible = false
 z_index = 5
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="TouchEscape" parent="." instance=ExtResource("touch_escape")]
 
 [connection signal="pressed" from="FrameworkUI/GameScreen/Actions/Settings" to="." method="_settings_dialog"]
 [connection signal="pressed" from="FrameworkUI/GameScreen/Actions/Rules" to="." method="_room_rules_dialog"]
