@@ -11,6 +11,7 @@ const InputSettings = preload("res://core/api/party_input.gd")
 const Presets = preload("res://core/runtime/party_presets.gd")
 const Arguments = preload("res://core/dev/party_arguments.gd")
 const Packages = preload("res://core/content/party_packages.gd")
+const ContentArchive = preload("res://core/content/party_content_archive.gd")
 const PreferencesPanel: PackedScene = preload("res://core/ui/party_preferences_panel.tscn")
 const SystemSettings: PackedScene = preload("res://core/ui/party_system_settings.tscn")
 const ProtocolPage: PackedScene = preload("res://core/ui/party_protocol_page.tscn")
@@ -61,6 +62,10 @@ func _ready() -> void:
 		push_error("无法加载系统配置：" + settings.settings_path + " · " + error_string(settings_error))
 		return
 	packages = Packages.new()
+	var archive: RefCounted = ContentArchive.new()
+	var bootstrap_error: Error = archive.bootstrap(InputSettings.installation_directory())
+	if bootstrap_error != OK:
+		_content_error = archive.last_error
 	var source_choices: JsonConfig = JsonConfig.new()
 	var source_error: Error = source_choices.load(settings.settings_path.get_base_dir().path_join("party_sources.json"))
 	if source_error != OK and source_error != ERR_FILE_NOT_FOUND:
@@ -71,9 +76,10 @@ func _ready() -> void:
 		var pair: PackedStringArray = str(_arguments["source"]).split(":", true, 1)
 		if pair.size() == 2:
 			choices[pair[0]] = pair[1]
-	var mount_error: Error = packages.mount_directory(str(_arguments.get("pack-dir", InputSettings.installation_directory())), choices)
-	if mount_error != OK:
-		_content_error = packages.last_error
+	if _content_error.is_empty():
+		var mount_error: Error = packages.mount_directory(str(_arguments.get("pack-dir", InputSettings.installation_directory())), choices)
+		if mount_error != OK:
+			_content_error = packages.last_error
 	catalog = Catalog.new()
 	catalog.scan()
 	var declaration: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://core/i18n/localization.json"))
@@ -640,6 +646,16 @@ func _package_dialog() -> void:
 	var box: VBoxContainer = _modal("内容包 · 安装或更改后重新启动", preload("res://core/ui/dialogs/packages.tscn"))
 	var path: LineEdit = box.get_node("Path")
 	var info: Label = box.get_node("Status")
+	box.get_node("ImportArchive").pressed.connect(func() -> void:
+		_choose_transfer("content", info))
+	box.get_node("ExportSettings").pressed.connect(func() -> void:
+		_choose_transfer("export_settings", info))
+	box.get_node("ImportSettings").pressed.connect(func() -> void:
+		_choose_transfer("import_settings", info))
+	if OS.has_feature("android"):
+		path.hide()
+		box.get_node("Install").hide()
+		box.get_node("Sources").hide()
 	box.get_node("Install").pressed.connect(func() -> void:
 		var source: String = path.text.strip_edges()
 		if not source.ends_with(".pck") or not FileAccess.file_exists(source + ".json"):
@@ -668,6 +684,57 @@ func _package_dialog() -> void:
 	_dialog.confirmed.connect(func() -> void:
 		choices_file.set_value("sources", "choices", choices)
 		_check(preload("res://core/config/party_config_store.gd").write_configs({choices_path: choices_file.encode_to_text()})))
+
+## Android's system picker grants access to the selected document without broad storage access.
+func _choose_transfer(operation: String, info: Label) -> void:
+	var picker: FileDialog = FileDialog.new()
+	picker.access = FileDialog.ACCESS_FILESYSTEM
+	picker.use_native_dialog = true
+	picker.file_mode = FileDialog.FILE_MODE_SAVE_FILE if operation == "export_settings" else FileDialog.FILE_MODE_OPEN_FILE
+	picker.filters = PackedStringArray(["*.zip ; GodotParty content"]) if operation == "content" else PackedStringArray(["*.json ; GodotParty settings"])
+	if operation == "export_settings":
+		picker.current_file = "godotparty-settings.json"
+	_dialog.add_child(picker)
+	picker.canceled.connect(picker.queue_free)
+	picker.file_selected.connect(func(source: String) -> void:
+		if operation == "content":
+			var archive: RefCounted = ContentArchive.new()
+			var error: Error = archive.queue_update(source, InputSettings.installation_directory())
+			info.text = "内容包已接收，请退出并重新打开游戏。" if error == OK else archive.last_error
+		else:
+			info.text = _transfer_system_settings(source, operation == "export_settings")
+		picker.queue_free())
+	picker.popup_centered_ratio(0.8)
+
+## Transfer editable system preferences while retaining this installation's persistent player identity.
+func _transfer_system_settings(path: String, exporting: bool) -> String:
+	if exporting:
+		var values: Dictionary = settings.config.sections.duplicate(true)
+		values.erase("profile")
+		var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
+		if file == null:
+			return "无法导出配置：" + error_string(FileAccess.get_open_error())
+		file.store_string(JSON.stringify(values, "\t"))
+		file.flush()
+		return "系统配置已导出。" if file.get_error() == OK else "无法导出配置：" + error_string(file.get_error())
+	var imported: JsonConfig = JsonConfig.new()
+	var error: Error = imported.load(path)
+	if error != OK:
+		return "无法导入配置：" + imported.last_error + " " + error_string(error)
+	imported.sections.erase("profile")
+	imported.sections["profile"] = settings.config.sections.profile.duplicate(true)
+	var candidate: PartyInput = InputSettings.new()
+	candidate.config = imported
+	candidate.settings_path = settings.settings_path
+	error = candidate.validate_system_settings()
+	if error != OK:
+		return "系统配置内容无效，原配置未更改。"
+	error = candidate.save_settings()
+	if error != OK:
+		return "保存系统配置失败：" + error_string(error)
+	settings.config.sections = imported.sections
+	_apply_system_preferences()
+	return "系统配置已导入，本机玩家身份保持不变。"
 
 func _confirm_action(text: String, action: Callable) -> void:
 	var dialog: GPPartyDialog = preload("res://core/ui/party_dialog.tscn").instantiate()
@@ -763,6 +830,10 @@ func _process(_delta: float) -> void:
 		runner._lobby_api.input.input_blocked = modal
 	for scope: Dictionary in runner._scopes.values():
 		scope["api"].input.input_blocked = modal or (_minimal_hud and _session_controls_open) or scope["phase"] != "playing"
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		navigation_back()
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if _page == "game" and _minimal_hud and event.is_action_pressed("ui_cancel") and not event.is_echo():

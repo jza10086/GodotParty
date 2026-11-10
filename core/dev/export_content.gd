@@ -8,9 +8,12 @@ const Selection = preload("res://core/dev/party_export_selection.gd")
 func _initialize() -> void:
 	var output: String = ""
 	var request_path: String = ""
+	var stage_source: String = ""
 	for argument: String in OS.get_cmdline_user_args():
 		if argument.begins_with("--output="):
 			output = argument.trim_prefix("--output=")
+		elif argument.begins_with("--stage-source="):
+			stage_source = argument.trim_prefix("--stage-source=")
 		elif argument.begins_with("--request="):
 			request_path = argument.trim_prefix("--request=")
 	if output.is_empty() or not output.is_absolute_path():
@@ -30,6 +33,30 @@ func _initialize() -> void:
 	var selection: Dictionary = Selection.resolve(catalog, requested)
 	if not selection.ok:
 		_fail(selection.error)
+		return
+	if not stage_source.is_empty():
+		for id: String in selection.ids:
+			for path: String in Catalog.files(catalog.packages[id]._root):
+				if path.ends_with(".import"):
+					continue
+				var target: String = stage_source.path_join(path.trim_prefix("res://"))
+				var error: Error = DirAccess.make_dir_recursive_absolute(target.get_base_dir())
+				if error == OK:
+					error = DirAccess.copy_absolute(path, target)
+				if error != OK:
+					_fail("Cannot stage " + path + ": " + error_string(error))
+					return
+			var manifest: Dictionary = catalog.packages[id]
+			var payload: Dictionary = Packages.External.inventory(manifest._root, manifest.get("external_files", []))
+			if not payload.ok:
+				_fail(payload.error)
+				return
+			var error: Error = Packages.External.copy_payload(manifest._root, stage_source.path_join(manifest._root.trim_prefix("res://")), payload.files, payload.directories)
+			if error != OK:
+				_fail("Cannot stage external payload: " + error_string(error))
+				return
+		print("CONTENT_SOURCE_STAGE_PASS")
+		quit()
 		return
 	var packages: RefCounted = Packages.new()
 	for id: String in selection.ids:

@@ -2,6 +2,8 @@
 extends RefCounted
 
 static func application_root() -> String:
+	if OS.has_feature("android"):
+		return ProjectSettings.globalize_path("user://").trim_suffix("/")
 	return ProjectSettings.globalize_path("res://").trim_suffix("/") if OS.has_feature("editor") else OS.get_executable_path().get_base_dir()
 
 static func folder(value: Variant) -> bool:

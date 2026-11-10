@@ -8,7 +8,9 @@
 
 配置按三个职责组织：`manifest.json` 保存包 ID、名称、包/API 版本、协议及依赖；包内业务脚本 `settings.gd` 的静态 `schema()` 声明字段、默认值、限制、控件与层级；用户 JSON 文件只保存持久数据，不定义 UI。Schema 中 `audience: local` 属于本地偏好（画质、热键等），`audience: room` 属于房主规则。说明和默认值不复制到每份用户设置中；`settings_version` 标识数据结构版本，独立于包发布版本。只有房主规则提供命名预设。
 
-用户配置均为 UTF-8 JSON，可使用普通文本编辑器修改，位于项目根目录（编辑器）或可执行文件所在目录（导出）。`PartyInput.installation_directory()` 返回安装根目录；实例 `storage_directory()` 返回当前资料槽根目录。路径不依赖工作目录，不回退到 `user://`。读取偏好不生成默认配置；显式应用才保存；首次启动仍会持久化必要的 player_id。开发用 `--party-profile=<slot>` 将完整配置树隔离到 `tmp/test/profiles/<slot>/`，安装内容仍来自正式安装根目录。运行时不读取或迁移 CFG；JSON 语法和字段值无效时明确报错。
+用户配置均为 UTF-8 JSON，可使用普通文本编辑器修改，位于项目根目录（编辑器）或可执行文件所在目录（桌面导出）。Android 使用应用私有 `user://` 的绝对路径，保留下面相同的目录结构。`PartyInput.installation_directory()` 返回当前平台的安装数据根目录；实例 `storage_directory()` 返回当前资料槽根目录。路径不依赖工作目录。读取偏好不生成默认配置；显式应用才保存；首次启动仍会持久化必要的 player_id。开发用 `--party-profile=<slot>` 将完整配置树隔离到 `tmp/test/profiles/<slot>/`，安装内容仍来自正式安装根目录。运行时不读取或迁移 CFG；JSON 语法和字段值无效时明确报错。
+
+Android 的“内容包”界面通过系统文件选择器导入内容 ZIP，并导入/导出系统配置 JSON。系统配置传输不包含或替换本机 player_id；协议资料和游戏偏好继续通过游戏内设置修改，不包含在此 JSON 中。同包名、同签名 APK 覆盖安装保留应用数据；卸载或清除应用数据会删除这些配置。
 
 ```text
 GodotParty/

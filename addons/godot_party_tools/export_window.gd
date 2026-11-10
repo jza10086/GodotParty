@@ -3,6 +3,7 @@
 extends ConfirmationDialog
 const Catalog = preload("res://core/content/party_catalog.gd")
 const Selection = preload("res://core/dev/party_export_selection.gd")
+var platform: String = "Windows"
 var _catalog: RefCounted
 var _tree: Tree
 var _directory: LineEdit
@@ -18,7 +19,7 @@ var _job: String
 var _poll: float = 0.0
 
 func _ready() -> void:
-	title = "GodotParty · 导出 Windows 可玩包"
+	title = "GodotParty · 导出 " + platform + " 可玩包"
 	size = Vector2i(820, 720)
 	min_size = Vector2i(660, 520)
 	exclusive = true
@@ -80,7 +81,7 @@ func open() -> void:
 	var root: TreeItem = _tree.create_item()
 	_core = _tree.create_item(root)
 	_core.set_cell_mode(0, TreeItem.CELL_MODE_CHECK)
-	_core.set_text(0, "核心框架 · Windows x64")
+	_core.set_text(0, "核心框架 · Android APK" if platform == "Android" else "核心框架 · Windows x64")
 	_core.set_metadata(0, "@core")
 	_core.set_editable(0, true)
 	_core.set_checked(0, true)
@@ -175,7 +176,9 @@ func _refresh_selection() -> void:
 			selected += int(child.is_checked(0))
 		group.set_checked(0, total > 0 and selected == total)
 		group.set_indeterminate(0, selected > 0 and selected < total)
-	_status.text = ("已选择 %d 个内容包（含依赖）。已有配置及外置文件会保留。请先退出目标目录中的游戏。" % ids.size()) if _selection.ok else _selection.error
+	var description: String = "已选择 %d 个内容包（含依赖）。" % ids.size()
+	description += "勾选核心生成测试签名 APK；内容 ZIP 可在游戏中导入，重启后生效。" if platform == "Android" else "已有配置及外置文件会保留。请先退出目标目录中的游戏。"
+	_status.text = description if _selection.ok else _selection.error
 	_update_button()
 
 func _update_button() -> void:
@@ -198,7 +201,7 @@ func _start_export() -> void:
 	if request == null:
 		_status.text = "无法写入导出请求：" + error_string(FileAccess.get_open_error())
 		return
-	request.store_string(JSON.stringify({"core": _core.is_checked(0), "packages": _requested, "output": _directory.text}))
+	request.store_string(JSON.stringify({"platform": platform, "core": _core.is_checked(0), "packages": _requested, "output": _directory.text}))
 	request.flush()
 	error = request.get_error()
 	request.close()

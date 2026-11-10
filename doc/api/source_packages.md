@@ -36,6 +36,18 @@ dependencies 是包 ID 到精确 package_version 的映射。升级协议时，�
 
 core/dev/export_release.ps1 是窗口使用的同一后端，接收 RequestPath 指向的 JSON。请求包含 core 布尔值、output 绝对目录和 packages 包 ID 数组。export_windows_host.ps1 可单独构建核心；export_windows_minimal.ps1 是原版轮换与阿瓦隆的预设，复用同一后端和依赖计算。运行后仍需检查正式菜单、设置和实际开局；导出成功不等于多人或外网验收。
 
+## 可视化 Android 导出
+
+编辑器打开“项目 → 工具 → GodotParty：导出 Android 可玩包”。仍只需勾选内容和选择输出目录，依赖选择规则与 Windows 相同。勾选核心会生成 `GodotParty.apk`，同时生成 `GodotParty-content-android.zip`；不勾选核心则只生成内容 ZIP，用于单独更新小游戏。后端请求增加 `platform: "Android"`，省略时仍导出 Windows。
+
+当前 APK 是 ARM64、横屏、调试签名的测试包，使用本机 Godot 已配置的 Android SDK、Java 和匹配导出模板。导出器在隔离工程中导入 Android 资源，使用 Compatibility 渲染器，并启用屏幕触摸模拟鼠标左键；不会把触摸变成键盘操作，也不提供虚拟摇杆。需要键盘或鼠标右键的小游戏仍须另行适配。初版选择小游戏轮换与竞拍大师。
+
+APK 内置所选内容 ZIP；首次启动在应用私有存储中安装各包，再挂载 PCK 和注册 `class_name`。每个新 APK 构建首次运行会更新内置内容，已有 config/ 和已存在的外置数据文件保留，缺少的默认外置文件补齐。内容安装前校验平台、描述和路径，失败时报告原因。独立 ZIP 也使用相同目录与校验，不将配置打包。
+
+Android 不使用 Windows 文件资源管理器直接合并安装目录。在“内容包”中选择 Android 内容 ZIP，完全退出应用再打开后生效，不热替换正在使用的 PCK。原生文件选择器要求 Android 10 或更新系统；系统配置 JSON 可在此导出、编辑并导入，玩家身份保留。游戏偏好仍通过游戏内设置修改。覆盖安装 APK 时需保持包名与签名；卸载或清除应用数据会删除配置。
+
+APK 构建成功仅证明导出流程完成。真机验收需检查首次启动、创建/加入房间、竞拍大师触摸操作及再次启动后的配置保留。
+
 ## 外置文件与目录
 
 内容作者在 manifest.json 的 external_files 数组声明包内相对路径，目录必须以 / 结尾，文件不带结尾 /。例如 "external_files": ["charts/", "maps/default.json"]。省略时表示没有外置数据。路径大小写应与磁盘一致，不支持通配符、上级路径、链接、重叠声明及 config/、avatars/、manifest.json、content.pck、content.pck.json 等保留位置。

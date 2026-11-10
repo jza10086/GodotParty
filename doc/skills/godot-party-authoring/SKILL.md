@@ -45,6 +45,7 @@ Use typed GDScript without :=. Keep public docs and protocol examples aligned wi
 Run the narrow tests for the changed boundary; separate automated checks from manual editor and external-network acceptance.
 
 Windows host exports use core/dev/export_windows_host.ps1; the old Acceptance fixture was removed.
+Android exports use core/dev/export_android.ps1 through the Android export menu. Content stays in independent PCKs, installed from a platform-specific ZIP into private application storage before class registration. Touch emulates the left mouse button; keyboard-dependent games need their own mobile controls. See doc/api/source_packages.md for APK and content-only updates.
 Exported templates do not run editor-only --script tests. Read doc/api/source_packages.md for delivery.
 Native RPC is outside scope filtering. Stop author-owned senders before removal; native packets already
 in flight can still produce engine path errors after cancellation. See doc/testing.md for tested boundaries.

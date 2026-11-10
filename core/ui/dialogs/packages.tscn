@@ -1,33 +1,91 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://b2028safwecat"]
 
+[ext_resource type="Shader" uid="uid://bbmv2flgi2w7i" path="res://core/ui/ambient_reveal/surface.gdshader" id="2_k68qd"]
 [ext_resource type="PackedScene" path="res://core/ui/party_dialog.tscn" id="r1"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="r2"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r3"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r4"]
 
-[node name="Packages" instance=ExtResource("r1")]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_f6ek2"]
+resource_local_to_scene = true
+shader = ExtResource("2_k68qd")
+shader_parameter/use_backdrop = false
+shader_parameter/backdrop_origin = Vector2(0, 0)
+shader_parameter/backdrop_extent = Vector2(1100, 760)
 
+[node name="Packages" unique_id=296717293 instance=ExtResource("r1")]
+layout_mode = 3
+anchors_preset = 15
 
-[node name="Path" parent="Panel/Layout/Scroll/Content" instance=ExtResource("r2")]
+[node name="Scrim" parent="." index="0"]
+layout_mode = 0
+
+[node name="Panel" parent="." index="1"]
+material = SubResource("ShaderMaterial_f6ek2")
+layout_mode = 0
+
+[node name="Layout" parent="Panel" index="0"]
+layout_mode = 0
+
+[node name="Title" parent="Panel/Layout" index="0"]
+layout_mode = 2
+
+[node name="Scroll" parent="Panel/Layout" index="1"]
+layout_mode = 2
+
+[node name="Content" parent="Panel/Layout/Scroll" index="0"]
+layout_mode = 2
+
+[node name="Message" parent="Panel/Layout/Scroll/Content" index="0"]
+layout_mode = 2
+
+[node name="Path" parent="Panel/Layout/Scroll/Content" index="1" unique_id=1402223890 instance=ExtResource("r2")]
 unique_name_in_owner = true
+layout_mode = 2
 placeholder_text = "已导出的 .pck 文件绝对路径（旁边须有 .pck.json）"
 
-[node name="Status" parent="Panel/Layout/Scroll/Content" type="Label"]
+[node name="Status" type="Label" parent="Panel/Layout/Scroll/Content" index="2" unique_id=287005879]
 unique_name_in_owner = true
-text = ""
+layout_mode = 2
 autowrap_mode = 3
 
-[node name="Install" parent="Panel/Layout/Scroll/Content" instance=ExtResource("r3")]
+[node name="Install" parent="Panel/Layout/Scroll/Content" index="3" unique_id=973598714 instance=ExtResource("r3")]
 unique_name_in_owner = true
+layout_mode = 2
 text = "安装 PCK 及描述文件"
 
-[node name="Sources" parent="Panel/Layout/Scroll/Content" type="HBoxContainer"]
+[node name="Sources" type="HBoxContainer" parent="Panel/Layout/Scroll/Content" index="4" unique_id=747485368]
+layout_mode = 2
 
-
-[node name="Package" parent="Panel/Layout/Scroll/Content/Sources" instance=ExtResource("r4")]
+[node name="Package" parent="Panel/Layout/Scroll/Content/Sources" index="0" unique_id=66699612 instance=ExtResource("r4")]
 unique_name_in_owner = true
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Source" parent="Panel/Layout/Scroll/Content/Sources" instance=ExtResource("r4")]
+[node name="Source" parent="Panel/Layout/Scroll/Content/Sources" index="1" unique_id=480565605 instance=ExtResource("r4")]
 unique_name_in_owner = true
+layout_mode = 2
 
+[node name="ImportArchive" type="Button" parent="Panel/Layout/Scroll/Content" index="5" unique_id=1107882702]
+unique_name_in_owner = true
+layout_mode = 2
+text = "选择内容 ZIP（重启后更新）"
+
+[node name="ExportSettings" type="Button" parent="Panel/Layout/Scroll/Content" index="6" unique_id=561492165]
+unique_name_in_owner = true
+layout_mode = 2
+text = "导出系统配置 JSON"
+
+[node name="ImportSettings" type="Button" parent="Panel/Layout/Scroll/Content" index="7" unique_id=622473199]
+unique_name_in_owner = true
+layout_mode = 2
+text = "导入系统配置 JSON"
+
+[node name="Actions" parent="Panel/Layout" index="2"]
+layout_mode = 2
+
+[node name="Cancel" parent="Panel/Layout/Actions" index="0"]
+layout_mode = 2
+
+[node name="Confirm" parent="Panel/Layout/Actions" index="1"]
+layout_mode = 2

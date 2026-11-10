@@ -3,6 +3,8 @@ param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'go
 $ErrorActionPreference = 'Stop'
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $request = Get-Content -LiteralPath $RequestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+$platform = if ($request.platform) { [string]$request.platform } else { 'Windows' }
+if ($platform -notin 'Windows','Android') { throw 'Unsupported export platform' }
 if ($request.core -isnot [bool] -or $request.packages -isnot [Array] -or (!$request.core -and $request.packages.Count -eq 0)) { throw 'Select core or at least one package' }
 if (![IO.Path]::IsPathRooted($request.output)) { throw 'Export directory must be absolute' }
 $output = [IO.Path]::GetFullPath($request.output).TrimEnd('\','/')
@@ -34,11 +36,13 @@ try {
     Status 'Checking system Godot'
     $version = (& $GodotPath --version | Out-String).Trim()
     if ($LASTEXITCODE -ne 0 -or !$version) { throw 'Cannot run system Godot' }
-    if ($request.core) {
+    if ($platform -eq 'Android') {
+        & (Join-Path $PSScriptRoot 'export_android.ps1') -GodotPath $GodotPath -RequestPath $RequestPath
+    } elseif ($request.core) {
         Status 'Exporting Windows core'
         & (Join-Path $PSScriptRoot 'export_windows_host.ps1') -GodotPath $GodotPath -BuildRoot (Join-Path $buildRoot 'host') -OutputDirectory $stage | Out-Null
     }
-    if ($request.packages.Count -gt 0) {
+    if ($platform -eq 'Windows' -and $request.packages.Count -gt 0) {
         Status 'Exporting content and dependencies'
         $log = Join-Path $buildRoot 'content.log'
         & $GodotPath --headless --path $projectRoot --log-file (Join-Path $buildRoot 'content-engine.log') --script res://core/dev/export_content.gd -- "--output=$stage" "--request=$RequestPath" *> $log
@@ -53,7 +57,7 @@ try {
         Check-Target $target
         if (Test-Path -LiteralPath $target -PathType Container) { throw "File conflicts with directory: $target" }
         $packageArtifact = $relative -match '^(protocols|maingame|minigame)\\[^\\]+\\(avatars\\[^\\]+\\)?content\.pck(\.json)?$'
-        $replace = $relative -eq 'GodotParty.exe' -or $packageArtifact -or $relative.StartsWith('core\notices\')
+        $replace = $relative -in 'GodotParty.exe','GodotParty.apk','GodotParty-content-android.zip' -or $packageArtifact -or $relative.StartsWith('core\notices\')
         if ((Test-Path -LiteralPath $target) -and !$replace) { continue }
         $backup = Join-Path (Join-Path $buildRoot 'previous') $relative
         $existed = Test-Path -LiteralPath $target

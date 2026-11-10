@@ -8,6 +8,7 @@ var _message: AcceptDialog
 var _operation: String = ""
 var _manifest: String = ""
 var _export_window: ConfirmationDialog
+var _android_export_window: ConfirmationDialog
 
 func _enter_tree() -> void:
 	_dialog = EditorFileDialog.new()
@@ -19,13 +20,19 @@ func _enter_tree() -> void:
 	_export_window = preload("res://addons/godot_party_tools/export_window.gd").new()
 	EditorInterface.get_base_control().add_child(_export_window)
 	add_tool_menu_item("GodotParty：导出可玩包", _export_window.open)
+	_android_export_window = preload("res://addons/godot_party_tools/export_window.gd").new()
+	_android_export_window.platform = "Android"
+	EditorInterface.get_base_control().add_child(_android_export_window)
+	add_tool_menu_item("GodotParty：导出 Android 可玩包", _android_export_window.open)
 	add_tool_menu_item("GodotParty：导出源码包", func() -> void: _choose("source"))
 	add_tool_menu_item("GodotParty：导出 PCK", func() -> void: _choose("pack"))
 	add_tool_menu_item("GodotParty：导入源码包", func() -> void: _choose("import"))
 
 func _exit_tree() -> void:
-	for title: String in ["GodotParty：导出可玩包", "GodotParty：导出源码包", "GodotParty：导出 PCK", "GodotParty：导入源码包"]:
+	for title: String in ["GodotParty：导出可玩包", "GodotParty：导出 Android 可玩包", "GodotParty：导出源码包", "GodotParty：导出 PCK", "GodotParty：导入源码包"]:
 		remove_tool_menu_item(title)
+	if is_instance_valid(_android_export_window):
+		_android_export_window.queue_free()
 	if is_instance_valid(_export_window):
 		_export_window.queue_free()
 	if is_instance_valid(_dialog):
