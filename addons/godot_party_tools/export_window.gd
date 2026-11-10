@@ -1,5 +1,5 @@
 @tool
-## Windows release picker. Business/export policy lives in core/dev and package manifests.
+## Platform release picker. Business/export policy lives in core/dev and package manifests.
 extends ConfirmationDialog
 const Catalog = preload("res://core/content/party_catalog.gd")
 const Selection = preload("res://core/dev/party_export_selection.gd")

@@ -71,4 +71,4 @@ For GodotPartyDefault content, read games/protocols/godot_party_default_protocol
 
 - Portable layout and presets: read doc/api/configuration.md. Avatar packs belong to their protocol and declare owner_protocol. Core retains player_id only; protocol profile.json owns display names/appearance. Install protocols, maingame and minigame in distinct root folders. Preset filenames are their names; load edits drafts, explicit Apply commits. Never calculate file hashes.
 
-- Visual export lives in Project → Tools → GodotParty：导出可玩包. Declare loose payloads in manifest external_files (directory paths end in /), and resolve them with api.get_external_path. See doc/api/source_packages.md. Personal config/ is excluded from publication.
+- Visual export has two entries in Project → Tools: GodotParty：导出 Windows 可玩包 and GodotParty：导出 Android 可玩包. Both use content checkboxes and an output directory; omit core for content-only updates. Declare loose payloads in manifest external_files (directory paths end in /), and resolve them with api.get_external_path. See doc/api/source_packages.md. Personal config/ is excluded from publication.
