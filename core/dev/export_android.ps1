@@ -3,6 +3,16 @@ param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'go
 $ErrorActionPreference = 'Stop'
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $request = Get-Content -LiteralPath $RequestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+$androidSdkPath = ''
+$localSettingsPath = Join-Path $projectRoot 'tmp/local/android_export.json'
+if ($request.core -and (Test-Path -LiteralPath $localSettingsPath)) {
+    $localSettings = Get-Content -LiteralPath $localSettingsPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    $androidSdkPath = [string]$localSettings.android_sdk_path
+    if (!$androidSdkPath -or ![IO.Path]::IsPathRooted($androidSdkPath)) { throw "android_sdk_path must be absolute: $localSettingsPath" }
+    if (!(Test-Path -LiteralPath (Join-Path $androidSdkPath 'platform-tools/adb.exe') -PathType Leaf)) { throw "Android SDK is missing platform-tools/adb.exe: $androidSdkPath" }
+    $buildTools = Join-Path $androidSdkPath 'build-tools'
+    if (!(Test-Path -LiteralPath $buildTools -PathType Container) -or !(Get-ChildItem -LiteralPath $buildTools -Directory | Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName 'apksigner.bat') -PathType Leaf })) { throw "Android SDK is missing build-tools/apksigner.bat: $androidSdkPath" }
+}
 $job = Split-Path -Parent ([IO.Path]::GetFullPath($RequestPath))
 $stage = Join-Path $job 'build'
 $contentProject = Join-Path $job 'android_content'
@@ -93,9 +103,19 @@ try {
 if ($request.core) {
     Status 'Building Android APK'
     $hostText = New-AndroidProject $hostProject
+    if ($androidSdkPath) {
+        Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'android_export_settings.gd') -Destination (Join-Path $hostProject 'core/dev')
+        [IO.File]::WriteAllText((Join-Path $hostProject 'core/dev/android_export_settings.cfg'), "[plugin]`nname=`"Android export settings`"`ndescription=`"Local SDK configuration`"`nauthor=`"GodotParty`"`nversion=`"1.0`"`nscript=`"android_export_settings.gd`"`n", $utf8)
+        $hostText = Set-ProjectValue $hostText 'editor_plugins' 'enabled' 'PackedStringArray("res://core/dev/android_export_settings.cfg")'
+        # Enable only after resource import; the SDK override belongs to the APK export process.
+    }
     Copy-Item -LiteralPath $bundlePath -Destination (Join-Path $hostProject 'core/bundled_content.zip')
     Copy-Item -LiteralPath (Join-Path $projectRoot 'doc/credits.md') -Destination (Join-Path $hostProject 'core/project-credits.md')
     Run-Godot 'android-host-import' @('--headless','--path',$hostProject,'--log-file',(Join-Path $job 'android-host-import-engine.log'),'--import')
     Enable-Theme $hostProject $hostText
-    Run-Godot 'android-apk' @('--headless','--path',$hostProject,'--log-file',(Join-Path $job 'android-apk-engine.log'),'--export-debug','Android',(Join-Path $stage 'GodotParty.apk'))
+    $previousSdkPath = $env:GODOTPARTY_ANDROID_SDK_PATH
+    try {
+        if ($androidSdkPath) { $env:GODOTPARTY_ANDROID_SDK_PATH = $androidSdkPath }
+        Run-Godot 'android-apk' @('--headless','--path',$hostProject,'--log-file',(Join-Path $job 'android-apk-engine.log'),'--export-debug','Android',(Join-Path $stage 'GodotParty.apk'))
+    } finally { $env:GODOTPARTY_ANDROID_SDK_PATH = $previousSdkPath }
 }

@@ -38,6 +38,8 @@ core/dev/export_release.ps1 是窗口使用的同一后端，接收 RequestPath 
 
 ## 可视化 Android 导出
 
+通常使用 Godot 编辑器设置中的 SDK 路径。若运行中的编辑器反复写回旧 SDK 配置，可在本机 `tmp/local/android_export.json` 写入 `{"android_sdk_path":"F:/AndroidSDK"}`。可视化导出器会提前检查该目录，并在隔离的 APK 导出进程内应用此路径；该文件不提交、不进入可玩包，也不增加导出窗口选项。没有此文件时仍使用编辑器设置，存在但无效时明确失败，不自动猜测 SDK 位置。
+
 编辑器打开“项目 → 工具 → GodotParty：导出 Android 可玩包”。仍只需勾选内容和选择输出目录，依赖选择规则与 Windows 相同。勾选核心会生成 `GodotParty.apk`，同时生成 `GodotParty-content-android.zip`；不勾选核心则只生成内容 ZIP，用于单独更新小游戏。后端请求增加 `platform: "Android"`，省略时仍导出 Windows。
 
 当前 APK 是 ARM64、横屏、调试签名的测试包，使用本机 Godot 已配置的 Android SDK、Java 和匹配导出模板。导出器在隔离工程中导入 Android 资源，使用 Compatibility 渲染器，并启用屏幕触摸模拟鼠标左键；不会把触摸变成键盘操作，也不提供虚拟摇杆。需要键盘或鼠标右键的小游戏仍须另行适配。初版选择小游戏轮换与竞拍大师。
