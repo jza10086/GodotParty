@@ -1,6 +1,6 @@
 # GodotPartyDefault · 空白小游戏模板
 
-API 4 / manifest 2 / 配置 Schema 3；1–8 人；只实现原版协议 standard 普通局。
+API 5 / manifest 2 / 配置 Schema 3；1–8 人；只实现原版协议 standard 普通局。
 本包是「全幅画面＋简要叠加 HUD」和小游戏接入的参考。每位在线参赛者按一次「结束游戏」，房主按首次收到有效点击的先后排名；全部在线参赛者按完才展示成绩，退出者不排名。第一名得在线完成人数对应的分数，之后逐名减一。结束点击与排名仍遵循原版协议约定；随机池只决定本局初始展示。
 
 ## 目录与职责
@@ -95,13 +95,13 @@ var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 # 正式入口在初始化时检查 pool.open_file(...) 的 Error，再准备开局。
 # F6 跳过 open_file()，正式主机 rng.seed = api.get_seed()。
 func choose_next() -> Error:
-    var draws: Array[String] = pool.history()
-    draws.append(pool.choose(rng))
-    var error: Error = pool.accept_history(draws)
-    if error != OK:
-        return error
-    return api.net.broadcast(&"game/draw", {
-        "session": api.session_id, "scope": api.scope_id, "draws": draws})
+	var draws: Array[String] = pool.history()
+	draws.append(pool.choose(rng))
+	var error: Error = pool.accept_history(draws)
+	if error != OK:
+		return error
+	return api.net.broadcast(&"game/draw", {
+		"session": api.session_id, "scope": api.scope_id, "draws": draws})
 ```
 
 `game.gd` 是完整联网接入样例：每局准备结束后主机在 `graphics` 和 `navigation_2d` 中选一个初始展示，客户端可以在本端准备页结束前接收并记账，进入运行阶段后再应用。所有端选取一致，原结束按钮排名不变。个人手动切换视图不会新增游玩次数。DemoHub 的 F6 使用同一个组件但不打开文件。

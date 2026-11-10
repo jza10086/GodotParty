@@ -209,3 +209,126 @@ msgstr "Collapse panel"
 
 msgid "展开面板"
 msgstr "Expand panel"
+
+msgid "监听网卡 / IP"
+msgstr "Listen Interface / IP"
+
+msgid "刷新"
+msgstr "Refresh"
+
+msgid "请选择监听网卡 / IP"
+msgstr "Select a listen interface / IP"
+
+msgid "不可用：{address}（请重新选择）"
+msgstr "Unavailable: {address} (select again)"
+
+msgid "所选监听 IP 已不可用，请刷新并重新选择"
+msgstr "The selected listen IP is unavailable. Refresh and select again."
+
+msgid "游戏菜单"
+msgstr "Game menu"
+
+msgid "Esc 返回游戏"
+msgstr "Esc to resume"
+
+msgid "返回游戏"
+msgstr "Resume game"
+
+msgid "框架设置"
+msgstr "Framework settings"
+
+msgid "小游戏设置"
+msgstr "Minigame settings"
+
+msgid "返回大厅"
+msgstr "Return to lobby"
+
+msgid "选择本机监听 IP；隧道转发目标需与此匹配。请允许 UDP 端口通过防火墙。"
+msgstr "Choose a local listen IP matching the tunnel target. Allow the UDP port through the firewall."
+
+msgid "玩家与延迟"
+msgstr "Players & latency"
+
+msgid "松开 Tab 关闭 · F3 查看总积分"
+msgstr "Release Tab to close · F3 for overall scores"
+
+msgid "延迟为玩家与房主之间的往返时间；其他玩家的数据由房主提供。"
+msgstr "Latency is the round-trip time to the host. Other players’ readings are reported by the host."
+
+msgid "玩家"
+msgstr "Player"
+
+msgid "至房主 RTT"
+msgstr "RTT to host"
+
+msgid "连接状态"
+msgstr "Connection"
+
+msgid "你"
+msgstr "You"
+
+msgid "房主"
+msgstr "Host"
+
+msgid "已掉线"
+msgstr "Disconnected"
+
+msgid "测量中"
+msgstr "Measuring"
+
+msgid "正常"
+msgstr "Good"
+
+msgid "波动较大"
+msgstr "Unstable"
+
+msgid "无响应"
+msgstr "Unresponsive"
+
+msgid "丢包率"
+msgstr "Packet loss"
+
+msgid "丢包率为可靠包估计，约每 10 秒更新并平滑；自己的行显示上行，其他玩家显示房主下行。"
+msgstr "Reliable-packet loss estimate, updated about every 10 seconds and smoothed. Your row shows client-to-host traffic; other rows show host-to-player traffic."
+
+msgid "网络实验"
+msgstr "Network lab"
+
+msgid "房主侧"
+msgstr "Host side"
+
+msgid "客机侧"
+msgstr "Client side"
+
+msgid "启用网络模拟"
+msgstr "Enable network simulation"
+
+msgid "额外发送延迟"
+msgstr "Added outgoing delay"
+
+msgid "随机发送丢包率"
+msgstr "Random outgoing packet loss"
+
+msgid "仅影响本机下次以此身份建立的游戏连接；不会修改其他玩家的本地设置。"
+msgstr "Applies to your next game connection in this role. Other players keep their own local settings."
+
+msgid "每个发出 UDP 包增加的单向等待时间。双方各增加 100 ms 时，往返时间约增加 200 ms。"
+msgstr "One-way delay added to every outgoing UDP datagram. Adding 100 ms at each end increases the round trip by about 200 ms."
+
+msgid "每个发出 UDP 包独立丢弃的概率，包含握手、确认和重传。100% 会阻止连接；Tab 中的可靠包估计不等于此概率。"
+msgstr "Independent drop probability per outgoing UDP datagram, including handshakes, acknowledgements and retries. 100% prevents connection. The reliable-packet estimate in Tab is a different metric."
+
+msgid "设置仅保存在本机，下次连接生效。房主侧影响本机发往客机的包；客机侧影响本机发往房主的包。可靠消息仍由 ENet 重传，原生 RPC、语音和时钟同步都会受到影响。"
+msgstr "Local settings apply on the next connection. Host settings affect packets sent to clients; client settings affect packets sent to the host. ENet still retries reliable messages. Native RPC, voice and clock synchronization are affected."
+
+msgid "保存实验设置"
+msgstr "Save lab settings"
+
+msgid "默认关闭。先修改草稿，再保存；离开此页不会自动保存。"
+msgstr "Disabled by default. Edit the draft, then save. Leaving this page does not save automatically."
+
+msgid "实验设置保存失败："
+msgstr "Could not save lab settings: "
+
+msgid "实验设置已保存，下次创建或加入房间时生效。"
+msgstr "Lab settings saved. They apply when you next host or join a room."

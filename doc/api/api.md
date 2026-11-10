@@ -24,27 +24,15 @@ party_stop → LIFO 清理 → 释放场景。
 
 入房的一致性检查只核对框架名称/版本，以及房主已安装的全部协议、主游戏和小游戏的名称/版本，不限于本房间选中项。包以 ID 定位，名称使用 manifest 原始值，不使用随界面语言变化的译名。客机必须拥有房主清单中的全部项且名称、版本一致；客机额外安装的内容允许存在，不反向比较依赖清单，也不计算文件哈希。形象包不参与这项名称/版本比较；当前房间实际使用的资源、依赖和配置仍需有效。缺包、名称或版本不符会显示具体差异，配置失败会显示所属包与字段原因，详情可以滚动查看和复制。房间规则或成员形象更新后重新确认；仅切换准备状态保留已完成的内容确认，入房握手提交过的资料不重复自动提交。房主区分检查失败与尚未收到回执，超过 10 秒没有回执时显示超时原因；迟到的有效回执仍可解除该阻塞。此确认独立于玩家的手动准备和游戏加载后的 `mark_ready()`。
 
-```json
-{
-  "streams": {
-    "snapshots": {"mode": "unreliable", "audience": "instance"},
-    "inputs": {"mode": "ordered", "audience": "participants"},
-    "events": {"mode": "reliable", "audience": "participants"}
-  },
-  "native_channels": 1
-}
-```
+内容通信无需 manifest 流声明。直接使用 Godot `@rpc`，或发送时指定 `PartyNet` 的可靠性与逻辑通道。参见[内容网络通信指南](networking.md)及[签名参考](reference.md)。
 
-audience 为 participants、spectators、instance。定向消息可选择房间成员。
-可靠和有序流按作用域、发送者、流及目标去重；无序流不应用“丢弃旧序号”。
+基础值、数组、字典及已支持的 Godot 值可发送；Node、Resource、Callable、Signal 和 RID 不能发送。自定义编码使用 PackedByteArray。框架不提供自动预测、回滚或插值。
 
-基础值、数组、字典及已支持的 Godot 值可发送；Node、Resource、Callable、Signal 和 RID 不能发送。
-自定义编码使用 PackedByteArray。框架不提供自动预测、回滚或插值。
+原生通道可用 0–7。框架控制与 Godot 原生生成/销毁共用可靠通道 0，保持销毁先于作用域关闭；高频自定义原生 RPC 推荐用 1–7。8 保留，9 时钟/延迟，10 语音，11–22 为 PartyNet 内部通道，内容不得直接占用。PartyNet 的 `channel=0..3` 是逻辑通道，框架按可靠性映射到内部通道。不同通道、不同传输模式之间不保证顺序；topic 不产生独立网络通道。
 
-框架控制通信使用通道 0，便利消息使用通道 1，PCM 媒体使用通道 2；内容流从 3 开始。清单声明流和原生通道按房间固定映射分配。
-原生 RPC 使用稳定实例根路径，可通过 rpc_config 配置分配到的通道；
-只使用自己声明的通道数量，勿替换平台 MultiplayerPeer。
-原生消息不受 PartyNet 的作用域过滤承诺约束，作者负责节点存活和迟到消息。
+原生节点位于稳定实例根路径。不要替换框架 MultiplayerPeer 或另建全局 MultiplayerAPI。原生消息不受 PartyNet 的作用域过滤承诺约束；关闭时停止发送、定时器及同步器，并在节点仍存在时完成原生销毁。
+
+技术准备还等待首次主机时钟同步。大厅删除掉线玩家；局内保留名单并标记 connected=false，发出 `player_disconnected(player_id, peer_id)`，排名由玩法决定；加载阶段掉线取消加载。房主离开结束会话，未实现断线重连或房主迁移。延迟直接读取 ENet 原生 RTT，不额外发送测速探测；客机校时请求单独保留。ENet 判定掉线，高延迟不改变游戏模拟速度。
 
 父实例在子游戏期间仍能处理协议消息，但持久业务状态冻结，最终变更进入 reducer。
 

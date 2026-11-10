@@ -1,5 +1,7 @@
 ## Formal application shell. Development parameters enter this same UI and coordinator.
 extends Control
+const NetworkPanel = preload("res://core/ui/network_panel.gd")
+const NetworkPanelScene: PackedScene = preload("res://core/ui/network_panel.tscn")
 const MenuAudio = preload("res://core/ui/ambient_reveal/audio/menu_audio.gd")
 const JsonConfig = preload("res://core/config/party_json_config.gd")
 
@@ -31,6 +33,9 @@ var catalog: RefCounted
 var settings: PartyInput
 var presets: RefCounted
 @onready var _screen: VBoxContainer = %GameScreen
+@onready var _session_menu: Control = %SessionMenu
+var _session_focus: Control
+var _session_mouse_mode: Input.MouseMode = Input.MOUSE_MODE_VISIBLE
 var _page: String = ""
 var _minimal_hud: bool = false
 var _session_controls_open: bool = false
@@ -40,6 +45,8 @@ var _profile_name: LineEdit
 var _profile_panel: Control
 var _profile_error: Label
 var _arguments: Dictionary
+var _network_panel: NetworkPanel
+var _modal_input_active: bool = false
 var _overview: GPPartyDialog
 var _minigame_browser: Control
 
@@ -78,10 +85,19 @@ func _ready() -> void:
 	if connection.initialize(catalog, settings) != OK:
 		return
 	runner.configure(connection, catalog, settings)
+	_network_panel = NetworkPanelScene.instantiate()
+	_network_panel.configure(connection, catalog.i18n, _can_show_network_panel)
+	add_child(_network_panel)
 	presets = Presets.new(runner.config_store)
 	process_mode = Node.PROCESS_MODE_INHERIT
 	_frontend.show()
 	_frontend.initialize()
+	_session_menu.resume_requested.connect(_resume_game)
+	_session_menu.framework_settings_requested.connect(_settings_dialog)
+	_session_menu.minigame_settings_requested.connect(_minigame_settings_dialog)
+	_session_menu.lobby_requested.connect(_leave_session)
+	catalog.i18n.changed.connect(_localize_session_menu)
+	_localize_session_menu()
 	%UINavigation.initialize()
 	connection.changed.connect(_refresh)
 	connection.profile_reply.connect(_profile_reply)
@@ -154,20 +170,23 @@ func _show_page() -> void:
 		%LeaveSession.text = "返回大厅" if connection.host else "退出会话"
 
 ## UI adapters enter the same connection and catalog pipeline as development arguments.
-func host_from_ui(main_id: String, title: String, port: int = 7777) -> Error:
+func host_from_ui(main_id: String, title: String, port: int, bind_address: String) -> Error:
 	if not _content_error.is_empty():
 		connection.status = _content_error
 		return ERR_UNCONFIGURED
 	if main_id not in catalog.ids("maingame"):
 		return ERR_INVALID_PARAMETER
-	var error: Error = connection.open_host(port, "*", title, main_id)
+	if bind_address in ["", "*", "0.0.0.0", "::"] or bind_address not in IP.get_local_addresses():
+		connection.status = "请选择本机有效的监听网卡 / IP"
+		return ERR_INVALID_PARAMETER
+	var error: Error = connection.open_host(port, bind_address, title, main_id)
 	if error != OK:
 		return error
 	error = connection.configure(main_id, catalog.defaults(main_id), {}, {})
 	if error != OK:
 		connection.leave("创建失败：" + connection.status)
 		return error
-	return _save_connection_settings({"host_port": port})
+	return _save_connection_settings({"host_port": port, "host_bind_address": connection.connection_address})
 
 func join_from_ui(address: String, port: int) -> Error:
 	if not _content_error.is_empty():
@@ -216,6 +235,33 @@ func local_display_name() -> String:
 		_notice(local_profile.message)
 		return "资料读取失败"
 	return local_profile.name
+
+func _localize_session_menu() -> void:
+	_session_menu.localize(catalog.i18n)
+
+func _resume_game() -> void:
+	_session_controls_open = false
+	_session_menu.hide()
+	Input.mouse_mode = _session_mouse_mode
+	if is_instance_valid(_session_focus) and _session_focus.is_visible_in_tree():
+		_session_focus.grab_focus()
+	_session_focus = null
+
+func _toggle_session_menu() -> void:
+	if _session_controls_open:
+		_resume_game()
+	else:
+		_session_focus = get_viewport().gui_get_focus_owner()
+		_session_mouse_mode = Input.mouse_mode
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		_session_controls_open = true
+
+## Settings target the foreground child, including when this peer is spectating it.
+func _minigame_settings_dialog() -> void:
+	if not runner._scopes.has(runner._child_id):
+		return
+	var api: PartyAPI = runner._scopes[runner._child_id].api
+	_preferences_dialog(api.package_id, api.protocol_id)
 
 func _open_standings() -> void:
 	_show_results(runner.standings)
@@ -487,6 +533,7 @@ func _protocol_dialog() -> void:
 		_frontend.selected_protocol = id)
 	_frontend.hide()
 	_screen.hide()
+	_session_menu.hide()
 	%UINavigation.focus_settings_on_open(_settings_page.page)
 
 ## Diagnostics are independent of the lobby transport and stop when dismissed.
@@ -502,6 +549,22 @@ func _connectivity_dialog(as_client: bool) -> void:
 		if not dialog.visible:
 			panel.stop())
 	connection.changed.connect(panel.stop_when_online.bind(connection))
+
+## Dedicated local experiment page; the existing settings shell owns Back/Escape and focus.
+func _network_lab_dialog() -> void:
+	if connection.online or is_instance_valid(_settings_page):
+		return
+	if is_instance_valid(_dialog):
+		_dialog.hide()
+	_settings_focus = get_viewport().gui_get_focus_owner()
+	_settings_page = preload("res://core/ui/network_lab/network_lab_page.tscn").instantiate()
+	%Pages.add_child(_settings_page)
+	_settings_page.configure(settings, catalog.i18n)
+	_settings_page.back_requested.connect(_close_settings)
+	_frontend.hide()
+	_screen.hide()
+	_session_menu.hide()
+	%UINavigation.focus_settings_on_open(_settings_page.page)
 
 func _settings_dialog() -> void:
 	if is_instance_valid(_settings_page):
@@ -524,6 +587,7 @@ func _settings_dialog() -> void:
 	_settings_page.refresh_display_controls()
 	_frontend.hide()
 	_screen.hide()
+	_session_menu.hide()
 	%UINavigation.focus_settings_on_open(_settings_page.page)
 
 func _close_settings() -> void:
@@ -534,7 +598,8 @@ func _close_settings() -> void:
 	_settings_page.queue_free()
 	_settings_page = null
 	_frontend.visible = _page != "game"
-	_screen.visible = _page == "game"
+	_screen.visible = _page == "game" and not _minimal_hud
+	_session_menu.visible = _page == "game" and _minimal_hud and _session_controls_open
 	if is_instance_valid(_settings_focus) and _settings_focus.is_visible_in_tree():
 		_settings_focus.grab_focus()
 
@@ -543,7 +608,7 @@ func _preferences_dialog(game: String, protocol: String) -> void:
 		return
 	_preferences_focus = get_viewport().gui_get_focus_owner()
 	_preferences_return.clear()
-	for surface: CanvasItem in [_settings_page, _frontend, _screen, _dialog]:
+	for surface: CanvasItem in [_settings_page, _frontend, _screen, _session_menu, _dialog]:
 		if is_instance_valid(surface) and surface.visible:
 			_preferences_return.append(surface)
 			surface.hide()
@@ -626,6 +691,13 @@ func show_connection_issue(message: String) -> void:
 func _notice(message: String) -> void:
 	_notice_text = message
 	%GameStatus.text = message
+	_session_menu.set_status(message)
+	# Save recovery remains reachable without adding a fifth session-menu action.
+	if connection.host and not runner._pending.is_empty():
+		_modal("保存失败")
+		_dialog.dialog_text = message
+		_dialog.get_ok_button().text = "重试保存"
+		_dialog.confirmed.connect(_retry_save)
 	if is_instance_valid(_frontend):
 		_frontend.show_notice(message)
 	if is_instance_valid(_settings_page):
@@ -648,6 +720,8 @@ func navigation_scope() -> Control:
 		return _settings_page
 	if _frontend.is_visible_in_tree():
 		return _frontend.navigation_scope()
+	if _session_menu.is_visible_in_tree():
+		return _session_menu
 	return null
 
 func navigation_back() -> void:
@@ -665,29 +739,33 @@ func navigation_back() -> void:
 	elif _frontend.is_visible_in_tree():
 		_frontend.navigation_back()
 	elif _page == "game" and _minimal_hud:
-		_session_controls_open = not _session_controls_open
+		_toggle_session_menu()
 
 func _process(_delta: float) -> void:
-	# Content opts in through the public view group; scope removal restores the shell.
-	var minimal: bool = false
+	# Every foreground minigame uses the shared menu. Main games may also opt in.
+	var minimal: bool = runner._scopes.has(runner._child_id)
 	for scope: Dictionary in runner._scopes.values():
 		if scope.phase != "suspended" and scope.root.is_in_group(&"party_minimal_hud"):
 			minimal = true
 	if minimal != _minimal_hud:
 		_minimal_hud = minimal
 		_session_controls_open = false
-	_screen.visible = _page == "game" and not is_instance_valid(_settings_page) and not is_instance_valid(_preferences_page) and (not _minimal_hud or _session_controls_open)
-	_background.visible = _page != "game" or (_minimal_hud and _session_controls_open)
+	var settings_open: bool = is_instance_valid(_settings_page) or is_instance_valid(_preferences_page)
+	_screen.visible = _page == "game" and not settings_open and not _minimal_hud
+	_session_menu.set_game_available(runner._scopes.has(runner._child_id))
+	_session_menu.visible = _page == "game" and not settings_open and _minimal_hud and _session_controls_open
+	_background.visible = _page != "game"
 	var focus: Control = get_viewport().gui_get_focus_owner()
 	var framework_modal: bool = get_tree().get_nodes_in_group("framework_modal").any(func(node: Node) -> bool: return node is Control and node.is_visible_in_tree())
 	var modal: bool = framework_modal or not _frontend.modal_kind.is_empty() or is_instance_valid(_settings_page) or is_instance_valid(_preferences_page) or focus is LineEdit or focus is TextEdit or (is_instance_valid(_dialog) and _dialog.visible) or (is_instance_valid(_overview) and _overview.visible)
+	_modal_input_active = modal or (_minimal_hud and _session_controls_open)
 	if runner._lobby_api != null:
 		runner._lobby_api.input.input_blocked = modal
 	for scope: Dictionary in runner._scopes.values():
 		scope["api"].input.input_blocked = modal or (_minimal_hud and _session_controls_open) or scope["phase"] != "playing"
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if _page == "game" and _minimal_hud and event.is_action_pressed("ui_cancel"):
+	if _page == "game" and _minimal_hud and event.is_action_pressed("ui_cancel") and not event.is_echo():
 		navigation_back()
 		get_viewport().set_input_as_handled()
 		return
@@ -701,7 +779,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			_close_settings()
 			get_viewport().set_input_as_handled()
 		return
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_TAB and _page == "game":
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F3 and _page in ["lobby", "game"] and not _modal_input_active:
 		_show_results(runner.standings)
 		get_viewport().set_input_as_handled()
 
@@ -817,3 +895,7 @@ func room_action(operation: String, argument: Dictionary) -> void:
 				_: push_error("Unknown room settings panel: " + str(argument.panel))
 		_:
 			push_error("Unknown room action: " + operation)
+
+## The passive Tab overlay never pauses play, captures the mouse, or takes keyboard focus.
+func _can_show_network_panel() -> bool:
+	return connection.online and _page in ["lobby", "game"] and not _modal_input_active and get_window().has_focus()

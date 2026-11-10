@@ -30,7 +30,9 @@ func _ready() -> void:
 	if api == null:
 		push_error("请从 GodotParty 大厅启动小游戏轮换。")
 		return
-	api.mark_ready()
+	var error: Error = api.mark_ready()
+	if error != OK:
+		api.fail("ready_failed", error_string(error))
 
 func create_new_state(settings: Dictionary) -> Dictionary:
 	return Rules.initial(api.get_pool("minigames"), settings, api.get_players(), api.get_seed())
@@ -204,7 +206,10 @@ func _commit(next: Dictionary) -> void:
 func _state_committed(_revision: int) -> void:
 	_busy = false
 	if active and api.is_host():
-		api.publish_standings(_presentation())
+		var error: Error = api.publish_standings(_presentation())
+		if error != OK:
+			api.fail("standings_failed", error_string(error))
+			return
 		_queue_advance()
 
 func _round_cancelled(_round_id: String, reason: String) -> void:

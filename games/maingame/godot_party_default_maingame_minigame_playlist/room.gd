@@ -8,6 +8,7 @@ var _voice_bus: String = ""
 var _microphone: bool = false
 var _receive: bool = true
 var _stopped: bool = false
+var _latency_refresh_in: float = 0.0
 
 func room_setup(value: RoomAPI) -> void:
 	room = value
@@ -93,9 +94,13 @@ func _voice_error(error: Error) -> void:
 	room_stop()
 	room.show_notice("大厅语音初始化或设置失败：" + error_string(error))
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if _stopped:
 		return
+	_latency_refresh_in -= delta
+	if _latency_refresh_in <= 0.0:
+		_latency_refresh_in = 1.0
+		_refresh_latencies()
 	var status: Dictionary = room.activity.voice.get_status()
 	var microphone_status: String = "关闭"
 	if status.get("transmitting", false):
@@ -222,7 +227,6 @@ func room_refresh() -> void:
 	for index: int in range(8):
 		var player: Dictionary = connection.players[index] if index < connection.players.size() else {}
 		var name_label: Label = get_node("%SlotName" + str(index))
-		var state_label: Label = get_node("%SlotStatus" + str(index))
 		var slot: Button = get_node("%Slot" + str(index))
 		slot.set_meta("peer_id", player.get("peer_id", 0))
 		slot.disabled = player.is_empty()
@@ -230,9 +234,10 @@ func room_refresh() -> void:
 		name_label.text = player.get("name", "等待加入") + (" · 房主" if player.get("peer_id") == 1 else "")
 		name_label.tooltip_text = name_label.text
 		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		state_label.text = "空位" if player.is_empty() else ("已准备" if player.ready else "未准备")
+
 		if player.get("ready", false):
 			ready_count += 1
+	_refresh_latencies()
 	%PlayerCount.text = "%d / 8 人" % connection.players.size()
 	%PlayerCount.tooltip_text = "允许开始：" + connection.allowed_counts
 	var reason: String = connection.start_reason
@@ -251,3 +256,35 @@ func room_refresh() -> void:
 	%Rounds.text = "查看 / 配置"
 	%SettingsAuthority.text = "房主配置 · 设置和小游戏池同步到所有玩家" if connection.host else "房主配置 · 当前玩家只读"
 
+
+## Read cached statistics once a second; never rebuild slots or request a probe here.
+func _refresh_latencies() -> void:
+	for index: int in range(8):
+		var label: Label = get_node("%SlotStatus" + str(index))
+		label.modulate = Color.WHITE
+		label.tooltip_text = ""
+		if index >= connection.players.size():
+			label.text = "空位"
+			continue
+		var player: Dictionary = connection.players[index]
+		var ready_text: String = "已准备" if player.ready else "未准备"
+		var peer: int = 1 if not connection.host and player.peer_id == connection.local_peer else player.peer_id
+		var sample: Dictionary = room.activity.net.get_peer_stats(peer)
+		var state: String = "host" if player.connected and player.peer_id == 1 else sample.state
+		label.tooltip_text = "玩家与房主之间的往返延迟 RTT；按住 Tab 查看全部玩家"
+		match state:
+			"host":
+				label.text = ready_text + " · 房主"
+			"offline":
+				label.text = "已掉线"
+				label.modulate = Color("#f28c8c")
+			"measuring":
+				label.text = ready_text + " · 测量中"
+			"stalled":
+				label.text = ready_text + " · 无响应"
+				label.modulate = Color("#f28c8c")
+			"connected", "degraded":
+				label.text = ready_text + " · %d ms" % roundi(sample.rtt_msec)
+				if state == "degraded":
+					label.text += " · 波动"
+					label.modulate = Color("#f3c779")

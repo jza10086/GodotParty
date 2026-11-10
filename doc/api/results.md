@@ -45,7 +45,7 @@ reducer 不能发消息、写文件或直接播放奖励。重复 finish 不重�
 
 队伍行使用 team_id、name 和 members，包含稳定 player_id。名次由作者提供，可并列、跳号或用 0 表示未排名。
 框架按作者名次展示，0 放在已排名后；并列行保留作者顺序，不重算名次和奖励。没有展示数据时不猜测业务字段。
-publish_standings 更新 Tab 总览；finish_session 保存终态。
+publish_standings 更新 F3 总览；finish_session 保存终态。
 小游戏结果直接交回父实例，不强制弹出阻断父流程的成绩页。
 
 ## 恢复

@@ -2,6 +2,7 @@
 class_name PartyInput
 extends RefCounted
 const JsonConfig = preload("res://core/config/party_json_config.gd")
+const Schema = preload("res://core/config/party_schema.gd")
 const DISPLAY_DEFAULTS: Dictionary = {"mode": "borderless", "resolution": [1920, 1080], "vsync": true, "fps": 0}
 const DISPLAY_MODES: Dictionary = {"windowed": "窗口化", "borderless": "无边框全屏", "fullscreen": "独占全屏"}
 const RESOLUTIONS: Array[Vector2i] = [Vector2i(1280, 720), Vector2i(1366, 768), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(3840, 2160)]
@@ -78,6 +79,11 @@ func validate_system_settings() -> Error:
 		var name_value: Variant = config.get_value("system", key, "Default")
 		if not name_value is String or name_value.is_empty():
 			invalid = "system/" + key
+	var lab_schema: Dictionary = network_lab_schema()
+	for key: String in lab_schema.fields:
+		var field: Dictionary = lab_schema.fields[key]
+		if not Schema.normalize(field, config.get_value("network_lab", key, field.default)).ok:
+			invalid = "network_lab/" + key
 	if not invalid.is_empty():
 		push_error("系统配置无效：" + settings_path + " · " + invalid)
 		return ERR_INVALID_DATA
@@ -346,3 +352,30 @@ func settings_schema(draft: Dictionary = {}) -> Dictionary:
 				{"field": "system.input_device"}, {"field": "system.microphone_allowed"}, {"field": "system.microphone_mode"}]}]},
 		{"id": "keys", "title": "固定操作", "expanded": false, "children": [{"field": "navigation.back"}]}
 	]}
+
+## Local role profiles; defaults stay in this declaration and are never materialized on read.
+static func network_lab_schema() -> Dictionary:
+	var fields: Dictionary = {}
+	var layout: Array[Dictionary] = []
+	for role: String in ["host", "client"]:
+		var prefix: String = role + "."
+		fields[prefix + "enabled"] = {"type": "bool", "title": "启用网络模拟", "default": false,
+			"description": "仅影响本机下次以此身份建立的游戏连接；不会修改其他玩家的本地设置。"}
+		fields[prefix + "delay_msec"] = {"type": "int", "control": "number", "title": "额外发送延迟", "default": 0,
+			"min": 0, "max": 2000, "step": 1, "suffix": "ms",
+			"description": "每个发出 UDP 包增加的单向等待时间。双方各增加 100 ms 时，往返时间约增加 200 ms。"}
+		fields[prefix + "loss_percent"] = {"type": "float", "control": "number", "title": "随机发送丢包率", "default": 0.0,
+			"min": 0.0, "max": 100.0, "step": 0.1, "suffix": "%",
+			"description": "每个发出 UDP 包独立丢弃的概率，包含握手、确认和重传。100% 会阻止连接；Tab 中的可靠包估计不等于此概率。"}
+		layout.append({"id": role, "title": "房主侧" if role == "host" else "客机侧", "expanded": true,
+			"children": [{"field": prefix + "enabled"}, {"field": prefix + "delay_msec"}, {"field": prefix + "loss_percent"}]})
+	for field: Dictionary in fields.values():
+		field.merge({"audience": "local", "apply": "next_activation"})
+	return {"schema_format": 3, "settings_version": 1, "fields": fields, "layout": layout}
+
+func network_lab_values(role: String) -> Dictionary:
+	var schema: Dictionary = network_lab_schema()
+	var values: Dictionary = {}
+	for key: String in ["enabled", "delay_msec", "loss_percent"]:
+		values[key] = config.get_value("network_lab", role + "." + key, schema.fields[role + "." + key].default)
+	return values

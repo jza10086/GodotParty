@@ -1,4 +1,4 @@
-# GodotParty 4.2
+# GodotParty 5.0
 
 开发检出使用 `git clone --recurse-submodules <主仓地址>` 获取主仓记录的小游戏版本。在 `games/minigame/<id>/` 中切到小游戏自己的分支，修改、提交和推送后，重启游戏就能使用本机检出的内容。只有需要更新主仓为其他人锁定的子模块版本时，才提交版本指针。
 
@@ -15,7 +15,7 @@
 
 core/ 存放框架；games/maingame、minigame、protocols 存放内容；avatars 位于所属协议目录下；doc/ 存放文档和 AI skill。
 
-框架 4.2.0 / 公共 API 4 / 联机协议 16 / manifest_version 2。原型仅支持当前格式；旧 GPActivity 接口不再是作者接入方式。
+框架 5.0.0 / 公共 API 5 / 联机协议 17 / manifest_version 2。原型仅支持当前格式；旧 GPActivity 接口不再是作者接入方式。
 
 现已提供 [GodotPartyDefaultProtocol 1.0](games/protocols/godot_party_default_protocol/doc/README.md) 及默认占位形象包：玩家颜色、2D Godot 图标和 3D Cube。主菜单“协议 → 个人资料与形象”可配置。已安装[原版小游戏轮换](games/maingame/godot_party_default_maingame_minigame_playlist/README.md)，可从正式大厅创建房间，游玩水果武士、云间跃行、纸牌会客厅及心理博弈。旧测试内容恢复点为 `1a9e842`。
 
@@ -56,3 +56,6 @@ core/ 存放框架；games/maingame、minigame、protocols 存放内容；avatar
 [GodotPartyDefault · 小游戏轮换](games/maingame/godot_party_default_maingame_minigame_playlist/README.md) 是自动连续小游戏的大游戏入口，包 ID 为 `godot_party_default_maingame_minigame_playlist`。在正式大厅配置 minigames 池，可选择顺序或随机、总局数、是否重复及局间间隔。只选一个小游戏并开启重复即可连续测试；无需逐局手动启动。关闭重复时，实际局数不超过所选小游戏数量。
 
 玩家安装包分为 protocols/、maingame/、minigame/；框架内嵌在 GodotParty.exe。每包配置放在局部 config/，协议指定游戏覆盖目录；独立预设文件可直接重命名和分享。详见[便携目录与预设](doc/api/configuration.md)。
+
+- [原创内容许可与第三方例外](ASSET_LICENSES.md)
+- [受限资产分类登记](third_party_assets/README.md)

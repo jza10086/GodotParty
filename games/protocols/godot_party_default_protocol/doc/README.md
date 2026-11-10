@@ -1,6 +1,6 @@
 # GodotPartyDefaultProtocol 1.0
 
-包 ID `godot_party_default_protocol`，包版本 1.0.4，契约 1.0，API 4 / 清单 2。显示名称以 GodotPartyDefault 为前缀，文件和包 ID 使用蛇形命名。依赖 `godot_party_default_avatars` 1.0.0。
+包 ID `godot_party_default_protocol`，包版本 1.0.5，契约 1.0，API 5 / 清单 2。显示名称以 GodotPartyDefault 为前缀，文件和包 ID 使用蛇形命名。依赖 `godot_party_default_avatars` 1.0.1。
 
 协议只校验语义、生成展示和纯结算建议，不保存钱包、执行道具效果或决定奖励。金币、钻石、道具实例和已处理请求都由大游戏持久状态管理。所有身份使用框架提供的参与者 player_id，不使用 peer_id；观战者不能提交参赛结果。
 
@@ -162,13 +162,13 @@ cursors.setup(api)
 board_area.add_child(cursors)
 ```
 
-游戏清单声明 `"streams": {"cursors": {"mode": "ordered", "audience": "instance"}}`。组件通过便利消息 `pointer` 发给主机，再经声明流广播；只接纳当前在线参赛者的消息，观战者可查看。仅相对区域的 0–1 坐标过网，不发送屏幕像素；主机验证类型、有限数、范围、序号和发送间隔。每秒最多约 20 次发送，远端平滑追随，收到的显示数据 1.5 秒过期，断线/失焦/离开区域后隐藏。颜色直接取 `api.get_appearance(id).color` 的房间分配值，另显示远端玩家名字。本机彩色指针即时跟随鼠标，在交互区域内替代系统指针；离开、禁用、关闭作用域或释放场景时恢复系统指针，不接管已捕获/隐藏的鼠标。发送失败明确报错并停止同步。鼠标数据只作表现，不能据此判断点击或奖励。
+不声明 streams。组件通过 PartyNet 的不可靠有序消息 `pointer` 发给主机，再用同模式广播 `cursors`；只接纳当前在线参赛者的消息，观战者可查看。仅相对区域的 0–1 坐标过网，不发送屏幕像素；主机验证类型、有限数、范围、序号和发送间隔。最多 20 Hz，位置变化小于 0.001 时抑制重复发送，静止每 0.5 秒保活；远端平滑追随，显示数据 1.5 秒过期，断线/失焦/离开区域后隐藏。颜色直接取 `api.get_appearance(id).color` 的房间分配值，另显示远端玩家名字。本机彩色指针即时跟随鼠标，在交互区域内替代系统指针；离开、禁用、关闭作用域或释放场景时恢复系统指针，不接管已捕获/隐藏的鼠标。发送失败明确报错并停止同步。鼠标数据只作表现，不能据此判断点击或奖励。
 
 协议公共偏好 `ui.player_cursors`（默认开，可被小游戏覆盖，立即生效）控制本机是否显示其他玩家鼠标；不影响本机彩色指针及发送自己位置。组件 `enabled` 则由游戏在离开交互阶段时关闭显示并发布隐藏状态。组件的生命周期限于本次活动，释放时断开消息连接并恢复系统指针。
 
 「界面 → 他人鼠标透明度」（`ui.player_cursor_transparency`）默认 50%，范围 0–100%，0% 完全不透明、100% 完全透明。应用后立即调整其他玩家的指针、姓名及姓名描边；本机指针保持不透明。该偏好仅影响本机显示，可按小游戏覆盖，不改变位置同步或其他玩家的显示设置。
 
-公开资源 `ranked_round` 为原版五款街机小游戏复用的 Control 基类，提供 standard 生命周期、受发送者身份与单调序号约束的逻辑行动、主机快照、一次性结果提交和基础布局；不定义玩法和奖励。游戏入口场景继承协议的 ranked_round.tscn，根节点挂载对应的子类脚本。子类通过 build_game/start_game/tick_game/handle_action/make_snapshot/render_game 实现各自玩法。state 使用可靠快照；大型星潮状态另作压缩，视觉短时外推不改变裁定。清单应声明 state（reliable/instance）及需要时的 private_view（reliable/instance）。
+公开资源 `ranked_round` 是原版街机小游戏复用的 Control 基类，提供 standard 生命周期、经发送者身份与单调序号校验的逻辑行动、一次性结果提交和基础布局；不定义玩法和奖励。游戏入口继承 ranked_round.tscn，通过 build_game/start_game/tick_game/handle_action/render_game 实现玩法。基类只在开始时调用一次 publish；默认 make_snapshot/state 路径用于初始布局，不再定时广播完整状态。子类自行选择离散可靠事件和最少的不可靠运动采样；无需在清单声明流。星潮已经移除压缩全场快照。接口与组合见 [内容网络通信指南](../../../../doc/api/networking.md)。
 
 ## 游戏音频
 
@@ -179,10 +179,10 @@ board_area.add_child(cursors)
 协议公开 `briefing_view` / `briefing_gate` 与 `settlement_view` / `settlement_gate`；主游戏或小游戏按需挂载，不改变未接入游戏。
 
 - 加载：helper入树前 `configure(api, content)`，content含title/introduction/cover/controls；`read_content(manifest_path, api)`可读取自己的简介和实际绑定。初始化后游戏正常`mark_ready()`，`party_start()`中调用`transport_started()`；等`play_requested`才启动玩法。人工确认使用Enter/空格，观战无需确认；技术准备与人工准备独立，全员满足后默认3秒开始。
-- 可选玩家单选项（包版本 1.0.4）：加载 content 提供固定的 `choice_label`、`choice_options: Array[String]` 和 `choice_default`（必须属于选项）。`round_pages.prepare(game, api, request, start_play, content_overrides = {})` 的最后一个字典覆盖本轮加载页内容；游戏可用它传入由资源生成的选项。未配置选项的游戏不显示下拉框。
+- 可选玩家单选项（包版本 1.0.5）：加载 content 提供固定的 `choice_label`、`choice_options: Array[String]` 和 `choice_default`（必须属于选项）。`round_pages.prepare(game, api, request, start_play, content_overrides = {})` 的最后一个字典覆盖本轮加载页内容；游戏可用它传入由资源生成的选项。未配置选项的游戏不显示下拉框。
 - `briefing_gate.select_choice(value) -> Error` 提交本地选择；`get_choice(player_id) -> String` 读取房主确认的选择，观战者返回空字符串。准备消息同时携带选择，房主校验真实发送者、参与身份和选项后锁定；已准备或开始倒计时后不再接受修改。状态快照包含参与者的 `choices` 字典，沿用 session/scope/revision 校验。游戏在 `play_requested` 后读取所选值并启动实际玩法。
 - 纯加载 view 额外提供 `choice_selected(value)`、`set_choice(value)`；`set_state` 的玩家行可含 `choice` 字符串，面板仅显示该文本，不追加说明标签。是否可选与该玩家是否可准备一致；下拉框打开时 Enter 不会同时触发准备。
-- 结算：helper入树前`configure(api, presentation, result_token)`，presentation为`{title, rows:[{player_id, rank, metrics:{score}}]}`。score是本轮小游戏分数，不是父游戏奖励；作者给定rank，视图稳定处理并列，不按分数重排。所有在线端装好页面后自动回执，默认3秒发出`continued`，没有人工准备/退出按钮。
+- 结算：helper入树前`configure(api, presentation, result_token)`，presentation为`{title, rows:[{player_id, rank, metrics:{score}}]}`。score是本轮小游戏分数，不是父游戏奖励；作者给定rank，视图稳定处理并列，不按分数重排。所有在线端装好页面后自动回执，默认3秒发出`continued`，没有人工准备/退出按钮。就绪回执每 0.5 秒重发仅用于覆盖另一端页面尚未挂载的窗口；重复回执不重复发布状态，等待最多 30 秒，超时报错结束该轮。传输失败停止推进，不假装完成。
 - helper不调用`finish()`或发奖。拥有者自行选择提交前展示，或在父游戏持有已提交结果后展示；必须保证节点在展示期间仍存活。同一轮使用唯一token，消息校验session/scope/token/revision和真实发送者，退出时调用`stop()`。
 - 纯view可单独使用：加载view提供`configure`/`set_state`与`ready_requested`；结算view提供`configure(presentation, players)`与`set_countdown`，不拥有网络或计时。
 

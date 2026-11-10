@@ -90,7 +90,7 @@ func _begin_play() -> void:
 			_random_failed(error)
 			return
 		error = api.net.broadcast(DRAW_TOPIC, {"session": api.session_id,
-			"scope": api.scope_id, "draws": _random_pool.history()}, false)
+			"scope": api.scope_id, "draws": _random_pool.history()}, MultiplayerPeer.TRANSFER_MODE_RELIABLE, false)
 		if error != OK:
 			_random_failed(error)
 			return

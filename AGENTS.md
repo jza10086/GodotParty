@@ -42,7 +42,8 @@
 
 ## External assets
 
-- Keep external assets that cannot be redistributed in the project-root `private_assets/` directory beside `tmp/`, including downloads, extracted sources and converted copies. Keep this directory ignored by Git and Godot (`.gdignore`); public packages must work without it.
+- Keep confirmed non-redistributable external assets in project-root `third_party_assets/<license_type>/files/`, including downloads, extracted sources, converted copies and discovered duplicates. Keep each `files/` ignored by Git and the entire `third_party_assets/` ignored by Godot (`.gdignore`); track only registration documents and ignore rules. Each license category has an `assets.md` four-column table sorted alphabetically by asset name. Unresolved private references remain under ignored `private_assets/`; public packages must work without both directories.
+- License project-owner/GPT original code under MIT and original media under CC0-1.0 as scoped in `ASSET_LICENSES.md`; preserve all third-party licenses, notices and unresolved provenance records. New independently exported content packages must include their license texts and scope.
 
 - Record every externally downloaded art, font, music, sound, or other asset in `res://doc/credits.md`.
 - Follow the existing concise credits format: `类别：资产名称 来源 URL`.
@@ -141,7 +142,7 @@
 
 ## Framework content boundary
 
-- Framework 4.2.0 uses API 4, network protocol 16 and manifest format 2. manifest.json is the only author-maintained content catalog entry.
+- Framework 5.0.0 uses API 5, network protocol 17 and manifest format 2. manifest.json is the only author-maintained content catalog entry.
 - Games use public core/api and documented UI contracts. Minigames (including medium tags) live under games/minigame/<id>/; main games and playlists live under games/maingame/<id>/. Avatar packs belong to their protocol under games/protocols/<protocol_id>/avatars/<id>/; exported installs use protocols/<protocol_id>/avatars/<id>/. Host code must not interpret game economy or maintain another activity runner.
 - One top-level activity may start one foreground child with a participant subset; everyone else spectates, including the host when unselected. Only the host parent applies rewards.
 - Same-process content has ordinary Godot script capabilities. Do not introduce source-publication requirements, code audits, sandboxes, system-function blacklists or permission wrappers in this iteration. Retain protocol/version/dependency/file-conflict correctness checks.

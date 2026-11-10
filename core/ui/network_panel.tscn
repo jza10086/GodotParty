@@ -1,0 +1,107 @@
+[gd_scene format=3 uid="uid://0525mqw1x12h"]
+
+[ext_resource type="Script" uid="uid://byl2268xh04li" path="res://core/ui/network_panel.gd" id="1_ciipq"]
+[ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="2_mtn0c"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ngmkl"]
+content_margin_left = 24.0
+content_margin_top = 24.0
+content_margin_right = 24.0
+content_margin_bottom = 24.0
+bg_color = Color(0.045, 0.065, 0.095, 0.97)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.46, 0.58, 0.9)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="NetworkPanel" type="CanvasLayer" unique_id=409968925]
+layer = 100
+visible = false
+script = ExtResource("1_ciipq")
+
+[node name="Center" type="CenterContainer" parent="." unique_id=1413437950]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_mtn0c")
+
+[node name="Card" type="PanelContainer" parent="Center" unique_id=1363264023]
+custom_minimum_size = Vector2(960, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ngmkl")
+
+[node name="Content" type="VBoxContainer" parent="Center/Card" unique_id=1053252656]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Center/Card/Content" unique_id=1393883285]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "玩家与延迟"
+
+[node name="Hint" type="Label" parent="Center/Card/Content" unique_id=2099590806]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "松开 Tab 关闭 · F3 查看总积分"
+
+[node name="Separator" type="HSeparator" parent="Center/Card/Content" unique_id=387648035]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Players" type="GridContainer" parent="Center/Card/Content" unique_id=428486803]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 8
+columns = 4
+
+[node name="PlayerHeading" type="Label" parent="Center/Card/Content/Players" unique_id=61466071]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+text = "玩家"
+
+[node name="LatencyHeading" type="Label" parent="Center/Card/Content/Players" unique_id=914076018]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "至房主 RTT"
+horizontal_alignment = 2
+
+[node name="StateHeading" type="Label" parent="Center/Card/Content/Players" unique_id=1051642979]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "连接状态"
+
+[node name="LossHeading" type="Label" parent="Center/Card/Content/Players" unique_id=1600065768]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "丢包率"
+horizontal_alignment = 2
+
+[node name="Note" type="Label" parent="Center/Card/Content" unique_id=380791953]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "延迟为玩家与房主之间的往返时间；其他玩家的数据由房主提供。"
+autowrap_mode = 3

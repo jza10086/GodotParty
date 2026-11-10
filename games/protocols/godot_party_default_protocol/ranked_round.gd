@@ -1,6 +1,6 @@
 extends Control
-## Shared standard-round transport/UI for the five original arcade games.
-## Subclasses own gameplay, snapshots and ranking. No rewards or parent state live here.
+## Shared round lifecycle, authenticated actions and result pages.
+## Games explicitly publish their initialization/events and schedule necessary motion samples.
 const Pages = preload("res://games/protocols/godot_party_default_protocol/round_pages.gd")
 var pages: Pages
 var api: PartyAPI
@@ -87,11 +87,11 @@ func _process(delta: float) -> void:
 		return
 	elapsed += delta
 	tick_game(delta)
+	if not running:
+		return
 	clock += delta
 	if clock >= 0.1:
 		clock = 0.0
-		if api.is_host():
-			publish()
 		render_game()
 
 func send_action(data: Dictionary) -> void:
@@ -100,7 +100,10 @@ func send_action(data: Dictionary) -> void:
 	sequence += 1
 	data = data.duplicate(true)
 	data["seq"] = sequence
-	api.net.send_to_host(&"action", data)
+	var error: Error = api.net.send_to_host(&"action", data)
+	if error != OK:
+		party_stop(&"action_send_failed")
+		api.fail("action_send_failed", error_string(error))
 
 func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 	if not running:
@@ -129,7 +132,10 @@ func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 func publish() -> void:
 	var snapshot: Dictionary = make_snapshot()
 	snapshot["_sequence"] = int(snapshot.get("_sequence", 0)) + int(elapsed * 1000000)
-	api.net.broadcast_stream(&"state", snapshot)
+	var error: Error = api.net.send_to_group(&"state", snapshot, MultiplayerPeer.TRANSFER_MODE_RELIABLE, "instance", true)
+	if error != OK:
+		party_stop(&"initialization_send_failed")
+		api.fail("initialization_send_failed", error_string(error))
 
 func _players_changed() -> void:
 	if not api.is_host() or not running:

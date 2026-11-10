@@ -3,6 +3,8 @@ class_name PartyAPI
 extends RefCounted
 
 signal players_changed()
+## Transport departure, delivered once after the roster marks the player disconnected.
+signal player_disconnected(player_id: String, peer_id: int)
 signal state_committed(revision: int)
 signal commit_failed(code: String, message: String)
 signal round_committed(round_id: String, result: Dictionary)
@@ -41,6 +43,7 @@ func _init(context: Dictionary = {}, dispatch: Callable = Callable(), query: Cal
 	net._dispatch = _invoke
 	net._open = is_open
 	net._host = is_host
+	net._query = func(key: String, argument: Dictionary) -> Variant: return _query.call(scope_id, key, argument)
 
 func is_host() -> bool:
 	return _context.get("is_host", false)
@@ -120,7 +123,7 @@ func request_minigame(id: String, request: Dictionary, participants: Array[Strin
 func finish_session(presentation: Dictionary = {}) -> Error:
 	return _invoke("end", {"presentation": presentation})
 
-## Main host only. Optional Tab overview; no business values are inferred by core.
+## Main host only. Optional F3 overview; no business values are inferred by core.
 func publish_standings(presentation: Dictionary) -> Error:
 	return _invoke("standings", {"presentation": presentation})
 
@@ -149,7 +152,7 @@ func _read(key: String, fallback: Variant) -> Variant:
 func _invoke(operation: String, payload: Dictionary) -> Error:
 	if not is_open():
 		return ERR_UNAVAILABLE
-	if not Data.valid(payload):
+	if not Data.valid(payload, 0, operation == "message"):
 		return ERR_INVALID_PARAMETER
 	return _dispatch.call(scope_id, operation, payload)
 

@@ -94,6 +94,10 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 
 视觉参考截图：炮火争锋事件，ShellShock Live 官方商店与更新截图、Steam 社区实机截图（仅保留于 private_assets，不随项目发行） https://store.steampowered.com/app/326460/ShellShock_Live/ https://store.steampowered.com/news/posts/?appids=326460&enddate=1645653731 https://steamcommunity.com/sharedfiles/filedetails/?id=2069384920
 
+许可声明：本项目用户／GPT 原创代码 MIT、原创媒体 CC0-1.0（第三方例外见范围说明） ../ASSET_LICENSES.md
+受限资产：Godot MCP Toolkit 品牌图标（Jessica Mariana Aisen／NPGameDev，保留全部权利，仅本地归档） https://github.com/NPGameDev/godot-mcp-toolkit/blob/main/ATTRIBUTIONS.md
+受限资产登记：Atomic Realm 船包与 MCP 品牌图标，含原始／解包／已发现的历史副本 ../third_party_assets/README.md
+
 ## 小游戏 BGM 候选音乐
 
 [按小游戏选曲、文件与授权清单](bgm_candidates.md)；本组均选择来源页 CC0 1.0，尚未接入游戏。

@@ -5,9 +5,12 @@ extends Control
 
 signal continued()
 
-const View: PackedScene = preload("settlement_view.tscn")
+const View: PackedScene = preload("res://games/protocols/godot_party_default_protocol/settlement/settlement_view.tscn")
 const TOPIC: StringName = &"godot_party_default/settlement"
 @export_range(0.0, 10.0, 0.1) var countdown_seconds: float = 3.0
+## A missing mounted-result acknowledgement must end explicitly, never skip a peer.
+const READY_TIMEOUT_MSEC: int = 30000
+var _ready_deadline_msec: int = 0
 var api: PartyAPI
 var view: Control
 var token: String
@@ -21,7 +24,7 @@ var _mounted: bool = false
 var _closed: bool = false
 var _released: bool = false
 var _retry_in: float = 0.0
-var _last_count: int = -1
+var _end_msec: int = -1
 
 ## The owner supplies its authoritative result and a stable per-result request ID before insertion.
 ## It chooses whether to present before finish() or after a durable parent commit.
@@ -47,6 +50,7 @@ func _ready() -> void:
 	if _closed or not api.is_open():
 		return
 	_mounted = true
+	_ready_deadline_msec = Time.get_ticks_msec() + READY_TIMEOUT_MSEC
 	_send_ready()
 
 func _envelope(kind: String) -> Dictionary:
@@ -56,16 +60,23 @@ func _send_ready() -> void:
 	_retry_in = 0.5
 	var error: Error = api.net.send_to_host(TOPIC, _envelope("ready"))
 	if error != OK:
+		stop()
 		api.fail("settlement_send_failed", error_string(error))
 
 func _process(delta: float) -> void:
 	if _closed or _released or not _mounted or not api.is_open():
 		return
+	if _stage == "waiting" and Time.get_ticks_msec() >= _ready_deadline_msec:
+		stop()
+		api.fail("settlement_ready_timeout", "结算页面就绪等待超过 30 秒")
+		return
 	_retry_in -= delta
 	if not _ready_peers.has(_local_peer()) and _retry_in <= 0.0:
 		_send_ready()
+		if _closed:
+			return
 	if _stage == "countdown":
-		_remaining = maxf(0.0, _remaining - delta)
+		_remaining = maxf(0.0, float(_end_msec - api.net.host_time_msec()) / 1000.0)
 		if api.is_host() and _remaining == 0.0:
 			if _all_ready():
 				_stage = "continue"
@@ -74,8 +85,6 @@ func _process(delta: float) -> void:
 				_stage = "waiting"
 				_remaining = -1.0
 				_publish()
-		elif api.is_host() and ceili(_remaining) != _last_count:
-			_publish()
 	if is_instance_valid(view):
 		view.set_countdown(_remaining)
 
@@ -92,7 +101,8 @@ func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 		for peer: int in payload.ready:
 			_ready_peers[peer] = true
 		_stage = payload.stage
-		_remaining = float(payload.remaining)
+		_end_msec = payload.end_msec
+		_remaining = maxf(0.0, float(_end_msec - api.net.host_time_msec()) / 1000.0) if _stage == "countdown" else -1.0
 		if is_instance_valid(view):
 			view.set_countdown(_remaining)
 		if _stage == "continue":
@@ -101,6 +111,8 @@ func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 		var peer: int = int(sender.get("peer_id", 0))
 		for player: Dictionary in api.get_room_players():
 			if player.connected and player.peer_id == peer and player.player_id in sender.get("player_ids", []):
+				if _ready_peers.has(peer):
+					return
 				_ready_peers[peer] = true
 				_maybe_countdown()
 				_publish()
@@ -111,9 +123,7 @@ func _valid_state(payload: Dictionary) -> bool:
 		return false
 	if payload.get("stage") not in ["waiting", "countdown", "continue"] or not payload.get("ready") is Array:
 		return false
-	if payload.ready.size() > 8 or not (payload.get("remaining") is int or payload.get("remaining") is float):
-		return false
-	if not is_finite(float(payload.remaining)) or float(payload.remaining) < -1.0 or float(payload.remaining) > 10.0:
+	if payload.ready.size() > 8 or not payload.get("end_msec") is int or payload.end_msec < -1:
 		return false
 	var known: Dictionary = {}
 	for player: Dictionary in api.get_room_players():
@@ -142,14 +152,16 @@ func _maybe_countdown() -> void:
 	if _stage == "waiting" and _all_ready():
 		_stage = "countdown"
 		_remaining = countdown_seconds
+		_end_msec = api.net.host_time_msec() + roundi(countdown_seconds * 1000.0)
 
 func _publish() -> void:
 	_revision += 1
-	_last_count = ceili(_remaining)
 	var payload: Dictionary = _envelope("state")
-	payload.merge({"revision": _revision, "ready": _ready_peers.keys(), "stage": _stage, "remaining": _remaining})
-	if api.net.broadcast(TOPIC, payload) != OK:
-		api.fail("settlement_send_failed", "无法同步结算页面")
+	payload.merge({"revision": _revision, "ready": _ready_peers.keys(), "stage": _stage, "end_msec": _end_msec})
+	var error: Error = api.net.broadcast(TOPIC, payload)
+	if error != OK:
+		stop()
+		api.fail("settlement_send_failed", error_string(error))
 
 func _players_changed() -> void:
 	if _closed or _released or not api.is_host():

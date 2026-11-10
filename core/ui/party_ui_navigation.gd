@@ -33,9 +33,10 @@ var _last_warp: Vector2i
 var _cursor_mask: int = 0
 var _accept_pad_bindings: Array[InputEvent] = []
 @onready var _initial_mouse_mode: Input.MouseMode = Input.mouse_mode
-@onready var app: Control = get_parent()
+@export var app: Control
 
 func initialize() -> void:
+	assert(app != null, "UI navigation requires the application shell")
 	_hints.set_mode(false, false)
 	app.catalog.i18n.changed.connect(_refresh_hints)
 	_keyboard.key_pressed.connect(app._ui_audio.click)

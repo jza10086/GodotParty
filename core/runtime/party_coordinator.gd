@@ -52,6 +52,7 @@ func configure(link: Node, content_catalog: RefCounted, local_settings: PartyInp
 	connection.packet_received.connect(_packet)
 	connection.disconnected.connect(_withdraw)
 	connection.changed.connect(_connection_changed)
+	connection.stats_changed.connect(_network_stats_changed)
 	voice_backend = Voice.new()
 	add_child(voice_backend)
 	voice_backend.initialize(connection, settings)
@@ -69,8 +70,7 @@ func begin() -> Error:
 		_main_id = record["main_scope"]
 		connection.room["phase"] = "loading"
 		connection._publish()
-		connection.control("install", {"record": record, "restoring": true})
-		return OK
+		return connection.control("install", {"record": record, "restoring": true})
 	_main_id = Data.token()
 	record = {"revision": 0, "save_id": Data.token(), "main_scope": _main_id, "state": {}, "rounds": [], "room": connection.room.duplicate(true), "players": connection.players.duplicate(true), "appearances": {}, "status": "active", "seed": randi()}
 	record["main_rules"] = Rules.snapshot(record.room, record.room.main, catalog)
@@ -126,7 +126,6 @@ func _create_scope(id: String, package_id: String, round: String, participants: 
 
 	api.net._native_api = multiplayer
 	api.net._root = root
-	api.net._native_base = connection.room.get("channels", {}).get(package_id + ":native", 2)
 	var scope: Dictionary = {"id": id, "package": package_id, "round": round, "participants": participants.duplicate(), "request": request.duplicate(true), "api": api, "root": root, "phase": "preparing", "accepted": "", "view": null, "stopped": false, "ready_requested": false, "mouse_mode": Input.mouse_mode}
 	# Register before setup, including its callbacks; setup is intentionally off-tree.
 	_scopes[id] = scope
@@ -145,6 +144,12 @@ func _create_scope(id: String, package_id: String, round: String, participants: 
 	return scope
 
 func _query(scope_id: String, key: String, argument: Dictionary) -> Variant:
+	if key == "peer_stats":
+		return connection.get_peer_stats(argument.peer_id)
+	if key == "host_time":
+		return connection.network_clock.now_msec()
+	if key == "clock_ready":
+		return connection.network_clock.is_ready()
 	if key == "game_name":
 		return catalog.get_package(argument.id)["name"]
 	if key == "child_settings":
@@ -186,8 +191,7 @@ func _dispatch(id: String, operation: String, payload: Dictionary) -> Error:
 	if operation == "message":
 		return _send_message(scope, payload)
 	if operation == "fail":
-		connection.control("failure", {"scope": id, "reason": payload["code"] + ": " + payload["message"]}, 1)
-		return OK
+		return connection.control("failure", {"scope": id, "reason": payload["code"] + ": " + payload["message"]}, 1)
 	if operation == "ready":
 		if scope["phase"] != "preparing":
 			return ERR_UNAVAILABLE
@@ -217,8 +221,7 @@ func _dispatch(id: String, operation: String, payload: Dictionary) -> Error:
 				return ERR_INVALID_PARAMETER
 			if not connection.control_fits("standings", payload):
 				return ERR_INVALID_DATA
-			connection.control("standings", payload)
-			return OK
+			return connection.control("standings", payload)
 	return ERR_INVALID_PARAMETER
 
 func _next_record(state: Dictionary) -> Dictionary:
@@ -275,8 +278,7 @@ func _request(payload: Dictionary) -> Error:
 	if not connection.control_fits("child", message):
 		return ERR_INVALID_DATA
 	phase = "requesting"
-	connection.control("child", message)
-	return OK
+	return connection.control("child", message)
 
 func _adapter_instance(id: String, adapter: Dictionary) -> RefCounted:
 	if not adapter.has("entry"):
@@ -364,15 +366,22 @@ func _persist() -> void:
 		connection.control("committed", candidate)
 
 func _control(sender: int, kind: String, payload: Dictionary) -> void:
+	if not _valid_control(kind, payload):
+		if connection.host and sender != 1:
+			connection.multiplayer.disconnect_peer(sender)
+		else:
+			connection.leave("框架控制消息格式无效：" + kind)
+		return
 	if kind == "ready" and connection.host:
-		if payload.get("scope") == loading.get("scope") and sender in _expected and payload.get("rules") == _scopes[loading.scope].api.config._rules.get("id"):
+		if not loading.is_empty() and payload.scope == loading.scope and sender in _expected and payload.rules == _scopes[loading.scope].api.config._rules.get("id"):
 			_ready_peers[sender] = true
-			connection.control("readiness", {"scope": loading["scope"], "peers": _ready_peers.keys()})
+			if connection.control("readiness", {"scope": loading["scope"], "peers": _ready_peers.keys()}) != OK:
+				return
 			if _ready_peers.size() == _expected.size():
 				connection.control("start", {"scope": loading["scope"]})
 		return
 	if kind == "failure" and connection.host:
-		if payload.get("scope", "") in [_main_id, _child_id] and not _peer(sender).is_empty():
+		if not payload.scope.is_empty() and payload.scope in [_main_id, _child_id] and not _peer(sender).is_empty():
 			if not _child_id.is_empty():
 				cancel_round(payload.get("reason", "Load failed"))
 			else:
@@ -386,7 +395,7 @@ func _control(sender: int, kind: String, payload: Dictionary) -> void:
 		"child":
 			_enter_child(payload)
 		"readiness":
-			if payload.get("scope") == loading.get("scope"):
+			if not loading.is_empty() and payload.scope == loading.scope:
 				loading["ready"] = payload.get("peers", []).duplicate()
 				_scopes[loading.scope]["prepared_peers"] = loading["ready"].duplicate()
 				changed.emit()
@@ -404,8 +413,7 @@ func _control(sender: int, kind: String, payload: Dictionary) -> void:
 			cleanup(payload.get("reason", "Session stopped"))
 			failed.emit(payload.get("reason", ""))
 			if connection.host:
-				connection.room["phase"] = "lobby"
-				connection._publish()
+				connection.return_to_lobby()
 
 func _install(payload: Dictionary) -> void:
 	record = payload["record"].duplicate(true)
@@ -483,7 +491,7 @@ func _begin_barrier(scope: Dictionary) -> void:
 	changed.emit()
 
 func _report_ready(id: String) -> void:
-	if id == loading.get("scope") and _scopes.has(id) and _scopes[id]["phase"] == "preparing" and _scopes[id].effects.ready:
+	if id == loading.get("scope") and _scopes.has(id) and _scopes[id]["phase"] == "preparing" and _scopes[id].effects.ready and connection.network_clock.is_ready():
 		connection.control("ready", {"scope": id, "rules": _scopes[id].api.config._rules.get("id")}, 1)
 
 func _start_scope(id: String) -> void:
@@ -647,17 +655,10 @@ func cleanup(reason: String = "closed") -> void:
 	changed.emit()
 
 func _send_message(scope: Dictionary, payload: Dictionary) -> Error:
-	var stream: String = payload["stream"]
-	var declaration: Dictionary = catalog.get_package(scope["package"]).get("streams", {}).get(stream, {})
-	if not stream.is_empty() and declaration.is_empty():
-		return ERR_INVALID_PARAMETER
-	var mode: int = {"reliable": MultiplayerPeer.TRANSFER_MODE_RELIABLE, "unreliable": MultiplayerPeer.TRANSFER_MODE_UNRELIABLE, "ordered": MultiplayerPeer.TRANSFER_MODE_UNRELIABLE_ORDERED}[declaration.get("mode", "reliable")]
-	var channel: int = 1 if stream.is_empty() else connection.room["channels"].get(scope["package"] + ":" + stream, -1)
-	if channel < 0:
-		return ERR_UNCONFIGURED
+	var mode: int = payload["mode"]
+	var lane: int = payload["channel"]
+	var channel: int = PartyNet.MESSAGE_CHANNEL_BASE + lane * 3 + mode
 	var target: String = payload["target"]
-	if target.is_empty():
-		target = declaration.get("audience", "participants")
 	var destination: String = scope["id"]
 	if target == "parent":
 		if scope["id"] != _child_id:
@@ -676,48 +677,53 @@ func _send_message(scope: Dictionary, payload: Dictionary) -> Error:
 		if include and (payload["include_self"] or player["peer_id"] != connection.local_peer()):
 			targets.append(player["peer_id"])
 	if targets.is_empty():
-		return ERR_DOES_NOT_EXIST
+		return OK if target in ["instance", "participants", "spectators", "child"] else ERR_DOES_NOT_EXIST
+	# Enqueue remote sends before self delivery: local callbacks may finish and close this scope.
+	var include_own: bool = connection.local_peer() in targets
+	targets.erase(connection.local_peer())
+	if include_own:
+		targets.append(connection.local_peer())
 	for peer: int in targets:
-		var key: String = scope["id"] + ":" + stream + ":" + str(peer)
+		var key: String = "%s:%s:%s:%s:%s:%s" % [scope.id, destination, payload.topic, mode, lane, peer]
 		_sent[key] = _sent.get(key, 0) + 1
-		var packet: Dictionary = {"scope": scope["id"], "destination": destination, "round": scope["round"], "package": scope["package"], "target": peer, "stream": stream, "topic": payload["topic"], "payload": payload["payload"], "sequence": _sent[key]}
+		var packet: Dictionary = {"scope": scope.id, "destination": destination, "round": scope.round, "package": scope.package,
+			"target": peer, "topic": payload.topic, "payload": payload.payload, "sequence": _sent[key], "mode": mode, "channel": lane}
 		var error: Error = connection.send_packet(peer, packet, mode, channel)
 		if error != OK:
 			return error
 	return OK
 
 func _packet(sender: int, packet: Dictionary) -> void:
-	for field: String in ["scope", "destination", "round", "package", "stream", "topic"]:
+	for field: String in ["scope", "destination", "round", "package", "topic"]:
 		if not packet.get(field) is String:
 			return
-	if not packet.get("target") is int or not packet.get("sequence") is int:
-		return
-	var scope: Dictionary = _scopes.get(packet.get("scope", ""), {})
-	var target: Dictionary = _scopes.get(packet.get("destination", ""), {})
-	var player: Dictionary = _peer(sender)
-	if scope.is_empty() or target.is_empty() or player.is_empty() or not player["connected"]:
-		return
-	if packet.get("session") != connection.session_id or packet.get("package") != scope["package"] or packet.get("round") != scope["round"] or packet.get("target") != connection.local_peer():
-		return
-	var stream: String = packet.get("stream", "")
-	var declaration: Dictionary = catalog.get_package(scope["package"]).get("streams", {}).get(stream, {})
-	if not stream.is_empty() and declaration.is_empty():
-		return
-	if not packet.get("topic") is String or typeof(packet.get("sequence")) != TYPE_INT:
-		return
-	if declaration.get("mode", "reliable") != "unreliable":
-		var key: String = str(sender) + ":" + scope["id"] + ":" + stream + ":" + str(packet["target"])
-		if packet["sequence"] <= _received.get(key, 0):
+	for field: String in ["target", "sequence", "mode", "channel"]:
+		if not packet.get(field) is int:
 			return
-		_received[key] = packet["sequence"]
-	var identity: Dictionary = {"peer_id": sender, "player_ids": [player["player_id"]]}
-	var net: PartyNet = target["api"].net
-	if scope["id"] == target["id"]:
-		net.message_received.emit(identity, StringName(packet["topic"]), Data.copy(packet.get("payload")))
-	elif scope["id"] == _child_id and target["id"] == _main_id and connection.host:
-		net.child_message_received.emit(identity, StringName(packet["topic"]), Data.copy(packet.get("payload")))
-	elif scope["id"] == _main_id and target["id"] == _child_id and sender == 1:
-		net.parent_message_received.emit(identity, StringName(packet["topic"]), Data.copy(packet.get("payload")))
+	if packet.sequence < 1 or packet.mode not in [MultiplayerPeer.TRANSFER_MODE_RELIABLE, MultiplayerPeer.TRANSFER_MODE_UNRELIABLE, MultiplayerPeer.TRANSFER_MODE_UNRELIABLE_ORDERED] or packet.channel < 0 or packet.channel >= PartyNet.MESSAGE_LANES:
+		return
+	var scope: Dictionary = _scopes.get(packet.scope, {})
+	var target: Dictionary = _scopes.get(packet.destination, {})
+	var player: Dictionary = _peer(sender)
+	if scope.is_empty() or target.is_empty() or scope.phase == "closed" or target.phase == "closed" or player.is_empty() or not player.connected:
+		return
+	if packet.get("session") != connection.session_id or packet.package != scope.package or packet.round != scope.round or packet.target != connection.local_peer():
+		return
+	if scope.id != target.id and not (scope.id == _child_id and target.id == _main_id and connection.host) and not (scope.id == _main_id and target.id == _child_id and sender == 1):
+		return
+	if packet.mode != MultiplayerPeer.TRANSFER_MODE_UNRELIABLE:
+		var key: String = "%s:%s:%s:%s:%s:%s:%s" % [sender, scope.id, target.id, packet.topic, packet.mode, packet.channel, packet.target]
+		if packet.sequence <= _received.get(key, 0):
+			return
+		_received[key] = packet.sequence
+	var identity: Dictionary = {"peer_id": sender, "player_ids": [player.player_id]}
+	var net: PartyNet = target.api.net
+	if scope.id == target.id:
+		net.message_received.emit(identity, StringName(packet.topic), Data.copy(packet.get("payload")))
+	elif scope.id == _child_id:
+		net.child_message_received.emit(identity, StringName(packet.topic), Data.copy(packet.get("payload")))
+	else:
+		net.parent_message_received.emit(identity, StringName(packet.topic), Data.copy(packet.get("payload")))
 
 func _ids(players: Array) -> Array[String]:
 	var result: Array[String] = []
@@ -739,12 +745,17 @@ func _peer(id: int) -> Dictionary:
 	return {}
 
 func _withdraw(peer: int) -> void:
-	if phase == "loading":
+	var departed: Dictionary = _peer(peer)
+	# Active rosters preserve disconnected entries until the session returns to its lobby.
+	if not departed.is_empty():
+		for scope: Dictionary in _scopes.values():
+			scope.api.player_disconnected.emit(departed.player_id, peer)
+	if connection.host and phase == "loading":
 		if not _child_id.is_empty():
 			cancel_round("玩家加载期间断线")
 		else:
 			connection.control("abort", {"reason": "玩家加载期间断线"})
-	elif not _child_id.is_empty() and _scopes.has(_child_id):
+	elif connection.host and not _child_id.is_empty() and _scopes.has(_child_id):
 		var any_connected: bool = false
 		for player: Dictionary in _participants(_scopes[_child_id]["participants"]):
 			any_connected = any_connected or player["connected"]
@@ -807,7 +818,13 @@ func prepare_room() -> PartyAPI:
 	return _lobby_api
 
 ## Lobby settings use the same public identity/appearance snapshots as activity scopes.
-func _lobby_query(_scope: String, key: String, _argument: Dictionary) -> Variant:
+func _lobby_query(_scope: String, key: String, argument: Dictionary) -> Variant:
+	if key == "peer_stats":
+		return connection.get_peer_stats(argument.peer_id)
+	if key == "host_time":
+		return connection.network_clock.now_msec()
+	if key == "clock_ready":
+		return connection.network_clock.is_ready()
 	if key == "appearances":
 		var appearances: Dictionary = {}
 		for player: Dictionary in connection.players:
@@ -874,3 +891,55 @@ func edit_room_rules(revision: int, edits: Array) -> Error:
 	next.room = checked.room
 	next.room.phase = connection.room.phase
 	return _queue_commit({"kind": "rules", "record": next, "previous_phase": phase})
+
+func _network_stats_changed() -> void:
+	if _lobby_api != null:
+		_lobby_api.net.stats_changed.emit()
+	for scope: Dictionary in _scopes.values():
+		scope.api.net.stats_changed.emit()
+	if not loading.is_empty() and _scopes[loading.scope].ready_requested:
+		_report_ready(loading.scope)
+
+## Only the network boundary validates control shapes; internal handlers use the checked contract.
+func _valid_control(kind: String, payload: Dictionary) -> bool:
+	match kind:
+		"ready", "start", "failure", "readiness", "child":
+			if not payload.get("scope") is String or payload.scope.is_empty():
+				return false
+	match kind:
+		"ready":
+			return payload.get("rules") is String
+		"failure", "cancel", "abort":
+			return payload.get("reason") is String
+		"readiness":
+			if not payload.get("peers") is Array:
+				return false
+			for peer: Variant in payload.peers:
+				if not peer is int or peer < 1:
+					return false
+		"install", "committed":
+			if not payload.get("record") is Dictionary:
+				return false
+			var next: Dictionary = payload.record
+			for key: String in ["state", "room", "main_rules"]:
+				if not next.get(key) is Dictionary:
+					return false
+			if not next.get("main_scope") is String or next.main_scope.is_empty() or not next.get("revision") is int or not next.get("rounds") is Array:
+				return false
+			if kind == "committed":
+				if payload.get("kind") not in ["initial", "state", "round", "end", "rules"]:
+					return false
+				if payload.kind == "round" and (not payload.get("round") is String or not payload.get("result") is Dictionary):
+					return false
+				if payload.kind == "rules" and not payload.get("previous_phase") is String:
+					return false
+		"child":
+			for key: String in ["rules", "request", "config"]:
+				if not payload.get(key) is Dictionary:
+					return false
+			if not payload.get("id") is String or not payload.get("seed") is int or not payload.get("participants") is Array:
+				return false
+			for id: Variant in payload.participants:
+				if not id is String:
+					return false
+	return true

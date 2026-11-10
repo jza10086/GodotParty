@@ -1,6 +1,6 @@
 # PartyAPI / PartyNet 参考
 
-版本：框架 4.2.0，API 4，联机协议 16。实例由 core 注入，不要自行创建“当前游戏”全局单例。
+版本：框架 5.0.0，API 5，联机协议 17。实例由 core 注入，不要自行创建“当前游戏”全局单例。
 
 ## PartyAPI
 
@@ -27,7 +27,7 @@
 | commit_state(next_state: Dictionary) -> Error | 大游戏房主空闲阶段 | 接受普通状态提交，保存后应用广播 |
 | request_minigame(id: String, request: Dictionary, participants: Array[String] = []) -> Error | 大游戏房主空闲阶段 | 空名单为在线主游戏玩家；必须来自已勾选池 |
 | finish_session(presentation: Dictionary = {}) -> Error | 大游戏房主空闲阶段 | 保存终态后显示最终结果 |
-| publish_standings(presentation: Dictionary) -> Error | 大游戏房主空闲阶段 | 更新可选 Tab 总览，不解释业务状态 |
+| publish_standings(presentation: Dictionary) -> Error | 大游戏房主空闲阶段 | 更新可选 F3 总览，不解释业务状态 |
 | get_round_presentation() -> Dictionary | 活跃作用域 | 最近一次已提交小游戏结果的协议展示副本；没有转换器时为空 |
 | show_results(presentation: Dictionary) -> Error | 活跃作用域任意端 | 本端打开公共成绩页，不广播、不改变奖励 |
 | fail(code: String, message: String) -> Error | 任意活跃端 | 报告不能继续，由房主取消轮次或会话 |
@@ -38,7 +38,7 @@
 语言声明与回退见 [本地化](localization.md)。PartyRoomAPI.i18n 同样可用，默认绑定主游戏。
 玩家字段：player_id、peer_id、name、connected、is_local，以及协议资料快照。不要把 peer_id 写成永久业务身份。
 
-信号：players_changed；state_committed(revision)；commit_failed(code, message)；
+信号：players_changed；player_disconnected(player_id: String, peer_id: int)；state_committed(revision)；commit_failed(code, message)；
 round_committed(round_id, result)；round_cancelled(round_id, reason)。
 round_committed 是发布通知，不能在其中再次发放已由 reducer 处理的奖励。
 
@@ -53,18 +53,26 @@ finish、commit_state 的后续写入失败由 commit_failed 通知；候选保�
 
 ## PartyNet
 
-- send_to_host(topic: StringName, payload: Dictionary) -> Error：任意端，可靠发送给房主。
-- broadcast(topic: StringName, payload: Dictionary, include_self: bool = true) -> Error：房主可靠广播。
-- send_to_player(player_id: String, stream_id: StringName, payload: Variant) -> Error。
-- send_to_peer(peer_id: int, stream_id: StringName, payload: Variant) -> Error。
-- broadcast_stream(stream_id: StringName, payload: Variant, audience: String = "", include_self: bool = true) -> Error。
-- send_to_parent(topic: StringName, payload: Variant) -> Error：小游戏发给房主父实例。
-- send_to_child(topic: StringName, payload: Variant) -> Error：房主父实例发给当前子实例。
-- get_multiplayer_api()、get_instance_root()、get_native_channel_base()：原生联网入口。
+所有 payload 均为可序列化 Variant（不含 Object）；消息字典键支持 String、StringName 和整数实体 ID。持久化状态、配置与结果仍使用字符串键。mode 默认 `MultiplayerPeer.TRANSFER_MODE_RELIABLE`，也可用 UNRELIABLE / UNRELIABLE_ORDERED；channel 默认 0，范围 0–3。
 
-信号 message_received(sender, topic, payload)、parent_message_received、child_message_received。
-sender 来自真实传输层，包含 peer_id 和 player_ids。不可相信业务载荷自报身份。
-默认广播和向自己发送都只投递一次；include_self=false 排除本机。
+- `send_to_host(topic, payload, mode=RELIABLE, channel=0) -> Error`。
+- `broadcast(topic, payload, mode=RELIABLE, include_self=true, audience="instance", channel=0) -> Error`：仅房主。
+- `send_to_group(topic, payload, mode=RELIABLE, audience="instance", include_self=true, channel=0) -> Error`：任意成员，玩法负责权限校验。
+- `send_to_player(player_id, topic, payload, mode=RELIABLE, channel=0) -> Error`。
+- `send_to_peer(peer_id, topic, payload, mode=RELIABLE, channel=0) -> Error`。
+- `send_to_parent(topic, payload) -> Error`：可靠发送给房主父实例。
+- `send_to_child(topic, payload) -> Error`：房主父实例可靠发送到子实例。
+- `get_multiplayer_api() -> MultiplayerAPI`、`get_instance_root() -> Node`：原生入口，关闭后 null。
+- `host_time_msec() -> int`：主机单调毫秒时间估计；首次同步前或关闭后 -1。
+- `is_clock_ready() -> bool`：已有 5 秒内的时钟样本（房主恒为就绪）；样本过期后时间仍继续前进，不回退。
+- `get_peer_stats(peer_id=1) -> Dictionary`：state / peer_id；建立缓存后包含 rtt_msec、jitter_msec、sample_time、age_msec。RTT 和波动直接读取 ENet 原生统计，每秒缓存一次，不额外发送测速请求。sample_time 是采集端最后收到该对端会话包的本机时间，age_msec 是通信活跃度年龄（远端统计含本地等待汇总的时间），并非 ENet RTT 样本年龄。state 为 offline、host、measuring、connected、degraded、stalled。客机读取其他客机时是房主读取的链路 RTT，via_host=true，不是客机间 RTT。 `packet_loss_ready` 表示首个 ENet 丢包统计周期已完成；为 true 时 `packet_loss_percent` 才是有效百分比（0–100）。它是约每 10 秒更新的原生可靠包丢失平滑估计，方向与采集端发送方向一致。
+- `stats_changed()`：延迟、状态或时钟样本更新。
+
+信号 `message_received(sender, topic, payload)`、`parent_message_received`、`child_message_received`。sender 来自传输层，包含 peer_id 和 player_ids；不得相信 payload 自报身份。audience 为 instance、participants 或 spectators。默认包含自己并只投递一次；远端先入队，本机后回调。空组广播成功但不投递，未知定向目标返回 ERR_DOES_NOT_EXIST。可靠/有序消息按发送者、作用域、topic、模式、逻辑通道和目标去重；无序消息不丢弃较小序号。
+
+OK 仅表示本地提交成功。关闭返回 ERR_UNAVAILABLE，参数无效返回 ERR_INVALID_PARAMETER，越权广播返回 ERR_UNAUTHORIZED，非法类型或超过 1 MiB 返回 ERR_INVALID_DATA，传输错误原样返回。调用方必须停止依赖本次发送的操作，不能继续切回合或假装已送达。
+
+API 5 移除 broadcast_stream、get_native_channel_base 和清单流声明；直接更新当前调用方，不保留旧别名。完整组合与示例见[内容网络通信指南](networking.md)。
 
 ## PartyInput
 

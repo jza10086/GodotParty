@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
 [ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_qhdsu"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0wu0s"]
 resource_local_to_scene = true
 shader = ExtResource("4_0wu0s")
 shader_parameter/use_backdrop = false
@@ -91,6 +91,13 @@ theme_override_font_sizes/font_size = 22
 text = "连接测试"
 alignment = 0
 
+[node name="NetworkLab" parent="Menu" unique_id=2104679568 instance=ExtResource("ar_button")]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "网络实验"
+alignment = 0
+
 [node name="Profile" parent="." unique_id=785593560 instance=ExtResource("ar_button")]
 layout_mode = 0
 offset_left = 1400.0
@@ -121,7 +128,7 @@ horizontal_alignment = 2
 
 [node name="Avatar" parent="Profile" unique_id=1325470173 instance=ExtResource("ar_panel")]
 visible = false
-material = SubResource("ShaderMaterial_qhdsu")
+material = SubResource("ShaderMaterial_0wu0s")
 layout_mode = 0
 offset_left = 328.0
 offset_top = 16.0

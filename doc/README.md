@@ -14,5 +14,9 @@
 | 发布者 | [内容包](api/source_packages.md)、[测试](testing.md) |
 | AI | [作者 skill](skills/godot-party-authoring/SKILL.md) |
 
+[内容网络通信指南](api/networking.md)：必要数据、事件驱动、原生 RPC/生成/同步、时钟、延迟与掉线。
+
 [公共 API 参考](api/reference.md) 的签名以 core/api 的实现和文档注释为准。
-本工程只维护当前 API 4；旧 Resource 活动定义、Runtime 注入和文本协议加载器不再作为接入契约。
+本工程只维护当前 API 5；旧 Resource 活动定义、Runtime 注入和文本协议加载器不再作为接入契约。
+
+[原创内容许可](../ASSET_LICENSES.md) · [受限资产分类登记](../third_party_assets/README.md)

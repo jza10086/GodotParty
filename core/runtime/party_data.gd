@@ -1,12 +1,13 @@
 ## Internal value validation and deterministic fingerprints. Never decodes objects.
 extends RefCounted
 
-const API_VERSION: int = 4
-const WIRE_VERSION: int = 16
-const VERSION: String = "4.2.0"
+const API_VERSION: int = 5
+const WIRE_VERSION: int = 17
+const VERSION: String = "5.0.0"
 const FRAMEWORK_NAME: String = "GodotParty"
 
-static func valid(value: Variant, depth: int = 0) -> bool:
+## Wire messages may use integer entity IDs as map keys; persisted state keeps string keys.
+static func valid(value: Variant, depth: int = 0, integer_keys: bool = false) -> bool:
 	if depth > 32:
 		return false
 	match typeof(value):
@@ -16,12 +17,12 @@ static func valid(value: Variant, depth: int = 0) -> bool:
 			return is_finite(value)
 		TYPE_ARRAY:
 			for item: Variant in value:
-				if not valid(item, depth + 1):
+				if not valid(item, depth + 1, integer_keys):
 					return false
 			return true
 		TYPE_DICTIONARY:
 			for key: Variant in value:
-				if typeof(key) not in [TYPE_STRING, TYPE_STRING_NAME] or not valid(value[key], depth + 1):
+				if (typeof(key) not in [TYPE_STRING, TYPE_STRING_NAME] and not (integer_keys and typeof(key) == TYPE_INT)) or not valid(value[key], depth + 1, integer_keys):
 					return false
 			return true
 	return false

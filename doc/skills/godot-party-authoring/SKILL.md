@@ -1,6 +1,6 @@
 ---
 name: godot-party-authoring
-description: Author or integrate GodotParty API 4 games, protocol packages and appearances in the complete framework project; use for lifecycle, networking, state commits, configuration and content publishing.
+description: Author or integrate GodotParty API 5 games, protocol packages and appearances in the complete framework project; use for lifecycle, networking, state commits, configuration and content publishing.
 ---
 
 # GodotParty authoring
@@ -15,7 +15,7 @@ Paths are relative to the project root.
 
 - New minigame: doc/api/authoring.md and the chosen protocol package doc/.
 - Exact signatures/errors: doc/api/reference.md, then core/api/party_api.gd or party_net.gd.
-- Readiness, scope cleanup, generic/native networking: doc/api/api.md.
+- Readiness and scope cleanup: doc/api/api.md. Network design and native examples: doc/api/networking.md.
 - Main-game state, reducers, durable results and recovery: doc/api/results.md.
 - Configuration, custom panels and host-selected pools: doc/api/configuration.md.
 - Package languages, Chinese fallback, translated metadata/settings and api.i18n: doc/api/localization.md. Selection is manual in the main menu and never synchronized with room rules.
@@ -26,7 +26,7 @@ Paths are relative to the project root.
 
 ## Decisions that matter
 
-- Use only current API 4. Do not recreate GPActivityRuntime, controller inheritance, compatibility aliases or old Resource activity definitions.
+- Use only current API 5. Do not recreate GPActivityRuntime, controller inheritance, compatibility aliases or old Resource activity definitions.
 - setup runs before entering the tree; it cannot use @onready. Explicitly mark_ready after initialization. Simulation starts in party_start.
 - Host owns final publication; authors choose local/host/mixed judgement. A spectator host still runs coordination and host game logic.
 - finish OK accepts a candidate, not a durable reward. Main-game reducers are pure; never award again from round_committed.
@@ -37,7 +37,7 @@ Paths are relative to the project root.
 - Identity is player_id; peer_id is transport routing. Returned player/settings data are snapshots.
 - Main controller/state persist across a foreground minigame; the view is released and rebuilt. Old scope callbacks must not mutate new games.
 - Main games declare room_scene and own their lobby presentation through core/api/party_room_api.gd. Reuse documented public room scenes and framework panels; do not depend on private frontend nodes. Room activations close on rule changes and leaving. Optional minigames limits pool candidates; every declared pool must be nonempty before start.
-- Use declared streams or native Godot RPC as appropriate. Sending is not remote acknowledgement; framework channel ownership still applies.
+- Use native @rpc or PartyNet with call-site reliability. Do not declare streams/native_channels. Send only necessary data; send discrete data once and animate locally. Never periodically broadcast whole gameplay/world snapshots. Read doc/api/networking.md for channel ownership, native spawning, input rates and interpolation.
 - Source and PCK use the same paths and runtime. Publish only after a clean host without author source/cache can run the package.
 - Same-process content has ordinary Godot abilities. API correctness checks are not a security sandbox.
 

@@ -6,7 +6,7 @@ extends Control
 
 signal play_requested()
 
-const View: PackedScene = preload("briefing_view.tscn")
+const View: PackedScene = preload("res://games/protocols/godot_party_default_protocol/briefing/briefing_view.tscn")
 const TOPIC: StringName = &"godot_party_default/briefing"
 @export_range(0.0, 10.0, 0.1) var countdown_seconds: float = 3.0
 var api: PartyAPI
@@ -23,7 +23,7 @@ var _remaining: float = -1.0
 var _revision: int = 0
 var _received_revision: int = -1
 var _refresh_in: float = 0.0
-var _last_count: int = -1
+var _end_msec: int = -1
 var _notice: String = ""
 var _choice_options: Array[String] = []
 var _choices: Dictionary[String, String] = {}
@@ -88,6 +88,7 @@ func transport_started() -> void:
 		_release()
 	elif api.is_host():
 		_maybe_countdown()
+		_publish()
 	_refresh()
 
 ## A manual confirmation. Repeated input cannot skip the countdown or restart gameplay.
@@ -139,7 +140,7 @@ func _process(delta: float) -> void:
 	if _closed or _released or api == null or not api.is_open():
 		return
 	if _stage == "countdown":
-		_remaining = maxf(0.0, _remaining - delta)
+		_remaining = maxf(0.0, float(_end_msec - api.net.host_time_msec()) / 1000.0)
 		if api.is_host() and _remaining == 0.0:
 			if _all_confirmed():
 				_stage = "play"
@@ -148,8 +149,6 @@ func _process(delta: float) -> void:
 				_stage = "waiting"
 				_remaining = -1.0
 				_publish()
-		elif api.is_host() and ceili(_remaining) != _last_count:
-			_publish()
 	_refresh_in -= delta
 	if _refresh_in <= 0.0:
 		_refresh_in = 0.1
@@ -173,7 +172,8 @@ func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 		for id: String in payload.ready:
 			_ready_ids[id] = true
 		_stage = payload.stage
-		_remaining = float(payload.remaining)
+		_end_msec = payload.end_msec
+		_remaining = maxf(0.0, float(_end_msec - api.net.host_time_msec()) / 1000.0) if _stage == "countdown" else -1.0
 		if _ready_ids.has(_local_id()):
 			_request_pending = false
 		if _stage == "play" and _transport_started:
@@ -208,9 +208,7 @@ func _valid_state(payload: Dictionary) -> bool:
 		return false
 	if payload.get("stage") not in ["waiting", "countdown", "play"] or not payload.get("ready") is Array:
 		return false
-	if payload.ready.size() > 8 or not (payload.get("remaining") is float or payload.get("remaining") is int):
-		return false
-	if not is_finite(float(payload.remaining)) or float(payload.remaining) < -1.0 or float(payload.remaining) > 10.0:
+	if payload.ready.size() > 8 or not payload.get("end_msec") is int or payload.end_msec < -1:
 		return false
 	var participants: Dictionary = {}
 	for player: Dictionary in api.get_players():
@@ -230,13 +228,13 @@ func _publish() -> void:
 	if not api.is_host() or _closed:
 		return
 	_revision += 1
-	_last_count = ceili(_remaining)
 	var payload: Dictionary = _envelope("state")
-	payload.merge({"revision": _revision, "ready": _ready_ids.keys(), "stage": _stage, "remaining": _remaining})
+	payload.merge({"revision": _revision, "ready": _ready_ids.keys(), "stage": _stage, "end_msec": _end_msec})
 	if not _choice_options.is_empty():
 		payload.choices = _choices.duplicate()
 	var error: Error = api.net.broadcast(TOPIC, payload)
 	if error != OK:
+		stop()
 		api.fail("briefing_send_failed", error_string(error))
 
 func _all_confirmed() -> bool:
@@ -255,7 +253,7 @@ func _maybe_countdown() -> void:
 		return
 	_stage = "countdown"
 	_remaining = countdown_seconds
-	_publish()
+	_end_msec = api.net.host_time_msec() + roundi(countdown_seconds * 1000.0)
 
 func _players_changed() -> void:
 	if _closed or _released:

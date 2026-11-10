@@ -1,36 +1,40 @@
 [gd_scene format=3 uid="uid://c7csphin2ugba"]
 
-[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
-
-
+[ext_resource type="Shader" uid="uid://bbmv2flgi2w7i" path="res://core/ui/ambient_reveal/surface.gdshader" id="3_v5h00"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
-
-[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="ar_option_button"]
-
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="ar_line_edit"]
-
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="ar_option_button"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
+[ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_v5h00"]
+resource_local_to_scene = true
+shader = ExtResource("3_v5h00")
+shader_parameter/use_backdrop = false
+shader_parameter/backdrop_origin = Vector2(0, 0)
+shader_parameter/backdrop_extent = Vector2(1100, 760)
 
 [node name="Create" type="Control" unique_id=1531944978]
 layout_mode = 3
-mouse_filter = 2
-theme = ExtResource("theme")
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -440.0
-offset_top = -342.0
+offset_top = -363.0
 offset_right = 440.0
-offset_bottom = 342.0
+offset_bottom = 363.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("theme")
 
 [node name="Dialog" parent="." unique_id=954355529 instance=ExtResource("ar_panel")]
+material = SubResource("ShaderMaterial_v5h00")
 layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
 offset_right = 880.0
-offset_bottom = 684.0
+offset_bottom = 726.0
 mouse_filter = 2
 
 [node name="Title" type="Label" parent="." unique_id=1538875656]
@@ -49,7 +53,7 @@ offset_top = 96.0
 offset_right = 820.0
 offset_bottom = 132.0
 theme_override_font_sizes/font_size = 17
-text = "MOCK 示例游戏 · 尚未接入真实玩法"
+text = "选择已安装的协议与大游戏，确认后创建联机房间。"
 
 [node name="GameLabel" type="Label" parent="." unique_id=1356838584]
 layout_mode = 0
@@ -65,32 +69,32 @@ offset_left = 272.0
 offset_top = 152.0
 offset_right = 820.0
 offset_bottom = 210.0
-text = "选择协议或大游戏"
-alignment = 0
 
 [node name="DropdownNote" type="Label" parent="." unique_id=135199606]
 layout_mode = 0
 offset_left = 60.0
-offset_top = 510.0
+offset_top = 552.0
 offset_right = 820.0
-offset_bottom = 540.0
-text = "仅本地模拟 · 密码与公开性不进行真实访问控制"
+offset_bottom = 598.0
+theme_override_font_sizes/font_size = 17
+text = "选择本机监听 IP；隧道转发目标需与此匹配。请允许 UDP 端口通过防火墙。"
+autowrap_mode = 3
 
 [node name="Cancel" parent="." unique_id=1385452288 instance=ExtResource("ar_button")]
 layout_mode = 0
 offset_left = 60.0
-offset_top = 570.0
+offset_top = 612.0
 offset_right = 360.0
-offset_bottom = 642.0
+offset_bottom = 684.0
 theme_override_font_sizes/font_size = 26
 text = "取消"
 
 [node name="Confirm" parent="." unique_id=323820946 instance=ExtResource("ar_button")]
 layout_mode = 0
 offset_left = 400.0
-offset_top = 570.0
+offset_top = 612.0
 offset_right = 820.0
-offset_bottom = 642.0
+offset_bottom = 684.0
 theme_override_font_sizes/font_size = 26
 text = "创建房间"
 
@@ -128,33 +132,36 @@ offset_bottom = 374.0
 text = "7777"
 placeholder_text = "1–65535 · 默认 7777"
 
-[node name="VisibilityLabel" type="Label" parent="." unique_id=1122833040]
+[node name="BindAddressLabel" type="Label" parent="." unique_id=1122833040]
 layout_mode = 0
 offset_left = 60.0
 offset_top = 398.0
 offset_right = 260.0
-offset_bottom = 456.0
-text = "房间公开性"
+offset_bottom = 432.0
+text = "监听网卡 / IP"
 
-[node name="Visibility" parent="." unique_id=2080793745 instance=ExtResource("ar_option_button")]
+[node name="BindAddress" parent="." unique_id=2080793745 instance=ExtResource("ar_option_button")]
 layout_mode = 0
-offset_left = 272.0
-offset_top = 398.0
+offset_left = 60.0
+offset_top = 440.0
 offset_right = 820.0
-offset_bottom = 456.0
-selected = 0
-item_count = 3
-popup/item_0/text = "公开"
-popup/item_0/id = 0
-popup/item_1/text = "仅限好友"
-popup/item_1/id = 1
-popup/item_2/text = "仅限邀请"
-popup/item_2/id = 2
+offset_bottom = 498.0
+clip_text = true
+fit_to_longest_item = false
 
 [node name="Error" type="Label" parent="." unique_id=1126437486]
 layout_mode = 0
 offset_left = 60.0
-offset_top = 468.0
+offset_top = 510.0
 offset_right = 820.0
-offset_bottom = 502.0
+offset_bottom = 544.0
 theme_override_colors/font_color = Color(1, 0.65, 0.62, 1)
+
+[node name="RefreshAddresses" parent="." unique_id=921452050 instance=ExtResource("ar_button")]
+layout_mode = 0
+offset_left = 720.0
+offset_top = 390.0
+offset_right = 820.0
+offset_bottom = 432.0
+theme_override_font_sizes/font_size = 22
+text = "刷新"

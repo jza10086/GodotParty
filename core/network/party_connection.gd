@@ -5,7 +5,24 @@ const Data = preload("res://core/runtime/party_data.gd")
 const Rules = preload("res://core/config/party_room_rules.gd")
 const PlayerCounts = preload("res://core/config/party_player_counts.gd")
 const Profiles = preload("res://core/runtime/party_profiles.gd")
+const Clock = preload("res://core/network/party_network_clock.gd")
+const NetworkLab = preload("res://core/network/party_network_lab.gd")
+var _network_lab: NetworkLab = NetworkLab.new()
 const MAX_PACKET_BYTES: int = 1048576
+const STATS_INTERVAL_MSEC: int = 1000
+const STALE_LINK_MSEC: int = 3000
+signal stats_changed()
+var connection_state: String = "offline"
+var network_clock: RefCounted = Clock.new()
+var _dns_query: int = -1
+var _closing: bool = false
+var _next_stats_update: int = 0
+var _clock_request_sent: int = -1
+var _last_packet_msec: Dictionary[int, int] = {}
+var _loss_first_epoch: Dictionary[int, int] = {}
+var _peer_stats: Dictionary[int, Dictionary] = {}
+var _remote_stats: Dictionary[int, Dictionary] = {}
+var _last_remote_stats: int = 0
 signal changed()
 signal control_received(sender: int, kind: String, payload: Dictionary)
 signal control_sending(kind: String, payload: Dictionary)
@@ -41,7 +58,7 @@ static func parse_port(value: String) -> int:
 	var port: int = text.to_int()
 	return port if valid_port(port) else 0
 
-## Normalize an IP literal or DNS hostname without a port; DNS resolution belongs to ENet.
+## Normalize an IP literal or DNS hostname without a port; DNS resolution is queued asynchronously by join().
 static func normalize_address(value: String) -> String:
 	var address: String = value.strip_edges()
 	if address.begins_with("[") and address.ends_with("]"):
@@ -112,7 +129,7 @@ func _ready() -> void:
 	multiplayer.connected_to_server.connect(_connected)
 	multiplayer.connection_failed.connect(_connection_failed)
 	multiplayer.server_disconnected.connect(func() -> void: leave("房主已离开"))
-	multiplayer.peer_connected.connect(func(id: int) -> void: _hello_peers[id] = Time.get_ticks_msec() + 10000)
+	multiplayer.peer_connected.connect(_peer_connected)
 	multiplayer.peer_disconnected.connect(_disconnected)
 
 func initialize(local_catalog: RefCounted, local_settings: PartyInput) -> Error:
@@ -138,26 +155,37 @@ func open_host(port: int = 7777, bind_address: String = "*", room_name: String =
 		status = "监听地址必须是 IPv4、IPv6 或 *"
 		return ERR_INVALID_PARAMETER
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
-	# Wildcard keeps Godot's dual-stack socket: IPv4 and IPv6 share the selected port.
-	peer.set_bind_ip(bind_ip)
-	var error: Error = peer.create_server(port, 7, catalog.channel_count)
+	var lab: Dictionary = settings.network_lab_values("host")
+	# Disabled profiles keep the original ENet socket, including dual-stack binding.
+	peer.set_bind_ip("127.0.0.1" if lab.enabled else bind_ip)
+	var error: Error = peer.create_server(0 if lab.enabled else port, 7, PartyNet.CHANNEL_COUNT)
 	if error != OK:
 		status = "无法监听 UDP 端口 %d，请检查端口占用或监听地址" % port
 		return error
+	if lab.enabled:
+		error = _network_lab.start(bind_ip, port, "127.0.0.1", peer.host.get_local_port(), true, lab)
+		if error != OK:
+			peer.close()
+			_network_lab.stop()
+			status = "网络实验监听失败：" + error_string(error)
+			return error
 	status = ""
 	connection_address = bind_ip
 	connection_port = port
 	# Godot 4.7 5b4e0cb0f passes max_channels into ENet's bandwidth argument.
 	# Set both explicitly before accepting peers; two physical channels belong to ENetMultiplayerPeer.
 	peer.host.bandwidth_limit(0, 0)
-	peer.host.channel_limit(catalog.channel_count + 2)
+	peer.host.channel_limit(PartyNet.CHANNEL_COUNT + 2)
 	_scene.multiplayer_peer = peer
 	online = true
 	host = true
+	_closing = false
+	connection_state = "connected"
+	network_clock.reset(true)
 	session_id = Data.token()
 	var identity: Dictionary = profiles.identity()
 	players = [_make_player(identity, 1)]
-	room = {"title": room_name, "main": "", "settings": {}, "children": {}, "pools": {}, "revision": 0, "phase": "lobby", "channels": catalog.channels.duplicate(), "channel_count": catalog.channel_count}
+	room = {"title": room_name, "main": "", "settings": {}, "children": {}, "pools": {}, "revision": 0, "phase": "lobby"}
 	var mains: Array[String] = catalog.ids("maingame")
 	if not mains.is_empty():
 		var chosen: String = main_id if not main_id.is_empty() else mains[0]
@@ -176,6 +204,7 @@ static func valid_room_name(value: String) -> bool:
 			return false
 	return true
 
+## DNS is asynchronous and cancelable; all content requirements still come from the host.
 func join(address: String, port: int = 7777) -> Error:
 	if online:
 		return ERR_ALREADY_IN_USE
@@ -183,21 +212,60 @@ func join(address: String, port: int = 7777) -> Error:
 	if target.is_empty() or not valid_port(port):
 		status = "请输入有效的 IPv4、IPv6 或域名，端口范围为 1–65535"
 		return ERR_INVALID_PARAMETER
-	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
-	var error: Error = peer.create_client(target, port, 80)
-	if error != OK:
-		status = "无法连接 " + format_endpoint(target, port) + "：" + error_string(error)
-		return error
 	status = ""
 	connection_address = target
 	connection_port = port
-	_scene.multiplayer_peer = peer
 	online = true
 	host = false
+	_closing = false
+	network_clock.reset(false)
 	_connection_deadline = Time.get_ticks_msec() + 10000
+	if target.is_valid_ip_address():
+		return _connect_address(target)
+	_dns_query = IP.resolve_hostname_queue_item(target, IP.TYPE_ANY)
+	if _dns_query == IP.RESOLVER_INVALID_ID:
+		leave("无法启动域名解析：" + target)
+		return ERR_CANT_RESOLVE
+	connection_state = "resolving"
+	changed.emit()
+	return OK
+
+func _connect_address(address: String) -> Error:
+	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
+	var lab: Dictionary = settings.network_lab_values("client")
+	var target_address: String = address
+	var target_port: int = connection_port
+	if lab.enabled:
+		var relay_error: Error = _network_lab.start("127.0.0.1", 0, address, connection_port, false, lab)
+		if relay_error != OK:
+			leave("网络实验连接失败：" + error_string(relay_error))
+			return relay_error
+		target_address = "127.0.0.1"
+		target_port = _network_lab.local_port()
+	var error: Error = peer.create_client(target_address, target_port, PartyNet.CHANNEL_COUNT)
+	if error != OK:
+		leave("无法连接 " + format_endpoint(connection_address, connection_port) + "：" + error_string(error))
+		return error
+	_scene.multiplayer_peer = peer
+	connection_state = "connecting"
+	changed.emit()
 	return OK
 
 func leave(reason: String = "") -> void:
+	_network_lab.stop()
+	if _dns_query != -1:
+		IP.erase_resolve_item(_dns_query)
+		_dns_query = -1
+	connection_state = "offline"
+	_closing = false
+	_clock_request_sent = -1
+	_last_packet_msec.clear()
+	_loss_first_epoch.clear()
+	_peer_stats.clear()
+	_remote_stats.clear()
+	_last_remote_stats = 0
+	_next_stats_update = 0
+	network_clock.reset(false)
 	var was_online: bool = online
 	online = false
 	host = false
@@ -225,6 +293,8 @@ func leave(reason: String = "") -> void:
 	changed.emit()
 
 func _connected() -> void:
+	connection_state = "handshaking"
+	changed.emit()
 	_send(1, {"kind": "hello", "payload": profiles.identity()})
 
 func _make_player(identity: Dictionary, peer: int) -> Dictionary:
@@ -234,7 +304,7 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 	if bytes.size() > MAX_PACKET_BYTES:
 		return
 	var packet: Variant = bytes_to_var(bytes)
-	if not packet is Dictionary or not Data.valid(packet):
+	if not packet is Dictionary or not Data.valid(packet, 0, true):
 		return
 	if packet.get("wire") != Data.WIRE_VERSION:
 		if host:
@@ -245,6 +315,12 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 	if not packet.get("kind") is String or not packet.get("session") is String:
 		return
 	var kind: String = packet["kind"]
+	if packet["session"] == session_id and not _player_peer(sender).is_empty() and (host or sender == 1):
+		_last_packet_msec[sender] = Time.get_ticks_msec()
+	if kind in ["probe", "probe_reply", "link_stats"]:
+		if packet["session"] == session_id and not _player_peer(sender).is_empty():
+			_receive_link_packet(sender, kind, packet.get("payload", {}))
+		return
 	if kind == "media":
 		if bytes.size() <= 2048 and packet["session"] == session_id and not _player_peer(sender).is_empty():
 			media_received.emit(sender, packet)
@@ -293,15 +369,25 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 			return
 		session_id = packet["session"]
 		var issue: String = _room_content_issue(payload)
-		_send(1, {"kind": "ack", "payload": {"revision": payload.room.revision, "matches": issue.is_empty(), "message": issue}})
+		if _send(1, {"kind": "ack", "payload": {"revision": payload.room.revision, "matches": issue.is_empty(), "message": issue}}) != OK:
+			return
 		if not issue.is_empty():
 			status = "房间内容与配置检查失败：\n" + issue
 			# Wait for the host's rejection so its UI also receives the specific reason.
 			_connection_deadline = Time.get_ticks_msec() + 10000
 			return
+		var departed: Array[int] = []
+		for previous_player: Dictionary in players:
+			if previous_player.connected:
+				for next_player: Dictionary in payload.players:
+					if next_player.player_id == previous_player.player_id and not next_player.connected:
+						departed.append(previous_player.peer_id)
 		players.assign(payload["players"])
 		room = payload["room"].duplicate(true)
+		for peer_id: int in departed:
+			disconnected.emit(peer_id)
 		_connection_deadline = 0
+		connection_state = "connected"
 		status = ""
 		changed.emit()
 		_auto_profile()
@@ -474,8 +560,10 @@ func configure(main_id: String, configuration: Dictionary, child_settings: Dicti
 		return ERR_INVALID_DATA
 	room.rules_revision = int(previous_room.get("rules_revision", 0)) + 1
 	_publish()
+	if _closing:
+		return ERR_CONNECTION_ERROR
 	_auto_profile()
-	return OK if online else ERR_INVALID_DATA
+	return OK if online and not _closing else ERR_INVALID_DATA
 
 func set_ready(value: bool) -> void:
 	if not online or room.get("phase") != "lobby":
@@ -513,7 +601,7 @@ func start_reason() -> String:
 	if not recovery.is_empty() and players.size() != recovery["players"].size():
 		return "等待原玩家全部到齐"
 	for player: Dictionary in players:
-		if player.peer_id == 1:
+		if player.peer_id == 1 or not player.connected:
 			continue
 		if not _acks.has(player.peer_id):
 			return "正在检查 " + player.name + " 的内容与配置（等待客户端回执）"
@@ -521,7 +609,7 @@ func start_reason() -> String:
 		if not report.matches:
 			return player.name + " 检查未通过：" + report.message
 	for player: Dictionary in players:
-		if not player.ready:
+		if player.connected and not player.ready:
 			return "等待 " + player.name + " 准备"
 	return status if not room.has("closure") else ""
 
@@ -549,7 +637,6 @@ func prepare_restore(record: Dictionary) -> Error:
 	room = record["room"].duplicate(true)
 	room["phase"] = "lobby"
 	room["recovery"] = true
-	room["channels"] = catalog.channels.duplicate()
 	players = [own]
 	players[0]["connected"] = true
 	players[0]["ready"] = true
@@ -568,8 +655,8 @@ func submit_profile(name_value: String, value: Dictionary) -> Error:
 	if host:
 		_profile_request(1, _pending_profile)
 	else:
-		_send(1, {"kind": "profile", "payload": _pending_profile})
-	return OK
+		return _send(1, {"kind": "profile", "payload": _pending_profile})
+	return ERR_CONNECTION_ERROR if _closing else OK
 
 ## Protocol-owned room constraints run on the host using authoritative player snapshots.
 func _resolve_player_profile(protocol: RefCounted, value: Dictionary, player_id: String) -> Dictionary:
@@ -714,23 +801,33 @@ func _publish(require_confirmation: bool = true) -> void:
 		_ack_deadline = Time.get_ticks_msec() + 10000
 	for player: Dictionary in players:
 		if player["peer_id"] != 1 and player["connected"]:
-			_send(player["peer_id"], {"kind": "room", "payload": {"players": players, "room": room}})
+			if _send(player["peer_id"], {"kind": "room", "payload": {"players": players, "room": room}}) != OK:
+				return
 	changed.emit()
 
-func control(kind: String, payload: Dictionary, target: int = 0) -> void:
+## Framework transitions only execute locally after every required send was accepted.
+func control(kind: String, payload: Dictionary, target: int = 0) -> Error:
+	if not online or _closing:
+		return ERR_UNAVAILABLE
+	if not control_fits(kind, payload):
+		_send_failed(ERR_INVALID_DATA, kind)
+		return ERR_INVALID_DATA
+	if target == 0 and not host:
+		return ERR_UNAUTHORIZED
 	if host and target == 0:
 		control_sending.emit(kind, payload)
 	if target == 0:
-		if not host:
-			return
 		for player: Dictionary in players:
 			if player["connected"] and player["peer_id"] != local_peer():
-				_send(player["peer_id"], {"kind": "control", "payload": {"operation": kind, "data": payload}})
+				var error: Error = _send(player["peer_id"], {"kind": "control", "payload": {"operation": kind, "data": payload}})
+				if error != OK:
+					return error
 		control_received.emit(local_peer(), kind, payload.duplicate(true))
 	elif target == local_peer():
 		control_received.emit(local_peer(), kind, payload.duplicate(true))
 	else:
-		_send(target, {"kind": "control", "payload": {"operation": kind, "data": payload}})
+		return _send(target, {"kind": "control", "payload": {"operation": kind, "data": payload}})
+	return OK
 
 func send_media(target: int, packet: Dictionary) -> Error:
 	if not online or target not in multiplayer.get_peers():
@@ -740,9 +837,11 @@ func send_media(target: int, packet: Dictionary) -> Error:
 	var bytes: PackedByteArray = var_to_bytes(envelope)
 	if bytes.size() > 2048:
 		return ERR_INVALID_DATA
-	return _scene.send_bytes(bytes, target, MultiplayerPeer.TRANSFER_MODE_UNRELIABLE, 2)
+	return _scene.send_bytes(bytes, target, MultiplayerPeer.TRANSFER_MODE_UNRELIABLE, PartyNet.MEDIA_CHANNEL)
 
 func send_packet(target: int, packet: Dictionary, mode: int, channel: int) -> Error:
+	if not online or _closing:
+		return ERR_UNAVAILABLE
 	packet["wire"] = Data.WIRE_VERSION
 	packet["session"] = session_id
 	packet["kind"] = "net"
@@ -753,17 +852,38 @@ func send_packet(target: int, packet: Dictionary, mode: int, channel: int) -> Er
 		return OK
 	return _scene.send_bytes(var_to_bytes(packet), target, mode, channel)
 
-func _send(target: int, packet: Dictionary) -> void:
-	if not online or target not in multiplayer.get_peers():
+func _send(target: int, packet: Dictionary) -> Error:
+	var error: Error = OK
+	if not online or _closing or target not in multiplayer.get_peers():
+		error = ERR_UNAVAILABLE
+	else:
+		packet["wire"] = Data.WIRE_VERSION
+		packet["session"] = session_id
+		error = _scene.send_bytes(var_to_bytes(packet), target, MultiplayerPeer.TRANSFER_MODE_RELIABLE, PartyNet.CONTROL_CHANNEL) if packet_fits(packet) else ERR_INVALID_DATA
+	if error != OK:
+		_send_failed(error, str(packet.get("kind", "")))
+	return error
+
+## Fail the session instead of advancing after a partially submitted control transition.
+## Deferred teardown avoids freeing a scope inside its own setup or signal callback.
+func _send_failed(error: Error, operation: String) -> void:
+	if _closing:
 		return
-	if host and multiplayer.multiplayer_peer is ENetMultiplayerPeer:
-		var remote: ENetPacketPeer = multiplayer.multiplayer_peer.get_peer(target)
-		if remote == null or remote.get_state() != ENetPacketPeer.STATE_CONNECTED:
-			return
-	packet["wire"] = Data.WIRE_VERSION
-	packet["session"] = session_id
-	if packet_fits(packet):
-		_scene.send_bytes(var_to_bytes(packet), target, MultiplayerPeer.TRANSFER_MODE_RELIABLE, 0)
+	_closing = true
+	connection_state = "failed"
+	status = "网络发送失败（%s）：%s" % [operation, error_string(error)]
+	leave.call_deferred(status)
+
+## A completed activity roster must not keep disconnected players in the next lobby.
+func return_to_lobby() -> void:
+	var connected: Array[Dictionary] = []
+	for player: Dictionary in players:
+		if player.connected:
+			player.ready = player.peer_id == 1
+			connected.append(player)
+	players = connected
+	room["phase"] = "lobby"
+	_publish()
 
 func _player_peer(peer: int) -> Dictionary:
 	for player: Dictionary in players:
@@ -773,6 +893,12 @@ func _player_peer(peer: int) -> Dictionary:
 
 func _disconnected(peer: int) -> void:
 	_hello_peers.erase(peer)
+	_last_packet_msec.erase(peer)
+	_loss_first_epoch.erase(peer)
+	if peer == 1:
+		_clock_request_sent = -1
+	_peer_stats.erase(peer)
+	_remote_stats.erase(peer)
 	if not host:
 		return
 	var player: Dictionary = _player_peer(peer)
@@ -785,8 +911,30 @@ func _disconnected(peer: int) -> void:
 	disconnected.emit(peer)
 	_publish()
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	if _closing:
+		return
+	if _network_lab.is_active():
+		var relay_error: Error = _network_lab.poll()
+		if relay_error != OK:
+			leave("网络实验转发失败：" + error_string(relay_error))
+			return
 	var now: int = Time.get_ticks_msec()
+	if _dns_query != -1:
+		var query_status: IP.ResolverStatus = IP.get_resolve_item_status(_dns_query)
+		if query_status == IP.RESOLVER_STATUS_DONE:
+			var resolved: String = IP.get_resolve_item_address(_dns_query)
+			IP.erase_resolve_item(_dns_query)
+			_dns_query = -1
+			if _connect_address(resolved) != OK:
+				return
+		elif query_status == IP.RESOLVER_STATUS_ERROR:
+			leave("域名解析失败：" + connection_address)
+			return
+	network_clock.advance(delta)
+	if connection_state == "connected" and now >= _next_stats_update:
+		_next_stats_update = now + STATS_INTERVAL_MSEC
+		_update_network_stats(now)
 	if _connection_deadline > 0 and now > _connection_deadline:
 		leave(status if not status.is_empty() else "连接 %s 或握手超时，请检查 UDP 端口和防火墙" % format_endpoint(connection_address, connection_port))
 	if not _pending_profile.is_empty() and now > _profile_deadline:
@@ -798,7 +946,7 @@ func _process(_delta: float) -> void:
 			_ack_deadline = 0
 			var timed_out: bool = false
 			for player: Dictionary in players:
-				if player.peer_id != 1 and not _acks.has(player.peer_id):
+				if player.peer_id != 1 and player.connected and not _acks.has(player.peer_id):
 					_acks[player.peer_id] = {"matches": false, "message": "10 秒内未收到内容确认回执，请检查该实例是否暂停或断线"}
 					timed_out = true
 			if timed_out:
@@ -814,7 +962,7 @@ func control_fits(kind: String, payload: Dictionary) -> bool:
 	return packet_fits({"wire": Data.WIRE_VERSION, "session": session_id, "kind": "control", "payload": {"operation": kind, "data": payload}})
 
 func packet_fits(packet: Dictionary) -> bool:
-	return Data.valid(packet) and var_to_bytes(packet).size() <= MAX_PACKET_BYTES
+	return Data.valid(packet, 0, true) and var_to_bytes(packet).size() <= MAX_PACKET_BYTES
 
 ## Validate installed content before reading its configuration or constructing its room UI.
 func _room_content_issue(payload: Dictionary) -> String:
@@ -839,15 +987,8 @@ func _valid_room_snapshot(payload: Dictionary) -> bool:
 		return false
 	if not snapshot.get("main") is String or not snapshot.get("revision") is int or not snapshot.get("phase") is String:
 		return false
-	for key: String in ["settings", "children", "pools", "channels", "closure"]:
+	for key: String in ["settings", "children", "pools", "closure"]:
 		if not snapshot.get(key) is Dictionary:
-			return false
-	if not snapshot.get("channel_count") is int or snapshot["channel_count"] < 2 or snapshot["channel_count"] > 80:
-		return false
-	for key: Variant in snapshot["channels"]:
-		if not key is String or not snapshot["channels"][key] is int or snapshot["channels"][key] < 0 or snapshot["channels"][key] > snapshot["channel_count"]:
-			return false
-		if snapshot["channels"][key] == snapshot["channel_count"] and not key.ends_with(":native"):
 			return false
 	var identities: Dictionary = {}
 	var peers: Dictionary = {}
@@ -867,3 +1008,108 @@ func _valid_room_snapshot(payload: Dictionary) -> bool:
 		identities[player["player_id"]] = true
 		peers[player["peer_id"]] = true
 	return peers.has(1)
+
+## ENet owns disconnection; application traffic freshness only affects the displayed health.
+func _peer_connected(peer_id: int) -> void:
+	if host:
+		_hello_peers[peer_id] = Time.get_ticks_msec() + 10000
+	if host or peer_id == 1:
+		var peer: ENetPacketPeer = (_scene.multiplayer_peer as ENetMultiplayerPeer).get_peer(peer_id)
+		peer.set_timeout(8, 5000, 15000)
+
+func get_peer_stats(peer_id: int = 1) -> Dictionary:
+	var player: Dictionary = _player_peer(peer_id)
+	if not online or player.is_empty() or not player.connected:
+		return {"state": "offline", "peer_id": peer_id}
+	if host and peer_id == 1:
+		return {"state": "host", "peer_id": 1}
+	var source: Dictionary = _peer_stats.get(peer_id, {}) if host or peer_id == 1 else _remote_stats.get(peer_id, {})
+	if source.is_empty():
+		return {"state": "measuring", "peer_id": peer_id}
+	var result: Dictionary = source.duplicate()
+	result["age_msec"] = Time.get_ticks_msec() - int(source.sample_time)
+	if not host and peer_id != 1:
+		result.age_msec = Time.get_ticks_msec() - _last_remote_stats + int(source.get("source_age_msec", 0))
+	result["state"] = "stalled" if result.age_msec > STALE_LINK_MSEC else ("degraded" if result.rtt_msec >= 200 or result.jitter_msec >= 50 else "connected")
+	result["peer_id"] = peer_id
+	result["via_host"] = not host and peer_id != 1
+	return result
+
+func _send_link_packet(peer_id: int, kind: String, payload: Dictionary) -> void:
+	var packet: Dictionary = {"wire": Data.WIRE_VERSION, "session": session_id, "kind": kind, "payload": payload}
+	var error: Error = _scene.send_bytes(var_to_bytes(packet), peer_id, MultiplayerPeer.TRANSFER_MODE_UNRELIABLE, PartyNet.CLOCK_CHANNEL)
+	if error != OK:
+		_send_failed(error, kind)
+
+func _update_network_stats(now: int) -> void:
+	# Reading ENet statistics sends no traffic. Never smooth the native estimate again.
+	for player: Dictionary in players:
+		var peer_id: int = player.peer_id
+		if player.connected and peer_id != local_peer() and (host or peer_id == 1) and _last_packet_msec.has(peer_id):
+			var peer: ENetPacketPeer = (_scene.multiplayer_peer as ENetMultiplayerPeer).get_peer(peer_id)
+			var loss_epoch: int = int(peer.get_statistic(ENetPacketPeer.PEER_PACKET_LOSS_EPOCH))
+			# Wait for an epoch change: the initial epoch only starts the first window.
+			if _loss_first_epoch.get(peer_id, 0) == 0:
+				_loss_first_epoch[peer_id] = loss_epoch
+			_peer_stats[peer_id] = {
+				"packet_loss_ready": _loss_first_epoch[peer_id] != 0 and loss_epoch != _loss_first_epoch[peer_id],
+				"packet_loss_percent": peer.get_statistic(ENetPacketPeer.PEER_PACKET_LOSS) * 100.0 / ENetPacketPeer.PACKET_LOSS_SCALE,
+				"rtt_msec": peer.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME),
+				"jitter_msec": peer.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME_VARIANCE),
+				"sample_time": _last_packet_msec[peer_id]}
+	# Only clients need remote timestamps. The host no longer sends RTT-only probes.
+	if not host and (_clock_request_sent < 0 or now - _clock_request_sent >= 3000):
+		_clock_request_sent = now
+		_send_link_packet(1, "probe", {"sent": now})
+	if host:
+		var rows: Array[Dictionary] = []
+		for peer_id: int in _peer_stats:
+			var item: Dictionary = _peer_stats[peer_id].duplicate()
+			item["peer_id"] = peer_id
+			item["source_age_msec"] = now - int(item.sample_time)
+			rows.append(item)
+		for player: Dictionary in players:
+			if player.connected and player.peer_id != 1:
+				_send_link_packet(player.peer_id, "link_stats", {"peers": rows})
+	stats_changed.emit()
+
+func _receive_link_packet(sender: int, kind: String, payload: Variant) -> void:
+	if not payload is Dictionary:
+		return
+	var now: int = Time.get_ticks_msec()
+	if kind == "probe":
+		if host and payload.get("sent") is int and payload.sent >= 0:
+			_send_link_packet(sender, "probe_reply", {"sent": payload.sent, "received": now, "replied": Time.get_ticks_msec()})
+	elif kind == "probe_reply" and not host and sender == 1:
+		if not payload.get("sent") is int or not payload.get("received") is int or not payload.get("replied") is int or _clock_request_sent < 0 or payload.sent != _clock_request_sent:
+			return
+		if payload.replied < payload.received or payload.sent > now:
+			return
+		_clock_request_sent = -1
+		network_clock.observe(payload.sent, payload.received, payload.replied, now)
+	elif kind == "link_stats" and not host and sender == 1:
+		if not payload.get("peers") is Array or payload.peers.size() > 7:
+			return
+		var reports: Dictionary[int, Dictionary] = {}
+		for item: Variant in payload.peers:
+			if not item is Dictionary or not item.get("peer_id") is int or not item.get("sample_time") is int or not item.get("source_age_msec") is int:
+				return
+			if not (item.get("rtt_msec") is float or item.get("rtt_msec") is int) or not (item.get("jitter_msec") is float or item.get("jitter_msec") is int):
+				return
+			if item.rtt_msec < 0 or item.jitter_msec < 0 or item.source_age_msec < 0:
+				return
+			if not item.get("packet_loss_ready") is bool or not (item.get("packet_loss_percent") is float or item.get("packet_loss_percent") is int):
+				return
+			if not is_finite(item.packet_loss_percent) or item.packet_loss_percent < 0.0 or item.packet_loss_percent > 100.0:
+				return
+			reports[item.peer_id] = item.duplicate()
+		_remote_stats = reports
+		_last_remote_stats = now
+		stats_changed.emit()
+
+## Only the local active relay determines this indicator; a remote host may also simulate its link.
+func is_network_lab_active() -> bool:
+	return _network_lab.is_active()
+
+func _exit_tree() -> void:
+	_network_lab.stop()

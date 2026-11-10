@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://df0k065cblnk1"]
 
 [ext_resource type="Script" uid="uid://jhdhih3rcbug" path="res://core/app/party_main.gd" id="1_vg4ib"]
+[ext_resource type="PackedScene" uid="uid://cnixft6n5gdxb" path="res://core/ui/session_menu/session_menu.tscn" id="13_i8x7f"]
 [ext_resource type="Script" uid="uid://bmqhhda608ejf" path="res://core/ui/ambient_reveal/audio/menu_audio.gd" id="audio"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="background"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="button"]
@@ -11,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/xbox_hints.tscn" id="hints"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/pad_keyboard.tscn" id="keyboard"]
 [ext_resource type="Script" uid="uid://dxq3qc6w4kbl" path="res://core/ui/party_ui_navigation.gd" id="navigation"]
+[ext_resource type="Script" uid="uid://8so0i70ir5ib" path="res://core/ui/network_status.gd" id="network_status"]
 [ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 
 [node name="party_main" type="Control" unique_id=1685594889]
@@ -42,26 +44,45 @@ script = ExtResource("connection")
 unique_name_in_owner = true
 script = ExtResource("coordinator")
 
-[node name="Framework" type="VBoxContainer" parent="." unique_id=1746661127]
+[node name="NetworkStatus" type="Label" parent="." unique_id=1803759927 node_paths=PackedStringArray("connection")]
+z_index = 50
 layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -240.0
+offset_top = 12.0
+offset_right = -24.0
+offset_bottom = 40.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 2
+script = ExtResource("network_status")
+connection = NodePath("../Connection")
+
+[node name="FrameworkUI" type="CanvasLayer" parent="." unique_id=979922659]
+unique_name_in_owner = true
+layer = 64
+
+[node name="Framework" type="VBoxContainer" parent="FrameworkUI" unique_id=1746661127]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 theme_override_constants/separation = 0
 
-[node name="Pages" type="Control" parent="Framework" unique_id=1036243403 groups=["framework_pages"]]
+[node name="Pages" type="Control" parent="FrameworkUI/Framework" unique_id=1036243403 groups=["framework_pages"]]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="PartyUI" parent="Framework/Pages" unique_id=1229081488 node_paths=PackedStringArray("app", "modal_layer") instance=ExtResource("frontend")]
+[node name="PartyUI" parent="FrameworkUI/Framework/Pages" unique_id=1229081488 node_paths=PackedStringArray("app", "modal_layer") instance=ExtResource("frontend")]
 unique_name_in_owner = true
 layout_mode = 1
-app = NodePath("../../..")
+app = NodePath("../../../..")
 modal_layer = NodePath("../../../DialogHost/FrontendModal")
 
-[node name="HintMargin" type="MarginContainer" parent="Framework" unique_id=325990309 groups=["framework_hints"]]
+[node name="HintMargin" type="MarginContainer" parent="FrameworkUI/Framework" unique_id=325990309 groups=["framework_hints"]]
 unique_name_in_owner = true
 z_index = 901
 layout_mode = 2
@@ -70,14 +91,14 @@ theme_override_constants/margin_left = 24
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 12
 
-[node name="InputHints" parent="Framework/HintMargin" unique_id=1628039100 instance=ExtResource("hints")]
+[node name="InputHints" parent="FrameworkUI/Framework/HintMargin" unique_id=1628039100 instance=ExtResource("hints")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="GameScreen" type="VBoxContainer" parent="." unique_id=1693062044]
+[node name="GameScreen" type="VBoxContainer" parent="FrameworkUI" unique_id=1693062044]
 unique_name_in_owner = true
 visible = false
-layout_mode = 0
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 48.0
@@ -87,76 +108,88 @@ offset_bottom = -32.0
 mouse_filter = 2
 theme_override_constants/separation = 14
 
-[node name="GameStatus" type="Label" parent="GameScreen" unique_id=1423782966]
+[node name="GameStatus" type="Label" parent="FrameworkUI/GameScreen" unique_id=1423782966]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 autowrap_mode = 3
 
-[node name="Actions" type="HBoxContainer" parent="GameScreen" unique_id=354015134]
+[node name="Actions" type="HBoxContainer" parent="FrameworkUI/GameScreen" unique_id=354015134]
 layout_mode = 2
 
-[node name="Settings" parent="GameScreen/Actions" unique_id=1183855517 instance=ExtResource("button")]
+[node name="Settings" parent="FrameworkUI/GameScreen/Actions" unique_id=1183855517 instance=ExtResource("button")]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "本地设置"
 
-[node name="Rules" parent="GameScreen/Actions" unique_id=1256411011 instance=ExtResource("button")]
+[node name="Rules" parent="FrameworkUI/GameScreen/Actions" unique_id=1256411011 instance=ExtResource("button")]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "下一轮规则"
 
-[node name="Standings" parent="GameScreen/Actions" unique_id=2045529967 instance=ExtResource("button")]
+[node name="Standings" parent="FrameworkUI/GameScreen/Actions" unique_id=2045529967 instance=ExtResource("button")]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "排名总览 [Tab]"
 
-[node name="RetrySave" parent="GameScreen/Actions" unique_id=634218160 instance=ExtResource("button")]
+[node name="RetrySave" parent="FrameworkUI/GameScreen/Actions" unique_id=634218160 instance=ExtResource("button")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "重试保存"
 
-[node name="LeaveSession" parent="GameScreen/Actions" unique_id=1756369170 instance=ExtResource("button")]
+[node name="LeaveSession" parent="FrameworkUI/GameScreen/Actions" unique_id=1756369170 instance=ExtResource("button")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "返回大厅"
 
-[node name="DialogHost" type="Control" parent="." unique_id=1954808417 groups=["framework_dialog_host"]]
+[node name="DialogHost" type="Control" parent="FrameworkUI" unique_id=1954808417 groups=["framework_dialog_host"]]
 unique_name_in_owner = true
 z_index = 10
-anchors_preset = 0
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-[node name="FrontendModal" parent="DialogHost" unique_id=1039890492 instance=ExtResource("frontend_modal")]
+[node name="FrontendModal" parent="FrameworkUI/DialogHost" unique_id=1039890492 instance=ExtResource("frontend_modal")]
 visible = false
 anchors_preset = 0
 
-[node name="UINavigation" type="Control" parent="." unique_id=1597583777]
+[node name="UINavigation" type="Control" parent="FrameworkUI" unique_id=1597583777 node_paths=PackedStringArray("app")]
 unique_name_in_owner = true
 z_index = 900
 z_as_relative = false
-anchors_preset = 0
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource("navigation")
+app = NodePath("../..")
 
-[node name="PadKeyboard" parent="UINavigation" unique_id=234302380 instance=ExtResource("keyboard")]
+[node name="PadKeyboard" parent="FrameworkUI/UINavigation" unique_id=234302380 instance=ExtResource("keyboard")]
 unique_name_in_owner = true
 layout_mode = 0
 anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 
-[connection signal="pressed" from="GameScreen/Actions/Settings" to="." method="_settings_dialog"]
-[connection signal="pressed" from="GameScreen/Actions/Rules" to="." method="_room_rules_dialog"]
-[connection signal="pressed" from="GameScreen/Actions/Standings" to="." method="_open_standings"]
-[connection signal="pressed" from="GameScreen/Actions/RetrySave" to="." method="_retry_save"]
-[connection signal="pressed" from="GameScreen/Actions/LeaveSession" to="." method="_leave_session"]
+[node name="SessionMenu" parent="FrameworkUI" unique_id=1495354537 instance=ExtResource("13_i8x7f")]
+unique_name_in_owner = true
+visible = false
+z_index = 5
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="pressed" from="FrameworkUI/GameScreen/Actions/Settings" to="." method="_settings_dialog"]
+[connection signal="pressed" from="FrameworkUI/GameScreen/Actions/Rules" to="." method="_room_rules_dialog"]
+[connection signal="pressed" from="FrameworkUI/GameScreen/Actions/Standings" to="." method="_open_standings"]
+[connection signal="pressed" from="FrameworkUI/GameScreen/Actions/RetrySave" to="." method="_retry_save"]
+[connection signal="pressed" from="FrameworkUI/GameScreen/Actions/LeaveSession" to="." method="_leave_session"]

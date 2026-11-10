@@ -12,8 +12,6 @@ const KINDS: Array[String] = ["maingame", "minigame", "protocols", "avatars"]
 var packages: Dictionary = {}
 var _schemas: Dictionary = {}
 var errors: Array[String] = []
-var channels: Dictionary = {}
-var channel_count: int = 3
 
 func scan() -> Error:
 	packages.clear()
@@ -34,7 +32,6 @@ func scan() -> Error:
 					for avatar: String in DirAccess.get_directories_at(avatars):
 						register_manifest(avatars.path_join(avatar).path_join("manifest.json"))
 	_validate_config_directories()
-	_build_channels()
 	return OK if errors.is_empty() else ERR_INVALID_DATA
 
 func register_manifest(path: String) -> Error:
@@ -50,9 +47,8 @@ func register_manifest(path: String) -> Error:
 	if packages.has(id):
 		errors.append("DUPLICATE_PACKAGE: " + id)
 		return ERR_ALREADY_EXISTS
-	var native_count: Variant = manifest.get("native_channels", 0)
-	if not manifest.get("streams", {}) is Dictionary or not native_count is int or native_count < 0 or native_count > 80:
-		errors.append(id + ": invalid channel declaration")
+	if manifest.has("streams") or manifest.has("native_channels"):
+		errors.append(id + ": API 5 uses call-site transfer modes and fixed native channels; remove streams/native_channels")
 		return ERR_INVALID_DATA
 	if manifest.kind == "protocols" and not manifest.get("config_directories") is Dictionary:
 		errors.append(id + ": missing config_directories")
@@ -104,9 +100,6 @@ func validate_manifest(manifest: Dictionary) -> String:
 	var player_count_issue: String = PlayerCounts.validate(manifest)
 	if not player_count_issue.is_empty():
 		return player_count_issue
-	for key: String in ["native_channels"]:
-		if manifest.has(key) and (not manifest[key] is int or manifest[key] < 0 or manifest[key] > 80):
-			return "Invalid count: " + key
 	for field: Variant in manifest.get("player_fields", []):
 		if not field is Dictionary or not field.get("key") is String or field.get("type") not in ["bool", "int", "float", "string", "enum"]:
 			return "Invalid field declaration"
@@ -160,13 +153,8 @@ func validate_manifest(manifest: Dictionary) -> String:
 					return "Invalid adapter dependency"
 			if adapter.has("entry") and (not adapter["entry"] is String or not Data.relative_path(adapter["entry"])):
 				return "Invalid adapter entry"
-	var streams: Variant = manifest.get("streams", {})
-	if not streams is Dictionary:
-		return "Invalid streams"
-	for id: Variant in streams:
-		var stream: Variant = streams[id]
-		if not stream is Dictionary or stream.get("mode", "reliable") not in ["reliable", "unreliable", "ordered"] or stream.get("audience", "participants") not in ["participants", "spectators", "instance"]:
-			return "Invalid stream " + str(id)
+	if manifest.has("streams") or manifest.has("native_channels"):
+		return "API 5 does not use streams/native_channels declarations"
 	return ""
 
 func _protocol_reference(value: Variant) -> bool:
@@ -441,21 +429,6 @@ func validate_settings(id: String, value: Dictionary) -> Dictionary:
 		if not checked.get("ok", false):
 			return checked
 	return report
-
-func _build_channels() -> void:
-	channels.clear()
-	channel_count = 3
-	for id: String in ids():
-		var streams: Array = packages[id].get("streams", {}).keys()
-		streams.sort()
-		for stream: String in streams:
-			channels[id + ":" + stream] = channel_count
-			channel_count += 1
-		var native_count: int = int(packages[id].get("native_channels", 0))
-		channels[id + ":native"] = channel_count
-		channel_count += native_count
-	if channel_count > 80:
-		errors.append("CHANNEL_CAPACITY: more than 80 logical channels")
 
 ## Match Godot's ignored-directory boundary, including archived prototypes and their import remaps.
 static func files(root: String) -> Array[String]:

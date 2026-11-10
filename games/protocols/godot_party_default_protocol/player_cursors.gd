@@ -1,9 +1,13 @@
 extends Control
 ## Opt-in pointer surface. Coordinates are presentation only, never gameplay input.
-## Call setup(api) before insertion; declare the ordered, instance-wide cursors stream.
+## Call setup(api) before insertion; cursor updates use unreliable ordered messages.
 const CursorScene: PackedScene = preload("res://games/protocols/godot_party_default_protocol/appearance/player_cursor.tscn")
 const SEND_INTERVAL: float = 0.05
 const EXPIRY_MSEC: int = 1500
+const IDLE_INTERVAL: float = 0.5
+const POSITION_THRESHOLD: float = 0.001
+var _sent_point: Vector2 = Vector2.ZERO
+var _sent_visible: bool = false
 
 var api: PartyAPI
 var local_id: String = ""
@@ -39,13 +43,16 @@ func _process(delta: float) -> void:
 	var local_visible: bool = active and get_window().has_focus() and Rect2(Vector2.ZERO, Vector2.ONE).has_point(point)
 	local_visible = local_visible and (Input.mouse_mode == Input.MOUSE_MODE_VISIBLE or _owns_mouse and Input.mouse_mode == Input.MOUSE_MODE_HIDDEN)
 	_clock += delta
-	if not _network_failed and _clock >= SEND_INTERVAL and not local_id.is_empty():
+	var changed: bool = local_visible != _sent_visible or (local_visible and point.distance_to(_sent_point) >= POSITION_THRESHOLD)
+	if not _network_failed and _clock >= SEND_INTERVAL and not local_id.is_empty() and (changed or _clock >= IDLE_INTERVAL):
 		_clock = 0.0
 		sequence += 1
+		_sent_point = point
+		_sent_visible = local_visible
 		_check_send(api.net.send_to_host(&"pointer", {
 			"seq": sequence, "visible": local_visible,
 			"x": clampf(point.x, 0, 1), "y": clampf(point.y, 0, 1)
-		}))
+		}, MultiplayerPeer.TRANSFER_MODE_UNRELIABLE_ORDERED, 1))
 	var show_others: bool = active and bool(api.config.get_common(&"ui.player_cursors"))
 	var remote_alpha: float = 1.0 - float(api.config.get_common(&"ui.player_cursor_transparency")) / 100.0
 	var now: int = Time.get_ticks_msec()
@@ -123,7 +130,7 @@ func _message(sender: Dictionary, topic: StringName, data: Variant) -> void:
 					return
 				stamps[id] = now
 				points[id] = data.duplicate()
-				_check_send(api.net.broadcast_stream(&"cursors", {"id": id, "point": data}))
+				_check_send(api.net.send_to_group(&"cursors", {"id": id, "point": data}, MultiplayerPeer.TRANSFER_MODE_UNRELIABLE_ORDERED, "instance", true))
 				return
 	elif topic == &"cursors" and int(sender.peer_id) == 1:
 		if not data.get("id") is String or not data.get("point") is Dictionary or not valid_point(data.point):

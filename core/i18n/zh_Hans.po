@@ -209,3 +209,126 @@ msgstr "收起面板"
 
 msgid "展开面板"
 msgstr "展开面板"
+
+msgid "监听网卡 / IP"
+msgstr "监听网卡 / IP"
+
+msgid "刷新"
+msgstr "刷新"
+
+msgid "请选择监听网卡 / IP"
+msgstr "请选择监听网卡 / IP"
+
+msgid "不可用：{address}（请重新选择）"
+msgstr "不可用：{address}（请重新选择）"
+
+msgid "所选监听 IP 已不可用，请刷新并重新选择"
+msgstr "所选监听 IP 已不可用，请刷新并重新选择"
+
+msgid "游戏菜单"
+msgstr "游戏菜单"
+
+msgid "Esc 返回游戏"
+msgstr "Esc 返回游戏"
+
+msgid "返回游戏"
+msgstr "返回游戏"
+
+msgid "框架设置"
+msgstr "框架设置"
+
+msgid "小游戏设置"
+msgstr "小游戏设置"
+
+msgid "返回大厅"
+msgstr "返回大厅"
+
+msgid "选择本机监听 IP；隧道转发目标需与此匹配。请允许 UDP 端口通过防火墙。"
+msgstr "选择本机监听 IP；隧道转发目标需与此匹配。请允许 UDP 端口通过防火墙。"
+
+msgid "玩家与延迟"
+msgstr "玩家与延迟"
+
+msgid "松开 Tab 关闭 · F3 查看总积分"
+msgstr "松开 Tab 关闭 · F3 查看总积分"
+
+msgid "延迟为玩家与房主之间的往返时间；其他玩家的数据由房主提供。"
+msgstr "延迟为玩家与房主之间的往返时间；其他玩家的数据由房主提供。"
+
+msgid "玩家"
+msgstr "玩家"
+
+msgid "至房主 RTT"
+msgstr "至房主 RTT"
+
+msgid "连接状态"
+msgstr "连接状态"
+
+msgid "你"
+msgstr "你"
+
+msgid "房主"
+msgstr "房主"
+
+msgid "已掉线"
+msgstr "已掉线"
+
+msgid "测量中"
+msgstr "测量中"
+
+msgid "正常"
+msgstr "正常"
+
+msgid "波动较大"
+msgstr "波动较大"
+
+msgid "无响应"
+msgstr "无响应"
+
+msgid "丢包率"
+msgstr "丢包率"
+
+msgid "丢包率为可靠包估计，约每 10 秒更新并平滑；自己的行显示上行，其他玩家显示房主下行。"
+msgstr "丢包率为可靠包估计，约每 10 秒更新并平滑；自己的行显示上行，其他玩家显示房主下行。"
+
+msgid "网络实验"
+msgstr "网络实验"
+
+msgid "房主侧"
+msgstr "房主侧"
+
+msgid "客机侧"
+msgstr "客机侧"
+
+msgid "启用网络模拟"
+msgstr "启用网络模拟"
+
+msgid "额外发送延迟"
+msgstr "额外发送延迟"
+
+msgid "随机发送丢包率"
+msgstr "随机发送丢包率"
+
+msgid "仅影响本机下次以此身份建立的游戏连接；不会修改其他玩家的本地设置。"
+msgstr "仅影响本机下次以此身份建立的游戏连接；不会修改其他玩家的本地设置。"
+
+msgid "每个发出 UDP 包增加的单向等待时间。双方各增加 100 ms 时，往返时间约增加 200 ms。"
+msgstr "每个发出 UDP 包增加的单向等待时间。双方各增加 100 ms 时，往返时间约增加 200 ms。"
+
+msgid "每个发出 UDP 包独立丢弃的概率，包含握手、确认和重传。100% 会阻止连接；Tab 中的可靠包估计不等于此概率。"
+msgstr "每个发出 UDP 包独立丢弃的概率，包含握手、确认和重传。100% 会阻止连接；Tab 中的可靠包估计不等于此概率。"
+
+msgid "设置仅保存在本机，下次连接生效。房主侧影响本机发往客机的包；客机侧影响本机发往房主的包。可靠消息仍由 ENet 重传，原生 RPC、语音和时钟同步都会受到影响。"
+msgstr "设置仅保存在本机，下次连接生效。房主侧影响本机发往客机的包；客机侧影响本机发往房主的包。可靠消息仍由 ENet 重传，原生 RPC、语音和时钟同步都会受到影响。"
+
+msgid "保存实验设置"
+msgstr "保存实验设置"
+
+msgid "默认关闭。先修改草稿，再保存；离开此页不会自动保存。"
+msgstr "默认关闭。先修改草稿，再保存；离开此页不会自动保存。"
+
+msgid "实验设置保存失败："
+msgstr "实验设置保存失败："
+
+msgid "实验设置已保存，下次创建或加入房间时生效。"
+msgstr "实验设置已保存，下次创建或加入房间时生效。"

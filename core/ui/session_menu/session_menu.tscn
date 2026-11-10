@@ -1,0 +1,106 @@
+[gd_scene format=3 uid="uid://cnixft6n5gdxb"]
+
+[ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="1_mvge5"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="2_787yw"]
+[ext_resource type="Script" uid="uid://c0et4xsq4s2s0" path="res://core/ui/session_menu/session_menu.gd" id="2_xns5w"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mvge5"]
+content_margin_left = 36.0
+content_margin_top = 36.0
+content_margin_right = 36.0
+content_margin_bottom = 32.0
+bg_color = Color(0.075, 0.1, 0.14, 0.98)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.28, 0.36, 0.46, 0.75)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 28
+
+[node name="SessionMenu" type="Control" unique_id=1495354537]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource("1_mvge5")
+script = ExtResource("2_xns5w")
+
+[node name="Overlay" type="ColorRect" parent="." unique_id=1237543615]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.025, 0.04, 0.065, 0.72)
+
+[node name="Center" type="CenterContainer" parent="." unique_id=861276044]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Card" type="PanelContainer" parent="Center" unique_id=1748135480]
+custom_minimum_size = Vector2(480, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mvge5")
+
+[node name="Content" type="VBoxContainer" parent="Center/Card" unique_id=1773130337]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Center/Card/Content" unique_id=194114124]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "游戏菜单"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="Center/Card/Content" unique_id=1375171106]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.68, 0.77, 1)
+theme_override_font_sizes/font_size = 17
+text = "Esc 返回游戏"
+horizontal_alignment = 1
+
+[node name="Actions" type="VBoxContainer" parent="Center/Card/Content" unique_id=1845025827]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Resume" type="Button" parent="Center/Card/Content/Actions" unique_id=293268139 instance=ExtResource("2_787yw")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(408, 60)
+layout_mode = 2
+theme = ExtResource("1_mvge5")
+text = "返回游戏"
+
+[node name="FrameworkSettings" type="Button" parent="Center/Card/Content/Actions" unique_id=1943214649 instance=ExtResource("2_787yw")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(408, 60)
+layout_mode = 2
+theme = ExtResource("1_mvge5")
+text = "框架设置"
+
+[node name="MinigameSettings" type="Button" parent="Center/Card/Content/Actions" unique_id=1004351462 instance=ExtResource("2_787yw")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(408, 60)
+layout_mode = 2
+theme = ExtResource("1_mvge5")
+text = "小游戏设置"
+
+[node name="Lobby" type="Button" parent="Center/Card/Content/Actions" unique_id=901185275 instance=ExtResource("2_787yw")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(408, 60)
+layout_mode = 2
+theme = ExtResource("1_mvge5")
+text = "返回大厅"
+
+[node name="Status" type="Label" parent="Center/Card/Content" unique_id=1435331669]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(408, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+autowrap_mode = 3

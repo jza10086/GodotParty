@@ -26,6 +26,7 @@ const MENU_TEXT: Dictionary = {
 	"Home/Menu/Exit:text": "退出",
 	"Home/Menu/ListenTest:text": "监听测试",
 	"Home/Menu/ConnectTest:text": "连接测试",
+	"Home/Menu/NetworkLab:text": "网络实验",
 	"Home/Profile:tooltip_text": "编辑玩家资料",
 	"Home/Profile/Hint:text": "编辑玩家资料",
 	"Home/Profile/Avatar/Placeholder:text": "头像",
@@ -46,7 +47,9 @@ const MENU_TEXT: Dictionary = {
 	"@Create/RoomName:placeholder_text": "1–24 字",
 	"@Create/PortLabel:text": "监听端口 (UDP)",
 	"@Create/Port:placeholder_text": "1–65535 · 默认 7777",
-	"@Create/VisibilityLabel:text": "房间公开性",
+	"@Create/BindAddressLabel:text": "监听网卡 / IP",
+	"@Create/RefreshAddresses:text": "刷新",
+	"@Create/DropdownNote:text": "选择本机监听 IP；隧道转发目标需与此匹配。请允许 UDP 端口通过防火墙。",
 	"Rooms/RoomsSubtitle:text": "通过 IP 或域名加入房主 · 房间发现服务暂未开放",
 	"Rooms/Name0:text": "房间发现暂未开放",
 	"Rooms/Info0:text": "当前没有公共房间列表；请向房主获取地址和端口。",
@@ -79,6 +82,7 @@ func initialize() -> void:
 	_button("Home/Menu/Settings", app._settings_dialog)
 	_button("Home/Menu/ListenTest", app._connectivity_dialog.bind(false))
 	_button("Home/Menu/ConnectTest", app._connectivity_dialog.bind(true))
+	_button("Home/Menu/NetworkLab", app._network_lab_dialog)
 	_button("Home/Menu/Exit", func() -> void: open_modal("Confirm"))
 	_button("Home/Profile", func() -> void: open_modal("Profile"))
 	_button("Rooms/Back", func() -> void: show_page("Home"))
@@ -99,8 +103,10 @@ func initialize() -> void:
 	for key: String in ["Room2", "Name2", "Info2", "Join2"]:
 		get_node("Rooms/" + key).hide()
 	_create.get_node("Port").text_submitted.connect(func(_text: String) -> void: submit_create())
-	_create.get_node("Visibility").clear()
-	_create.get_node("Visibility").disabled = true
+	_create.get_node("RefreshAddresses").pressed.connect(func() -> void:
+		_refresh_host_addresses(str(_create.get_node("BindAddress").get_selected_metadata())))
+	_create.get_node("BindAddress").item_selected.connect(func(_index: int) -> void:
+		_create.get_node("BindAddress").tooltip_text = _create.get_node("BindAddress").get_item_text(_index))
 	_direct.get_node("Address").max_length = 260
 	for label: Label in [_create.get_node("Error"), _direct.get_node("Error"), $Rooms/Info1]:
 		label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -144,7 +150,7 @@ func _build_games() -> void:
 	_create.get_node("Confirm").text = _t("下一步") if _create_step == "protocol" else _t("创建房间")
 	_create.get_node("Cancel").text = _t("取消") if _create_step == "protocol" else _t("上一步")
 	_create.get_node("Note").text = _t("协议决定房间规则、形象与公共体验。") if _create_step == "protocol" else _t("仅显示兼容大游戏；具体配置在创建后的大厅设置。")
-	for key: String in ["RoomNameLabel", "RoomName", "PortLabel", "Port", "VisibilityLabel", "Visibility"]:
+	for key: String in ["RoomNameLabel", "RoomName", "PortLabel", "Port", "BindAddressLabel", "BindAddress", "RefreshAddresses"]:
 		_create.get_node(key).visible = _create_step == "game"
 	_create.get_node("Game").disabled = options.is_empty()
 	_create.get_node("Confirm").disabled = options.is_empty()
@@ -154,6 +160,38 @@ func _build_games() -> void:
 	else:
 		var current: String = selected_protocol if _create_step == "protocol" else selected_game
 		select_game(current if current in options else options[0])
+
+## Enumerate local bind IPs. Keep a disappeared selection visible as invalid instead of
+## silently broadening a previously restricted listener to every interface.
+func _refresh_host_addresses(selected_address: String) -> void:
+	var picker: OptionButton = _create.get_node("BindAddress")
+	picker.clear()
+	picker.add_item(_t("请选择监听网卡 / IP"))
+	picker.set_item_metadata(0, "")
+	picker.set_item_disabled(0, true)
+	var addresses: Array[String] = [""]
+	for interface: Dictionary in IP.get_local_interfaces():
+		for address: String in interface.addresses:
+			if not address.is_valid_ip_address() or address in addresses:
+				continue
+			# Link-local IPv6 needs an interface scope, which this address field does not carry.
+			var lower: String = address.to_lower()
+			if lower.begins_with("fe") and lower.substr(2, 1) in ["8", "9", "a", "b"]:
+				continue
+			var label: String = "%s · %s · %s" % ["IPv6" if address.contains(":") else "IPv4", interface.get("friendly", interface.name), address]
+			picker.add_item(label)
+			var index: int = picker.item_count - 1
+			picker.set_item_metadata(index, address)
+			picker.get_popup().set_item_tooltip(index, label)
+			addresses.append(address)
+	var chosen: int = 0 if selected_address in ["", "*", "0.0.0.0", "::"] else addresses.find(selected_address)
+	if chosen == -1:
+		picker.add_item(_t("不可用：{address}（请重新选择）", {"address": selected_address}))
+		chosen = picker.item_count - 1
+		picker.set_item_metadata(chosen, selected_address)
+		picker.set_item_disabled(chosen, true)
+	picker.select(chosen)
+	picker.tooltip_text = picker.get_item_text(chosen)
 
 func select_game(id: String) -> void:
 	if _create_step == "protocol":
@@ -210,7 +248,7 @@ func open_modal(kind: String) -> void:
 			_create.get_node("RoomName").text = _t("我的派对")
 			_create.get_node("Error").text = ""
 			_create.get_node("Port").text = str(app.settings.config.get_value("connection", "host_port", 7777))
-			_create.get_node("DropdownNote").text = _t("同时监听 IPv4 / IPv6 · 请允许所填 UDP 端口通过防火墙")
+			_refresh_host_addresses(str(app.settings.config.get_value("connection", "host_bind_address", "")))
 			_create.get_node("Game").grab_focus()
 		"Direct":
 			_direct.get_node("Address").text = app.connection.format_endpoint(str(app.settings.config.get_value("connection", "address", "127.0.0.1")), int(app.settings.config.get_value("connection", "port", 7777)))
@@ -266,7 +304,11 @@ func submit_create() -> void:
 	if port == 0:
 		_create.get_node("Error").text = _t("端口请输入 1–65535 的整数")
 		return
-	var error: Error = app.host_from_ui(selected_game, title, port)
+	var picker: OptionButton = _create.get_node("BindAddress")
+	if picker.is_item_disabled(picker.selected):
+		_create.get_node("Error").text = _t("请选择监听网卡 / IP") if picker.selected == 0 else _t("所选监听 IP 已不可用，请刷新并重新选择")
+		return
+	var error: Error = app.host_from_ui(selected_game, title, port, str(picker.get_selected_metadata()))
 	if error != OK:
 		_create.get_node("Error").text = app.connection.status if not app.connection.status.is_empty() else error_string(error)
 
@@ -300,6 +342,9 @@ func submit_profile() -> void:
 
 func refresh() -> void:
 	_sync_room()
+	if _joining and app.connection.online:
+		var stage: String = {"resolving": "正在解析地址…", "connecting": "正在连接…", "handshaking": "正在检查房主全部游戏…", "connected": "已连接"}.get(app.connection.connection_state, "")
+		_direct.get_node("Error").text = stage
 	if _joining and not app.connection.online:
 		_joining = false
 		_direct.get_node("Confirm").disabled = false
@@ -391,8 +436,8 @@ func _apply_language() -> void:
 		var target: Node = modal_layer.get_node(parts[0].trim_prefix("@")) if parts[0].begins_with("@") else get_node(parts[0])
 		target.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 		target.set(parts[1], _t(MENU_TEXT[binding]))
-	_create.get_node("Visibility").clear()
-	_create.get_node("Visibility").add_item(_t("地址直连"))
+	if modal_kind == "Create":
+		_refresh_host_addresses(str(_create.get_node("BindAddress").get_selected_metadata()))
 	$Home/Language.select(0 if app.catalog.i18n.locale == "zh_Hans" else 1)
 	if modal_kind == "Create":
 		_build_games()

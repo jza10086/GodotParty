@@ -22,6 +22,10 @@ var _status: String = ""
 var _rows_hash: int = -1
 var _initialized: bool = false
 var _compact: bool = false
+var _hint_hovered: bool = false
+var _hint_pressed: bool = false
+var _hint_enabled: bool = false
+var _hint_tween: Tween
 
 @onready var _layout: MarginContainer = %Layout
 @onready var _title: Label = %Title
@@ -64,6 +68,13 @@ func _ready() -> void:
 		prompt.visible = prompt == _input_hint
 	_input_hint.description = "准备就绪"
 	_input_hint.set_gamepad(false)
+	_input_hint.mouse_filter = Control.MOUSE_FILTER_STOP
+	_input_hint.gui_input.connect(_ready_hint_input)
+	_input_hint.mouse_entered.connect(_set_hint_hovered.bind(true))
+	_input_hint.mouse_exited.connect(_set_hint_hovered.bind(false))
+	_input_hint.resized.connect(_center_hint_pivot)
+	visibility_changed.connect(_reset_hidden_hint)
+	get_window().focus_exited.connect(_set_hint_hovered.bind(false))
 	var art: PreviewArt = PreviewArt.new()
 	art.name = "OriginalPreviewArt"
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -111,6 +122,57 @@ func focus_ready() -> void:
 
 func _can_submit_ready() -> bool:
 	return _local_can_ready and not _local_ready and _countdown < 0
+
+## Confirm on release so pressing shows feedback and dragging away cancels.
+func _ready_hint_input(event: InputEvent) -> void:
+	if not event is InputEventMouseButton or event.button_index != MOUSE_BUTTON_LEFT:
+		return
+	if not _can_submit_ready() or _choice.get_popup().visible:
+		return
+	var submit: bool = _hint_pressed and not event.pressed and Rect2(Vector2.ZERO, _input_hint.size).has_point(event.position)
+	_hint_pressed = event.pressed
+	_update_hint_feedback()
+	if submit:
+		ready_requested.emit()
+
+func _set_hint_hovered(hovered: bool) -> void:
+	_hint_hovered = hovered
+	if not hovered:
+		_hint_pressed = false
+	_update_hint_feedback()
+
+func _center_hint_pivot() -> void:
+	_input_hint.pivot_offset = _input_hint.size * 0.5
+
+func _reset_hidden_hint() -> void:
+	if not is_visible_in_tree():
+		_hint_hovered = false
+		_hint_pressed = false
+		_update_hint_feedback()
+
+func _update_hint_feedback() -> void:
+	if _hint_tween != null:
+		_hint_tween.kill()
+	_center_hint_pivot()
+	var active: bool = _can_submit_ready() and is_visible_in_tree()
+	var tint: Color = Color.WHITE
+	var zoom: float = 1.0
+	if active and _hint_pressed:
+		tint = ACCENT
+		zoom = 0.96
+	elif active and _hint_hovered:
+		tint = Color(0.78, 0.9, 1.0)
+		zoom = 1.025
+	if not is_visible_in_tree():
+		_input_hint.scale = Vector2.ONE
+		_input_hint.modulate = Color(1.0, 1.0, 1.0, _input_hint.modulate.a)
+		return
+	_hint_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	var duration: float = 0.08 if _hint_pressed else 0.16
+	_hint_tween.tween_property(_input_hint, "scale", Vector2.ONE * zoom, duration)
+	_hint_tween.tween_property(_input_hint, "modulate:r", tint.r, duration)
+	_hint_tween.tween_property(_input_hint, "modulate:g", tint.g, duration)
+	_hint_tween.tween_property(_input_hint, "modulate:b", tint.b, duration)
 
 func _shortcut_input(event: InputEvent) -> void:
 	if not is_visible_in_tree() or not _can_submit_ready() or not event is InputEventKey:
@@ -176,6 +238,11 @@ func _render_state() -> void:
 		_rows_hash = new_hash
 		_render_roster()
 	_choice.disabled = not _can_submit_ready()
+	_input_hint.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if _can_submit_ready() else Control.CURSOR_ARROW
+	if _hint_enabled != _can_submit_ready():
+		_hint_enabled = _can_submit_ready()
+		_hint_pressed = false
+		_update_hint_feedback()
 	_input_hint.modulate.a = 1.0 if _can_submit_ready() or _countdown >= 0 else 0.45
 	_input_hint.get_node("Icons").visible = _countdown < 0
 	if _countdown >= 0:
