@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#233b59"/><stop offset="1" stop-color="#111b2b"/></linearGradient><linearGradient id="card" x2="0" y2="1"><stop stop-color="#47688b"/><stop offset="1" stop-color="#253e5a"/></linearGradient></defs>
+<rect width="1600" height="900" rx="28" fill="url(#bg)"/>
+<circle cx="800" cy="450" r="315" fill="none" stroke="#86bce7" stroke-opacity=".12" stroke-width="2"/>
+<circle cx="800" cy="450" r="365" fill="none" stroke="#86bce7" stroke-opacity=".07" stroke-width="2"/>
+<g fill="url(#card)" stroke="#8bb5dc" stroke-opacity=".55" stroke-width="3">
+<rect x="535" y="260" width="240" height="330" rx="26" transform="rotate(-16 655 425)"/>
+<rect x="825" y="260" width="240" height="330" rx="26" transform="rotate(16 945 425)"/>
+<rect x="675" y="220" width="250" height="350" rx="26"/>
+</g>
+<g fill="#b7dafa"><rect x="744" y="322" width="112" height="112" rx="20"/><circle cx="773" cy="351" r="8" fill="#2e4a65"/><circle cx="827" cy="405" r="8" fill="#2e4a65"/><circle cx="800" cy="378" r="8" fill="#2e4a65"/></g>
+<path d="M540 638 Q800 785 1060 638" fill="none" stroke="#83bdec" stroke-width="12" stroke-linecap="round"/>
+<path d="M1020 630 L1070 632 L1055 681" fill="none" stroke="#83bdec" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+<g fill="#89b7da" opacity=".4"><circle cx="450" cy="270" r="7"/><circle cx="1150" cy="580" r="8"/><circle cx="1210" cy="290" r="4"/><circle cx="415" cy="620" r="4"/></g>
+</svg>

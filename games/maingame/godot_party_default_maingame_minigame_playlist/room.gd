@@ -14,7 +14,7 @@ func _ready() -> void:
 	_button("Ready", room.ready_or_start)
 	_button("Map", room.open_settings.bind("pool"))
 	_button("Rounds", room.open_settings.bind("main"))
-	_button("Advanced", room.open_settings.bind("protocol"))
+	_button("Advanced", room.open_settings.bind("preferences"))
 	_button("CopyAddress", _copy_room_address)
 	for index: int in range(8):
 		var slot: Button = get_node("%Slot" + str(index))
@@ -81,10 +81,11 @@ func room_refresh() -> void:
 	var count: int = 0
 	for pool: Array in connection.room.get("pools", {}).values():
 		count += pool.size()
-	%Map.text = "已选择 %d 项 · 查看 / 配置" % count
-	%Rounds.text = "查看 / 配置"
-	%Map.tooltip_text = "房主配置" if connection.host else "查看房主配置"
-	%Rounds.tooltip_text = %Map.tooltip_text
+	%Map.text = "小游戏池"
+	%Rounds.text = "轮换模式"
+	%Map.tooltip_text = "已选择 %d 项 · %s" % [count, "房主配置" if connection.host else "查看房主配置"]
+	%Rounds.tooltip_text = "轮换方式、局数、重复与间隔"
+	%Advanced.tooltip_text = "主游戏本机偏好与协议继承设置"
 
 
 ## Read cached statistics once a second; never rebuild slots or request a probe here.

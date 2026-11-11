@@ -1,13 +1,14 @@
 {
   "manifest_version": 2,
   "core_api_major": 5,
-  "package_version": "1.1.13",
+  "package_version": "1.1.14",
   "id": "godot_party_default_maingame_minigame_playlist",
   "name": "GodotPartyDefault · 小游戏轮换",
   "kind": "maingame",
   "supported_systems": ["windows", "android"],
   "entry": "game.tscn",
   "room_scene": "room.tscn",
+  "cover": "preview.svg",
   "protocol": {
     "id": "godot_party_default_protocol",
     "api_major": 1,

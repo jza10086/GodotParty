@@ -24,7 +24,7 @@ func ready_or_start() -> void:
 func leave() -> void:
 	_dispatch.call("leave", {})
 
-## Panels: pool, main, protocol, rules, system. Panels remain reusable framework UI.
+## Panels: pool, main, preferences (main-game local settings), protocol, rules, system. Panels remain reusable framework UI.
 func open_settings(panel: String) -> void:
 	_dispatch.call("settings", {"panel": panel})
 

@@ -114,66 +114,62 @@ theme_override_constants/separation = 10
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.25
 
+[node name="PreviewFrame" type="AspectRatioContainer" parent="Insets/Layout/Cards/RoomColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+ratio = 1.7777778
+stretch_mode = 0
+
+[node name="MainPreview" type="TextureRect" parent="Insets/Layout/Cards/RoomColumn/PreviewFrame"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
 [node name="ConfigurationCard" parent="Insets/Layout/Cards/RoomColumn" groups=["lobby_card"] instance=ExtResource("ar_card")]
+layout_mode = 2
 
+[node name="Content" type="VBoxContainer" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard"]
+layout_mode = 2
+theme_override_constants/separation = 12
 
-[node name="Content" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard" type="VBoxContainer"]
-theme_override_constants/separation = 10
+[node name="BasicTitle" type="Label" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "主游戏设置"
 
-[node name="BasicTitle" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content" type="Label"]
-unique_name_in_owner = true
-text = "游戏与规则"
-theme_override_font_sizes/font_size = 32
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="MapRow" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content" type="HBoxContainer"]
+[node name="Modes" type="HBoxContainer" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content"]
+layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="MapLabel" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/MapRow" type="Label"]
+[node name="Rounds" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/Modes" instance=ExtResource("ar_button")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"PoolButton"
+theme_override_font_sizes/font_size = 26
+text = "轮换模式"
+
+[node name="Map" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/Modes" instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"PoolButton"
+theme_override_font_sizes/font_size = 26
 text = "小游戏池"
-theme_override_font_sizes/font_size = 23
-vertical_alignment = 1
-mouse_filter = 2
+
+[node name="Advanced" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content" instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="Map" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/MapRow" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-text = "选择小游戏"
-custom_minimum_size = Vector2(150, 48)
-
-[node name="RoundsRow" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content" type="HBoxContainer"]
-theme_override_constants/separation = 16
-
-[node name="RoundsLabel" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/RoundsRow" type="Label"]
-unique_name_in_owner = true
-text = "轮换配置"
-theme_override_font_sizes/font_size = 23
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-
-[node name="Rounds" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/RoundsRow" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-text = "查看 / 配置"
-custom_minimum_size = Vector2(150, 48)
-
-[node name="AdvancedRow" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content" type="HBoxContainer"]
-theme_override_constants/separation = 16
-
-[node name="AdvancedLabel" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/AdvancedRow" type="Label"]
-unique_name_in_owner = true
-text = "协议与本地偏好"
-theme_override_font_sizes/font_size = 23
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-
-[node name="Advanced" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/AdvancedRow" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-text = "协议与本地设置"
-custom_minimum_size = Vector2(150, 48)
+theme_type_variation = &"PoolButton"
+theme_override_font_sizes/font_size = 26
+text = "主游戏高级设置"
 
 [node name="ActionBackdrop" type="BackBufferCopy" parent="Insets/Layout"]
 copy_mode = 2

@@ -975,6 +975,7 @@ func room_action(operation: String, argument: Dictionary) -> void:
 			match argument.panel:
 				"pool": _configuration_dialog()
 				"main": _main_configuration_dialog()
+				"preferences": _preferences_dialog(connection.room.main, catalog.get_package(connection.room.main).protocol.id)
 				"protocol": _protocol_dialog()
 				"rules": _room_rules_dialog()
 				"system": _settings_dialog()
