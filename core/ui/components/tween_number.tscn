@@ -1,11 +1,11 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://core/ui/components/odometer_number.gd" id="1"]
+[ext_resource type="Script" path="res://core/ui/components/tween_number.gd" id="1"]
 [sub_resource type="SystemFont" id="Font"]
 font_names = PackedStringArray("Consolas", "DejaVu Sans Mono")
 font_weight = 700
 
-[node name="OdometerNumber" type="Control"]
+[node name="TweenNumber" type="Control"]
 custom_minimum_size = Vector2(640, 128)
 layout_mode = 3
 mouse_filter = 2
