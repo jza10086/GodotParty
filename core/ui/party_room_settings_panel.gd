@@ -2,8 +2,8 @@
 extends VBoxContainer
 const Schema = preload("res://core/config/party_schema.gd")
 const Form = preload("res://core/ui/party_config_form.gd")
-const SectionScene: PackedScene = preload("res://core/ui/settings/setting_section.tscn")
 var rows: Array[Dictionary] = []
+var _preset_bars: Dictionary[String, Control] = {}
 var main_id: String
 var store: RefCounted
 var protocol_id: String
@@ -25,13 +25,10 @@ func _section(title: String, target: String, game: String, schema: Dictionary, o
 		if running and (schema.fields[key].apply != "next_round" or game == main_id):
 			locked.append(key)
 	var context: Dictionary = {"schema": schema, "audience": "room", "inherit": true, "overrides": target == "game_common", "base": base, "locked": locked, "inherit_label": "继承协议" if target == "game_common" else "使用默认值"}
-	var section: Control = SectionScene.instantiate()
-	section.configure(title, true)
-	add_child(section)
 	var form: Form = preload("res://core/ui/party_config_form.tscn").instantiate()
 	form.configure(original, editable, context)
-	section.body().add_child(form)
-	rows.append({"target": target, "game_id": game, "schema": schema, "original": original.duplicate(true), "form": form, "context": context, "editable": editable})
+	add_child(form)
+	rows.append({"title": title, "target": target, "game_id": game, "schema": schema, "original": original.duplicate(true), "form": form, "context": context, "editable": editable})
 
 func edits() -> Array:
 	var result: Array = []
@@ -52,6 +49,7 @@ func _preset_controls(id: String, editable: bool) -> void:
 		return
 	var bar: Control = preload("res://core/ui/party_preset_bar.tscn").instantiate()
 	add_child(bar)
+	_preset_bars[id] = bar
 	bar.configure(store, id, protocol_id, func() -> Dictionary: return _preset_snapshot(id, bar.service), editable)
 	bar.loaded.connect(func(value: Dictionary) -> void:
 		for row: Dictionary in rows:
@@ -71,3 +69,18 @@ func _preset_snapshot(id: String, service: RefCounted) -> Dictionary:
 			else:
 				own = row.form.explicit_values()
 	return service.snapshot(id, protocol_id, own, common)
+
+## Present every nonempty schema category through the shared workspace tab strip.
+func mount_workspace(workspace: Control) -> void:
+	workspace.clear_pages()
+	for row: Dictionary in rows:
+		if row.form.categories().is_empty():
+			continue
+		var id: String = protocol_id if row.target == "protocol_base" else row.game_id
+		if _preset_bars.has(id):
+			var bar: Control = _preset_bars[id]
+			bar.reparent(row.form, false)
+			row.form.move_child(bar, 0)
+			_preset_bars.erase(id)
+		remove_child(row.form)
+		workspace.add_form(row.form, row.title + " · ")

@@ -31,7 +31,6 @@ var rows: Dictionary[String, Control] = {}
 @onready var local_preferences: Button = %LocalPreferences
 @onready var folder: Button = %Folder
 @onready var error_label: Label = %ErrorLabel
-var advanced_dialog: GPPartyDialog
 
 func configure(owner_app: Node, room: Dictionary, can_edit: bool) -> void:
 	app = owner_app
@@ -90,9 +89,6 @@ func _ready() -> void:
 		check.pressed.connect(_check_pressed.bind(id, check))
 		row_list.add_child(row)
 		rows[id] = row
-	visibility_changed.connect(func() -> void:
-		if not is_visible_in_tree() and is_instance_valid(advanced_dialog):
-			advanced_dialog.hide())
 	_filter_rows(search.text)
 
 func _cover(id: String) -> Texture2D:
@@ -286,34 +282,29 @@ func open_preferences() -> void:
 func open_advanced() -> void:
 	if focused.is_empty():
 		return
-	if is_instance_valid(advanced_dialog):
-		advanced_dialog.queue_free()
 	var id: String = focused
-	advanced_dialog = preload("res://core/ui/dialogs/minigame_rules.tscn").instantiate()
-	advanced_dialog.title = "高级设置 · " + _title(id)
-	advanced_dialog.ok_button_text = "应用到草稿"
-	advanced_dialog.dialog_hide_on_ok = false
-	app.get_node("%DialogHost").add_child(advanced_dialog)
 	var panel: Control = app._panel(id, draft.children[id] if draft.children.has(id) else app.catalog.defaults(id), editable)
-	advanced_dialog.content.get_node("FormSlot").add_child(panel)
+	var context: Dictionary = {"schema": app.catalog.schema(id), "audience": "room", "pools": draft.pools.duplicate(true), "fields": app.catalog.fields(id), "resources": app.catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return app.catalog.asset(ref, app.catalog.packages)}
+	var editor: Control = app._configuration_editor("高级设置 · " + _title(id), panel, editable, "配置此小游戏的房间规则；应用后返回小游戏池草稿。", func() -> void: panel.configure(app.catalog.defaults(id), editable, context))
+	editor.apply_button.text = "应用到草稿"
 	var protocol: String = app.catalog.get_package(draft.main).protocol.id
 	var state: Dictionary = {"common": draft.common_overrides.get(id, {}).duplicate(true)}
-	var bar: Control = advanced_dialog.content.get_node("Presets")
+	var bar: Control = editor.presets
+	bar.show()
 	bar.configure(app.runner.config_store, id, protocol, func() -> Dictionary: return app.presets.snapshot(id, protocol, panel.get_value(), state.common), editable)
 	bar.loaded.connect(func(value: Dictionary) -> void:
 		panel.configure(app.catalog.validate_settings(id, value.room_own).value, editable, {"schema": app.catalog.schema(id), "audience": "room", "fields": app.catalog.fields(id), "resources": app.catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return app.catalog.asset(ref, app.catalog.packages)})
 		state.common = value.room_common.duplicate(true))
-	var hint: Label = advanced_dialog.content.get_node("Hint")
-	advanced_dialog.get_ok_button().disabled = not editable
-	advanced_dialog.confirmed.connect(func() -> void:
+	var hint: Label = editor.page.status
+	editor.apply_button.disabled = not editable
+	editor.apply_requested.connect(func() -> void:
 		if apply_advanced(id, panel.get_value()):
 			draft.common_overrides[id] = state.common.duplicate(true)
-			advanced_dialog.hide()
+			app._close_preferences()
 			_refresh_rows()
 			_refresh_inspector()
 		else:
 			hint.text = error_label.text)
-	advanced_dialog.popup_centered(Vector2i(1100, 850))
 
 ## Validation and persistence succeed before replacing the draft. Cancel never reaches this method.
 func apply_advanced(id: String, value: Dictionary) -> bool:
@@ -340,15 +331,8 @@ func _open_folder() -> void:
 	if error != OK:
 		error_label.text = "无法打开目录：" + error_string(error)
 
-func _exit_tree() -> void:
-	if is_instance_valid(advanced_dialog):
-		advanced_dialog.hide()
-		advanced_dialog.queue_free()
-
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not is_visible_in_tree() or not event is InputEventKey or not event.pressed or event.echo:
-		return
-	if is_instance_valid(advanced_dialog) and advanced_dialog.visible:
 		return
 	var owner: Control = get_viewport().gui_get_focus_owner()
 	if owner is LineEdit or owner == preset_picker or owner == pool_picker:

@@ -311,6 +311,19 @@ func _choose_offline_profile() -> void:
 	_dialog.get_ok_button().disabled = picker.item_count == 0
 	_dialog.confirmed.connect(func() -> void: _profile_dialog(picker.get_item_metadata(picker.selected)))
 
+func _local_profile_settings() -> void:
+	var body: VBoxContainer = preload("res://core/ui/dialogs/profile.tscn").instantiate()
+	var name_input: LineEdit = body.get_node("PlayerName")
+	name_input.text = local_display_name()
+	var editor: Control = _configuration_editor("玩家资料", body, true, "编辑本机玩家昵称，应用后保存。")
+	editor.apply_requested.connect(func() -> void:
+		var error: Error = save_local_name(name_input.text.strip_edges())
+		if error != OK:
+			editor.page.status.text = "昵称需为 1–16 字，且不能包含控制字符" if error == ERR_INVALID_PARAMETER else "保存失败：" + error_string(error)
+			return
+		_close_preferences()
+		_frontend.refresh())
+
 func _profile_dialog(selected_protocol: String = "") -> void:
 	var player: Dictionary = connection._player_peer(connection.local_peer())
 	var protocol_id: String = selected_protocol
@@ -332,17 +345,17 @@ func _profile_dialog(selected_protocol: String = "") -> void:
 		if player.is_empty():
 			return
 		protocol_id = catalog.get_package(connection.room["main"])["protocol"]["id"]
-	var box: VBoxContainer = _modal("个人资料 · " + protocol_id, preload("res://core/ui/dialogs/profile.tscn"))
+	var box: VBoxContainer = preload("res://core/ui/dialogs/profile.tscn").instantiate()
 	_profile_name = box.get_node("PlayerName")
 	_profile_name.text = player["name"]
 	_profile_panel = _panel(protocol_id, player["profile"], not connection.room.get("recovery", false), true)
 	box.get_node("ProfileSlot").add_child(_profile_panel)
-	_profile_error = box.get_node("Error")
+	var editor: Control = _configuration_editor("个人资料", box, not connection.room.get("recovery", false), "编辑昵称、形象和协议提供的个人资料，应用后保存。")
+	_profile_error = editor.page.status
 	_profile_error.text = connection.profiles.last_error if offline else ""
-	_profile_apply = _dialog.get_ok_button()
+	_profile_apply = editor.apply_button
 	_profile_apply.text = "应用"
-	_dialog.dialog_hide_on_ok = false
-	_dialog.confirmed.connect(func() -> void:
+	editor.apply_requested.connect(func() -> void:
 		if offline:
 			if not connection.profiles.validate_name(_profile_name.text):
 				_profile_error.text = "昵称需为 1–16 个字符，不能包含控制字符或首尾空格"
@@ -355,7 +368,7 @@ func _profile_dialog(selected_protocol: String = "") -> void:
 			var save_error: Error = connection.profiles.save(_profile_name.text, protocol_id, value)
 			_profile_error.text = "已保存" if save_error == OK else "本机保存失败：" + error_string(save_error)
 			if save_error == OK:
-				_dialog.hide()
+				_close_preferences()
 				_frontend.refresh()
 			return
 		var error: Error = connection.submit_profile(_profile_name.text, _profile_panel.get_value())
@@ -420,30 +433,31 @@ func _main_configuration_dialog() -> void:
 	var id: String = connection.room.main
 	var revision: int = int(connection.room.get("rules_revision", 0))
 	var editable: bool = connection.host and connection.recovery.is_empty() and runner.phase == "idle"
-	var box: VBoxContainer = _modal("大游戏配置 · " + str(catalog.get_package(id).get("name", id)), preload("res://core/ui/dialogs/main_rules.tscn"))
 	var panel: Control = _panel(id, connection.room.settings, editable)
+	var context: Dictionary = {"schema": catalog.schema(id), "audience": "room", "pools": connection.room.pools.duplicate(true), "fields": catalog.fields(id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)}
+	var editor: Control = _configuration_editor("高级设置 · " + catalog.get_package(id).name, panel, editable, "配置主游戏规则；修改先进入草稿，应用后同步到房间。", func() -> void: panel.configure(catalog.defaults(id), editable, context))
 	var protocol: String = catalog.get_package(id).protocol.id
 	var preset_draft: Dictionary = connection.room.duplicate(true)
-	var bar: Control = box.get_node("Presets")
+	var bar: Control = editor.presets
+	bar.show()
 	bar.configure(runner.config_store, id, protocol, func() -> Dictionary: return presets.snapshot(id, protocol, panel.get_value(), preset_draft.common_overrides.get(id, {}), preset_draft), editable)
 	bar.loaded.connect(func(value: Dictionary) -> void:
 		panel.configure(catalog.validate_settings(id, value.room_own).value, editable, {"schema": catalog.schema(id), "audience": "room", "pools": value.room.pools.duplicate(true), "fields": catalog.fields(id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)})
 		for key: String in ["common", "children", "pools", "common_overrides"]:
 			preset_draft[key] = value.room[key].duplicate(true)
+		context.pools = value.room.pools.duplicate(true)
 		preset_draft.common_overrides[id] = value.room_common.duplicate(true))
-	box.get_node("FormSlot").add_child(panel)
-	var error_label: Label = box.get_node("Error")
-	_dialog.dialog_hide_on_ok = false
-	_dialog.get_ok_button().text = "应用大游戏规则"
-	_dialog.get_ok_button().disabled = not editable
-	_dialog.confirmed.connect(func() -> void:
+	var error_label: Label = editor.page.status
+	editor.apply_button.text = "应用大游戏规则"
+	editor.apply_button.disabled = not editable
+	editor.apply_requested.connect(func() -> void:
 		if connection.room.get("main", "") != id or int(connection.room.get("rules_revision", 0)) != revision:
 			error_label.text = "房间配置已经变化，请重新打开。"
 			return
 		var error: Error = connection.configure(id, panel.get_value(), preset_draft.children, preset_draft.pools, preset_draft.common, preset_draft.common_overrides)
 		error_label.text = connection.status if error != OK else ""
 		if error == OK:
-			_dialog.hide())
+			_close_preferences())
 
 func _select_main(id: String) -> void:
 	_check(connection.configure(id, catalog.defaults(id), {}, {}))
@@ -624,21 +638,32 @@ func _close_settings() -> void:
 	if is_instance_valid(_settings_focus) and _settings_focus.is_visible_in_tree():
 		_settings_focus.grab_focus()
 
-func _preferences_dialog(game: String, protocol: String) -> void:
-	if is_instance_valid(_preferences_page):
-		return
+## Both local preferences and independent configuration editors share one fullscreen lifecycle.
+func _open_settings_surface(scene: PackedScene) -> Control:
 	_preferences_focus = get_viewport().gui_get_focus_owner()
 	_preferences_return.clear()
 	for surface: CanvasItem in [_settings_page, _frontend, _screen, _session_menu, _dialog]:
 		if is_instance_valid(surface) and surface.visible:
 			_preferences_return.append(surface)
 			surface.hide()
-	_preferences_page = PreferencesPanel.instantiate()
+	_preferences_page = scene.instantiate()
 	%Pages.add_child(_preferences_page)
-	_preferences_page.configure(runner.config_store, game, protocol)
-	_preferences_page.present_fullscreen()
-	%UINavigation.focus_settings_on_open(_preferences_page.page)
 	_preferences_page.back_requested.connect(_close_preferences)
+	return _preferences_page
+
+func _configuration_editor(title: String, panel: Control, editable: bool, description: String, reset: Callable = Callable()) -> Control:
+	var editor: Control = _open_settings_surface(preload("res://core/ui/settings/settings_editor.tscn"))
+	editor.configure(title, panel, editable, description, reset)
+	%UINavigation.focus_settings_on_open(editor.page)
+	return editor
+
+func _preferences_dialog(game: String, protocol: String) -> void:
+	if is_instance_valid(_preferences_page):
+		return
+	var editor: Control = _open_settings_surface(PreferencesPanel)
+	editor.configure(runner.config_store, game, protocol)
+	editor.present_fullscreen()
+	%UINavigation.focus_settings_on_open(editor.page)
 
 func _close_preferences() -> void:
 	if not is_instance_valid(_preferences_page):
@@ -883,18 +908,18 @@ func _room_rules_dialog() -> void:
 		return
 	var draft: Dictionary = connection.room if runner.phase == "idle" else runner.record.room
 	var revision: int = int(draft.get("rules_revision", 0))
-	var box: VBoxContainer = _modal("房间规则 · 当前轮次保持不变", preload("res://core/ui/dialogs/room_rules.tscn"))
-	var panel: Control = box.get_node("Rules")
+	var panel: Control = preload("res://core/ui/party_room_settings_panel.tscn").instantiate()
 	panel.configure(draft, catalog, connection.host, runner.phase != "idle", runner.config_store)
-	var status: Label = box.get_node("Status")
+	var editor: Control = _configuration_editor("房间规则", panel, connection.host, "编辑协议规则和各游戏的覆盖；运行中的规则按其生效时机应用。")
+	panel.mount_workspace(editor.page)
+	var status: Label = editor.page.status
 	status.text = "开局配置已锁定；标记为下一轮的规则在下次加载时生效。" if runner.phase != "idle" else "房间修改不会自动覆盖你的命名预设。"
-	_dialog.dialog_hide_on_ok = false
-	_dialog.get_ok_button().disabled = not connection.host
-	_dialog.confirmed.connect(func() -> void:
+	editor.apply_button.disabled = not connection.host
+	editor.apply_requested.connect(func() -> void:
 		var error: Error = runner.edit_room_rules(revision, panel.edits())
 		status.text = "已接受；运行中的修改须保存成功后生效" if error == OK else error_string(error)
 		if error == OK:
-			_dialog.get_ok_button().disabled = true)
+			editor.apply_button.disabled = true)
 
 
 

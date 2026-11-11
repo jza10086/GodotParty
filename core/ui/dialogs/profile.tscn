@@ -1,19 +1,17 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://core/ui/party_dialog.tscn" id="r1"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="r2"]
 
-[node name="Profile" instance=ExtResource("r1")]
+[node name="Profile" type="VBoxContainer"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
 
 
-[node name="PlayerName" parent="Panel/Layout/Scroll/Content" instance=ExtResource("r2")]
+[node name="NameLabel" type="Label" parent="."]
+text = "玩家昵称"
+
+[node name="PlayerName" parent="." instance=ExtResource("r2")]
 unique_name_in_owner = true
 
 
-[node name="ProfileSlot" parent="Panel/Layout/Scroll/Content" type="VBoxContainer"]
-
-
-[node name="Error" parent="Panel/Layout/Scroll/Content" type="Label"]
-unique_name_in_owner = true
-text = ""
-autowrap_mode = 3
+[node name="ProfileSlot" parent="." type="VBoxContainer"]

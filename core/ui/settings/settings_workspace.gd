@@ -22,6 +22,8 @@ func _ready() -> void:
 	%Reset.pressed.connect(func() -> void:
 		for form: Control in _forms:
 			form.reset_defaults()
+		if not _tabs.is_empty() and _tabs[_selected].form == null and _tabs[_selected].reset.is_valid():
+			_tabs[_selected].reset.call()
 		status.text = "本页设置已恢复默认草稿，应用后保存。"
 		reset_requested.emit())
 	%TabScroll.get_h_scroll_bar().value_changed.connect(func(_value: float) -> void: _update_scroll_indicator())
@@ -51,8 +53,8 @@ func add_form(form: Control, prefix: String = "") -> void:
 	form.rebuilt.connect(_rebuild_tabs)
 	_rebuild_tabs()
 
-func add_page(title: String, content: Control, description: String = "") -> void:
-	_extras.append({"form": null, "id": title, "title": title, "content": content, "description": description})
+func add_page(title: String, content: Control, description: String = "", reset: Callable = Callable()) -> void:
+	_extras.append({"form": null, "id": title, "title": title, "content": content, "description": description, "reset": reset})
 	_rebuild_tabs()
 
 func clear_pages() -> void:
@@ -196,7 +198,7 @@ func select_tab(index: int) -> void:
 	selected.button.set_pressed_no_signal(true)
 	%Previous.disabled = index == 0
 	%Next.disabled = index == _tabs.size() - 1
-	%Reset.disabled = _forms.is_empty()
+	%Reset.disabled = _forms.is_empty() and not _tabs[index].reset.is_valid()
 	%List.scroll_vertical = 0
 	if selected.form != null:
 		selected.form.show()

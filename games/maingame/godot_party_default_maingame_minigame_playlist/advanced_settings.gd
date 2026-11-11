@@ -1,5 +1,6 @@
 ## Playlist-owned room editor. Zero rounds stays automatic in saved rules and presets.
 extends VBoxContainer
+const SectionScene: PackedScene = preload("res://core/ui/settings/setting_section.tscn")
 const NumberRow: PackedScene = preload("res://core/ui/settings/number.tscn")
 const ToggleRow: PackedScene = preload("res://core/ui/settings/toggle.tscn")
 var _value: Dictionary
@@ -35,9 +36,13 @@ func _row(slot: VBoxContainer, scene: PackedScene, key: String, value: Variant, 
 	var field: Dictionary = _fields[key].duplicate(true)
 	field.key = key
 	field.merge(overrides, true)
+	var section: Control = SectionScene.instantiate()
+	section.configure(field.title, true)
+	slot.add_child(section)
 	var row: Control = scene.instantiate()
-	slot.add_child(row)
 	row.configure(field, value, editable)
+	row.get_node("%Label").hide()
+	section.set_field(row, false)
 	return row
 
 func _build_rounds() -> void:

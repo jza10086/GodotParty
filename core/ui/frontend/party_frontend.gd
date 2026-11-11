@@ -86,7 +86,7 @@ func initialize() -> void:
 	_button("Home/Menu/ConnectTest", app._connectivity_dialog.bind(true))
 	_button("Home/Menu/NetworkLab", app._network_lab_dialog)
 	_button("Home/Menu/Exit", func() -> void: open_modal("Confirm"))
-	_button("Home/Profile", func() -> void: open_modal("Profile"))
+	_button("Home/Profile", app._local_profile_settings)
 	_button("Rooms/Back", func() -> void: show_page("Home"))
 	_button("Rooms/Direct", func() -> void: open_modal("Direct"))
 	_button("Rooms/Join1", func() -> void: open_modal("Direct"))
