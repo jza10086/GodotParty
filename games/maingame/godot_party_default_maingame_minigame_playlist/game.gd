@@ -60,9 +60,9 @@ func create_view() -> Node:
 	column.add_theme_constant_override("separation", 18)
 	scroll.add_child(column)
 	_label(column, "原版 · 小游戏轮换", 40)
-	_label(column, "已完成 %d / %d 局 · %s · %s" % [state.get("completed", 0), state.get("queue", []).size(), state.get("rotation", "顺序"), "允许重复" if state.get("allow_repeat", true) else "不重复"], 26)
+	_label(column, "已完成 %d / %d 局 · %s · %s" % [state.get("completed", 0), state.get("queue", []).size(), state.get("rotation", "顺序"), "避免重复" if state.avoid_repeat else "允许重复"], 26)
 	if state.get("queue", []).size() < int(state.get("requested_rounds", 0)):
-		_label(column, "关闭重复后，实际局数以所选小游戏数量为上限。", 20)
+		_label(column, "避免重复已开启，实际局数以所选小游戏数量为上限。", 20)
 	_message = _label(column, _status_text(), 24)
 	var score_lines: PackedStringArray = []
 	for row: Dictionary in _presentation().rows:

@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://games/maingame/godot_party_default_maingame_minigame_playlist/advanced_settings.gd" id="script"]
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://core/ui/settings/switch_option.tscn" id="switch"]
+
+[node name="AdvancedSettings" type="VBoxContainer"]
+size_flags_horizontal = 3
+theme = ExtResource("theme")
+theme_override_constants/separation = 18
+script = ExtResource("script")
+
+[node name="Automatic" parent="." instance=ExtResource("switch")]
+unique_name_in_owner = true
+text = "按小游戏数量自动设置局数"
+button_pressed = true
+
+[node name="RoundsSlot" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="AvoidSlot" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="RepeatHelp" type="Label" parent="."]
+unique_name_in_owner = true
+text = "避免重复开启时，每个小游戏最多出现一次，实际局数不超过已选数量。"
+autowrap_mode = 3
+theme_type_variation = &"MutedLabel"
+
+[node name="IntervalSlot" type="VBoxContainer" parent="."]
+unique_name_in_owner = true

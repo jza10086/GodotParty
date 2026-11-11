@@ -9,11 +9,11 @@ static func make_queue(pool: Array, settings: Dictionary, seed_value: int) -> Ar
 	var result: Array[String] = []
 	if selected.is_empty():
 		return result
-	var count: int = clampi(int(settings.get("rounds", 4)), 1, 100)
-	var repeat: bool = bool(settings.get("allow_repeat", true))
+	var count: int = selected.size() if settings.rounds == 0 else int(settings.rounds)
+	var random_order: bool = settings.rotation == "随机"
+	var repeat: bool = not (random_order and settings.avoid_repeat)
 	if not repeat:
 		count = mini(count, selected.size())
-	var random_order: bool = settings.get("rotation", "顺序") == "随机"
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = seed_value
 	if random_order and not repeat:
@@ -31,8 +31,8 @@ static func initial(pool: Array, settings: Dictionary, players: Array[Dictionary
 	for player: Dictionary in players:
 		scores[player.player_id] = 0
 	return {"queue": make_queue(pool, settings, seed_value), "cursor": 0, "completed": 0,
-		"requested_rounds": int(settings.get("rounds", 4)), "rotation": settings.get("rotation", "顺序"),
-		"allow_repeat": bool(settings.get("allow_repeat", true)), "interval": int(settings.get("interval", 0)),
+		"requested_rounds": pool.size() if settings.rounds == 0 else int(settings.rounds), "rotation": settings.rotation,
+		"avoid_repeat": settings.rotation == "随机" and settings.avoid_repeat, "interval": int(settings.interval),
 		"scores": scores, "attempt": 0, "launch": {}, "pause_reason": "", "last": {}, "history": []}
 
 ## Only the pending request can advance the queue. Cancellation leaves the slot available for retry.

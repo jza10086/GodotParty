@@ -175,7 +175,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"PoolButton"
 theme_override_font_sizes/font_size = 26
-text = "主游戏高级设置"
+text = "高级设置"
 
 [node name="ActionBackdrop" type="BackBufferCopy" parent="Insets/Layout"]
 copy_mode = 2

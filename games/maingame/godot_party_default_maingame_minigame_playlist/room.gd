@@ -94,7 +94,7 @@ func room_refresh() -> void:
 	%Rotation.disabled = not connection.host or connection.recovering
 	%Map.tooltip_text = "已选择 %d 项 · %s" % [count, "房主配置" if connection.host else "查看房主配置"]
 	%Rotation.tooltip_text = "轮换模式" if connection.host else "轮换模式由房主设置"
-	%Advanced.tooltip_text = "总局数、重复与间隔等主游戏规则"
+	%Advanced.tooltip_text = "轮换局数、避免游戏重复与局间间隔"
 
 
 ## Read cached statistics once a second; never rebuild slots or request a probe here.

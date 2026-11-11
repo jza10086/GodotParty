@@ -295,7 +295,7 @@ func _panel(package_id: String, value: Dictionary, editable: bool, profile: bool
 	var definition: Dictionary = catalog.get_package(package_id)
 	var scene: String = definition.get("player_config_panel" if profile else "config_panel", "")
 	var panel: Control = load(catalog.path(package_id, scene)).instantiate() if not scene.is_empty() else preload("res://core/ui/party_config_form.tscn").instantiate()
-	var context: Dictionary = {"schema": catalog.schema(package_id), "audience": "room", "fields": definition.get("player_fields", []) if profile else catalog.fields(package_id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)}
+	var context: Dictionary = {"schema": catalog.schema(package_id), "audience": "room", "pools": connection.room.get("pools", {}).duplicate(true), "fields": definition.get("player_fields", []) if profile else catalog.fields(package_id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)}
 	if profile and connection.host and connection.room.get("phase") == "lobby" and connection.recovery.is_empty():
 		context["room_players"] = func() -> Array: return connection.players.duplicate(true)
 		context["assign_room_profile"] = connection.assign_player_profile
@@ -427,7 +427,7 @@ func _main_configuration_dialog() -> void:
 	var bar: Control = box.get_node("Presets")
 	bar.configure(runner.config_store, id, protocol, func() -> Dictionary: return presets.snapshot(id, protocol, panel.get_value(), preset_draft.common_overrides.get(id, {}), preset_draft), editable)
 	bar.loaded.connect(func(value: Dictionary) -> void:
-		panel.configure(catalog.validate_settings(id, value.room_own).value, editable, {"schema": catalog.schema(id), "audience": "room", "fields": catalog.fields(id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)})
+		panel.configure(catalog.validate_settings(id, value.room_own).value, editable, {"schema": catalog.schema(id), "audience": "room", "pools": value.room.pools.duplicate(true), "fields": catalog.fields(id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)})
 		for key: String in ["common", "children", "pools", "common_overrides"]:
 			preset_draft[key] = value.room[key].duplicate(true)
 		preset_draft.common_overrides[id] = value.room_common.duplicate(true))

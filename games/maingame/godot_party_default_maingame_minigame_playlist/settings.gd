@@ -4,15 +4,15 @@ extends RefCounted
 static func schema() -> Dictionary:
 	return {
 		"schema_format": 3,
-		"settings_version": 1,
+		"settings_version": 2,
 		"fields": {
 			"rounds": {
 				"type": "int",
-				"default": 4,
-				"title": "总局数",
-				"min": 1,
+				"default": 0,
+				"title": "轮换局数",
+				"min": 0,
 				"max": 100,
-				"description": "关闭重复时，实际局数最多为所选小游戏数量。",
+				"description": "0 表示自动按已选小游戏数量设置；大于 0 表示手动局数。",
 				"audience": "room",
 				"apply": "lobby",
 				"control": "number"
@@ -30,11 +30,11 @@ static func schema() -> Dictionary:
 				"apply": "lobby",
 				"control": "select"
 			},
-			"allow_repeat": {
+			"avoid_repeat": {
 				"type": "bool",
 				"default": true,
-				"title": "允许小游戏重复",
-				"description": "开启后顺序循环、随机有放回抽取；单选一个小游戏可连续测试。",
+				"title": "避免游戏重复",
+				"description": "仅随机轮换生效。开启后每个小游戏最多出现一次，实际局数不超过已选小游戏数。",
 				"audience": "room",
 				"apply": "lobby",
 				"control": "toggle"
@@ -64,7 +64,8 @@ static func schema() -> Dictionary:
 						"field": "rotation"
 					},
 					{
-						"field": "allow_repeat"
+						"field": "avoid_repeat",
+						"enabled_when": {"field": "rotation", "equals": "随机"}
 					},
 					{
 						"field": "interval"
