@@ -1,9 +1,11 @@
-## Read-only room roster and host-link RTT. Opening this panel never sends packets.
+## Passive Tab surface: the main game owns standings; core only adds existing link statistics.
 extends CanvasLayer
 
 var _connection: Node
 var _i18n: RefCounted
 var _can_open: Callable
+var _standings: Callable
+var _format_metric: Callable
 var _refresh_in: float = 0.0
 var _rows: Array[Array] = []
 @onready var _title: Label = %Title
@@ -12,20 +14,22 @@ var _rows: Array[Array] = []
 @onready var _table: GridContainer = %Players
 
 ## The formal shell injects the existing connection and its current input context.
-func configure(connection: Node, i18n: RefCounted, can_open: Callable) -> void:
+func configure(connection: Node, i18n: RefCounted, can_open: Callable, standings: Callable, format_metric: Callable) -> void:
 	_connection = connection
 	_i18n = i18n
 	_can_open = can_open
+	_standings = standings
+	_format_metric = format_metric
 
 func _ready() -> void:
-	assert(_connection != null and _i18n != null and _can_open.is_valid(), "Network panel requires the application context")
+	assert(_connection != null and _i18n != null and _can_open.is_valid() and _standings.is_valid() and _format_metric.is_valid(), "Network panel requires the application context")
 	for index: int in range(8):
 		var row: Array[Label] = []
-		for column: int in range(4):
+		for column: int in range(6):
 			var label: Label = Label.new()
-			label.custom_minimum_size = Vector2([360.0, 140.0, 160.0, 140.0][column], 40.0)
-			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL if column == 0 else Control.SIZE_FILL
-			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if column in [1, 3] else HORIZONTAL_ALIGNMENT_LEFT
+			label.custom_minimum_size = Vector2([80.0, 320.0, 180.0, 140.0, 160.0, 140.0][column], 40.0)
+			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL if column == 1 else Control.SIZE_FILL
+			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if column in [0, 2, 3, 5] else HORIZONTAL_ALIGNMENT_LEFT
 			label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 			label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			label.add_theme_font_size_override("font_size", 22)
@@ -45,6 +49,7 @@ func _localize() -> void:
 	_title.text = _text("玩家与延迟")
 	_hint.text = _text("松开 Tab 关闭 · F3 查看总积分")
 	_note.text = _text("延迟为玩家与房主之间的往返时间；其他玩家的数据由房主提供。")
+	%RankHeading.text = _text("名次")
 	%PlayerHeading.text = _text("玩家")
 	%LatencyHeading.text = _text("至房主 RTT")
 	%StateHeading.text = _text("连接状态")
@@ -93,7 +98,20 @@ func _process(delta: float) -> void:
 		_refresh()
 
 func _refresh() -> void:
-	var players: Array = _connection.players
+	var presentation: Dictionary = _standings.call()
+	var ranked: bool = not presentation.is_empty()
+	var result_rows: Array = presentation.get("rows", [])
+	var columns: Array = presentation.get("columns", [])
+	var players: Array = _ordered_players(result_rows)
+	var results: Dictionary = {}
+	for entry: Dictionary in result_rows:
+		for id: String in entry.get("members", [entry.get("player_id", "")]):
+			results[id] = entry
+	_title.text = presentation.get("title", _text("玩家与延迟"))
+	_table.columns = 6 if ranked else 4
+	%RankHeading.visible = ranked
+	%ScoreHeading.visible = ranked
+	%ScoreHeading.text = columns[0].get("title", columns[0].key) if columns.size() == 1 else _text("主游戏成绩")
 	var local_peer: int = _connection.local_peer()
 	for index: int in _rows.size():
 		var row: Array = _rows[index]
@@ -103,12 +121,22 @@ func _refresh() -> void:
 		if not occupied:
 			continue
 		var player: Dictionary = players[index]
-		row[0].text = player.name
+		row[0].visible = ranked
+		row[2].visible = ranked
+		var entry: Dictionary = results.get(player.player_id, {})
+		var rank_value: int = entry.get("rank", 0)
+		row[0].text = str(rank_value) if rank_value > 0 else "—"
+		var metrics: PackedStringArray = []
+		for column: Dictionary in columns:
+			var value: String = _format_metric.call(entry.get("metrics", {}).get(column.key, "—"), column.get("format", "text"))
+			metrics.append(value if columns.size() == 1 else column.get("title", column.key) + "：" + value)
+		row[2].text = "\n".join(metrics) if not metrics.is_empty() else "—"
+		row[1].text = player.name
 		if player.peer_id == local_peer:
-			row[0].text += " · " + _text("你")
+			row[1].text += " · " + _text("你")
 		if player.peer_id == 1:
-			row[0].text += " · " + _text("房主")
-		row[0].modulate = Color.WHITE if player.connected else Color("#95a0ad")
+			row[1].text += " · " + _text("房主")
+		row[1].modulate = Color.WHITE if player.connected else Color("#95a0ad")
 		var sample: Dictionary = _connection.get_peer_stats(1 if player.peer_id == local_peer and not _connection.host else player.peer_id)
 		var state: String = "host" if player.connected and player.peer_id == 1 else sample.state
 		var captions: Dictionary[String, String] = {"host": "房主", "offline": "已掉线", "measuring": "测量中", "connected": "正常", "degraded": "波动较大", "stalled": "无响应"}
@@ -119,11 +147,35 @@ func _refresh() -> void:
 			color = Color("#f3c779")
 		elif state == "measuring":
 			color = Color("#b0bbc9")
-		row[1].text = "%d ms" % roundi(sample.rtt_msec) if state in ["connected", "degraded"] else "—"
-		row[2].text = _text(captions[state])
-		row[1].modulate = color
-		row[2].modulate = color
-		row[3].text = "—"
+		row[3].text = "%d ms" % roundi(sample.rtt_msec) if state in ["connected", "degraded"] else "—"
+		row[4].text = _text(captions[state])
 		row[3].modulate = color
+		row[4].modulate = color
+		row[5].text = "—"
+		row[5].modulate = color
 		if state in ["connected", "degraded"]:
-			row[3].text = "%.1f%%" % sample.packet_loss_percent if sample.packet_loss_ready else _text("测量中")
+			row[5].text = "%.1f%%" % sample.packet_loss_percent if sample.packet_loss_ready else _text("测量中")
+
+## Keep author ranks and tie order. Team members share their author's row; omitted players follow.
+func _ordered_players(rows: Array) -> Array:
+	var indices: Array[int] = []
+	for index: int in rows.size():
+		indices.append(index)
+	indices.sort_custom(func(a: int, b: int) -> bool:
+		var rank_a: int = rows[a].get("rank", 0)
+		var rank_b: int = rows[b].get("rank", 0)
+		if rank_a == rank_b:
+			return a < b
+		return rank_b == 0 or (rank_a > 0 and rank_a < rank_b))
+	var ordered: Array = []
+	var included: Array[String] = []
+	for index: int in indices:
+		for id: String in rows[index].get("members", [rows[index].get("player_id", "")]):
+			for player: Dictionary in _connection.players:
+				if player.player_id == id:
+					ordered.append(player)
+					included.append(id)
+	for player: Dictionary in _connection.players:
+		if player.player_id not in included:
+			ordered.append(player)
+	return ordered

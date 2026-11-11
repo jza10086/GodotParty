@@ -249,6 +249,12 @@ msgstr "选择本机监听 IP；隧道转发目标需与此匹配。请允许 UD
 msgid "玩家与延迟"
 msgstr "玩家与延迟"
 
+msgid "名次"
+msgstr "名次"
+
+msgid "主游戏成绩"
+msgstr "主游戏成绩"
+
 msgid "松开 Tab 关闭 · F3 查看总积分"
 msgstr "松开 Tab 关闭 · F3 查看总积分"
 

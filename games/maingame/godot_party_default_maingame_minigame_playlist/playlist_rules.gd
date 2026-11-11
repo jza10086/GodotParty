@@ -48,7 +48,7 @@ static func settle(old_state: Dictionary, result: Dictionary) -> Dictionary:
 	var count: int = launch.participants.size()
 	for row: Dictionary in result.get("rankings", []):
 		if row.get("status") == "completed" and int(row.get("rank", 0)) > 0 and next.scores.has(row.player_id):
-			next.scores[row.player_id] += maxi(0, count - int(row.rank) + 1)
+			next.scores[row.player_id] += maxi(0, count - int(row.rank))
 	next.history.append({"game_id": launch.game_id, "request_id": launch.request_id})
 	next.cursor += 1
 	next.completed += 1

@@ -92,7 +92,7 @@ func _ready() -> void:
 		return
 	runner.configure(connection, catalog, settings)
 	_network_panel = NetworkPanelScene.instantiate()
-	_network_panel.configure(connection, catalog.i18n, _can_show_network_panel)
+	_network_panel.configure(connection, catalog.i18n, _can_show_network_panel, _tab_standings, _metric)
 	add_child(_network_panel)
 	presets = Presets.new(runner.config_store)
 	process_mode = Node.PROCESS_MODE_INHERIT
@@ -1011,6 +1011,10 @@ func room_action(operation: String, argument: Dictionary) -> void:
 				_: push_error("Unknown room settings panel: " + str(argument.panel))
 		_:
 			push_error("Unknown room action: " + operation)
+
+## The parent main game owns the published order and metrics, including while a child is active.
+func _tab_standings() -> Dictionary:
+	return runner.standings if _page == "game" else {}
 
 ## The passive Tab overlay never pauses play, captures the mouse, or takes keyboard focus.
 func _can_show_network_panel() -> bool:

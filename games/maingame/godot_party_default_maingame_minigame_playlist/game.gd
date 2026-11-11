@@ -68,7 +68,7 @@ func create_view() -> Node:
 	for row: Dictionary in _presentation().rows:
 		score_lines.append("%s  %s · %d 分" % [str(row.rank) + "." if row.rank > 0 else "—", _player_name(row.player_id), row.metrics.points])
 	_label(column, "\n".join(score_lines), 24)
-	_label(column, "每局完成者获得「参赛人数 − 名次 + 1」积分，并列同分，退出者不获本局积分。", 20)
+	_label(column, "每局完成者获得「参赛人数 − 名次」积分，并列同分，退出者不获本局积分。", 20)
 	if not state.get("pause_reason", "").is_empty():
 		_button(column, "重试本局", _retry, not api.is_host())
 		_button(column, "结束轮换并结算", _end, not api.is_host())
@@ -137,6 +137,8 @@ func party_start() -> void:
 	active = true
 	_busy = false
 	_wait = float(state.get("interval", 0))
+	if api.is_host() and not _publish_standings():
+		return
 	_queue_advance()
 
 func party_resume() -> void:
@@ -205,12 +207,16 @@ func _commit(next: Dictionary) -> void:
 
 func _state_committed(_revision: int) -> void:
 	_busy = false
-	if active and api.is_host():
-		var error: Error = api.publish_standings(_presentation())
-		if error != OK:
-			api.fail("standings_failed", error_string(error))
-			return
+	if active and api.is_host() and _publish_standings():
 		_queue_advance()
+
+## Publish restored/committed totals before the next child replaces the parent view.
+func _publish_standings() -> bool:
+	var error: Error = api.publish_standings(_presentation())
+	if error != OK:
+		api.fail("standings_failed", error_string(error))
+		return false
+	return true
 
 func _round_cancelled(_round_id: String, reason: String) -> void:
 	if api.is_host():

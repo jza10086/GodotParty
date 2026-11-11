@@ -643,6 +643,7 @@ func cleanup(reason: String = "closed") -> void:
 	_pending.clear()
 	_deferred_finish.clear()
 	loading.clear()
+	standings.clear()
 	_received.clear()
 	_sent.clear()
 	_deadline = 0

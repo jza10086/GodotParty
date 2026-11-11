@@ -249,6 +249,12 @@ msgstr "Choose a local listen IP matching the tunnel target. Allow the UDP port 
 msgid "玩家与延迟"
 msgstr "Players & latency"
 
+msgid "名次"
+msgstr "Rank"
+
+msgid "主游戏成绩"
+msgstr "Main game results"
+
 msgid "松开 Tab 关闭 · F3 查看总积分"
 msgstr "Release Tab to close · F3 for overall scores"
 

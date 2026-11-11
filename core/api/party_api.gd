@@ -123,7 +123,7 @@ func request_minigame(id: String, request: Dictionary, participants: Array[Strin
 func finish_session(presentation: Dictionary = {}) -> Error:
 	return _invoke("end", {"presentation": presentation})
 
-## Main host only. Optional F3 overview; no business values are inferred by core.
+## Main host only. Owns in-game Tab order/metrics and the F3 overview; core infers no business values.
 func publish_standings(presentation: Dictionary) -> Error:
 	return _invoke("standings", {"presentation": presentation})
 
