@@ -73,6 +73,7 @@ theme_override_constants/h_separation = 24
 theme_override_constants/v_separation = 8
 
 [node name="Title" type="Label" parent="KeyboardHints"]
+visible = false
 custom_minimum_size = Vector2(0, 40)
 vertical_alignment = 1
 theme_type_variation = &"AccentLabel"

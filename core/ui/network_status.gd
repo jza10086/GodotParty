@@ -10,7 +10,7 @@ func _ready() -> void:
 	_refresh()
 
 func _refresh() -> void:
-	visible = connection.online
+	visible = connection.online and connection.room.get("phase") != "lobby"
 	if not visible:
 		return
 	if connection.host:

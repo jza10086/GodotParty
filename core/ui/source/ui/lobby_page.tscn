@@ -51,29 +51,6 @@ action = &""
 description = "返回主界面"
 keyboard_icons = Array[Texture2D]([ExtResource("esc")])
 
-[node name="Heading" parent="Insets/Layout" type="HBoxContainer"]
-theme_override_constants/separation = 16
-
-[node name="LobbyTitle" parent="Insets/Layout/Heading" type="Label"]
-unique_name_in_owner = true
-text = "房间大厅"
-theme_override_font_sizes/font_size = 46
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-
-[node name="CopyAddress" parent="Insets/Layout/Heading" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 56)
-text = "复制地址"
-
-[node name="LobbySubtitle" parent="Insets/Layout" type="Label"]
-unique_name_in_owner = true
-text = "小游戏轮换"
-theme_override_font_sizes/font_size = 22
-vertical_alignment = 1
-mouse_filter = 2
-
 [node name="Cards" parent="Insets/Layout" type="HBoxContainer"]
 theme_override_constants/separation = 16
 size_flags_vertical = 3
@@ -445,39 +422,6 @@ unique_name_in_owner = true
 text = "协议与本地设置"
 custom_minimum_size = Vector2(150, 48)
 
-[node name="VoiceCard" parent="Insets/Layout/Cards/RoomColumn" groups=["lobby_card"] instance=ExtResource("ar_card")]
-
-
-[node name="Content" parent="Insets/Layout/Cards/RoomColumn/VoiceCard" type="VBoxContainer"]
-theme_override_constants/separation = 10
-
-[node name="VoiceTitle" parent="Insets/Layout/Cards/RoomColumn/VoiceCard/Content" type="Label"]
-unique_name_in_owner = true
-text = "大厅语音"
-theme_override_font_sizes/font_size = 30
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="Controls" parent="Insets/Layout/Cards/RoomColumn/VoiceCard/Content" type="HBoxContainer"]
-theme_override_constants/separation = 16
-
-[node name="Microphone" parent="Insets/Layout/Cards/RoomColumn/VoiceCard/Content/Controls" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-text = "开启麦克风"
-custom_minimum_size = Vector2(150, 48)
-
-[node name="Receive" parent="Insets/Layout/Cards/RoomColumn/VoiceCard/Content/Controls" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-text = "关闭收听"
-custom_minimum_size = Vector2(150, 48)
-
-[node name="VoiceStatus" parent="Insets/Layout/Cards/RoomColumn/VoiceCard/Content" type="Label"]
-unique_name_in_owner = true
-text = "麦克风关闭"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
 [node name="ActionBackdrop" type="BackBufferCopy" parent="Insets/Layout"]
 copy_mode = 2
 
@@ -490,6 +434,25 @@ size_flags_horizontal = 3
 vertical_alignment = 1
 autowrap_mode = 3
 theme_override_font_sizes/font_size = 21
+
+[node name="CopyAddress" type="Button" parent="Insets/Layout/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 84)
+text = "复制房间地址"
+theme = ExtResource("action_theme")
+theme_type_variation = &"CopyBlue"
+
+[node name="Caption" type="Label" parent="Insets/Layout/Footer/CopyAddress"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "复制房间地址"
+material = SubResource("CutoutText")
 
 [node name="Ready" type="Button" parent="Insets/Layout/Footer"]
 unique_name_in_owner = true

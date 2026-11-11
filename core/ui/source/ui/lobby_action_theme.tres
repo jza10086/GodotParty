@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=14 format=3]
+[gd_resource type="Theme" load_steps=18 format=3]
 
 [sub_resource type="StyleBoxFlat" id="ReadyGreen_normal"]
 bg_color = Color(0.26, 0.76, 0.45, 1)
@@ -174,6 +174,58 @@ expand_margin_top = 4.0
 expand_margin_right = 4.0
 expand_margin_bottom = 4.0
 
+[sub_resource type="StyleBoxFlat" id="CopyBlue_normal"]
+bg_color = Color(0.25, 0.58, 0.94, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_left = 16
+corner_radius_bottom_right = 16
+corner_detail = 16
+anti_aliasing = true
+content_margin_left = 30.0
+content_margin_right = 30.0
+content_margin_top = 18.0
+content_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxFlat" id="CopyBlue_hover"]
+bg_color = Color(0.32, 0.65, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_left = 16
+corner_radius_bottom_right = 16
+corner_detail = 16
+anti_aliasing = true
+content_margin_left = 30.0
+content_margin_right = 30.0
+content_margin_top = 18.0
+content_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxFlat" id="CopyBlue_pressed"]
+bg_color = Color(0.2, 0.49, 0.82, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_left = 16
+corner_radius_bottom_right = 16
+corner_detail = 16
+anti_aliasing = true
+content_margin_left = 30.0
+content_margin_right = 30.0
+content_margin_top = 18.0
+content_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxFlat" id="CopyBlue_disabled"]
+bg_color = Color(0.25, 0.58, 0.94, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_left = 16
+corner_radius_bottom_right = 16
+corner_detail = 16
+anti_aliasing = true
+content_margin_left = 30.0
+content_margin_right = 30.0
+content_margin_top = 18.0
+content_margin_bottom = 18.0
+
 [resource]
 
 ReadyGreen/base_type = &"Button"
@@ -259,3 +311,31 @@ StartOrange/colors/font_focus_color = Color(0, 0, 0, 0)
 StartOrange/colors/font_hover_pressed_color = Color(0, 0, 0, 0)
 
 StartOrange/font_sizes/font_size = 30
+
+CopyBlue/base_type = &"Button"
+
+CopyBlue/styles/normal = SubResource("CopyBlue_normal")
+
+CopyBlue/styles/hover = SubResource("CopyBlue_hover")
+
+CopyBlue/styles/pressed = SubResource("CopyBlue_pressed")
+
+CopyBlue/styles/disabled = SubResource("CopyBlue_disabled")
+
+CopyBlue/styles/hover_pressed = SubResource("CopyBlue_pressed")
+
+CopyBlue/styles/focus = SubResource("focus")
+
+CopyBlue/colors/font_color = Color(0, 0, 0, 0)
+
+CopyBlue/colors/font_hover_color = Color(0, 0, 0, 0)
+
+CopyBlue/colors/font_pressed_color = Color(0, 0, 0, 0)
+
+CopyBlue/colors/font_disabled_color = Color(0, 0, 0, 0)
+
+CopyBlue/colors/font_focus_color = Color(0, 0, 0, 0)
+
+CopyBlue/colors/font_hover_pressed_color = Color(0, 0, 0, 0)
+
+CopyBlue/font_sizes/font_size = 30
