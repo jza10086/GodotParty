@@ -94,6 +94,8 @@ def compile_ipa(godot, host, output, logs):
     payload.mkdir()
     app = payload / apps[0].name
     shutil.copytree(apps[0], app, symlinks=True)
+    # Keep redistribution notices readable without unpacking the Godot PCK.
+    shutil.copytree(host / "core/notices", app / "notices")
     for index, framework in enumerate(sorted(app.rglob("*.framework"), key=lambda p: len(p.parts), reverse=True)):
         run(["codesign", "--force", "--sign", "-", framework], logs, f"sign-framework-{index}")
     run(["codesign", "--force", "--sign", "-", app], logs, "sign-app")
@@ -102,6 +104,9 @@ def compile_ipa(godot, host, output, logs):
     with zipfile.ZipFile(ipa) as archive:
         if f"Payload/{app.name}/Info.plist" not in archive.namelist():
             raise RuntimeError("Invalid IPA structure")
+        for name in ("LICENSE", "LICENSE-CC0.txt", "ASSET_LICENSES.md", "credits.md"):
+            if f"Payload/{app.name}/notices/{name}" not in archive.namelist():
+                raise RuntimeError(f"IPA is missing redistribution notice: {name}")
     return {"architecture": arch, "minimum_os": info["MinimumOSVersion"],
             "device_family": info["UIDeviceFamily"], "ipa_bytes": ipa.stat().st_size}
 
