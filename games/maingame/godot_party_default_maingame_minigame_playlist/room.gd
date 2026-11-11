@@ -66,21 +66,25 @@ func room_refresh() -> void:
 	_refresh_latencies()
 	%PlayerCount.text = "%d / 8 人" % connection.players.size()
 	%PlayerCount.tooltip_text = "允许开始：" + connection.allowed_counts
+	var count: int = 0
+	for pool: Array in connection.room.get("pools", {}).values():
+		count += pool.size()
+	var no_selection: bool = count == 0
 	var reason: String = connection.start_reason
-	%ReadySummary.text = reason if connection.host and not unready else ""
-	%Ready.disabled = connection.host and (unready or not reason.is_empty())
+	%ReadySummary.text = reason if connection.host and not unready and not no_selection else ""
+	%Ready.disabled = connection.host and (no_selection or unready or not reason.is_empty())
 	if connection.host:
-		%Ready.text = "玩家未准备" if unready else "开始游戏"
-		%Ready.theme_type_variation = &"CancelRed" if unready else &"StartOrange"
+		if no_selection:
+			%Ready.text = "未选择小游戏"
+		else:
+			%Ready.text = "玩家未准备" if unready else "开始游戏"
+		%Ready.theme_type_variation = &"CancelRed" if no_selection or unready else &"StartOrange"
 	else:
 		%Ready.text = "取消准备" if connection.local_ready else "准备"
 		%Ready.theme_type_variation = &"CancelRed" if connection.local_ready else &"ReadyGreen"
 	%Ready.get_node("Caption").text = %Ready.text
-	%Ready.tooltip_text = reason
+	%Ready.tooltip_text = ""
 	%CopyAddress.disabled = %CopyAddress.disabled or connection.connection_port <= 0
-	var count: int = 0
-	for pool: Array in connection.room.get("pools", {}).values():
-		count += pool.size()
 	%Map.text = "小游戏池"
 	%Rounds.text = "轮换模式"
 	%Map.tooltip_text = "已选择 %d 项 · %s" % [count, "房主配置" if connection.host else "查看房主配置"]
