@@ -241,7 +241,7 @@ func apply_display(viewport: Viewport) -> void:
 		return
 	var window: Window = viewport.get_window()
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if desired.vsync else DisplayServer.VSYNC_DISABLED, window.get_window_id())
-	if OS.has_feature("android") or _display_is_embedded(window):
+	if OS.has_feature("android") or OS.has_feature("ios") or _display_is_embedded(window):
 		return
 	if desired.mode == "borderless":
 		window.mode = Window.MODE_FULLSCREEN
@@ -271,8 +271,8 @@ func display_feedback(viewport: Viewport) -> String:
 	var sync: String = "垂直同步已开启" if actual_vsync else "垂直同步已关闭"
 	if actual_vsync != desired.vsync:
 		sync += "（当前驱动未接受所选模式）"
-	if OS.has_feature("android"):
-		return "已保存；%s，%s。Android 使用设备全屏尺寸。" % [rate, sync]
+	if OS.has_feature("android") or OS.has_feature("ios"):
+		return "已保存；%s，%s。移动端使用设备屏幕尺寸。" % [rate, sync]
 	if _display_is_embedded(window):
 		return "已保存；%s，%s。编辑器内嵌运行无法改变窗口模式和尺寸，请关闭“嵌入游戏”后运行。" % [rate, sync]
 	var actual_mode: String = "fullscreen" if window.mode == Window.MODE_EXCLUSIVE_FULLSCREEN else ("borderless" if window.mode == Window.MODE_FULLSCREEN else "windowed")

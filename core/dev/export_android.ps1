@@ -91,7 +91,7 @@ Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $bundlePath = Join-Path $stage 'GodotParty-content-android.zip'
 $packages = @(Get-ChildItem -LiteralPath $payload -Recurse -Filter 'content.pck.json' | ForEach-Object { $_.DirectoryName.Substring($payload.Length+1).Replace('\','/') })
-$header = @{format=1;id=[guid]::NewGuid().ToString('N');platform='Android';packages=$packages} | ConvertTo-Json -Depth 5
+$header = @{format=1;id=[guid]::NewGuid().ToString('N');platform=$request.platform;packages=$packages} | ConvertTo-Json -Depth 5
 [IO.File]::WriteAllText((Join-Path $payload 'bundle.json'),$header,$utf8)
 $archive = [IO.Compression.ZipFile]::Open($bundlePath,[IO.Compression.ZipArchiveMode]::Create)
 try {

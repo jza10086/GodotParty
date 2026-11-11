@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "core_api_major": 5,
-  "package_version": "1.0.1",
+  "package_version": "1.0.2",
   "id": "godot_party_default_avatars",
   "name": "GodotPartyDefaultAvatars",
   "kind": "avatars",

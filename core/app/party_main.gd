@@ -692,7 +692,7 @@ func _package_dialog() -> void:
 		_choose_transfer("export_settings", info))
 	box.get_node("ImportSettings").pressed.connect(func() -> void:
 		_choose_transfer("import_settings", info))
-	if OS.has_feature("android"):
+	if OS.has_feature("android") or OS.has_feature("ios"):
 		path.hide()
 		box.get_node("Install").hide()
 		box.get_node("Sources").hide()

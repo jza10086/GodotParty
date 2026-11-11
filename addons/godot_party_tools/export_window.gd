@@ -81,7 +81,7 @@ func open() -> void:
 	var root: TreeItem = _tree.create_item()
 	_core = _tree.create_item(root)
 	_core.set_cell_mode(0, TreeItem.CELL_MODE_CHECK)
-	_core.set_text(0, "核心框架 · Android APK" if platform == "Android" else "核心框架 · Windows x64")
+	_core.set_text(0, {"Windows": "核心框架 · Windows x64", "Android": "核心框架 · Android APK", "iOS": "核心框架 · iOS IPA（SideStore）"}[platform])
 	_core.set_metadata(0, "@core")
 	_core.set_editable(0, true)
 	_core.set_checked(0, true)
@@ -177,7 +177,10 @@ func _refresh_selection() -> void:
 		group.set_checked(0, total > 0 and selected == total)
 		group.set_indeterminate(0, selected > 0 and selected < total)
 	var description: String = "已选择 %d 个内容包（含依赖）。" % ids.size()
-	description += "勾选核心生成测试签名 APK；内容 ZIP 可在游戏中导入，重启后生效。" if platform == "Android" else "已有配置及外置文件会保留。请先退出目标目录中的游戏。"
+	if platform == "iOS":
+		description += "GitHub 云构建：仅使用已推送的当前提交，不包含未提交修改。勾选核心生成需 SideStore 重签的 IPA；输出目录接收下载产物。需先运行 gh auth login。"
+	else:
+		description += "勾选核心生成测试签名 APK；内容 ZIP 可在游戏中导入，重启后生效。" if platform == "Android" else "已有配置及外置文件会保留。请先退出目标目录中的游戏。"
 	_status.text = description if _selection.ok else _selection.error
 	_update_button()
 
@@ -209,7 +212,8 @@ func _start_export() -> void:
 		_status.text = "写入导出请求失败：" + error_string(error)
 		return
 	_worker = Thread.new()
-	error = _worker.start(_run_export.bind(_job, ProjectSettings.globalize_path("res://core/dev/export_release.ps1")))
+	var backend: String = "export_ios_cloud.ps1" if platform == "iOS" else "export_release.ps1"
+	error = _worker.start(_run_export.bind(_job, ProjectSettings.globalize_path("res://core/dev/" + backend)))
 	if error != OK:
 		_worker = null
 		_status.text = "无法启动导出：" + error_string(error)
@@ -254,6 +258,8 @@ func _process(delta: float) -> void:
 	_refresh_selection()
 	var passed: bool = result.code == 0 and "EXPORT_RELEASE_PASS" in result.output
 	_status.text = ("导出完成：" + _directory.text) if passed else ("导出失败（%d）：\n" % result.code + result.output.right(1600))
+	if passed and platform == "iOS":
+		_status.text = "导出完成：" + FileAccess.get_file_as_string(_job.path_join("result.txt")) + "\nIPA 需要通过 SideStore 重签后安装。"
 	_status.text += "\n构建日志：" + _job
 
 func _exit_tree() -> void:

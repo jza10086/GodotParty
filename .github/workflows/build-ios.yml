@@ -1,0 +1,100 @@
+name: Build GodotParty iOS
+run-name: iOS ${{ inputs.request_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Full pushed commit to build
+        required: true
+        type: string
+      request_id:
+        description: Unique export request ID
+        required: true
+        type: string
+      godot_version:
+        description: Stable system Godot version from the export tool
+        required: true
+        default: '4.7.2'
+        type: string
+      core:
+        description: Include the framework IPA
+        required: true
+        default: true
+        type: boolean
+      packages:
+        description: JSON array of requested package IDs (dependencies are automatic)
+        required: true
+        default: '["godot_party_default_maingame_minigame_playlist","gp_auction_master"]'
+        type: string
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.revision }}
+          submodules: recursive
+      - name: Install matching Godot editor and iOS template
+        env:
+          GODOT_VERSION: ${{ inputs.godot_version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, pathlib, re, urllib.request, zipfile
+          version = os.environ['GODOT_VERSION']
+          if not re.fullmatch(r'4\.\d+(?:\.\d+)?', version):
+              raise SystemExit('Use a stable Godot 4 release number, e.g. 4.7.2')
+          root = pathlib.Path('tmp/ios-toolchain').resolve()
+          root.mkdir(parents=True)
+          base = f'https://github.com/godotengine/godot-builds/releases/download/{version}-stable/'
+          editor = f'Godot_v{version}-stable_macos.universal.zip'
+          templates = f'Godot_v{version}-stable_export_templates.tpz'
+          for name in (editor, templates):
+              print('Downloading', name, flush=True)
+              urllib.request.urlretrieve(base + name, root / name)
+          with zipfile.ZipFile(root / templates) as archive:
+              target = pathlib.Path.home() / 'Library/Application Support/Godot/export_templates' / f'{version}.stable'
+              target.mkdir(parents=True, exist_ok=True)
+              (target / 'ios.zip').write_bytes(archive.read('templates/ios.zip'))
+          with open(os.environ['GITHUB_ENV'], 'a') as env:
+              env.write(f'GODOT={root}/Godot.app/Contents/MacOS/Godot\n')
+          PY
+          ditto -x -k "$PWD/tmp/ios-toolchain/Godot_v${GODOT_VERSION}-stable_macos.universal.zip" "$PWD/tmp/ios-toolchain"
+      - name: Prepare selected content request
+        env:
+          SELECTED_PACKAGES: ${{ inputs.packages }}
+          INCLUDE_CORE: ${{ inputs.core }}
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib
+          request = {"core": json.loads(os.environ["INCLUDE_CORE"]),
+                     "packages": json.loads(os.environ["SELECTED_PACKAGES"])}
+          pathlib.Path("tmp").mkdir(exist_ok=True)
+          pathlib.Path("tmp/ios-request.json").write_text(json.dumps(request), encoding="utf-8")
+          PY
+      - name: Build selected iOS game
+        run: |
+          python3 core/dev/build_ios.py --godot "$GODOT" \
+            --request "$PWD/tmp/ios-request.json" --output "$PWD/tmp/ios-build" \
+            --build-number "$GITHUB_RUN_NUMBER"
+      - name: Upload playable bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: GodotParty-iOS-SideStore
+          path: tmp/ios-build/release/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-logs
+          path: tmp/ios-build/logs/
+          if-no-files-found: ignore
+          retention-days: 7

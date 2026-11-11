@@ -1,7 +1,7 @@
-## Android touch uses the framework's native mouse emulation. The wake gesture is never an ESC.
+## Mobile touch uses the framework's native mouse emulation. The wake gesture is never an ESC.
 extends MarginContainer
 
-@export var android_only: bool = true
+@export var mobile_only: bool = true
 @export_range(0.5, 10.0, 0.5) var idle_hide_seconds: float = 3.0
 @onready var _button: Button = %Escape
 @onready var _hide_timer: Timer = %HideTimer
@@ -9,7 +9,7 @@ var _pointer_down: bool = false
 var _armed: bool = false
 
 func _ready() -> void:
-	visible = not android_only or OS.has_feature("android")
+	visible = not mobile_only or OS.has_feature("android") or OS.has_feature("ios")
 	_hide_timer.timeout.connect(_hide_button)
 	_hide_button()
 

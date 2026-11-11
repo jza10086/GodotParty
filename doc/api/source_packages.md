@@ -6,7 +6,7 @@
 
 玩家安装目录见 [配置与预设](configuration.md)。协议、maingame、minigame 分别放入对应根文件夹，每包单独目录，包含 content.pck 和 content.pck.json；形象包放入所属协议 avatars/。替换版本时只替换这两个生成文件，保留 config/。安装、删除、更新及来源切换后重新启动，不做热替换。
 
-编辑器“项目 → 工具”只提供“GodotParty：导出 Windows 可玩包”和“GodotParty：导出 Android 可玩包”两个入口。窗口内勾选内容并选择输出目录；不勾选核心即可仅导出独立内容更新。导出前完成资源导入，导出器跳过含 .gdignore 的目录及其整个子树，不收集其中的旧原型、资源和导入映射。批量导出脚本 core/dev/export_content.gd 自动生成标准目录和 content.pck 文件名。
+编辑器“项目 → 工具”提供“GodotParty：导出 Windows 可玩包”、“GodotParty：导出 Android 可玩包”和“GodotParty：导出 iOS 可玩包”三个入口。窗口内勾选内容并选择输出目录；不勾选核心即可仅导出独立内容更新。导出前完成资源导入，导出器跳过含 .gdignore 的目录及其整个子树，不收集其中的旧原型、资源和导入映射。批量导出脚本 core/dev/export_content.gd 自动生成标准目录和 content.pck 文件名。
 
 描述格式 3 包含构建信息、包 ID/版本/类别、文件路径索引、UID 索引和 script_classes 类型清单，形象包另含 owner_protocol；不含文件哈希。框架检查目录归属、声明路径、UID 和类型名冲突、核心/引擎版本、挂载后清单及依赖版本。协议 PCK 不重复包含 avatars 子包。房间比较包版本与配置快照；相同版本号不证明文件字节相同，作者修改内容后必须更新 package_version。
 
@@ -59,3 +59,16 @@ APK 构建成功仅证明导出流程完成。真机验收需检查首次启动�
 游戏通过 api.get_external_path("charts") 或 api.get_external_path("maps/default.json") 获取本包声明范围内的绝对路径。编辑器运行返回源码包下的位置，导出运行返回安装目录；--party-pack-dir 验收目录也被支持。此接口不创建文件，未声明路径明确报错。FileAccess、DirAccess 可直接使用返回路径；原始 PNG、OGG 等应使用支持运行时文件的加载 API。预加载资源仍须放在 PCK 中，不能将预加载所依赖的文件改成外置。
 
 普通场景、贴图和脚本按包内相对结构装入 PCK。外置声明用于确实需要用户编辑、扩展或通过文件系统读取的数据。作者负责文件格式校验，文件内容不参与联机一致性比较。
+
+
+## 可视化 iOS 云导出
+
+编辑器打开“项目 → 工具 → GodotParty：导出 iOS 可玩包”。仍只需勾选内容和选择下载目录。勾选核心生成 `GodotParty-iOS-SideStore.ipa` 与 `GodotParty-content-ios.zip`；不勾选核心只生成内容 ZIP。每次下载存入所选目录中的 `ios-<提交版本>-<运行编号>/`，附带 `build-info.json` 和安装说明，不覆盖其他构建。
+
+Windows 本机需要 Git、GitHub CLI 和 PATH 上的 Godot；先运行 `gh auth login -h github.com`，账户需要该仓库 Actions 的运行权限。后端 `core/dev/export_ios_cloud.ps1` 使用 origin 指向的 GitHub 仓库，只构建已推送的当前 HEAD；未提交修改不会进入云端，尚未推送的提交明确失败。窗口显示提交、工作流链接及构建阶段；详细记录在本次 `tmp/exports/` 目录。修改源码或内容后，应先提交并推送相关小游戏子模块，再推送主仓库引用。
+
+`.github/workflows/build-ios.yml` 在 macOS/Xcode 上检出指定提交及其子模块，安装与本机 Godot 相同版本的编辑器和 iOS 模板。`core/dev/build_ios.py` 复用移动端内容导出流程，自动补齐依赖、重新导入资源，再构建独立的 iOS 框架工程。框架声明 `ios`，使用 Compatibility 渲染、横屏、触摸模拟左键；左上角 Esc 第一次触碰只显现，再点击才发送 Esc。初版 iOS 玩法声明覆盖原版协议、小游戏轮换和竞拍大师，其他小游戏需要各自适配后声明。
+
+IPA 面向 ARM64 iPad/iPhone，仅带 ad-hoc 签名，必须导入 SideStore 重签安装，不能直接安装，也不是 TestFlight/App Store 包。本流程不接收 Apple 证书。GitHub 保留可玩产物 14 天、构建日志 7 天；构建失败时查看运行链接中的诊断产物。
+
+iOS 配置和内置内容安装到应用私有存储，保留已有玩家配置及外置文件；更新时保持应用标识和签名身份。卸载或清除应用数据会丢失配置。内容 ZIP 导入后需要重启，不热替换 PCK。云端结构和编译检查不代替 iPad 真机触摸、文件选择器、房间创建及多人联网验收。
