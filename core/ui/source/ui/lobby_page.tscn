@@ -5,9 +5,16 @@
 
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
 
-[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="ar_option_button"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/action_prompt.tscn" id="prompt"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/keyboard_escape.svg" id="esc"]
+[ext_resource type="Theme" path="res://core/ui/source/ui/lobby_action_theme.tres" id="action_theme"]
+[ext_resource type="Shader" path="res://core/ui/source/ui/lobby_cutout_text.gdshader" id="cutout"]
 
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/card.tscn" id="ar_card"]
+
+
+[sub_resource type="ShaderMaterial" id="CutoutText"]
+shader = ExtResource("cutout")
 
 [node name="Lobby" type="Control"]
 theme = ExtResource("theme")
@@ -25,6 +32,25 @@ offset_bottom = -28.0
 [node name="Layout" parent="Insets" type="VBoxContainer"]
 theme_override_constants/separation = 10
 
+[node name="Navigation" type="HBoxContainer" parent="Insets/Layout"]
+theme_override_constants/separation = 12
+
+[node name="Back" parent="Insets/Layout/Navigation" instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(270, 56)
+tooltip_text = "返回主界面"
+
+[node name="Prompt" parent="Insets/Layout/Navigation/Back" instance=ExtResource("prompt")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+mouse_filter = 2
+alignment = 0
+action = &""
+description = "返回主界面"
+keyboard_icons = Array[Texture2D]([ExtResource("esc")])
+
 [node name="Heading" parent="Insets/Layout" type="HBoxContainer"]
 theme_override_constants/separation = 16
 
@@ -36,12 +62,10 @@ vertical_alignment = 1
 mouse_filter = 2
 size_flags_horizontal = 3
 
-[node name="RoleBadge" parent="Insets/Layout/Heading" type="Label"]
+[node name="CopyAddress" parent="Insets/Layout/Heading" instance=ExtResource("ar_button")]
 unique_name_in_owner = true
-text = "房主视角"
-theme_override_font_sizes/font_size = 23
-vertical_alignment = 1
-mouse_filter = 2
+custom_minimum_size = Vector2(180, 56)
+text = "复制地址"
 
 [node name="LobbySubtitle" parent="Insets/Layout" type="Label"]
 unique_name_in_owner = true
@@ -355,39 +379,6 @@ theme_override_font_sizes/font_size = 20
 vertical_alignment = 1
 mouse_filter = 2
 
-[node name="VoiceCard" parent="Insets/Layout/Cards/PlayersColumn" groups=["lobby_card"] instance=ExtResource("ar_card")]
-
-
-[node name="Content" parent="Insets/Layout/Cards/PlayersColumn/VoiceCard" type="VBoxContainer"]
-theme_override_constants/separation = 10
-
-[node name="VoiceTitle" parent="Insets/Layout/Cards/PlayersColumn/VoiceCard/Content" type="Label"]
-unique_name_in_owner = true
-text = "大厅语音"
-theme_override_font_sizes/font_size = 30
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="Controls" parent="Insets/Layout/Cards/PlayersColumn/VoiceCard/Content" type="HBoxContainer"]
-theme_override_constants/separation = 16
-
-[node name="Microphone" parent="Insets/Layout/Cards/PlayersColumn/VoiceCard/Content/Controls" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-text = "开启麦克风"
-custom_minimum_size = Vector2(150, 48)
-
-[node name="Receive" parent="Insets/Layout/Cards/PlayersColumn/VoiceCard/Content/Controls" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-text = "关闭收听"
-custom_minimum_size = Vector2(150, 48)
-
-[node name="VoiceStatus" parent="Insets/Layout/Cards/PlayersColumn/VoiceCard/Content" type="Label"]
-unique_name_in_owner = true
-text = "麦克风关闭"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
 [node name="RoomColumn" parent="Insets/Layout/Cards" type="VBoxContainer"]
 theme_override_constants/separation = 10
 size_flags_horizontal = 3
@@ -405,29 +396,6 @@ text = "游戏与规则"
 theme_override_font_sizes/font_size = 32
 vertical_alignment = 1
 mouse_filter = 2
-
-[node name="SettingsAuthority" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content" type="Label"]
-unique_name_in_owner = true
-text = "房主配置"
-theme_override_font_sizes/font_size = 21
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="GameRow" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content" type="HBoxContainer"]
-theme_override_constants/separation = 16
-
-[node name="GameLabel" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/GameRow" type="Label"]
-unique_name_in_owner = true
-text = "主游戏"
-theme_override_font_sizes/font_size = 23
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-
-[node name="Game" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/GameRow" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-text = "小游戏轮换"
-custom_minimum_size = Vector2(150, 48)
 
 [node name="MapRow" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content" type="HBoxContainer"]
 theme_override_constants/separation = 16
@@ -477,122 +445,67 @@ unique_name_in_owner = true
 text = "协议与本地设置"
 custom_minimum_size = Vector2(150, 48)
 
-[node name="NetworkCard" parent="Insets/Layout/Cards/RoomColumn" groups=["lobby_card"] instance=ExtResource("ar_card")]
+[node name="VoiceCard" parent="Insets/Layout/Cards/RoomColumn" groups=["lobby_card"] instance=ExtResource("ar_card")]
 
 
-[node name="Content" parent="Insets/Layout/Cards/RoomColumn/NetworkCard" type="VBoxContainer"]
+[node name="Content" parent="Insets/Layout/Cards/RoomColumn/VoiceCard" type="VBoxContainer"]
 theme_override_constants/separation = 10
 
-[node name="NetworkTitle" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content" type="Label"]
+[node name="VoiceTitle" parent="Insets/Layout/Cards/RoomColumn/VoiceCard/Content" type="Label"]
 unique_name_in_owner = true
-text = "连接与邀请"
-theme_override_font_sizes/font_size = 32
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="ConnectionShare" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content" type="VBoxContainer"]
-unique_name_in_owner = true
-theme_override_constants/separation = 6
-
-[node name="IPv4" type="HBoxContainer" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare" unique_id=614692143]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Family" type="Label" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare/IPv4" unique_id=2006949696]
-custom_minimum_size = Vector2(72, 38)
-layout_mode = 2
-text = "IPv4"
-
-[node name="Address" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare/IPv4" unique_id=2045850279 instance=ExtResource("ar_option_button")]
-layout_mode = 2
-size_flags_horizontal = 3
-clip_text = true
-fit_to_longest_item = false
-
-[node name="CopyAddress" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare/IPv4" unique_id=1227462704 instance=ExtResource("ar_button")]
-custom_minimum_size = Vector2(140, 38)
-layout_mode = 2
-text = "复制地址"
-
-[node name="CopyEndpoint" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare/IPv4" unique_id=1635930673 instance=ExtResource("ar_button")]
-custom_minimum_size = Vector2(208, 38)
-layout_mode = 2
-text = "复制地址和端口"
-
-[node name="IPv6" type="HBoxContainer" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare" unique_id=353615985]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Family" type="Label" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare/IPv6" unique_id=1194902668]
-custom_minimum_size = Vector2(72, 38)
-layout_mode = 2
-text = "IPv6"
-
-[node name="Address" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare/IPv6" unique_id=2031312349 instance=ExtResource("ar_option_button")]
-layout_mode = 2
-size_flags_horizontal = 3
-clip_text = true
-fit_to_longest_item = false
-
-[node name="CopyAddress" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare/IPv6" unique_id=1434149935 instance=ExtResource("ar_button")]
-custom_minimum_size = Vector2(140, 38)
-layout_mode = 2
-text = "复制地址"
-
-[node name="CopyEndpoint" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare/IPv6" unique_id=976832481 instance=ExtResource("ar_button")]
-custom_minimum_size = Vector2(208, 38)
-layout_mode = 2
-text = "复制地址和端口"
-
-[node name="Actions" type="HBoxContainer" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare" unique_id=1955030863]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Hint" type="Label" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare/Actions" unique_id=664748146]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "本机地址 · UDP 7777"
-text_overrun_behavior = 3
-
-[node name="Refresh" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare/Actions" unique_id=2063775947 instance=ExtResource("ar_button")]
-custom_minimum_size = Vector2(140, 32)
-layout_mode = 2
-text = "刷新地址"
-
-[node name="CopyPort" parent="Insets/Layout/Cards/RoomColumn/NetworkCard/Content/ConnectionShare/Actions" unique_id=29052224 instance=ExtResource("ar_button")]
-custom_minimum_size = Vector2(208, 32)
-layout_mode = 2
-text = "复制端口"
-[node name="ReadyCard" parent="Insets/Layout/Cards/RoomColumn" groups=["lobby_card"] instance=ExtResource("ar_card")]
-
-
-[node name="Content" parent="Insets/Layout/Cards/RoomColumn/ReadyCard" type="VBoxContainer"]
-theme_override_constants/separation = 10
-
-[node name="ActionsTitle" parent="Insets/Layout/Cards/RoomColumn/ReadyCard/Content" type="Label"]
-unique_name_in_owner = true
-text = "准备与开始"
+text = "大厅语音"
 theme_override_font_sizes/font_size = 30
 vertical_alignment = 1
 mouse_filter = 2
 
-[node name="ReadySummary" parent="Insets/Layout/Cards/RoomColumn/ReadyCard/Content" type="Label"]
+[node name="Controls" parent="Insets/Layout/Cards/RoomColumn/VoiceCard/Content" type="HBoxContainer"]
+theme_override_constants/separation = 16
+
+[node name="Microphone" parent="Insets/Layout/Cards/RoomColumn/VoiceCard/Content/Controls" instance=ExtResource("ar_button")]
 unique_name_in_owner = true
-text = "等待成员准备"
-theme_override_font_sizes/font_size = 23
+text = "开启麦克风"
+custom_minimum_size = Vector2(150, 48)
+
+[node name="Receive" parent="Insets/Layout/Cards/RoomColumn/VoiceCard/Content/Controls" instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+text = "关闭收听"
+custom_minimum_size = Vector2(150, 48)
+
+[node name="VoiceStatus" parent="Insets/Layout/Cards/RoomColumn/VoiceCard/Content" type="Label"]
+unique_name_in_owner = true
+text = "麦克风关闭"
+theme_override_font_sizes/font_size = 20
 vertical_alignment = 1
 mouse_filter = 2
 
-[node name="Actions" parent="Insets/Layout/Cards/RoomColumn/ReadyCard/Content" type="HBoxContainer"]
-theme_override_constants/separation = 16
+[node name="ActionBackdrop" type="BackBufferCopy" parent="Insets/Layout"]
+copy_mode = 2
 
-[node name="Ready" parent="Insets/Layout/Cards/RoomColumn/ReadyCard/Content/Actions" instance=ExtResource("ar_button")]
+[node name="Footer" type="HBoxContainer" parent="Insets/Layout"]
+theme_override_constants/separation = 24
+
+[node name="ReadySummary" type="Label" parent="Insets/Layout/Footer"]
 unique_name_in_owner = true
+size_flags_horizontal = 3
+vertical_alignment = 1
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 21
+
+[node name="Ready" type="Button" parent="Insets/Layout/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 84)
 text = "准备"
-custom_minimum_size = Vector2(150, 48)
+theme = ExtResource("action_theme")
+theme_type_variation = &"ReadyGreen"
 
-[node name="Back" parent="Insets/Layout/Cards/RoomColumn/ReadyCard/Content/Actions" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-text = "离开房间"
-custom_minimum_size = Vector2(150, 48)
-
+[node name="Caption" type="Label" parent="Insets/Layout/Footer/Ready"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "准备"
+material = SubResource("CutoutText")

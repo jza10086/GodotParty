@@ -22,20 +22,13 @@ func _ready() -> void:
 	_button("Advanced", room.open_settings.bind("protocol"))
 	_button("Microphone", _toggle_microphone)
 	_button("Receive", _toggle_receive)
-	_button("ConnectionShare/Actions/Refresh", _refresh_local_addresses)
-	_button("ConnectionShare/Actions/CopyPort", _copy_listening_port)
-	for family: String in ["IPv4", "IPv6"]:
-		_button("ConnectionShare/" + family + "/CopyAddress", _copy_local_address.bind(family, false))
-		_button("ConnectionShare/" + family + "/CopyEndpoint", _copy_local_address.bind(family, true))
-		var choices: OptionButton = get_node("%ConnectionShare/" + family + "/Address")
-		choices.item_selected.connect(func(_index: int) -> void: _update_address_share())
+	_button("CopyAddress", _copy_room_address)
 	for index: int in range(8):
 		var slot: Button = get_node("%Slot" + str(index))
 		slot.pressed.connect(func() -> void: room.show_player(slot.get_meta("peer_id")))
 	%VoiceStatus.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	%VoiceStatus.mouse_filter = Control.MOUSE_FILTER_PASS
 	%VoiceStatus.mouse_entered.connect(func() -> void: %VoiceStatus.tooltip_text = %VoiceStatus.text)
-	_refresh_local_addresses()
 	room_refresh()
 	var error: Error = room.activity.on_close(room_stop)
 	if error != OK:
@@ -134,96 +127,20 @@ func room_stop() -> void:
 func _exit_tree() -> void:
 	room_stop()
 
-func _refresh_local_addresses() -> void:
-	var addresses: Dictionary = {"IPv4": [], "IPv6": []}
-	var seen: Dictionary = {}
-	for interface: Dictionary in IP.get_local_interfaces():
-		var adapter: String = str(interface.get("friendly", ""))
-		if adapter.is_empty():
-			adapter = str(interface.get("name", "网卡"))
-		for raw_address: String in interface.get("addresses", []):
-			var address: String = room.normalize_address(raw_address)
-			if address.is_empty() or seen.has(address.to_lower()):
-				continue
-			var family: String = "IPv6" if address.contains(":") else "IPv4"
-			if family == "IPv4":
-				if address.begins_with("127.") or address == "0.0.0.0":
-					continue
-			else:
-				var group: String = address.get_slice(":", 0)
-				var first_group: int = 0 if group.is_empty() else group.hex_to_int()
-				# Link-local IPv6 needs an interface scope; the direct-connect field
-				# currently accepts unscoped literals only, so do not advertise it.
-				if address in ["::", "::1", "0:0:0:0:0:0:0:0", "0:0:0:0:0:0:0:1"] or (first_group & 0xffc0) == 0xfe80 or (first_group & 0xff00) == 0xff00:
-					continue
-			seen[address.to_lower()] = true
-			addresses[family].append({"address": address, "adapter": adapter})
-	for family: String in ["IPv4", "IPv6"]:
-		var choices: OptionButton = get_node("%ConnectionShare/" + family + "/Address")
-		var previous: String = str(choices.get_item_metadata(choices.selected)) if choices.selected >= 0 else ""
-		choices.clear()
-		var selected: int = 0
-		for entry: Dictionary in addresses[family]:
-			var index: int = choices.item_count
-			var description: String = "%s · %s" % [entry.address, entry.adapter]
-			choices.add_item(description)
-			choices.set_item_metadata(index, entry.address)
-			choices.get_popup().set_item_tooltip(index, description)
-			if entry.address == previous:
-				selected = index
-		if choices.item_count == 0:
-			choices.add_item("暂无可分享的 " + family + " 地址")
-			choices.set_item_metadata(0, "")
-		choices.select(selected)
-		choices.disabled = addresses[family].is_empty()
-	_update_address_share()
-
-## Clients can inspect their own interfaces but must not advertise themselves as
-## the room host. The copied port always comes from the active listening socket.
-func _update_address_share() -> void:
-	var hosting: bool = connection.online and connection.host
-	for family: String in ["IPv4", "IPv6"]:
-		var row: HBoxContainer = get_node("%ConnectionShare/" + family)
-		var choices: OptionButton = row.get_node("Address")
-		var address: String = str(choices.get_item_metadata(choices.selected)) if choices.selected >= 0 else ""
-		row.get_node("CopyAddress").disabled = address.is_empty()
-		row.get_node("CopyEndpoint").disabled = address.is_empty() or not hosting
-		row.get_node("CopyEndpoint").tooltip_text = "复制两行地址与端口，分别填入直连窗口" if hosting else "本机不是房主，请由房主分享监听地址和端口"
-		choices.tooltip_text = choices.get_item_text(choices.selected) if not address.is_empty() else "不列出回环、未指定或需要接口范围的 IPv6 链路本地地址"
-	get_node("%ConnectionShare/Actions/CopyPort").disabled = not hosting
-	get_node("%ConnectionShare/Actions/Hint").text = "本机地址 · UDP %d" % connection.connection_port if hosting else "本机地址 · 当前不是房主"
-	get_node("%ConnectionShare/Actions/Hint").tooltip_text = "从本机网卡读取；局域网地址仅适用于可达的本地网络，未检测公网可达性。"
-
-func _copy_local_address(family: String, include_port: bool) -> void:
-	if not connection.online or (include_port and not connection.host):
-		return
-	var choices: OptionButton = get_node("%ConnectionShare/" + family + "/Address")
-	if choices.selected < 0:
-		return
-	var address: String = str(choices.get_item_metadata(choices.selected))
-	if address.is_empty():
-		return
-	var text: String = "地址：%s\n端口：%d" % [address, connection.connection_port] if include_port else address
-	DisplayServer.clipboard_set(text)
-	room.show_notice("已复制 " + family + (" 地址和端口" if include_port else " 地址"))
-
-func _copy_listening_port() -> void:
-	if not connection.online or not connection.host:
-		return
-	DisplayServer.clipboard_set(str(connection.connection_port))
-	room.show_notice("已复制监听端口 %d" % connection.connection_port)
+## Copy the selected endpoint; never advertise a different local interface.
+func _copy_room_address() -> void:
+	DisplayServer.clipboard_set(room.format_endpoint(connection.connection_address, connection.connection_port))
+	room.show_notice("已复制房间地址")
 
 func room_refresh() -> void:
 	connection = room.get_state()
-	_update_address_share()
+	%CopyAddress.disabled = not connection.online or connection.connection_address in ["", "*", "0.0.0.0", "::"]
+	%CopyAddress.tooltip_text = room.format_endpoint(connection.connection_address, connection.connection_port)
 	var main: String = connection.room.get("main", "")
 	var game_name: String = room.get_game_name(main)
 	%LobbyTitle.text = connection.room.get("title", "GodotParty")
-	var endpoint: String = "IPv4 / IPv6 · UDP %d" % connection.connection_port if connection.host else room.format_endpoint(connection.connection_address, connection.connection_port)
-	%LobbySubtitle.text = "%s · %s · %s" % ["房主" if connection.host else "已加入", endpoint, game_name]
-	%LobbySubtitle.tooltip_text = %LobbySubtitle.text
-	%RoleBadge.text = "房主视角" if connection.host else "玩家视角"
-	var ready_count: int = 0
+	%LobbySubtitle.text = game_name
+	var unready: bool = false
 	for index: int in range(8):
 		var player: Dictionary = connection.players[index] if index < connection.players.size() else {}
 		var name_label: Label = get_node("%SlotName" + str(index))
@@ -235,26 +152,30 @@ func room_refresh() -> void:
 		name_label.tooltip_text = name_label.text
 		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 
-		if player.get("ready", false):
-			ready_count += 1
+		if player.get("connected", false) and not player.get("ready", false):
+			unready = true
 	_refresh_latencies()
 	%PlayerCount.text = "%d / 8 人" % connection.players.size()
 	%PlayerCount.tooltip_text = "允许开始：" + connection.allowed_counts
 	var reason: String = connection.start_reason
-	%ReadySummary.text = reason if not reason.is_empty() else "已准备 %d / %d · 允许 %s" % [ready_count, connection.players.size(), connection.allowed_counts]
-	%ReadySummary.tooltip_text = %ReadySummary.text
-	%ReadySummary.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	%Ready.disabled = connection.host and not reason.is_empty()
-	%Ready.text = "开始游戏" if connection.host else ("取消准备" if connection.local_ready else "准备")
-	%Game.text = game_name
-	%Game.disabled = true
-	%Game.tooltip_text = "本房间协议与大游戏已固定，更换请重新创建房间"
+	%ReadySummary.text = reason if connection.host and not unready else ""
+	%Ready.disabled = connection.host and (unready or not reason.is_empty())
+	if connection.host:
+		%Ready.text = "有玩家未准备" if unready else "开始游戏"
+		%Ready.theme_type_variation = &"CancelRed" if unready else &"StartOrange"
+	else:
+		%Ready.text = "取消准备" if connection.local_ready else "准备"
+		%Ready.theme_type_variation = &"CancelRed" if connection.local_ready else &"ReadyGreen"
+	%Ready.get_node("Caption").text = %Ready.text
+	%Ready.tooltip_text = reason
+	%CopyAddress.disabled = %CopyAddress.disabled or connection.connection_port <= 0
 	var count: int = 0
 	for pool: Array in connection.room.get("pools", {}).values():
 		count += pool.size()
 	%Map.text = "已选择 %d 项 · 查看 / 配置" % count
 	%Rounds.text = "查看 / 配置"
-	%SettingsAuthority.text = "房主配置 · 设置和小游戏池同步到所有玩家" if connection.host else "房主配置 · 当前玩家只读"
+	%Map.tooltip_text = "房主配置" if connection.host else "查看房主配置"
+	%Rounds.tooltip_text = %Map.tooltip_text
 
 
 ## Read cached statistics once a second; never rebuild slots or request a probe here.
@@ -274,7 +195,7 @@ func _refresh_latencies() -> void:
 		label.tooltip_text = "玩家与房主之间的往返延迟 RTT；按住 Tab 查看全部玩家"
 		match state:
 			"host":
-				label.text = ready_text + " · 房主"
+				label.text = "房主"
 			"offline":
 				label.text = "已掉线"
 				label.modulate = Color("#f28c8c")
