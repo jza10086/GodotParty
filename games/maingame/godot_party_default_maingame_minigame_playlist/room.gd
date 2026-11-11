@@ -13,8 +13,8 @@ func _ready() -> void:
 	_button("Back", room.leave)
 	_button("Ready", room.ready_or_start)
 	_button("Map", room.open_settings.bind("pool"))
-	_button("Rounds", room.open_settings.bind("main"))
-	_button("Advanced", room.open_settings.bind("preferences"))
+	%Rotation.item_selected.connect(_rotation_selected)
+	_button("Advanced", room.open_settings.bind("main"))
 	_button("CopyAddress", _copy_room_address)
 	for index: int in range(8):
 		var slot: Button = get_node("%Slot" + str(index))
@@ -23,6 +23,10 @@ func _ready() -> void:
 
 func _button(path: String, action: Callable) -> void:
 	get_node("%" + path).pressed.connect(action)
+
+func _rotation_selected(index: int) -> void:
+	room.update_main_settings({"rotation": ["顺序", "随机"][index]})
+	room_refresh()
 
 func room_focus() -> void:
 	if %Ready.disabled:
@@ -86,10 +90,11 @@ func room_refresh() -> void:
 	%Ready.tooltip_text = ""
 	%CopyAddress.disabled = %CopyAddress.disabled or connection.connection_port <= 0
 	%Map.text = "小游戏池"
-	%Rounds.text = "轮换模式"
+	%Rotation.select(["顺序", "随机"].find(connection.room.settings.rotation))
+	%Rotation.disabled = not connection.host or connection.recovering
 	%Map.tooltip_text = "已选择 %d 项 · %s" % [count, "房主配置" if connection.host else "查看房主配置"]
-	%Rounds.tooltip_text = "轮换方式、局数、重复与间隔"
-	%Advanced.tooltip_text = "主游戏本机偏好与协议继承设置"
+	%Rotation.tooltip_text = "轮换模式" if connection.host else "轮换模式由房主设置"
+	%Advanced.tooltip_text = "总局数、重复与间隔等主游戏规则"
 
 
 ## Read cached statistics once a second; never rebuild slots or request a probe here.

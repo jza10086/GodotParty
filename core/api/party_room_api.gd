@@ -28,6 +28,11 @@ func leave() -> void:
 func open_settings(panel: String) -> void:
 	_dispatch.call("settings", {"panel": panel})
 
+## Apply a partial main-game rule update through the host lobby configuration flow.
+## Other room rules and selected pools are preserved; failures are shown by the framework.
+func update_main_settings(values: Dictionary) -> void:
+	_dispatch.call("main_settings", {"values": values})
+
 func show_player(peer: int) -> void:
 	_dispatch.call("player", {"peer": peer})
 

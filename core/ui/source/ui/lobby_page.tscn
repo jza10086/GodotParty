@@ -4,6 +4,7 @@
 
 
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="ar_option"]
 
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/action_prompt.tscn" id="prompt"]
 [ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/keyboard_escape.svg" id="esc"]
@@ -144,14 +145,19 @@ text = "主游戏设置"
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="Rounds" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/Modes" instance=ExtResource("ar_button")]
+[node name="Rotation" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/Modes" instance=ExtResource("ar_option")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_type_variation = &"PoolButton"
+theme_type_variation = &"PoolPicker"
 theme_override_font_sizes/font_size = 26
-text = "轮换模式"
+item_count = 2
+selected = 0
+popup/item_0/text = "顺序轮换"
+popup/item_0/id = 0
+popup/item_1/text = "随机轮换"
+popup/item_1/id = 1
 
 [node name="Map" parent="Insets/Layout/Cards/RoomColumn/ConfigurationCard/Content/Modes" instance=ExtResource("ar_button")]
 unique_name_in_owner = true

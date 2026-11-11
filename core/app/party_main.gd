@@ -971,6 +971,10 @@ func room_action(operation: String, argument: Dictionary) -> void:
 				_profile_dialog()
 			else:
 				_player_detail(argument.peer)
+		"main_settings":
+			var configuration: Dictionary = connection.room.settings.duplicate(true)
+			configuration.merge(argument.values, true)
+			_check(connection.configure(connection.room.main, configuration, connection.room.children, connection.room.pools))
 		"settings":
 			match argument.panel:
 				"pool": _configuration_dialog()
