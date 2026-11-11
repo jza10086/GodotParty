@@ -51,12 +51,13 @@ func room_refresh() -> void:
 	var unready: bool = false
 	for index: int in range(8):
 		var player: Dictionary = connection.players[index] if index < connection.players.size() else {}
-		var name_label: Label = get_node("%SlotName" + str(index))
 		var slot: Button = get_node("%Slot" + str(index))
+		var name_label: Label = slot.get_node("%PlayerName")
+		slot.player_color = Color(player.appearance.color) if not player.is_empty() else Color(0.30, 0.35, 0.42)
 		slot.set_meta("peer_id", player.get("peer_id", 0))
 		slot.disabled = player.is_empty()
 		slot.modulate.a = 0.5 if player.is_empty() else 1.0
-		name_label.text = player.get("name", "等待加入") + (" · 房主" if player.get("peer_id") == 1 else "")
+		name_label.text = player.get("name", "空位")
 		name_label.tooltip_text = name_label.text
 		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 
@@ -69,7 +70,7 @@ func room_refresh() -> void:
 	%ReadySummary.text = reason if connection.host and not unready else ""
 	%Ready.disabled = connection.host and (unready or not reason.is_empty())
 	if connection.host:
-		%Ready.text = "有玩家未准备" if unready else "开始游戏"
+		%Ready.text = "玩家未准备" if unready else "开始游戏"
 		%Ready.theme_type_variation = &"CancelRed" if unready else &"StartOrange"
 	else:
 		%Ready.text = "取消准备" if connection.local_ready else "准备"
@@ -89,11 +90,11 @@ func room_refresh() -> void:
 ## Read cached statistics once a second; never rebuild slots or request a probe here.
 func _refresh_latencies() -> void:
 	for index: int in range(8):
-		var label: Label = get_node("%SlotStatus" + str(index))
+		var label: Label = get_node("%Slot" + str(index)).get_node("%PlayerStatus")
 		label.modulate = Color.WHITE
 		label.tooltip_text = ""
 		if index >= connection.players.size():
-			label.text = "空位"
+			label.text = ""
 			continue
 		var player: Dictionary = connection.players[index]
 		var ready_text: String = "已准备" if player.ready else "未准备"
@@ -103,7 +104,7 @@ func _refresh_latencies() -> void:
 		label.tooltip_text = "玩家与房主之间的往返延迟 RTT；按住 Tab 查看全部玩家"
 		match state:
 			"host":
-				label.text = "房主"
+				label.text = "host"
 			"offline":
 				label.text = "已掉线"
 				label.modulate = Color("#f28c8c")

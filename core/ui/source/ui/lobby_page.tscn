@@ -11,6 +11,7 @@
 [ext_resource type="Shader" path="res://core/ui/source/ui/lobby_cutout_text.gdshader" id="cutout"]
 
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/card.tscn" id="ar_card"]
+[ext_resource type="PackedScene" path="res://core/ui/source/ui/lobby_player_card.tscn" id="player_card"]
 
 
 [sub_resource type="ShaderMaterial" id="CutoutText"]
@@ -84,277 +85,29 @@ theme_override_font_sizes/font_size = 23
 vertical_alignment = 1
 mouse_filter = 2
 
-[node name="Slot0" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("ar_button")]
+[node name="Slot0" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 54)
 
-[node name="Player" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot0" type="HBoxContainer"]
-theme_override_constants/separation = 16
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_right = -14.0
-mouse_filter = 2
-
-[node name="Number" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot0/Player" type="Label"]
-text = "01"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="SlotName0" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot0/Player" type="Label"]
+[node name="Slot1" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
-text = "等待加入"
-theme_override_font_sizes/font_size = 24
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-text_overrun_behavior = 3
 
-[node name="SlotStatus0" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot0/Player" type="Label"]
+[node name="Slot2" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
-text = "空位"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
 
-[node name="Slot1" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("ar_button")]
+[node name="Slot3" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 54)
 
-[node name="Player" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot1" type="HBoxContainer"]
-theme_override_constants/separation = 16
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_right = -14.0
-mouse_filter = 2
-
-[node name="Number" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot1/Player" type="Label"]
-text = "02"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="SlotName1" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot1/Player" type="Label"]
+[node name="Slot4" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
-text = "等待加入"
-theme_override_font_sizes/font_size = 24
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-text_overrun_behavior = 3
 
-[node name="SlotStatus1" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot1/Player" type="Label"]
+[node name="Slot5" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
-text = "空位"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
 
-[node name="Slot2" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("ar_button")]
+[node name="Slot6" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 54)
 
-[node name="Player" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot2" type="HBoxContainer"]
-theme_override_constants/separation = 16
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_right = -14.0
-mouse_filter = 2
-
-[node name="Number" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot2/Player" type="Label"]
-text = "03"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="SlotName2" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot2/Player" type="Label"]
+[node name="Slot7" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
-text = "等待加入"
-theme_override_font_sizes/font_size = 24
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-text_overrun_behavior = 3
-
-[node name="SlotStatus2" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot2/Player" type="Label"]
-unique_name_in_owner = true
-text = "空位"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="Slot3" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 54)
-
-[node name="Player" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot3" type="HBoxContainer"]
-theme_override_constants/separation = 16
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_right = -14.0
-mouse_filter = 2
-
-[node name="Number" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot3/Player" type="Label"]
-text = "04"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="SlotName3" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot3/Player" type="Label"]
-unique_name_in_owner = true
-text = "等待加入"
-theme_override_font_sizes/font_size = 24
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-text_overrun_behavior = 3
-
-[node name="SlotStatus3" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot3/Player" type="Label"]
-unique_name_in_owner = true
-text = "空位"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="Slot4" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 54)
-
-[node name="Player" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot4" type="HBoxContainer"]
-theme_override_constants/separation = 16
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_right = -14.0
-mouse_filter = 2
-
-[node name="Number" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot4/Player" type="Label"]
-text = "05"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="SlotName4" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot4/Player" type="Label"]
-unique_name_in_owner = true
-text = "等待加入"
-theme_override_font_sizes/font_size = 24
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-text_overrun_behavior = 3
-
-[node name="SlotStatus4" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot4/Player" type="Label"]
-unique_name_in_owner = true
-text = "空位"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="Slot5" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 54)
-
-[node name="Player" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot5" type="HBoxContainer"]
-theme_override_constants/separation = 16
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_right = -14.0
-mouse_filter = 2
-
-[node name="Number" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot5/Player" type="Label"]
-text = "06"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="SlotName5" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot5/Player" type="Label"]
-unique_name_in_owner = true
-text = "等待加入"
-theme_override_font_sizes/font_size = 24
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-text_overrun_behavior = 3
-
-[node name="SlotStatus5" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot5/Player" type="Label"]
-unique_name_in_owner = true
-text = "空位"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="Slot6" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 54)
-
-[node name="Player" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot6" type="HBoxContainer"]
-theme_override_constants/separation = 16
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_right = -14.0
-mouse_filter = 2
-
-[node name="Number" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot6/Player" type="Label"]
-text = "07"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="SlotName6" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot6/Player" type="Label"]
-unique_name_in_owner = true
-text = "等待加入"
-theme_override_font_sizes/font_size = 24
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-text_overrun_behavior = 3
-
-[node name="SlotStatus6" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot6/Player" type="Label"]
-unique_name_in_owner = true
-text = "空位"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="Slot7" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("ar_button")]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 54)
-
-[node name="Player" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot7" type="HBoxContainer"]
-theme_override_constants/separation = 16
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_right = -14.0
-mouse_filter = 2
-
-[node name="Number" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot7/Player" type="Label"]
-text = "08"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
-
-[node name="SlotName7" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot7/Player" type="Label"]
-unique_name_in_owner = true
-text = "等待加入"
-theme_override_font_sizes/font_size = 24
-vertical_alignment = 1
-mouse_filter = 2
-size_flags_horizontal = 3
-text_overrun_behavior = 3
-
-[node name="SlotStatus7" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Slot7/Player" type="Label"]
-unique_name_in_owner = true
-text = "空位"
-theme_override_font_sizes/font_size = 20
-vertical_alignment = 1
-mouse_filter = 2
 
 [node name="RoomColumn" parent="Insets/Layout/Cards" type="VBoxContainer"]
 theme_override_constants/separation = 10
