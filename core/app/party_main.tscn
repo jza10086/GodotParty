@@ -16,6 +16,8 @@
 [ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 [ext_resource type="PackedScene" path="res://core/ui/party_touch_escape.tscn" id="touch_escape"]
 
+[ext_resource type="PackedScene" path="res://core/ui/notification_bar.tscn" id="notifications"]
+
 [node name="party_main" type="Control" unique_id=1685594889]
 layout_mode = 3
 anchors_preset = 15
@@ -188,6 +190,9 @@ visible = false
 z_index = 5
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="NotificationBar" parent="." instance=ExtResource("notifications")]
+unique_name_in_owner = true
 
 [node name="TouchEscape" parent="." instance=ExtResource("touch_escape")]
 

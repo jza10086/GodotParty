@@ -135,6 +135,13 @@ func get_round_presentation() -> Dictionary:
 func show_results(presentation: Dictionary) -> Error:
 	return _invoke("show_results", {"presentation": presentation})
 
+## Shows a local framework notification for three seconds. New notices replace the current one.
+## Available to protocol runtimes, main games and minigames; does not broadcast or alter focus.
+func show_notice(message: String) -> Error:
+	if message.strip_edges().is_empty():
+		return ERR_INVALID_PARAMETER
+	return _invoke("notice", {"message": message})
+
 ## Report a recoverable failure; the host coordinates cancellation.
 func fail(code: String, message: String) -> Error:
 	return _invoke("fail", {"code": code, "message": message})

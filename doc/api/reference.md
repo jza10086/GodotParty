@@ -29,6 +29,7 @@
 | finish_session(presentation: Dictionary = {}) -> Error | 大游戏房主空闲阶段 | 保存终态后显示最终结果 |
 | publish_standings(presentation: Dictionary) -> Error | 大游戏房主空闲阶段 | 更新可选 F3 总览，不解释业务状态 |
 | get_round_presentation() -> Dictionary | 活跃作用域 | 最近一次已提交小游戏结果的协议展示副本；没有转换器时为空 |
+| show_notice(message: String) -> Error | 协议 runtime、主游戏、小游戏的活跃作用域，含大厅 | 本机框架通知，3 秒后消失（含淡入下滑、淡出上滑）；新通知替换旧通知并重新计时，不联网、不抢焦点；空白文本返回 ERR_INVALID_PARAMETER |
 | show_results(presentation: Dictionary) -> Error | 活跃作用域任意端 | 本端打开公共成绩页，不广播、不改变奖励 |
 | fail(code: String, message: String) -> Error | 任意活跃端 | 报告不能继续，由房主取消轮次或会话 |
 | on_close(callback: Callable) -> Error | 关闭前 | 同步、LIFO、至多一次；节点释放前执行 |

@@ -109,6 +109,7 @@ func _ready() -> void:
 	connection.profile_reply.connect(_profile_reply)
 	runner.changed.connect(_refresh)
 	runner.failed.connect(_notice)
+	runner.notice_requested.connect(show_notice)
 	runner.finished.connect(func(value: Dictionary) -> void: _show_results(value))
 	runner.presentation_requested.connect(_show_results)
 	_refresh()
@@ -795,6 +796,10 @@ func show_connection_issue(message: String) -> void:
 	_dialog.get_ok_button().text = "复制详情"
 	_dialog.confirmed.connect(func() -> void: DisplayServer.clipboard_set(message))
 
+## Framework-owned transient feedback, independent of the currently visible page.
+func show_notice(message: String) -> void:
+	%NotificationBar.show_notice(message)
+
 func _notice(message: String) -> void:
 	_notice_text = message
 	%GameStatus.text = message
@@ -805,8 +810,7 @@ func _notice(message: String) -> void:
 		_dialog.dialog_text = message
 		_dialog.get_ok_button().text = "重试保存"
 		_dialog.confirmed.connect(_retry_save)
-	if is_instance_valid(_frontend):
-		_frontend.show_notice(message)
+	show_notice(message)
 	if is_instance_valid(_settings_page):
 		_settings_page.status.text = message
 

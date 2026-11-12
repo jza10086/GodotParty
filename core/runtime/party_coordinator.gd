@@ -14,6 +14,7 @@ signal changed()
 signal failed(message: String)
 signal finished(presentation: Dictionary)
 signal presentation_requested(presentation: Dictionary)
+signal notice_requested(message: String)
 var connection: Node
 var catalog: RefCounted
 var voice_backend: Node
@@ -183,6 +184,9 @@ func _dispatch(id: String, operation: String, payload: Dictionary) -> Error:
 	var scope: Dictionary = _scopes.get(id, {})
 	if scope.is_empty() or scope["phase"] == "closed":
 		return ERR_UNAVAILABLE
+	if operation == "notice":
+		notice_requested.emit(payload["message"])
+		return OK
 	if operation == "show_results":
 		if not Data.presentation(payload["presentation"], connection.players):
 			return ERR_INVALID_PARAMETER
@@ -840,6 +844,13 @@ func _lobby_query(_scope: String, key: String, argument: Dictionary) -> Variant:
 		return players
 	return {}
 
+## Lobby protocol runtimes share the same local notification surface as active game scopes.
+func _lobby_dispatch(_scope: String, operation: String, payload: Dictionary) -> Error:
+	if operation == "notice":
+		notice_requested.emit(payload["message"])
+		return OK
+	return ERR_UNAVAILABLE
+
 func _update_lobby_settings() -> void:
 	var protocol: String = catalog.get_package(connection.room.get("main", "")).get("protocol", {}).get("id", "")
 	var lobby: bool = connection.online and phase == "idle" and connection.room.get("phase") == "lobby" and not protocol.is_empty()
@@ -848,7 +859,7 @@ func _update_lobby_settings() -> void:
 	if not lobby or _lobby_api != null:
 		return
 	var id: String = "lobby_" + protocol
-	_lobby_api = API.new({"session_id": connection.session_id, "scope_id": id, "protocol_id": protocol, "package_id": "", "rules_revision": connection.room.get("rules_revision"), "is_host": connection.host}, func(_scope: String, _op: String, _data: Dictionary) -> Error: return ERR_UNAVAILABLE, _lobby_query)
+	_lobby_api = API.new({"session_id": connection.session_id, "scope_id": id, "protocol_id": protocol, "package_id": "", "rules_revision": connection.room.get("rules_revision"), "is_host": connection.host}, _lobby_dispatch, _lobby_query)
 	_lobby_api.i18n = catalog.i18n.scope(connection.room.main)
 	_lobby_api.config = Config.new()
 	if _lobby_api.config.initialize(config_store, "", protocol, {"common": connection.room.get("common", {}), "own": {}}) != OK:

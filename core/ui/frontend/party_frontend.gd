@@ -229,7 +229,6 @@ func show_page(next: String) -> void:
 	for key: String in ["Home", "Rooms", "Lobby"]:
 		get_node(key).visible = key == next
 	page = next
-	$Toast.hide()
 	if page == "Lobby":
 		_room_view.room_focus()
 	else:
@@ -364,16 +363,9 @@ func refresh() -> void:
 	if app.connection.status != _connection_notice:
 		_connection_notice = app.connection.status
 		if not _connection_notice.is_empty():
-			show_notice(_connection_notice)
+			app.show_notice(_connection_notice)
 			if _connection_notice.contains("\n"):
 				app.show_connection_issue(_connection_notice)
-
-## Reuse the source scene feedback panel for actual connection and validation errors.
-func show_notice(message: String) -> void:
-	$Toast/Text.text = message.replace("\n", " ")
-	$Toast/Text.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	$Toast/Text.tooltip_text = message
-	$Toast.show()
 
 ## Replace the room scene when its lobby activation changes, including rule edits and recovery.
 func _sync_room() -> void:
@@ -452,4 +444,4 @@ func _select_language(index: int) -> void:
 	var error: Error = app.select_language("zh_Hans" if index == 0 else "en")
 	if error != OK:
 		$Home/Language.select(0 if app.catalog.i18n.locale == "zh_Hans" else 1)
-		show_notice(_t("语言保存失败：{error}", {"error": error_string(error)}))
+		app.show_notice(_t("语言保存失败：{error}", {"error": error_string(error)}))

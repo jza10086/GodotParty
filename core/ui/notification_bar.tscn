@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://f1amq76p08uv"]
+
+[ext_resource type="Script" uid="uid://dim3nxqbsgop8" path="res://core/ui/notification_bar.gd" id="1_pse8w"]
+[ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="2_i0m8c"]
+
+[node name="NotificationBar" type="CanvasLayer" unique_id=1251143166]
+process_mode = 3
+layer = 120
+script = ExtResource("1_pse8w")
+
+[node name="Motion" type="Control" parent="." unique_id=2054127867]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_i0m8c")
+
+[node name="Card" type="PanelContainer" parent="Motion" unique_id=1538664262]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -360.0
+offset_top = 32.0
+offset_right = 360.0
+offset_bottom = 96.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_type_variation = &"AmbientCard"
+
+[node name="Insets" type="MarginContainer" parent="Motion/Card" unique_id=1540295139]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 4
+
+[node name="Message" type="Label" parent="Motion/Card/Insets" unique_id=741254799]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "通知"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3

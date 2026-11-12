@@ -6,7 +6,6 @@
 [ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 
 
-[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
 
 [node name="PartyUI" type="Control" unique_id=1811586604]
 layout_mode = 3
@@ -31,24 +30,6 @@ anchors_preset = 0
 offset_right = 1920.0
 offset_bottom = 1080.0
 mouse_filter = 2
-
-[node name="Toast" parent="." unique_id=1899311329 instance=ExtResource("ar_panel")]
-visible = false
-layout_mode = 0
-offset_left = 610.0
-offset_top = 148.0
-offset_right = 1310.0
-offset_bottom = 210.0
-mouse_filter = 2
-
-[node name="Text" type="Label" parent="Toast" unique_id=986847010]
-layout_mode = 0
-offset_left = 12.0
-offset_right = 688.0
-offset_bottom = 62.0
-text = "演示结束！返回大厅再来一局。"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="Guide" type="Control" parent="." unique_id=1240779585]
 visible = false
