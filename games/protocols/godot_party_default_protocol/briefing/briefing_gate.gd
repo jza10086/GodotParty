@@ -18,6 +18,7 @@ var _closed: bool = false
 var _released: bool = false
 var _hello_sent: bool = false
 var _request_pending: bool = false
+var _requested_ready: bool = false
 var _stage: String = "waiting"
 var _remaining: float = -1.0
 var _revision: int = 0
@@ -70,7 +71,7 @@ func _ready() -> void:
 	view = View.instantiate()
 	add_child(view)
 	view.configure(_content)
-	view.ready_requested.connect(confirm_ready)
+	view.ready_requested.connect(func() -> void: set_ready(not _ready_ids.has(_local_id())))
 	view.choice_selected.connect(select_choice)
 	_refresh()
 
@@ -91,12 +92,15 @@ func transport_started() -> void:
 		_publish()
 	_refresh()
 
-## A manual confirmation. Repeated input cannot skip the countdown or restart gameplay.
-func confirm_ready() -> Error:
-	if _closed or _released or _request_pending or not _can_ready():
+## Set manual readiness before play. Canceling also stops the shared countdown.
+func set_ready(ready: bool) -> Error:
+	if _closed or _released or _request_pending or not _can_ready() or ready == _ready_ids.has(_local_id()):
 		return ERR_UNAVAILABLE
 	_request_pending = true
+	_requested_ready = ready
+	_notice = ""
 	var payload: Dictionary = _envelope("ready")
+	payload.ready = ready
 	if not _choice_options.is_empty():
 		payload.choice = _local_choice
 	var error: Error = api.net.send_to_host(TOPIC, payload)
@@ -108,7 +112,7 @@ func confirm_ready() -> Error:
 
 ## Optional single player choice, frozen by the same authoritative confirmation as readiness.
 func select_choice(value: String) -> Error:
-	if _closed or _released or _request_pending or not _can_ready() or value not in _choice_options:
+	if _closed or _released or _request_pending or not _can_ready() or _ready_ids.has(_local_id()) or value not in _choice_options:
 		return ERR_UNAVAILABLE
 	_local_choice = value
 	var payload: Dictionary = _envelope("choice")
@@ -174,7 +178,7 @@ func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 		_stage = payload.stage
 		_end_msec = payload.end_msec
 		_remaining = maxf(0.0, float(_end_msec - api.net.host_time_msec()) / 1000.0) if _stage == "countdown" else -1.0
-		if _ready_ids.has(_local_id()):
+		if _request_pending and _ready_ids.has(_local_id()) == _requested_ready:
 			_request_pending = false
 		if _stage == "play" and _transport_started:
 			_release()
@@ -184,22 +188,33 @@ func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 		return
 	if payload.get("kind") == "hello":
 		_publish()
-	elif payload.get("kind") in ["ready", "choice"] and _stage == "waiting":
-		if not _choice_options.is_empty() and (not payload.get("choice") is String or payload.choice not in _choice_options):
+	elif payload.get("kind") in ["ready", "choice"] and _stage in ["waiting", "countdown"]:
+		var readiness: bool = payload.kind == "ready"
+		if readiness and not payload.get("ready") is bool:
 			return
-		if payload.kind == "choice" and _choice_options.is_empty():
+		var cancel: bool = readiness and not payload.ready
+		if _stage == "countdown" and not cancel:
+			return
+		if not cancel and not _choice_options.is_empty() and (not payload.get("choice") is String or payload.choice not in _choice_options):
+			return
+		if not readiness and _choice_options.is_empty():
 			return
 		var preparation: Dictionary = api.get_preparation_status()
 		if int(sender.get("peer_id", 0)) not in preparation.get("ready_peers", []):
 			return
 		for player: Dictionary in api.get_players():
 			if player.connected and player.peer_id == sender.get("peer_id") and player.player_id in sender.get("player_ids", []):
-				if _ready_ids.has(player.player_id):
-					continue
-				if not _choice_options.is_empty():
-					_choices[player.player_id] = payload.choice
-				if payload.kind == "ready":
-					_ready_ids[player.player_id] = true
+				if cancel:
+					_ready_ids.erase(player.player_id)
+				elif not _ready_ids.has(player.player_id):
+					if not _choice_options.is_empty():
+						_choices[player.player_id] = payload.choice
+					if readiness:
+						_ready_ids[player.player_id] = true
+		if _stage == "countdown" and not _all_confirmed():
+			_stage = "waiting"
+			_remaining = -1.0
+			_end_msec = -1
 		_maybe_countdown()
 		_publish()
 
@@ -273,7 +288,7 @@ func _local_id() -> String:
 	return ""
 
 func _can_ready() -> bool:
-	if _stage != "waiting" or _ready_ids.has(_local_id()):
+	if _stage != "waiting" and not (_stage == "countdown" and _ready_ids.has(_local_id())):
 		return false
 	var preparation: Dictionary = api.get_preparation_status()
 	for player: Dictionary in api.get_players():

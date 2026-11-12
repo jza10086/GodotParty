@@ -11,6 +11,7 @@ const INK: Color = Color(0.96, 0.97, 0.99)
 const MUTED: Color = Color(0.6, 0.64, 0.7)
 const ACCENT: Color = Color(0.5843, 0.7804, 0.9255)
 const GREEN: Color = Color("a6c8a7")
+const ACTION_THEME: Theme = preload("res://core/ui/source/ui/lobby_action_theme.tres")
 
 @export var top_inset: int = 64
 var _content: Dictionary = {}
@@ -25,6 +26,7 @@ var _compact: bool = false
 var _hint_hovered: bool = false
 var _hint_pressed: bool = false
 var _hint_enabled: bool = false
+var _hint_ready: bool = false
 var _hint_tween: Tween
 
 @onready var _layout: MarginContainer = %Layout
@@ -66,7 +68,7 @@ func _ready() -> void:
 	%ReadyHints.set_mode(false, false)
 	for prompt: Control in %ReadyHints.get_node("KeyboardHints").get_children():
 		prompt.visible = prompt == _input_hint
-	_input_hint.description = "准备就绪"
+	_input_hint.description = "准备"
 	_input_hint.set_gamepad(false)
 	_input_hint.mouse_filter = Control.MOUSE_FILTER_STOP
 	_input_hint.gui_input.connect(_ready_hint_input)
@@ -121,7 +123,7 @@ func focus_ready() -> void:
 		grab_focus()
 
 func _can_submit_ready() -> bool:
-	return _local_can_ready and not _local_ready and _countdown < 0
+	return _local_can_ready and (_countdown < 0 or _local_ready)
 
 ## Confirm on release so pressing shows feedback and dragging away cancels.
 func _ready_hint_input(event: InputEvent) -> void:
@@ -155,17 +157,19 @@ func _update_hint_feedback() -> void:
 		_hint_tween.kill()
 	_center_hint_pivot()
 	var active: bool = _can_submit_ready() and is_visible_in_tree()
-	var tint: Color = Color.WHITE
+	var variation: StringName = &"CancelRed" if _local_ready else &"ReadyGreen"
+	var style: StyleBoxFlat = ACTION_THEME.get_stylebox(&"normal", variation)
+	var tint: Color = style.bg_color
 	var zoom: float = 1.0
 	if active and _hint_pressed:
-		tint = ACCENT
+		tint = ACTION_THEME.get_stylebox(&"pressed", variation).bg_color
 		zoom = 0.96
 	elif active and _hint_hovered:
-		tint = Color(0.78, 0.9, 1.0)
+		tint = ACTION_THEME.get_stylebox(&"hover", variation).bg_color
 		zoom = 1.025
 	if not is_visible_in_tree():
 		_input_hint.scale = Vector2.ONE
-		_input_hint.modulate = Color(1.0, 1.0, 1.0, _input_hint.modulate.a)
+		_input_hint.modulate = Color(tint.r, tint.g, tint.b, _input_hint.modulate.a)
 		return
 	_hint_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	var duration: float = 0.08 if _hint_pressed else 0.16
@@ -237,20 +241,21 @@ func _render_state() -> void:
 	if new_hash != _rows_hash:
 		_rows_hash = new_hash
 		_render_roster()
-	_choice.disabled = not _can_submit_ready()
+	_choice.disabled = not _can_submit_ready() or _local_ready
 	_input_hint.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if _can_submit_ready() else Control.CURSOR_ARROW
-	if _hint_enabled != _can_submit_ready():
+	if _hint_enabled != _can_submit_ready() or _hint_ready != _local_ready:
 		_hint_enabled = _can_submit_ready()
+		_hint_ready = _local_ready
 		_hint_pressed = false
 		_update_hint_feedback()
 	_input_hint.modulate.a = 1.0 if _can_submit_ready() or _countdown >= 0 else 0.45
-	_input_hint.get_node("Icons").visible = _countdown < 0
+	_input_hint.get_node("Icons").visible = _countdown < 0 or _can_submit_ready()
 	if _countdown >= 0:
-		_input_hint.description = "%d 秒后开始" % maxi(0, _countdown)
+		_input_hint.description = ("取消准备 · %d 秒后开始" if _local_ready else "%d 秒后开始") % maxi(0, _countdown)
 	elif _can_submit_ready() and _status.begins_with("准备消息发送失败"):
 		_input_hint.description = _status
 	else:
-		_input_hint.description = "准备就绪"
+		_input_hint.description = "取消准备" if _local_ready else "准备"
 	if _can_submit_ready():
 		_focus_when_free.call_deferred()
 
