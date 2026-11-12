@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://games/protocols/godot_party_default_protocol/briefing/briefing_view.gd" id="1_view"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="2_card"]
@@ -7,6 +7,7 @@
 [ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="5_theme"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/xbox_hints.tscn" id="6_hints"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="7_background"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="8_choice"]
 
 [node name="BriefingView" type="Control"]
 layout_mode = 3
@@ -210,13 +211,16 @@ theme_override_font_sizes/font_size = 22
 text = "难度"
 vertical_alignment = 1
 
-[node name="PlayerChoice" type="OptionButton" parent="Layout/Center/Content/Columns/RightColumn/InformationPanel/InformationMargin/Information/Rules/ChoiceRow"]
+[node name="PlayerChoice" parent="Layout/Center/Content/Columns/RightColumn/InformationPanel/InformationMargin/Information/Rules/ChoiceRow" instance=ExtResource("8_choice")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(210, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 theme_override_font_sizes/font_size = 22
+
+[node name="ClosingMenu" parent="Layout/Center/Content/Columns/RightColumn/InformationPanel/InformationMargin/Information/Rules/ChoiceRow/PlayerChoice" index="2"]
+open_upwards = true
 
 [node name="ControlSection" type="VBoxContainer" parent="Layout/Center/Content/Columns/RightColumn/InformationPanel/InformationMargin/Information"]
 unique_name_in_owner = true

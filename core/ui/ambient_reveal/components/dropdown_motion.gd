@@ -4,6 +4,7 @@ extends TextureRect
 const RevealScene: PackedScene = preload("res://core/ui/ambient_reveal/components/parts/dropdown_reveal.tscn")
 const OPEN_SECONDS: float = 0.16
 const CLOSE_SECONDS: float = 0.12
+@export var open_upwards: bool = false
 @onready var button: OptionButton = get_parent()
 @onready var popup: PopupMenu = button.get_popup()
 var reveal: CanvasLayer
@@ -24,6 +25,13 @@ func _visibility_changed() -> void:
 		motion.kill()
 	hide()
 	if popup.visible:
+		# Native popup sizing is complete here; position it before the reveal starts.
+		if open_upwards:
+			var top: int = roundi(button.get_screen_transform().origin.y)
+			var screen_top: int = 0 if popup.is_embedded() else DisplayServer.screen_get_usable_rect(button.get_window().current_screen).position.y
+			popup.max_size.y = mini(popup.max_size.y, maxi(1, top - screen_top))
+			popup.size.y = mini(popup.size.y, popup.max_size.y)
+			popup.position.y = top - popup.size.y
 		texture = null
 		upwards = popup.position.y < button.get_screen_transform().origin.y
 		mask.set_shader_parameter(&"upwards", upwards)
