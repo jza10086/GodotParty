@@ -207,7 +207,7 @@
 
 | 资产 | 作者 | 来源与位置 | 许可与范围 |
 | --- | --- | --- | --- |
-| 29 个 BGM 音频文件／版本及 1 个原始 ZIP | 逐曲作者见 [BGM 清单](bgm_candidates.md) | OpenGameArt 曲目发布页；`core/assets/audio/bgm_candidates/`；[逐曲记录](../core/assets/audio/bgm_candidates/catalog.json) | CC0 1.0，免费商用／修改／再分发；仅候选库，未接入小游戏。逐曲来源和许可旁档随库保留，不属于项目原创作品。 |
+| 29 个 BGM 音频文件／版本及 1 个原始 ZIP | 逐曲作者见 [BGM 清单](bgm_candidates.md) | OpenGameArt 曲目发布页；`core/authoring/bgm_candidates/`；[逐曲记录](../core/authoring/bgm_candidates/catalog.json) | CC0 1.0，免费商用／修改／再分发；仅候选库，未接入小游戏。逐曲来源和许可旁档随库保留，不属于项目原创作品。 |
 
 ## 后续补充 输入提示图标
 

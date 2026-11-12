@@ -42,7 +42,7 @@ func export_source(catalog: RefCounted, id: String, output: String) -> Error:
 			return error
 	return writer.close()
 
-## Exports raw scripts/scenes plus Godot-imported resources and their remaps.
+## Imported assets ship only their runtime outputs and remaps; source ZIPs retain originals.
 func export_pack(catalog: RefCounted, id: String, output: String) -> Error:
 	last_error = ""
 	if not catalog.packages.has(id):
@@ -57,6 +57,7 @@ func export_pack(catalog: RefCounted, id: String, output: String) -> Error:
 		return _error(payload.error)
 	var paths: Dictionary = {}
 	var uid_index: Dictionary = {}
+	var imported_sources: Array[String] = []
 	for path: String in Catalog.files(root):
 		var relative: String = path.trim_prefix(root + "/")
 		if External.contains(manifest.get("external_files", []), relative.trim_suffix(".import").trim_suffix(".uid")):
@@ -66,6 +67,18 @@ func export_pack(catalog: RefCounted, id: String, output: String) -> Error:
 			var imported: ConfigFile = ConfigFile.new()
 			if imported.load(path) != OK:
 				return _error("Invalid import remap: " + path)
+			var has_runtime_remap: bool = false
+			for key: String in imported.get_section_keys("remap"):
+				if key == "path" or key.begins_with("path."):
+					var target: String = imported.get_value("remap", key)
+					if not target.begins_with("res://.godot/imported/") or not FileAccess.file_exists(target):
+						return _error("Missing/invalid imported resource: " + target)
+					has_runtime_remap = true
+			if has_runtime_remap:
+				var source: String = path.trim_suffix(".import")
+				imported_sources.append(source)
+				if imported.has_section_key("remap", "uid"):
+					uid_index[imported.get_value("remap", "uid")] = source
 			for section: String in ["remap", "deps"]:
 				for key: String in imported.get_section_keys(section):
 					var value: Variant = imported.get_value(section, key)
@@ -82,6 +95,9 @@ func export_pack(catalog: RefCounted, id: String, output: String) -> Error:
 			var uid: int = ResourceLoader.get_resource_uid(path)
 			if uid != ResourceUID.INVALID_ID:
 				uid_index[ResourceUID.id_to_text(uid)] = path
+	# Remove originals after collection so directory iteration order cannot re-add them.
+	for source: String in imported_sources:
+		paths.erase(source)
 	var packer: PCKPacker = PCKPacker.new()
 	var error: Error = packer.pck_start(output)
 	if error != OK:
@@ -167,7 +183,7 @@ func validate_descriptor(description: Dictionary) -> String:
 		return "Package index omits manifest.json"
 	for uid_text: Variant in description.uids:
 		var path: Variant = description.uids[uid_text]
-		if not uid_text is String or ResourceUID.text_to_id(uid_text) == ResourceUID.INVALID_ID or not path is String or not seen.has(path) or not path.begins_with(root + "/"):
+		if not uid_text is String or ResourceUID.text_to_id(uid_text) == ResourceUID.INVALID_ID or not path is String or (not seen.has(path) and not seen.has(path + ".import")) or not path.begins_with(root + "/"):
 			return "Invalid resource UID index"
 	return ScriptClasses.validate(description.get("script_classes"), root, description.files)
 

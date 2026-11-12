@@ -99,3 +99,27 @@ static func copy_payload(source: String, destination: String, files: Array, dire
 		if error != OK:
 			return error
 	return OK
+
+## Build copies keep loose data out of the import pipeline. These markers never ship.
+static func stage_payload(source: String, destination: String, declarations: Array, files: Array, directories: Array) -> Error:
+	var error: Error = copy_payload(source, destination, files, directories)
+	if error != OK:
+		return error
+	for entry: String in declarations:
+		var marker_path: String = ""
+		var marker_text: String = ""
+		if entry.ends_with("/"):
+			marker_path = destination.path_join(entry).path_join(".gdignore")
+		else:
+			marker_path = destination.path_join(entry + ".import")
+			marker_text = "[remap]\nimporter=\"keep\"\n"
+		var marker: FileAccess = FileAccess.open(marker_path, FileAccess.WRITE)
+		if marker == null:
+			return FileAccess.get_open_error()
+		marker.store_string(marker_text)
+		marker.flush()
+		error = marker.get_error()
+		marker.close()
+		if error != OK:
+			return error
+	return OK

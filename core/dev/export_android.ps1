@@ -1,6 +1,7 @@
 param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'godot')
 # Build Android resources in isolated projects. Never reuse desktop texture import caches.
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'export_source_files.ps1')
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $request = Get-Content -LiteralPath $RequestPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $androidSdkPath = ''
@@ -40,10 +41,8 @@ function Set-ProjectValue([string]$text, [string]$section, [string]$key, [string
 }
 function New-AndroidProject([string]$destination) {
     New-Item -ItemType Directory -Path $destination -Force | Out-Null
-    foreach ($file in Get-ChildItem -LiteralPath (Join-Path $projectRoot 'core') -Recurse -File) {
+    foreach ($file in Get-PartyCoreFiles $projectRoot) {
         $relative = $file.FullName.Substring($projectRoot.Length + 1)
-        if ($relative -match '^core[\\/](saves[\\/]|dev[\\/]|config[\\/].*\.(json|cfg|bak|pending)$)' -or $file.Name.StartsWith('.') -or $file.Name.Contains('~') -or $file.Extension -in '.tmp','.bak','.pending') { continue }
-        if ($file.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Cannot export linked file: $relative" }
         $target = Join-Path $destination $relative
         New-Item -ItemType Directory -Path (Split-Path $target) -Force | Out-Null
         Copy-Item -LiteralPath $file.FullName -Destination $target

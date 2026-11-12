@@ -37,7 +37,8 @@ func _initialize() -> void:
 	if not stage_source.is_empty():
 		for id: String in selection.ids:
 			for path: String in Catalog.files(catalog.packages[id]._root):
-				if path.ends_with(".import"):
+				var relative: String = path.trim_prefix(catalog.packages[id]._root + "/")
+				if Packages.External.contains(catalog.packages[id].get("external_files", []), relative.trim_suffix(".import").trim_suffix(".uid")):
 					continue
 				var target: String = stage_source.path_join(path.trim_prefix("res://"))
 				var error: Error = DirAccess.make_dir_recursive_absolute(target.get_base_dir())
@@ -51,7 +52,7 @@ func _initialize() -> void:
 			if not payload.ok:
 				_fail(payload.error)
 				return
-			var error: Error = Packages.External.copy_payload(manifest._root, stage_source.path_join(manifest._root.trim_prefix("res://")), payload.files, payload.directories)
+			var error: Error = Packages.External.stage_payload(manifest._root, stage_source.path_join(manifest._root.trim_prefix("res://")), manifest.get("external_files", []), payload.files, payload.directories)
 			if error != OK:
 				_fail("Cannot stage external payload: " + error_string(error))
 				return

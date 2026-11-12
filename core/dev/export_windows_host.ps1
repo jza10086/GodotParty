@@ -5,6 +5,7 @@ param(
 )
 # Build the core from a clean copy. User data and content never enter the EXE.
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'export_source_files.ps1')
 Get-Command $GodotPath -CommandType Application -ErrorAction Stop | Out-Null
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 if (!$BuildRoot) { $BuildRoot = Join-Path $projectRoot ('tmp/exports/host_' + [guid]::NewGuid().ToString('N')) }
@@ -12,10 +13,9 @@ if (!$OutputDirectory) { $OutputDirectory = Join-Path $BuildRoot 'bin' }
 $sourceRoot = Join-Path $BuildRoot 'source'
 New-Item -ItemType Directory -Path $sourceRoot, $OutputDirectory -Force | Out-Null
 $utf8 = New-Object Text.UTF8Encoding($false)
-foreach ($file in Get-ChildItem -LiteralPath (Join-Path $projectRoot 'core') -Recurse -File) {
+$coreFiles = @(Get-PartyCoreFiles $projectRoot)
+foreach ($file in $coreFiles) {
     $relative = $file.FullName.Substring($projectRoot.Length + 1)
-    if ($relative -match '^core[\\/](saves[\\/]|dev[\\/]|config[\\/].*\.(json|cfg|bak|pending)$)' -or $file.Name.Contains('~') -or $file.Extension -in '.tmp','.bak','.pending') { continue }
-    if ($file.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Cannot export linked file: $relative" }
     $destination = Join-Path $sourceRoot $relative
     New-Item -ItemType Directory -Path (Split-Path $destination) -Force | Out-Null
     Copy-Item -LiteralPath $file.FullName -Destination $destination
@@ -66,7 +66,7 @@ foreach ($step in @('import','export')) {
 $notices = Join-Path $OutputDirectory 'core/notices'
 New-Item -ItemType Directory $notices -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $projectRoot 'doc/credits.md') -Destination (Join-Path $notices 'project-credits.md')
-foreach ($file in Get-ChildItem -LiteralPath (Join-Path $projectRoot 'core') -Recurse -File) {
+foreach ($file in $coreFiles) {
     if ($file.Extension -notin '.md','.txt' -or $file.Name -notmatch '(?i)license|copyright|copying|ofl|source|attribution') { continue }
     $target = Join-Path $notices $file.FullName.Substring($projectRoot.Length + 1)
     New-Item -ItemType Directory (Split-Path $target) -Force | Out-Null
