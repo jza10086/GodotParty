@@ -93,9 +93,9 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 
 ## 标准模板的职责与目录
 
-空白模板同时提供正式接入骨架和可移植演示。`game.gd` 持有 PartyAPI、阶段、网络消息、准备与结算；`examples/demo_hub.tscn` 组合演示；`examples/graphics/`、`examples/navigation_2d/`、`examples/audio/` 分别保存各功能的场景、脚本和专用资源。`adapter.gd` 只检查/转换协议请求与结果，`settings.gd` 声明配置，`i18n/` 保存语言模板。可选的大型美术资源留在包内 `assets/`。
+空白模板同时提供正式接入骨架和可移植演示。`game.gd` 持有 PartyAPI、阶段、网络消息、准备与结算；`ui/briefing.tscn` 和 `ui/settlement.tscn` 继承协议页面，`ui/round_pages.tscn` 在 CanvasLayer 中静态组合它们；`examples/demo_hub.tscn` 组合演示；`examples/graphics/`、`examples/navigation_2d/`、`examples/audio/` 分别保存各功能的场景、脚本和专用资源。`adapter.gd` 只检查/转换协议请求与结果，`settings.gd` 声明配置，`i18n/` 保存语言模板。可选的大型美术资源留在包内 `assets/`。
 
-随机题库、地图、图片可参考空白模板的 [随机统计组件](../../games/minigame/gp_blank/README.md#通用随机统计模板)：主机从本机最少次数项中选取，各端对主机本局序列去重并更新自己的统计；正式入口注入存储路径，F6 只用内存。组件可直接复制，不要求其他游戏依赖空白模板包。
+随机题库、地图、图片可参考空白模板的 [随机统计组件用法](../../games/minigame/gp_blank/README.md#通用随机统计模板)：主机从本机最少次数项中选取，各端对主机本局序列去重并更新自己的统计；正式入口注入存储路径，F6 只用内存。实现由协议的 `random/least_played_pool.gd` 提供，直接引用已声明的协议依赖，不复制模板代码，也不依赖空白模板包。
 
 新游戏按实际功能命名目录，不强制照搬 `examples/`，也不机械建立 `scenes/`、`scripts/`、`managers/`。一个场景脚本能清楚表达的流程不再拆转发层。跨场景可替换依赖用带类型的 `@export`；同一场景拥有的固定节点用 `%UniqueNode`。只有共享组件、资源和核心数据类型注册 `class_name`。GDScript 使用显式类型，不使用 `:=`。
 
@@ -140,7 +140,7 @@ F6 默认语言直接读取包声明的回退 Translation，使用与正式 `api
 | 混合模拟 | 响应敏感、需要共同状态的玩法 | 明确各字段权威方与校正时机 |
 | 独立 F6 预览 | 场景、美术、交互演示 | 不伪造 PartyAPI，不写正式偏好或提交成绩 |
 
-观战者可以查看公开内容和操作本机相机，不能提交参赛动作；房主即使是观战者，也继续运行权威逻辑。`get_players()` 的参赛者身份与本机/连接状态共同决定操作权，不能把“房主”等同于“本机参赛者”。私有身份、手牌等不进入广播。共享协议场景按适用性组合：`ranked_round`、`round_pages` 和准备/结算 gate 各有用途，不作为所有游戏必须采用的继承层。
+观战者可以查看公开内容和操作本机相机，不能提交参赛动作；房主即使是观战者，也继续运行权威逻辑。`get_players()` 的参赛者身份与本机/连接状态共同决定操作权，不能把“房主”等同于“本机参赛者”。私有身份、手牌等不进入广播。可复用的加载页、结算页、音频、光标、相机与随机池均来自协议，不引用空白模板。加载/结算在小游戏里保存继承场景，通过导出节点引用连接入口；运行时只配置/显示，不重新创建。固定布局与行模板可直接编辑，编辑器示例不进入真实状态。具体步骤见[协议场景接入](../../games/protocols/godot_party_default_protocol/doc/README.md#加载与结算场景)。共享协议场景按适用性组合：`ranked_round`、`round_pages` 和准备/结算 gate 各有用途，不作为所有游戏必须采用的继承层。
 
 ## 偏好与音频
 

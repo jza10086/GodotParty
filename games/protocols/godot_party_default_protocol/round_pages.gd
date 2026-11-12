@@ -1,6 +1,6 @@
 ## Default-protocol preparation and result pages for a single standard round.
 ## The minigame owns its start callback and the original result; only ranking data is public.
-extends Control
+extends CanvasLayer
 
 const Briefing = preload("res://games/protocols/godot_party_default_protocol/briefing/briefing_gate.gd")
 const Settlement = preload("res://games/protocols/godot_party_default_protocol/settlement/settlement_gate.gd")
@@ -8,24 +8,25 @@ const Contract = preload("res://games/protocols/godot_party_default_protocol/pro
 const RESULT_TOPIC: StringName = &"godot_party_default/round_result"
 
 var api: PartyAPI
-var briefing: Briefing
-var settlement: Settlement
+@export var briefing: Briefing
+@export var settlement: Settlement
+var _result_presented: bool = false
 var _request: Dictionary
 var _host_result: Dictionary
 var _hud_layers: Array[CanvasLayer] = []
 var _previous_mode: Node.ProcessMode
 
+func _ready() -> void:
+	assert(briefing != null and settlement != null, "Assign the inherited briefing and settlement scenes")
+
+## The owner preplaces this CanvasLayer and both game-owned inherited pages in its scene.
 func prepare(game: Node, context: PartyAPI, request: Dictionary, start_play: Callable, content_overrides: Dictionary = {}) -> Error:
 	api = context
 	_request = request.duplicate(true)
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_hide_hud_layers(game)
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_previous_mode = game.process_mode
 	game.process_mode = Node.PROCESS_MODE_DISABLED
-	game.add_child(self)
-	briefing = Briefing.new()
 	var manifest_path: String = game.scene_file_path.get_base_dir().path_join("manifest.json")
 	var content: Dictionary = Briefing.read_content(manifest_path, api)
 	content.merge(content_overrides, true)
@@ -36,7 +37,6 @@ func prepare(game: Node, context: PartyAPI, request: Dictionary, start_play: Cal
 		_hud_layers.clear()
 		game.process_mode = _previous_mode
 		start_play.call(), CONNECT_ONE_SHOT)
-	add_child(briefing)
 	api.net.message_received.connect(_message)
 	api.on_close(stop)
 	return api.mark_ready()
@@ -46,7 +46,7 @@ func transport_started() -> void:
 
 ## Freeze the original result on the host. Never broadcast private game_data or rewards.
 func present(result: Dictionary) -> Error:
-	if not api.is_host() or settlement != null:
+	if not api.is_host() or _result_presented:
 		return ERR_UNAVAILABLE
 	_host_result = result.duplicate(true)
 	var public_result: Dictionary = {"request_id": result.request_id, "rankings": result.rankings,
@@ -57,7 +57,7 @@ func present(result: Dictionary) -> Error:
 	return error
 
 func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
-	if topic != RESULT_TOPIC or sender.peer_id != 1 or api.is_host() or settlement != null:
+	if topic != RESULT_TOPIC or sender.peer_id != 1 or api.is_host() or _result_presented:
 		return
 	if not payload is Dictionary or not Contract.new().validate_result(payload, _request, api.get_players()).ok:
 		api.fail("invalid_result_page", "房主发送的结算数据无效。")
@@ -68,17 +68,16 @@ func _show_result(result: Dictionary) -> void:
 	_hide_hud_layers(get_parent())
 	get_parent().move_child(self, -1)
 	get_parent().process_mode = Node.PROCESS_MODE_DISABLED
-	settlement = Settlement.new()
+	_result_presented = true
 	settlement.configure(api, {"title": "本轮取消" if result.reason == "cancelled" else "本轮结算",
 		"rows": result.rankings, "columns": result.columns}, result.request_id)
 	if api.is_host():
 		settlement.continued.connect(_submit, CONNECT_ONE_SHOT)
-	add_child(settlement)
 
-## A game's CanvasLayer HUD would otherwise draw above both this page and host dialogs.
+## Hide gameplay overlays while retaining this page layer and framework dialogs.
 func _hide_hud_layers(game: Node) -> void:
 	for hud: CanvasLayer in game.find_children("*", "CanvasLayer", true, false):
-		if hud.visible:
+		if hud != self and not is_ancestor_of(hud) and hud.visible:
 			_hud_layers.append(hud)
 			hud.hide()
 

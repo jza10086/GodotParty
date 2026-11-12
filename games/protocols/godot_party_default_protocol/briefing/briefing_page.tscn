@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://games/protocols/godot_party_default_protocol/briefing/briefing_gate.gd" id="1_gate"]
+[ext_resource type="PackedScene" path="res://games/protocols/godot_party_default_protocol/briefing/briefing_view.tscn" id="2_view"]
+
+[node name="BriefingPage" type="Control" node_paths=PackedStringArray("view")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_gate")
+view = NodePath("View")
+
+[node name="View" parent="." instance=ExtResource("2_view")]
+layout_mode = 1
+
+[editable path="View"]

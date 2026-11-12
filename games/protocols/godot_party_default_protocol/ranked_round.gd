@@ -2,7 +2,7 @@ extends Control
 ## Shared round lifecycle, authenticated actions and result pages.
 ## Games explicitly publish their initialization/events and schedule necessary motion samples.
 const Pages = preload("res://games/protocols/godot_party_default_protocol/round_pages.gd")
-var pages: Pages
+@export var pages: Pages
 var api: PartyAPI
 var request: Dictionary = {}
 var settings: Dictionary = {}
@@ -45,7 +45,7 @@ func _ready() -> void:
 		return
 	status.text = "等待所有玩家就绪"
 	build_game()
-	pages = Pages.new()
+	assert(pages != null, "Assign ProtocolPages in the game scene")
 	var ready_error: Error = pages.prepare(self, api, request, _start_gameplay)
 	if ready_error != OK:
 		api.fail("load_failed", error_string(ready_error))

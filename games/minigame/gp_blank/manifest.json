@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "core_api_major": 5,
-  "package_version": "1.0.11",
+  "package_version": "1.0.12",
   "player_counts": [
     1,
     2,
@@ -14,7 +14,7 @@
   ],
   "entry": "game.tscn",
   "dependencies": {
-    "godot_party_default_protocol": "1.0.10"
+    "godot_party_default_protocol": "1.0.11"
   },
   "id": "gp_blank",
   "name": "空白小游戏",

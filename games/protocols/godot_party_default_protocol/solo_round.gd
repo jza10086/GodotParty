@@ -15,8 +15,8 @@ var request: Dictionary
 var participant: String
 var playing: bool = false
 var _gameplay: Node
-var _briefing: Briefing
-var _settlement: Settlement
+@export var briefing: Briefing
+@export var settlement: Settlement
 var _record_path: String
 var _best: int = -1
 var _reported: bool = false
@@ -58,17 +58,16 @@ func _ready() -> void:
 		return
 	if _stopped or not api.is_open():
 		return
-	_briefing = Briefing.new()
-	_briefing.configure(api, Briefing.read_content(scene_file_path.get_base_dir().path_join("manifest.json"), api))
-	_briefing.play_requested.connect(_play, CONNECT_ONE_SHOT)
-	add_child(_briefing)
+	assert(briefing != null and settlement != null, "Assign the inherited round pages")
+	briefing.configure(api, Briefing.read_content(scene_file_path.get_base_dir().path_join("manifest.json"), api))
+	briefing.play_requested.connect(_play, CONNECT_ONE_SHOT)
 	var error: Error = api.mark_ready()
 	if error != OK:
 		api.fail("solo_ready", error_string(error))
 
 func party_start() -> void:
 	if not _stopped:
-		_briefing.transport_started()
+		briefing.transport_started()
 
 func _play() -> void:
 	if _stopped:
@@ -147,13 +146,11 @@ func _settle(status: String, metrics: Dictionary) -> void:
 func _show_result(result: Dictionary) -> void:
 	playing = false
 	_stop_gameplay()
-	_briefing.stop()
-	_settlement = Settlement.new()
-	_settlement.configure(api, {"title": api.i18n.text(&"solo.result_title", {}, api.protocol_id),
+	briefing.stop()
+	settlement.configure(api, {"title": api.i18n.text(&"solo.result_title", {}, api.protocol_id),
 		"rows": result.rankings, "columns": result.columns}, request.request_id)
 	if api.is_host():
-		_settlement.continued.connect(_submit, CONNECT_ONE_SHOT)
-	add_child(_settlement)
+		settlement.continued.connect(_submit, CONNECT_ONE_SHOT)
 
 func _submit() -> void:
 	var error: Error = api.finish(_host_result)
@@ -166,10 +163,10 @@ func party_stop(_reason: StringName) -> void:
 	_stopped = true
 	playing = false
 	_stop_gameplay()
-	if _briefing != null:
-		_briefing.stop()
-	if _settlement != null:
-		_settlement.stop()
+	if briefing != null:
+		briefing.stop()
+	if settlement != null:
+		settlement.stop()
 	if _gameplay != null and _gameplay.is_connected(&"completed", _completed):
 		_gameplay.disconnect(&"completed", _completed)
 	if api != null:

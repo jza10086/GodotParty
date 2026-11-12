@@ -2,17 +2,13 @@
 ## this view neither computes rewards nor coordinates readiness or the next activity.
 extends Control
 
-const LABEL: PackedScene = preload("res://core/ui/ambient_reveal/components/display/label.tscn")
+@export var result_row_scene: PackedScene
 var _presentation: Dictionary = {}
 var _columns: Array = []
 var _names: Dictionary = {}
 var _seconds: float = -1.0
 var _initialized: bool = false
-var _compact: bool = false
 
-@onready var _card: MarginContainer = %Card
-@onready var _padding: MarginContainer = %Padding
-@onready var _column: VBoxContainer = %Column
 @onready var _title: Label = %Title
 @onready var _rows: VBoxContainer = %Rows
 @onready var _countdown: Label = %Countdown
@@ -39,10 +35,10 @@ func set_countdown(seconds: float) -> void:
 
 func _ready() -> void:
 	_initialized = true
-	resized.connect(_resize_layout)
-	_resize_layout()
-	_render()
-	set_countdown(_seconds)
+	assert(result_row_scene != null, "Assign the settlement row scene")
+	if not _presentation.is_empty():
+		_render()
+		set_countdown(_seconds)
 
 func _render() -> void:
 	_title.text = str(_presentation.get("title", "本轮结算")).trim_prefix("GodotPartyDefault · ")
@@ -53,7 +49,12 @@ func _render() -> void:
 			node.queue_free()
 	%ScoreHeading.hide()
 	for index: int in _columns.size():
-		var label: Label = _label(%Heading, "Metric%d" % index, _columns[index].title)
+		var label: Label = %ScoreHeading.duplicate()
+		%Heading.add_child(label)
+		label.show()
+		label.name = "Metric%d" % index
+		label.text = _columns[index].title
+		label.tooltip_text = label.text
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		label.set_meta("metric", true)
 	for child: Node in _rows.get_children():
@@ -76,28 +77,27 @@ func _render() -> void:
 		return first < second)
 	for entry: Dictionary in ordered.slice(0, 8):
 		_add_row(entry.row)
-	_resize_layout()
 
 func _add_row(row: Dictionary) -> void:
-	var line: HBoxContainer = HBoxContainer.new()
+	var line: HBoxContainer = result_row_scene.instantiate()
 	line.name = "Row" + str(_rows.get_child_count() + 1)
-	line.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	line.set_meta(&"player_id", str(row.get("player_id", "")))
 	_rows.add_child(line)
 	var rank_value: int = _rank(row)
-	var rank_label: Label = _label(line, "Rank", "—" if rank_value == 0 else str(rank_value))
-	rank_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var name_label: Label = _label(line, "PlayerName", str(_names.get(row.get("player_id", ""), "—")))
-	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	line.get_node("Rank").text = "—" if rank_value == 0 else str(rank_value)
+	var name_label: Label = line.get_node("PlayerName")
+	name_label.text = str(_names.get(row.get("player_id", ""), "—"))
 	name_label.tooltip_text = name_label.text
+	var template: Label = line.get_node("Metric")
+	template.hide()
 	for index: int in _columns.size():
 		var column: Dictionary = _columns[index]
-		var label: Label = _label(line, "Metric%d" % index, _metric(row.get("metrics", {}).get(column.key), column.format))
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		var label: Label = template.duplicate()
+		line.add_child(label)
+		label.show()
+		label.name = "Metric%d" % index
+		label.text = _metric(row.get("metrics", {}).get(column.key), column.format)
 		label.tooltip_text = label.text
-		label.set_meta("metric", true)
 
 func _rank(row: Dictionary) -> int:
 	var value: Variant = row.get("rank", 0)
@@ -113,45 +113,3 @@ func _metric(value: Variant, format: String) -> String:
 		"decimal": return "%.2f" % float(value)
 		"time": return "%02d:%05.2f" % [int(value) / 60000, fmod(float(value) / 1000.0, 60.0)]
 	return str(value)
-
-func _label(parent: Node, node_name: String, text: String) -> Label:
-	var label: Label = LABEL.instantiate() as Label
-	label.name = node_name
-	label.text = text
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(label)
-	return label
-
-func _resize_layout() -> void:
-	if not _initialized:
-		return
-	_compact = size.x < 1500.0 or size.y < 850.0
-	var outer: int = 24 if _compact else 64
-	for edge: String in ["left", "right", "top", "bottom"]:
-		%Layout.add_theme_constant_override("margin_" + edge, outer)
-		_padding.add_theme_constant_override("margin_" + edge, 24 if _compact else 42)
-	_card.custom_minimum_size.x = maxf(0.0, minf(1080.0, size.x - float(outer * 2)))
-	_column.add_theme_constant_override("separation", 14 if _compact else 20)
-	_rows.add_theme_constant_override("separation", 4 if _compact else 6)
-	_title.add_theme_font_size_override("font_size", 34 if _compact else 46)
-	_countdown.add_theme_font_size_override("font_size", 18 if _compact else 21)
-	var rank_width: float = 72.0 if _compact else 96.0
-	var score_width: float = minf(180.0, _card.custom_minimum_size.x * 0.52 / maxi(1, _columns.size()))
-	%RankHeading.custom_minimum_size.x = rank_width
-
-	%Heading.add_theme_constant_override("separation", 20 if _compact else 28)
-	for label: Label in %Heading.get_children():
-		if label.has_meta("metric"):
-			label.custom_minimum_size.x = score_width
-			label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-			label.tooltip_text = label.text
-		label.add_theme_font_size_override("font_size", 18 if _compact else 21)
-	for line: HBoxContainer in _rows.get_children():
-		line.custom_minimum_size.y = 44 if _compact else 64
-		line.add_theme_constant_override("separation", 20 if _compact else 28)
-		line.get_node("Rank").custom_minimum_size.x = rank_width
-		for label: Label in line.get_children():
-			if label.has_meta("metric"):
-				label.custom_minimum_size.x = score_width
-			label.add_theme_font_size_override("font_size", 23 if _compact else 29)

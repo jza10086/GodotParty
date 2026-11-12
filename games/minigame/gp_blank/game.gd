@@ -2,7 +2,7 @@ extends Control
 ## Formal entry: protocol readiness, authoritative press order and final publication.
 ## DemoHub owns editable demonstrations, input presentation and local audio controls.
 const DemoHub: GDScript = preload("examples/demo_hub.gd")
-const RandomPool: GDScript = preload("examples/random_pool/least_played_pool.gd")
+const RandomPool: GDScript = preload("res://games/protocols/godot_party_default_protocol/random/least_played_pool.gd")
 const DRAW_TOPIC: StringName = &"blank/draw"
 var _random_pool: RandomPool = RandomPool.new(DemoHub.RANDOM_DEMOS)
 enum Phase { PREPARING, RUNNING, SETTLING, SUBMITTED, STOPPED }
@@ -11,13 +11,13 @@ const RESULT_TOPIC: StringName = &"blank/result"
 var api: PartyAPI
 var request: Dictionary
 var phase: Phase = Phase.PREPARING
-var _briefing: Control
-var _settlement: Control
+@export var briefing: Control
+@export var settlement: Control
 var _cursors: Control
 var _result: Dictionary = {}
 var _press_order: Array[String] = []
 @onready var _demo: DemoHub = %DemoHub
-@onready var _pages: Control = %ProtocolPages
+@onready var _pages: CanvasLayer = %ProtocolPages
 
 func party_setup(value: PartyAPI, config: Dictionary) -> void:
 	api = value
@@ -58,16 +58,10 @@ func _ready() -> void:
 	_cursors.enabled = false
 	_cursors.hide()
 	_pages.add_child(_cursors)
-	var gate_script: Script = api.load_asset({"package_id": api.protocol_id, "resource_key": "briefing_gate"}) as Script
-	if gate_script == null:
-		api.fail("briefing_missing", "原版协议缺少加载场景。")
-		return
-	_briefing = gate_script.new()
-	var content: Dictionary = gate_script.read_content(get_script().resource_path.get_base_dir().path_join("manifest.json"), api)
+	var content: Dictionary = briefing.read_content(get_script().resource_path.get_base_dir().path_join("manifest.json"), api)
 	content["controls"] = [{"binding": api.i18n.text(&"game.mouse"), "description": api.i18n.text(&"game.controls")}]
-	_briefing.configure(api, content)
-	_briefing.play_requested.connect(_begin_play)
-	_pages.add_child(_briefing)
+	briefing.configure(api, content)
+	briefing.play_requested.connect(_begin_play)
 	await get_tree().process_frame
 	if not api.is_open():
 		return
@@ -77,7 +71,7 @@ func _ready() -> void:
 		api.fail("load_failed", error_string(error))
 
 func party_start() -> void:
-	_briefing.transport_started()
+	briefing.transport_started()
 
 func _begin_play() -> void:
 	phase = Phase.RUNNING
@@ -203,19 +197,13 @@ func _random_failed(error: Error) -> void:
 func _open_settlement(result: Dictionary) -> void:
 	if phase != Phase.RUNNING:
 		return
-	var gate_script: Script = api.load_asset({"package_id": api.protocol_id, "resource_key": "settlement_gate"}) as Script
-	if gate_script == null:
-		api.fail("settlement_missing", "原版协议缺少结算场景。")
-		return
 	_result = result.duplicate(true)
 	phase = Phase.SETTLING
 	_demo.stop_demo()
 	_cursors.enabled = false
 	_cursors.hide()
-	_settlement = gate_script.new()
-	_settlement.configure(api, {"title": api.i18n.text(&"game.results"), "rows": _result.rankings}, request.request_id)
-	_settlement.continued.connect(_submit_result)
-	_pages.add_child(_settlement)
+	settlement.configure(api, {"title": api.i18n.text(&"game.results"), "rows": _result.rankings}, request.request_id)
+	settlement.continued.connect(_submit_result)
 
 ## Every client mounted the result and the host's delay elapsed; only now submit once.
 func _submit_result() -> void:
@@ -231,10 +219,10 @@ func party_stop(_reason: StringName) -> void:
 	if is_instance_valid(_cursors):
 		_cursors.enabled = false
 		_cursors.hide()
-	if is_instance_valid(_briefing):
-		_briefing.stop()
-	if is_instance_valid(_settlement):
-		_settlement.stop()
+	if is_instance_valid(briefing):
+		briefing.stop()
+	if is_instance_valid(settlement):
+		settlement.stop()
 	if api != null and api.net.message_received.is_connected(_message):
 		api.net.message_received.disconnect(_message)
 	if api.players_changed.is_connected(_try_settle):

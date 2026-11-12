@@ -1,6 +1,6 @@
 # GodotPartyDefaultProtocol 1.0
 
-包 ID `godot_party_default_protocol`，包版本 1.0.5，契约 1.0，API 5 / 清单 2。显示名称以 GodotPartyDefault 为前缀，文件和包 ID 使用蛇形命名。依赖 `godot_party_default_avatars` 1.0.1。
+包 ID `godot_party_default_protocol`，包版本 1.0.11，契约 1.0，API 5 / 清单 2。显示名称以 GodotPartyDefault 为前缀，文件和包 ID 使用蛇形命名。依赖 `godot_party_default_avatars` 与 `godot_party_default_avatars_2d` 1.0.2。
 
 协议只校验语义、生成展示和纯结算建议，不保存钱包、执行道具效果或决定奖励。金币、钻石、道具实例和已处理请求都由大游戏持久状态管理。所有身份使用框架提供的参与者 player_id，不使用 peer_id；观战者不能提交参赛结果。
 
@@ -176,17 +176,65 @@ board_area.add_child(cursors)
 
 ## 加载与结算场景
 
-协议公开 `briefing_view` / `briefing_gate` 与 `settlement_view` / `settlement_gate`；主游戏或小游戏按需挂载，不改变未接入游戏。
+协议公开完整的 `briefing_page` / `settlement_page` 场景；它们组合 gate 脚本与固定的 View 子场景。`briefing_gate` / `settlement_gate` 是这些场景的脚本类型，不能再用 `.new()` 构建页面。纯表现用的 `briefing_view` / `settlement_view` 仍可独立使用。
 
-- 加载：helper入树前 `configure(api, content)`，content含title/introduction/cover/controls；`read_content(manifest_path, api)`可读取自己的简介和实际绑定。初始化后游戏正常`mark_ready()`，`party_start()`中调用`transport_started()`；等`play_requested`才启动玩法。人工确认使用Enter/空格或点击现有按键提示；绿色“准备”切换为红色“取消准备”，再次操作可取消。`briefing_gate.set_ready(bool) -> Error` 提交明确的准备状态。倒计时内仍可取消，房主立即撤回倒计时；重新全员准备后重新计时。观战无需确认；技术准备与人工准备独立，全员满足后默认3秒开始。
-- 可选玩家单选项（包版本 1.0.5）：加载 content 提供固定的 `choice_label`、`choice_options: Array[String]` 和 `choice_default`（必须属于选项）。`round_pages.prepare(game, api, request, start_play, content_overrides = {})` 的最后一个字典覆盖本轮加载页内容；游戏可用它传入由资源生成的选项。未配置选项的游戏不显示下拉框。
+小游戏在 Godot 编辑器中从两个 page 场景分别“新建继承场景”，保存为包内 `ui/briefing.tscn` 与 `ui/settlement.tscn`。展开可编辑的 `View` 子节点，改字体、颜色、布局、预览标题；需要扩展行为时派生对应 gate/view 脚本并调用 `super`，不复制网络协调代码。示例见空白模板的两个继承场景。
+
+在游戏入口预置 CanvasLayer（参考层级 32，低于框架菜单 64），实例化这两个本地场景，初始 `visible = false`。用 `@export` 节点引用连接入口；不要在启动时 `new()`、`instantiate()` 或重新 add_child 页面。每局创建新的游戏入口，页面只激活一次，停止后不复用到下一局。独立 F6 页面显示虚构样例，不连接网络、不写配置、不提交分数；模板 `game.tscn` 的 F6 仍直接显示原有演示。
+
+固定字号、间距、边框和容器保存在场景中，脚本不会按窗口尺寸重写。玩家行外观由 `briefing_player_row` / `settlement_row` 场景定义；控件提示由 `briefing_control_hint` 定义。可继承这些子场景并设置 View 的导出场景资源。成员增减才增删准备行，状态变化更新原行；结算只实例化实际成绩行及动态指标列。编辑器样例在首次填入真实数据时移除，不进入网络或成绩数据。
+
+- 加载：对预置页面调用 `configure(api, content)`（可在入树前或已入树后），content含title/introduction/cover/controls；`read_content(manifest_path, api)`可读取自己的简介和实际绑定。初始化后游戏正常`mark_ready()`，`party_start()`中调用`transport_started()`；等`play_requested`才启动玩法。人工确认使用Enter/空格或点击现有按键提示；绿色“准备”切换为红色“取消准备”，再次操作可取消。`briefing_gate.set_ready(bool) -> Error` 提交明确的准备状态。倒计时内仍可取消，房主立即撤回倒计时；重新全员准备后重新计时。观战无需确认；技术准备与人工准备独立，全员满足后默认3秒开始。
+- 可选玩家单选项（包版本 1.0.11）：加载 content 提供固定的 `choice_label`、`choice_options: Array[String]` 和 `choice_default`（必须属于选项）。`round_pages.prepare(game, api, request, start_play, content_overrides = {})` 的最后一个字典覆盖本轮加载页内容；游戏可用它传入由资源生成的选项。未配置选项的游戏不显示下拉框。
 - `briefing_gate.select_choice(value) -> Error` 提交本地选择；`get_choice(player_id) -> String` 读取房主确认的选择，观战者返回空字符串。准备消息同时携带选择，房主校验真实发送者、参与身份和选项后锁定；已准备或开始倒计时后不接受选项修改，取消准备后可重新选择。状态快照包含参与者的 `choices` 字典，沿用 session/scope/revision 校验。游戏在 `play_requested` 后读取所选值并启动实际玩法。
-- 纯加载 view 额外提供 `choice_selected(value)`、`set_choice(value)`；`set_state` 的玩家行可含 `choice` 字符串，面板仅显示该文本，不追加说明标签。未准备且操作可用时允许更改选项；下拉框打开时 Enter 不会同时触发准备。
-- 结算：helper入树前`configure(api, presentation, result_token)`，presentation为`{title, rows:[{player_id, rank, metrics:{score}}]}`。score是本轮小游戏分数，不是父游戏奖励；作者给定rank，视图稳定处理并列，不按分数重排。所有在线端装好页面后自动回执，默认3秒发出`continued`，没有人工准备/退出按钮。就绪回执每 0.5 秒重发仅用于覆盖另一端页面尚未挂载的窗口；重复回执不重复发布状态，等待最多 30 秒，超时报错结束该轮。传输失败停止推进，不假装完成。
+- 纯加载 view 额外提供 `choice_selected(value)`、`set_choice(value)`；`set_state` 的玩家行必须包含唯一的 `player_id`、`name` 和 `connected`，可含 `loaded`、`ready`、`participant` 与 `choice`。这些字段由 gate 从已验证的房间状态提供；直接使用 view 时调用方遵守相同约定。面板仅显示选项文本，不追加说明标签。未准备且操作可用时允许更改选项；下拉框打开时 Enter 不会同时触发准备。
+- 结算：对预置页面调用 `configure(api, presentation, result_token)`，presentation为`{title, rows:[{player_id, rank, metrics:{score}}]}`。score是本轮小游戏分数，不是父游戏奖励；作者给定rank，视图稳定处理并列，不按分数重排。所有在线端装好页面后自动回执，默认3秒发出`continued`，没有人工准备/退出按钮。就绪回执每 0.5 秒重发仅用于覆盖另一端页面尚未挂载的窗口；重复回执不重复发布状态，等待最多 30 秒，超时报错结束该轮。传输失败停止推进，不假装完成。
 - helper不调用`finish()`或发奖。拥有者自行选择提交前展示，或在父游戏持有已提交结果后展示；必须保证节点在展示期间仍存活。同一轮使用唯一token，消息校验session/scope/token/revision和真实发送者，退出时调用`stop()`。
 - 纯view可单独使用：加载view提供`configure`/`set_state`与`ready_requested`；结算view提供`configure(presentation, players)`与`set_countdown`，不拥有网络或计时。
 
-空白模板是接入示例：自己持有加载和结算页面；在线参赛者各按一次结束按钮，房主按收到有效点击的顺序生成并广播排名，所有端自动看完结算后才`finish()`一次。页面使用已有主菜单背景/主题/面板，不引入外部资产。正式游戏可以复用公开组件 `round_pages`。在初始化完成后调用 `prepare(game, api, request, start_play)`，在 party_start 调用 transport_started()。房主将游戏原结果交给 present(result)，公共页面按 columns 展示 rankings 中的指标，完整结果仅由房主提交。单人包可以直接使用 `solo_round`，为 gameplay 指定发出 completed(metrics) 的场景，为 columns 声明成绩列，并在清单中声明单人。
+空白模板是接入示例：自己持有加载和结算页面；在线参赛者各按一次结束按钮，房主按收到有效点击的顺序生成并广播排名，所有端自动看完结算后才`finish()`一次。页面使用已有主菜单背景/主题/面板，不引入外部资产。正式游戏可以在固定 CanvasLayer 上挂公开脚本 `round_pages`，通过 Inspector 给 `briefing` / `settlement` 指定两个本地继承场景节点。初始化完成后调用 `prepare(game, api, request, start_play)`，在 party_start 调用 transport_started()。房主将游戏原结果交给 present(result)，公共页面按 columns 展示 rankings 中的指标，完整结果仅由房主提交。采用 `ranked_round` 的入口必须将 `pages` 指向这个 CanvasLayer。单人包使用 `solo_round`，将 `briefing` / `settlement` 直接指向本地继承场景，为 gameplay 指定发出 completed(metrics) 的场景，为 columns 声明成绩列，并在清单中声明单人。
+
+### 自己管理阶段的最小调用
+
+```gdscript
+@export var briefing: Control
+@export var settlement: Control
+var api: PartyAPI
+var request: Dictionary
+
+func party_setup(context: PartyAPI, config: Dictionary) -> void:
+    api = context
+    request = config.duplicate(true)
+
+func _ready() -> void:
+    briefing.play_requested.connect(_begin_play)
+    briefing.configure(api, briefing.read_content(scene_file_path.get_base_dir().path_join("manifest.json"), api))
+    var error: Error = api.mark_ready()
+    if error != OK:
+        api.fail("load_failed", error_string(error))
+
+func party_start() -> void:
+    briefing.transport_started()
+
+func show_result(result: Dictionary) -> void:
+    settlement.continued.connect(_submit_result, CONNECT_ONE_SHOT)
+    settlement.configure(api, {"title": "本轮结算", "rows": result.rankings,
+        "columns": result.columns}, request.request_id)
+
+func party_stop(_reason: StringName) -> void:
+    briefing.stop()
+    settlement.stop()
+```
+
+`_begin_play`、网络结果接收和 `_submit_result` 由小游戏实现；只有房主调用 `api.finish()`，所有发送与提交错误都必须处理。配置页面只显示数据，不替游戏判断公开/私有信息。场景节点和场景资源的依赖会由导出器收集；清单必须声明当前协议版本，无需把空白模板放入导出包。
+
+## 相机与随机内容池
+
+公开脚本 `orbit_camera` 位于 `camera/orbit_camera.gd`，挂到场景里的 Camera3D。初始相机位置与 `initial_focus` 在 Inspector 设置；滚轮缩放、中键俯仰/方位、中心表面拾取由 `handle_input(event) -> bool` 处理，游戏在 `_unhandled_input` 转发并消费事件。用 `input_allowed` 传入阶段与 `api.input.input_blocked` 门控，`focus_on(unit, local_anchor)` 跟随单位，`set_orbit(center, distance, yaw, pitch)` 显式切换构图。游戏负责目标与输入边界。
+
+公开脚本 `least_played_pool` 位于 `random/least_played_pool.gd`，用 `new(content_ids)` 创建一局的池。`choose(rng)` 仅抽取，`accept_history(sequence)` 成功后才记账；`history()` 和 `counts()` 返回副本。需要持久化时显式 `open_file(absolute_path)` 并检查 Error，F6 不调用。房主选择，所有端接受已验证的主机序列，网络消息不含各端私有累计次数。相同前缀不重复计数，未知 ID、冲突历史或损坏文件会失败。完整调用示例见[空白模板](../../../minigame/gp_blank/README.md#通用随机统计模板)。
+
+音频、光标和字体继续由协议公开；Esc 菜单、框架设置和返回大厅属于 core。小游戏的演示、规则、资源、奖励与专用设置留在各自包内，公共组件不引用任何小游戏。
 
 ## 单参赛者接入
 

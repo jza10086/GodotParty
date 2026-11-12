@@ -5,14 +5,13 @@ extends Control
 
 signal continued()
 
-const View: PackedScene = preload("res://games/protocols/godot_party_default_protocol/settlement/settlement_view.tscn")
 const TOPIC: StringName = &"godot_party_default/settlement"
 @export_range(0.0, 10.0, 0.1) var countdown_seconds: float = 3.0
 ## A missing mounted-result acknowledgement must end explicitly, never skip a peer.
 const READY_TIMEOUT_MSEC: int = 30000
 var _ready_deadline_msec: int = 0
 var api: PartyAPI
-var view: Control
+@export var view: Control
 var token: String
 var _presentation: Dictionary = {}
 var _ready_peers: Dictionary = {}
@@ -26,7 +25,7 @@ var _released: bool = false
 var _retry_in: float = 0.0
 var _end_msec: int = -1
 
-## The owner supplies its authoritative result and a stable per-result request ID before insertion.
+## Activate the authored scene once with an authoritative result and stable request ID.
 ## It chooses whether to present before finish() or after a durable parent commit.
 func configure(context: PartyAPI, presentation: Dictionary, result_token: String) -> void:
 	api = context
@@ -35,15 +34,16 @@ func configure(context: PartyAPI, presentation: Dictionary, result_token: String
 	api.net.message_received.connect(_message)
 	api.players_changed.connect(_players_changed)
 	api.on_close(stop)
+	if is_node_ready():
+		_activate()
 
 func _ready() -> void:
-	if api == null or token.is_empty():
-		push_error("Settlement requires an injected API and result token")
-		return
-	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	view = View.instantiate()
-	add_child(view)
+	assert(view != null, "Assign the page's presentation view in its scene")
+	if api != null:
+		_activate()
+
+func _activate() -> void:
+	show()
 	view.configure(_presentation, api.get_room_players())
 	view.set_countdown(-1.0)
 	await get_tree().process_frame

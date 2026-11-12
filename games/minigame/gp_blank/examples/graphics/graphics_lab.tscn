@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bcs4splw5sk0o"]
 
 [ext_resource type="Script" path="graphics_lab.gd" id="1_p4e3l"]
-[ext_resource type="Script" path="orbit_camera.gd" id="2_p0ujp"]
+[ext_resource type="Script" path="res://games/protocols/godot_party_default_protocol/camera/orbit_camera.gd" id="2_p0ujp"]
 [ext_resource type="PackedScene" path="building_display.tscn" id="3_o8aa1"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_p0ujp"]

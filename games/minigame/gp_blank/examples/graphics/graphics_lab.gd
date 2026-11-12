@@ -1,6 +1,6 @@
 extends Node3D
 ## Scene nodes own art settings. Only standalone previews apply experimental quality.
-const OrbitCamera = preload("orbit_camera.gd")
+const OrbitCamera = preload("res://games/protocols/godot_party_default_protocol/camera/orbit_camera.gd")
 @onready var orbit_camera: OrbitCamera = %Camera
 var protocol_managed: bool = false
 var _saved_viewport: Dictionary[StringName, Variant] = {}

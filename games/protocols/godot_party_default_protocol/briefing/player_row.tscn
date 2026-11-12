@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="panel"]
+
+[node name="PlayerRow" instance=ExtResource("panel")]
+custom_minimum_size = Vector2(0, 68)
+size_flags_horizontal = 3
+
+[node name="Line" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_right = -18.0
+theme_override_constants/separation = 16
+
+[node name="Name" type="Label" parent="Line"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 25
+text = "小林"
+vertical_alignment = 1
+text_overrun_behavior = 3
+
+[node name="Choice" type="Label" parent="Line"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+theme_override_colors/font_color = Color(0.5843, 0.7804, 0.9255, 1)
+text = "普通"
+vertical_alignment = 1
+
+[node name="State" type="Label" parent="Line"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "未准备"
+vertical_alignment = 1
+horizontal_alignment = 2

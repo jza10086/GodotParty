@@ -6,11 +6,10 @@ extends Control
 
 signal play_requested()
 
-const View: PackedScene = preload("res://games/protocols/godot_party_default_protocol/briefing/briefing_view.tscn")
 const TOPIC: StringName = &"godot_party_default/briefing"
 @export_range(0.0, 10.0, 0.1) var countdown_seconds: float = 3.0
 var api: PartyAPI
-var view: Control
+@export var view: Control
 var _content: Dictionary = {}
 var _ready_ids: Dictionary = {}
 var _transport_started: bool = false
@@ -48,7 +47,7 @@ static func read_content(manifest_path: String, context: PartyAPI) -> Dictionary
 			"description": result.actions[action]})
 	return result
 
-## Call before insertion. Neither this method nor the helper calls mark_ready for the game.
+## Activate this scene once per round. The owner still calls mark_ready explicitly.
 func configure(context: PartyAPI, content: Dictionary) -> void:
 	api = context
 	_content = content.duplicate(true)
@@ -61,15 +60,16 @@ func configure(context: PartyAPI, content: Dictionary) -> void:
 	api.net.message_received.connect(_message)
 	api.players_changed.connect(_players_changed)
 	api.on_close(stop)
+	if is_node_ready():
+		_activate()
 
 func _ready() -> void:
-	if api == null:
-		push_error("Briefing requires an injected PartyAPI")
-		return
-	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	view = View.instantiate()
-	add_child(view)
+	assert(view != null, "Assign the page's presentation view in its scene")
+	if api != null:
+		_activate()
+
+func _activate() -> void:
+	show()
 	view.configure(_content)
 	view.ready_requested.connect(func() -> void: set_ready(not _ready_ids.has(_local_id())))
 	view.choice_selected.connect(select_choice)

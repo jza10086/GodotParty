@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[node name="ResultRow" type="HBoxContainer"]
+custom_minimum_size = Vector2(0, 64)
+size_flags_horizontal = 3
+theme_override_constants/separation = 28
+
+[node name="Rank" type="Label" parent="."]
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 29
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayerName" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 29
+text = "小林"
+text_overrun_behavior = 3
+vertical_alignment = 1
+
+[node name="Metric" type="Label" parent="."]
+custom_minimum_size = Vector2(0, 0)
+size_flags_horizontal = 3
+layout_mode = 2
+theme_override_font_sizes/font_size = 29
+text = "1,250"
+horizontal_alignment = 2
+vertical_alignment = 1
+text_overrun_behavior = 3

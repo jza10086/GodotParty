@@ -10,18 +10,20 @@ game.tscn / game.gd         正式入口：阶段、准备、结果、网络、�
 adapter.gd                 standard 请求检查与结果映射
 settings.gd / manifest.json 配置声明、包信息与依赖
 i18n/                      中英文翻译与命名占位模板
+ui/                        继承协议的准备页、结算页，以及固定 CanvasLayer
 examples/
   demo_hub.tscn / .gd       组合演示、HUD、本机切换和输入门控
-  graphics/                展台、建筑陈列、自由俯视相机
+  graphics/                展台、建筑陈列、协议相机的配置与调用
   navigation_2d/           航道、船、航标与二维 HUD
   audio/                   音频测试面板、七个 Cue 与 samples/
-  random_pool/             最少游玩次数优先的随机池与本机统计
 assets/kenney_city/         三个 Kenney City Kit 模型包及许可
 ```
 
-入口只持有 DemoHub 和协议页面挂点。DemoHub 用 `finish_requested` 报告意图，用 `failed(error)` 报告配置写入失败；入口负责网络发送及 `api.fail()`。演示组件只接收所需的翻译、偏好、音频节点与输入 Callable，不直接依赖 PartyAPI。未提供 API 的 F6 预览隐藏结束按钮，不产生比赛或持久化设置。
+入口持有 DemoHub 和固定的协议页面场景。`ui/briefing.tscn` / `ui/settlement.tscn` 继承协议场景，编辑 `View` 子节点即可调整布局；`ui/round_pages.tscn` 以 CanvasLayer 32 组合它们，初始隐藏，由入口显式激活。DemoHub 用 `finish_requested` 报告意图，用 `failed(error)` 报告配置写入失败；入口负责网络发送及 `api.fail()`。演示组件只接收所需的翻译、偏好、音频节点与输入 Callable，不直接依赖 PartyAPI。未提供 API 的 F6 预览隐藏结束按钮，不产生比赛或持久化设置。
 
 完整标准见 [小游戏接入规范](../../../doc/api/authoring.md)，包括场景化、计算模型、权限、配置草稿、复制、验证与发布。本包的文件划分用于说明实际职责，不要求所有小游戏拥有同样的目录数量或相同的协议控制器。
+
+公共组件和页面生命周期见[协议场景接入](../../protocols/godot_party_default_protocol/doc/README.md#加载与结算场景)。其他游戏依赖协议，不依赖本模板；演示内容与示例音频仍留在本包。Esc 菜单由框架拥有，游戏不复制或重新绑定 Esc。
 
 ## 开发与预览入口
 
@@ -37,7 +39,7 @@ assets/kenney_city/         三个 Kenney City Kit 模型包及许可
 
 滚轮围绕画面中心缩放；中键拖动调整方位和俯仰；Shift＋中键沿地面平移。开始旋转或缩放时，以中心射线命中的表面为支点；射线落空保留原支点。移动物体会带着支点移动。
 
-移植 `examples/graphics/orbit_camera.gd` 到活动 Camera3D，在 `_unhandled_input` 中转发 `handle_input(event)`，返回 true 时消费事件。`input_allowed` 指定阶段与菜单门控。可选的 `initial_focus` 引用一个 Marker3D，只初始化支点，不重摆相机；初始构图直接在编辑器移动 Camera3D。需要程序切换构图时调用 `set_orbit(中心, 距离, 方位角, 俯角)`；调用 `focus_on(unit, local_anchor)` 跟随单位。`focus_mask` 对应场景物理层。透视缩放改变距离，正交缩放改变视野尺寸。
+将协议公开的 `camera/orbit_camera.gd` 挂到活动 Camera3D，在 `_unhandled_input` 中转发 `handle_input(event)`，返回 true 时消费事件。`input_allowed` 指定阶段与菜单门控。可选的 `initial_focus` 引用一个 Marker3D，只初始化支点，不重摆相机；初始构图直接在编辑器移动 Camera3D。需要程序切换构图时调用 `set_orbit(中心, 距离, 方位角, 俯角)`；调用 `focus_on(unit, local_anchor)` 跟随单位。`focus_mask` 对应场景物理层。透视缩放改变距离，正交缩放改变视野尺寸。
 
 美术参数直接编辑原生节点：World 的 Environment；Camera 的投影、FOV、裁剪与 Camera Attributes；Sun/Omni/Spot 的颜色、能量、方向和阴影参数；Samples 下模型的材质与初始姿态。不会再由根节点镜像字段覆盖这些编辑。
 
@@ -75,7 +77,7 @@ F6 调整音量立即生效，仅当前预览有效。正式模式维护草稿�
 
 ## 通用随机统计模板
 
-`examples/random_pool/least_played_pool.gd` 从记忆拼图的统计机制整理而来，可单独复制到地图、题库、图片等随机内容所在的功能目录。它不依赖 PartyAPI、图片资源或本模板；不注册全局类，也不要求修改 core 或协议。
+协议的 `random/least_played_pool.gd` 从记忆拼图的统计机制整理而来。通过已声明的协议依赖直接引用，供地图、题库、图片等随机内容使用；不再从空白模板复制实现。它不依赖 PartyAPI 或模板资源，内容 ID、网络权限和存储路径由游戏负责。
 
 - `new(content_ids)` 指定非空且不重复的稳定内容 ID，每局建立新实例。
 - `open_file(absolute_path)` 显式启用持久化，仅正式入口调用。路径通过 `api.input.storage_directory()` 和当前 `api.package_id` 组成。未调用时只维护内存计数，F6 不接触正式文件。
@@ -87,7 +89,7 @@ F6 调整音量立即生效，仅当前预览有效。正式模式维护草稿�
 最小主机流程（每局只初始化一次 `pool` 与 `rng`）：
 
 ```gdscript
-const RandomPool: GDScript = preload("examples/random_pool/least_played_pool.gd")
+const RandomPool: GDScript = preload("res://games/protocols/godot_party_default_protocol/random/least_played_pool.gd")
 const CONTENT_IDS: Array[String] = ["map_a", "map_b", "map_c"]
 var pool: RandomPool = RandomPool.new(CONTENT_IDS)
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()

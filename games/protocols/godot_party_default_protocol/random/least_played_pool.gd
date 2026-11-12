@@ -1,5 +1,5 @@
 extends RefCounted
-## Copyable least-played pool. One instance owns one match's accepted draw history.
+## Protocol least-played pool. One instance owns one match's accepted draw history.
 ## The entry owns authority/transport; only open_file() opts into local persistence.
 const MAX_COUNT: int = 9007199254740991
 var _ids: Array[String] = []

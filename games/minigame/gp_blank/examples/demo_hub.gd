@@ -4,7 +4,7 @@ extends Control
 signal finish_requested()
 signal failed(error: Error)
 const DEFAULT_TEXT: Translation = preload("../i18n/zh_Hans.po")
-const RandomPool: GDScript = preload("random_pool/least_played_pool.gd")
+const RandomPool: GDScript = preload("res://games/protocols/godot_party_default_protocol/random/least_played_pool.gd")
 const RANDOM_DEMOS: Array[String] = ["graphics", "navigation_2d"]
 const GraphicsLab = preload("graphics/graphics_lab.gd")
 const NavigationDemo = preload("navigation_2d/navigation_2d.gd")

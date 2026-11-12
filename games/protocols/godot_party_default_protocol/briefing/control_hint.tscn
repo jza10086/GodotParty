@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[node name="ControlHint" type="VBoxContainer"]
+theme_override_constants/separation = 3
+
+[node name="Binding" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.5843, 0.7804, 0.9255, 1)
+text = "鼠标左键"
+autowrap_mode = 3
+
+[node name="Description" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "选择"
+autowrap_mode = 3
