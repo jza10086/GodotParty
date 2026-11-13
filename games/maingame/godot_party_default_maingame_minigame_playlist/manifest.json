@@ -1,49 +1,11 @@
 {
-  "manifest_version": 2,
-  "core_api_major": 6,
-  "package_version": "1.1.24",
-  "id": "godot_party_default_maingame_minigame_playlist",
   "name": "GodotPartyDefault · 小游戏轮换",
   "kind": "maingame",
-  "supported_systems": [
-    "windows",
-    "android",
-    "ios"
-  ],
-  "entry": "game.tscn",
-  "room_scene": "room.tscn",
-  "cover": "preview.svg",
-  "protocol": {
-    "id": "godot_party_default_protocol",
-    "api_major": 1,
-    "min_api_minor": 0
-  },
-  "pools": [
-    "minigames"
-  ],
-  "player_counts": [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8
-  ],
+  "package_version": "0.0.1",
+  "framework_version": "0.0.1",
+  "remark": "",
   "dependencies": {
-    "godot_party_default_protocol": "1.0.14",
-    "godot_party_default_ui": "1.0.3"
-  },
-  "config_schema": "settings.gd",
-  "config_panel": "advanced_settings.tscn",
-  "localization": {
-    "supported_locales": [
-      "zh_Hans"
-    ],
-    "fallback_locale": "zh_Hans",
-    "translations": {
-      "zh_Hans": "i18n/zh_Hans.po"
-    }
+    "godot_party_default_protocol": "~0.0.1",
+    "godot_party_default_ui": "~0.0.1"
   }
 }

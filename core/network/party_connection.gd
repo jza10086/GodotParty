@@ -313,11 +313,11 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 	var packet: Variant = bytes_to_var(bytes)
 	if not packet is Dictionary or not Data.valid(packet, 0, true):
 		return
-	if packet.get("wire") != Data.WIRE_VERSION:
+	if packet.get("framework_version") != Data.VERSION:
 		if host:
-			_send(sender, {"kind": "rejected", "payload": {"message": "联机协议版本不同（当前版本：%s；房主所需版本：%d）" % [str(packet.get("wire")), Data.WIRE_VERSION]}})
+			_send(sender, {"kind": "rejected", "payload": {"message": "框架版本不同（当前版本：%s；房主所需版本：%s）" % [str(packet.get("framework_version")), Data.VERSION]}})
 		elif sender == 1:
-			leave("联机协议版本不同（当前版本：%d；房主所需版本：%s）" % [Data.WIRE_VERSION, str(packet.get("wire"))])
+			leave("框架版本不同（当前版本：%s；房主所需版本：%s）" % [Data.VERSION, str(packet.get("framework_version"))])
 		return
 	if not packet.get("kind") is String or not packet.get("session") is String:
 		return
@@ -883,7 +883,7 @@ func send_media(target: int, packet: Dictionary) -> Error:
 	if not online or target not in multiplayer.get_peers():
 		return ERR_UNAVAILABLE
 	var envelope: Dictionary = packet.duplicate(true)
-	envelope.merge({"wire": Data.WIRE_VERSION, "session": session_id, "kind": "media"}, true)
+	envelope.merge({"framework_version": Data.VERSION, "session": session_id, "kind": "media"}, true)
 	var bytes: PackedByteArray = var_to_bytes(envelope)
 	if bytes.size() > 2048:
 		return ERR_INVALID_DATA
@@ -892,7 +892,7 @@ func send_media(target: int, packet: Dictionary) -> Error:
 func send_packet(target: int, packet: Dictionary, mode: int, channel: int) -> Error:
 	if not online or _closing:
 		return ERR_UNAVAILABLE
-	packet["wire"] = Data.WIRE_VERSION
+	packet["framework_version"] = Data.VERSION
 	packet["session"] = session_id
 	packet["kind"] = "net"
 	if not packet_fits(packet):
@@ -907,7 +907,7 @@ func _send(target: int, packet: Dictionary) -> Error:
 	if not online or _closing or target not in multiplayer.get_peers():
 		error = ERR_UNAVAILABLE
 	else:
-		packet["wire"] = Data.WIRE_VERSION
+		packet["framework_version"] = Data.VERSION
 		packet["session"] = session_id
 		error = _scene.send_bytes(var_to_bytes(packet), target, MultiplayerPeer.TRANSFER_MODE_RELIABLE, PartyNet.CONTENT_CHANNEL if packet.kind in ["content_prepare", "content_prepared", "content_get", "content_chunk", "content_complete", "content_cancel"] else PartyNet.CONTROL_CHANNEL) if packet_fits(packet) else ERR_INVALID_DATA
 	if error != OK:
@@ -1021,7 +1021,7 @@ func _process(delta: float) -> void:
 
 ## Control envelopes are measured before durable writes so local state cannot outgrow transport.
 func control_fits(kind: String, payload: Dictionary) -> bool:
-	return packet_fits({"wire": Data.WIRE_VERSION, "session": session_id, "kind": "control", "payload": {"operation": kind, "data": payload}})
+	return packet_fits({"framework_version": Data.VERSION, "session": session_id, "kind": "control", "payload": {"operation": kind, "data": payload}})
 
 func packet_fits(packet: Dictionary) -> bool:
 	return Data.valid(packet, 0, true) and var_to_bytes(packet).size() <= MAX_PACKET_BYTES
@@ -1105,7 +1105,7 @@ func get_peer_stats(peer_id: int = 1) -> Dictionary:
 	return result
 
 func _send_link_packet(peer_id: int, kind: String, payload: Dictionary) -> void:
-	var packet: Dictionary = {"wire": Data.WIRE_VERSION, "session": session_id, "kind": kind, "payload": payload}
+	var packet: Dictionary = {"framework_version": Data.VERSION, "session": session_id, "kind": kind, "payload": payload}
 	var error: Error = _scene.send_bytes(var_to_bytes(packet), peer_id, MultiplayerPeer.TRANSFER_MODE_UNRELIABLE, PartyNet.CLOCK_CHANNEL)
 	if error != OK:
 		_send_failed(error, kind)

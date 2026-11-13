@@ -1,14 +1,15 @@
 # 可开局人数
 
-协议、大游戏、小游戏的 `manifest.json` 必须声明 `player_counts`：1–8 之间不重复的整数数组。连续区间也逐一列出；数组顺序不影响结果。头像包不需要声明。旧 `min_players` / `max_players` 不再接受。
+协议、大游戏、小游戏的入口脚本 `static func party_definition() -> Dictionary` 返回 `player_counts`：1–8 之间不重复的整数数组。连续区间也逐一列出；数组顺序不影响结果。头像包不需要声明。人数规则不进入内容 manifest。
 
-```json
-{
-  "player_counts": [1, 2, 3, 4, 5, 6, 7, 8],
-  "player_count_rules": [
-    {"when": {"mode": "team"}, "counts": [2, 4, 6, 8]}
-  ]
-}
+```gdscript
+static func party_definition() -> Dictionary:
+    return {
+        "player_counts": [1, 2, 3, 4, 5, 6, 7, 8],
+        "player_count_rules": [
+            {"when": {"mode": "team"}, "counts": [2, 4, 6, 8]}
+        ]
+    }
 ```
 
 `player_count_rules` 可省略。`when` 引用本包配置 Schema 中的 room 字段，所有键值同时相等时生效；字段默认值也参与判断。字段、枚举值及类型必须有效，不能引用 local 偏好。上例要求 Schema 声明 `mode`，其枚举包括 `team`。规则只收窄静态人数集合，多个命中的规则继续取交集，不采用第一条或最后一条覆盖。声明的 counts 不能为空，但计算得到的交集可以为空。

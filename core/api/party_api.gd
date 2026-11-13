@@ -93,7 +93,7 @@ func load_asset(ref: Dictionary) -> Resource:
 		return null
 	return _query.call(scope_id, "asset", ref)
 
-## Absolute path to a declared external file/directory in this package.
+## Absolute path under external/ in the artifact frozen for this process.
 ## Use FileAccess/DirAccess or runtime media loaders; this does not create or modify files.
 func get_external_path(relative: String) -> String:
 	if not is_open():

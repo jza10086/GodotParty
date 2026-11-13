@@ -1,66 +1,12 @@
 {
-  "manifest_version": 2,
-  "core_api_major": 6,
-  "package_version": "1.0.14",
-  "id": "godot_party_default_protocol",
   "name": "GodotPartyDefaultProtocol",
   "kind": "protocols",
-  "supported_systems": [
-    "windows",
-    "android",
-    "ios"
-  ],
-  "player_counts": [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8
-  ],
-  "entry": "protocol.gd",
-  "contract": {
-    "api_major": 1,
-    "api_minor": 0
-  },
-  "player_config_panel": "profile_panel.tscn",
+  "package_version": "0.0.1",
+  "framework_version": "0.0.1",
+  "remark": "",
   "dependencies": {
-    "godot_party_default_avatars": "1.0.3",
-    "godot_party_default_avatars_2d": "1.0.3",
-    "godot_party_default_ui": "1.0.3"
-  },
-  "resources": {
-    "contract": "protocol.gd",
-    "ranked_round": "ranked_round.gd",
-    "ranked_round_scene": "ranked_round.tscn",
-    "round_pages": "round_pages.gd",
-    "solo_round": "solo_round.gd",
-    "solo_controls": "solo_controls.gd",
-    "briefing_page": "briefing/briefing_page.tscn",
-    "briefing_gate": "briefing/briefing_gate.gd",
-    "settlement_page": "settlement/settlement_page.tscn",
-    "orbit_camera": "camera/orbit_camera.gd",
-    "least_played_pool": "random/least_played_pool.gd",
-    "settlement_gate": "settlement/settlement_gate.gd",
-    "game_audio": "audio/game_audio.tscn",
-    "audio_cue": "audio/audio_cue.gd",
-    "audio_handle": "audio/audio_handle.gd"
-  },
-  "config_schema": "settings.gd",
-  "settings_runtime": "settings_runtime.gd",
-  "config_directories": {
-    "maingame": "godot_party_default_v1",
-    "minigame": "godot_party_default_v1"
-  },
-  "localization": {
-    "supported_locales": [
-      "zh_Hans"
-    ],
-    "fallback_locale": "zh_Hans",
-    "translations": {
-      "zh_Hans": "i18n/zh_Hans.po"
-    }
+    "godot_party_default_avatars": "~0.0.1",
+    "godot_party_default_avatars_2d": "~0.0.1",
+    "godot_party_default_ui": "~0.0.1"
   }
 }

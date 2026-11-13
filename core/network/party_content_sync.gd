@@ -36,7 +36,6 @@ var _queue: Array[String] = []
 var _stage: String = ""
 var _deadline: int = 0
 var _preparing: bool = false
-var _building: bool = false
 var waiting: bool = false
 var _gate_requirements: Dictionary = {}
 var reports: Dictionary = {}
@@ -182,72 +181,26 @@ func reset() -> void:
 	_deadline = 0
 	changed.emit()
 
-## Advertise source packages immediately; build only the package actually requested.
+## Offers reference the immutable artifacts selected and verified at process startup.
 func offer(peer: int, requirements: Dictionary, stage: String = "join", token: String = "") -> void:
 	_uploads.erase(peer)
 	var offered: Dictionary = {}
 	for id: String in requirements.packages:
 		var required: Dictionary = requirements.packages[id]
 		var manifest: Dictionary = connection.catalog.packages[id]
-		var relative: String = Paths.package_relative(manifest)
-		var row: Dictionary = {"id": id, "name": required.name, "version": required.version, "relative": relative, "kind": manifest.kind, "supported_systems": required.supported_systems, "files": [], "error": ""}
-		if not _editor_source(manifest):
-			_describe(row, directory.path_join(relative))
-		offered[id] = row
+		var artifact: Dictionary = connection.catalog.artifacts[id]
+		offered[id] = {"id": id, "name": manifest.name, "version": required.version, "hash": required.hash, "relative": Paths.package_relative(manifest), "kind": manifest.kind, "files": artifact.files.duplicate(true), "error": ""}
 	_offers[peer] = offered
 	if connection._player_peer(peer).is_empty():
 		connection._hello_peers[peer] = Time.get_ticks_msec() + 600000
 	connection._send(peer, {"kind": "content_offer", "payload": {"requirements": requirements, "items": offered.values(), "phase": stage, "check_id": token}})
 
-func _editor_source(manifest: Dictionary) -> bool:
-	return OS.has_feature("editor") and FileAccess.file_exists(ProjectSettings.globalize_path(str(manifest.get("_root", ""))).path_join("manifest.json"))
-
-func _describe(row: Dictionary, root: String) -> void:
-	row.files = []
-	row.error = ""
-	var descriptor: String = root.path_join("content.pck.json")
-	var description: Variant = JSON.parse_string(FileAccess.get_file_as_string(descriptor)) if FileAccess.file_exists(descriptor) else null
-	var validator: RefCounted = Packages.new()
-	if not description is Dictionary or not validator.validate_descriptor(description).is_empty() or description.get("id") != row.id or description.get("version") != row.version or Paths.package_relative(description) != row.relative or description.get("artifact") != "content.pck" or description.get("supported_systems", []) != row.supported_systems or description.get("kind") != row.kind:
-		row.error = "房主缺少对应版本的可分发 PCK，请重新导出"
-		return
-	var names: Array = ["content.pck.json", "content.pck"]
-	names.append_array(description.get("external_files", []))
-	for name: String in names:
-		var input: FileAccess = FileAccess.open(root.path_join(name), FileAccess.READ)
-		if input == null or input.get_length() > MAX_FILE:
-			row.error = "房主发布文件缺失或过大：" + name
-			return
-		row.files.append({"path": name, "size": input.get_length()})
-
-## Resolve a fixed generation before sending its file list; peers never see partial exports.
 func prepare(peer: int, payload: Dictionary) -> void:
 	if not _offers.has(peer) or not payload.get("task") is String or payload.task.length() != 32 or not payload.get("id") is String or not _offers[peer].has(payload.id):
 		return
 	_uploads[peer] = {"task": payload.task, "id": payload.id, "queue": [], "file": null, "index": 0, "requested": 0, "served": 0, "complete": false}
 	var row: Dictionary = _offers[peer][payload.id]
-	var manifest: Dictionary = connection.catalog.packages[row.id]
-	var root: String = directory.path_join(row.relative)
-	row.error = ""
-	if manifest.package_version != row.version:
-		row.error = "房主内容版本已变化，请重新加入"
-	elif _editor_source(manifest):
-		while _building:
-			await get_tree().process_frame
-			if not _offers.has(peer) or not is_same(_offers[peer].get(payload.id), row) or _uploads.get(peer, {}).get("task") != payload.task:
-				return
-		_building = true
-		var exporter: RefCounted = load("res://core/dev/party_shared_pack_builder.gd").new()
-		root = await exporter.distribution_root(connection.catalog, row.id, directory.path_join("tmp/content_distribution"))
-		_building = false
-		if not _offers.has(peer) or not is_same(_offers[peer].get(payload.id), row) or _uploads.get(peer, {}).get("task") != payload.task:
-			return
-		if root.is_empty():
-			row.error = "房主自动生成分发包失败：" + exporter.last_error
-	if row.error.is_empty():
-		_describe(row, root)
-	if row.error.is_empty():
-		row["_root"] = root
+	row["_root"] = connection.catalog.artifacts[row.id].root
 	if connection._player_peer(peer).is_empty():
 		connection._hello_peers[peer] = Time.get_ticks_msec() + 600000
 	connection._send(peer, {"kind": "content_prepared", "payload": {"task": payload.task, "id": row.id, "files": row.files, "error": row.error}})
@@ -277,7 +230,7 @@ func _files_issue(files: Variant) -> String:
 		return "无效的内容文件清单"
 	var seen: Dictionary = {}
 	for entry: Variant in files:
-		if not entry is Dictionary or not entry.get("path") is String or not entry.get("size") is int or entry.size < 0 or entry.size > MAX_FILE or not Data.relative_path(entry.path) or entry.path != entry.path.simplify_path() or entry.path.split("/")[0] in ["config", "avatars"] or seen.has(entry.path):
+		if not entry is Dictionary or not entry.get("path") is String or not entry.get("size") is int or entry.size < 0 or entry.size > MAX_FILE or not Data.relative_path(entry.path) or entry.path != entry.path.simplify_path() or (entry.path not in ["content.pck", "content.pck.json"] and not Packages.External.safe_path(entry.path)) or seen.has(entry.path):
 			return "无效的内容文件清单"
 		seen[entry.path] = true
 	if not seen.has("content.pck") or not seen.has("content.pck.json"):
@@ -309,16 +262,12 @@ func receive_offer(payload: Dictionary) -> void:
 		if not value is Dictionary or not value.get("id") is String or not Paths.folder(value.id) or not value.get("name") is String or not value.get("version") is String or not value.get("relative") is String or not value.get("files") is Array or not value.get("error") is String:
 			connection.leave("无效的内容包条目")
 			return
-		if ids.has(value.id) or not requirements.packages.get(value.id) is Dictionary or requirements.packages[value.id].get("version") != value.version or requirements.packages[value.id].get("name") != value.name or requirements.packages[value.id].get("supported_systems") != value.get("supported_systems") or requirements.packages[value.id].get("kind") != value.get("kind"):
+		if ids.has(value.id) or not requirements.packages.get(value.id) is Dictionary or requirements.packages[value.id].get("version") != value.version or requirements.packages[value.id].get("hash") != value.get("hash"):
 			connection.leave("内容同步条目与房间要求不一致")
 			return
-		if value.get("kind") not in Packages.Catalog.KINDS or not value.get("supported_systems") is Array or (value.kind == "assets" and not value.supported_systems.is_empty()) or (value.kind != "assets" and value.supported_systems.is_empty()):
-			connection.leave("无效的平台声明")
+		if value.get("kind") not in Packages.Catalog.KINDS or not Packages.PackageHash.valid(value.get("hash")) or Packages.Versions.parse(value.version).is_empty():
+			connection.leave("无效的包类型、版本或 Hash")
 			return
-		for system: Variant in value.supported_systems:
-			if not Data.valid_system(system):
-				connection.leave("无效的平台声明")
-				return
 		ids[value.id] = true
 		var row: Dictionary = value.duplicate(true)
 		var parts: PackedStringArray = row.relative.split("/")
@@ -332,19 +281,14 @@ func receive_offer(payload: Dictionary) -> void:
 			connection.leave("无效的内容文件清单")
 			return
 		var local: Dictionary = connection.catalog.packages.get(row.id, {})
-		var supported: bool = row.kind == "assets" or Data.supports_system(row.supported_systems)
-		if supported and local.get("package_version") == row.version and local.get("name", row.id) == row.name:
+		if local.get("package_version") == row.version and local.get("package_hash") == row.hash:
 			continue
 		row["current"] = local.get("package_version", "未安装")
 		row["state"] = "pending"
 		row["received"] = 0
 		row["total"] = _file_bytes(row.files)
 		row["speed"] = 0.0
-		row["unsupported"] = not supported
-		if OS.has_feature("editor") and FileAccess.file_exists("res://games/" + row.relative + "/manifest.json"):
-			row.error = "开发源码不自动替换；请使用导出的游戏验证更新"
-		if not supported:
-			row.error = "平台不支持（" + Data.SYSTEM + "）"
+		row["unsupported"] = false
 		rows.append(row)
 	if rows.is_empty():
 		if phase == "join":
@@ -574,7 +518,7 @@ func _finish() -> void:
 func _write_bundle(zip_path: String, generation: int) -> Error:
 	for row: Dictionary in rows:
 		var raw: Dictionary = Data.read_json(_stage.path_join(row.relative).path_join("content.pck.json"))
-		if raw.get("id") != row.id or raw.get("version") != row.version or Paths.package_relative(raw) != row.relative or raw.get("supported_systems", []) != row.supported_systems or raw.get("kind") != row.kind:
+		if raw.get("id") != row.id or raw.get("version") != row.version or Paths.package_relative(raw) != row.relative or raw.get("package_hash") != row.hash or raw.get("kind") != row.kind:
 			return ERR_INVALID_DATA
 	var writer: ZIPPacker = ZIPPacker.new()
 	var error: Error = writer.open(zip_path)

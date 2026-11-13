@@ -1,5 +1,7 @@
 ## Content dependency closure, shared by the editor window and CLI exporter.
 extends RefCounted
+const Versions = preload("res://core/content/party_versions.gd")
+const Data = preload("res://core/runtime/party_data.gd")
 
 static func resolve(catalog: RefCounted, requested: Array) -> Dictionary:
 	var selected: Dictionary = {}
@@ -59,6 +61,8 @@ static func _dependency_issue(id: String, packages: Dictionary, visiting: Array[
 	var path: Array[String] = visiting.duplicate()
 	path.append(id)
 	var manifest: Dictionary = packages[id]
+	if manifest.framework_version != Data.VERSION:
+		return "框架版本不匹配：" + manifest.framework_version
 	if manifest.kind == "avatars":
 		if not packages.has(manifest.owner_protocol):
 			return "缺少所属协议：" + manifest.owner_protocol
@@ -68,7 +72,7 @@ static func _dependency_issue(id: String, packages: Dictionary, visiting: Array[
 		var version: String = manifest.dependencies[dependency]
 		if not packages.has(dependency):
 			return "缺少依赖：" + dependency + " " + version
-		if packages[dependency].package_version != version:
+		if not Versions.matches(packages[dependency].package_version, version):
 			return "依赖版本不匹配：" + dependency + "（需要 " + version + "，已安装 " + str(packages[dependency].package_version) + "）"
 		var reason: String = _dependency_issue(dependency, packages, path, unavailable)
 		if not reason.is_empty():

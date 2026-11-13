@@ -1,20 +1,6 @@
-## Manifest-declared loose payloads. Directory declarations end in "/", paths stay package-relative.
+## Formal loose package files live exclusively under external/.
 extends RefCounted
 const Data = preload("res://core/runtime/party_data.gd")
-
-static func validate(value: Variant) -> String:
-	if not value is Array:
-		return "external_files must be an array"
-	var seen: Array[String] = []
-	for entry: Variant in value:
-		if not entry is String or not safe_path(entry.trim_suffix("/")):
-			return "Invalid external_files path: " + str(entry)
-		var path: String = entry.trim_suffix("/").to_lower()
-		for other: String in seen:
-			if path == other or path.begins_with(other + "/") or other.begins_with(path + "/"):
-				return "Overlapping external_files paths: " + entry
-		seen.append(path)
-	return ""
 
 static func safe_path(path: String) -> bool:
 	if not Data.relative_path(path) or path != path.simplify_path() or path.ends_with("/"):
@@ -22,39 +8,21 @@ static func safe_path(path: String) -> bool:
 	for part: String in path.split("/"):
 		if part.begins_with(".") or part.contains("*") or part.contains("?") or part.ends_with(".") or part.ends_with(" "):
 			return false
-	return path.get_slice("/", 0).to_lower() not in ["config", "avatars", "manifest.json", "content.pck", "content.pck.json"]
+	return path == "external" or path.begins_with("external/")
 
-static func contains(declarations: Array, path: String) -> bool:
-	for entry: String in declarations:
-		if path == entry.trim_suffix("/") or (entry.ends_with("/") and path.begins_with(entry)):
-			return true
-	return false
+static func contains(path: String) -> bool:
+	return path == "external" or path.begins_with("external/")
 
-## Collect physical files, including empty folders. Missing payloads and links fail export.
-static func inventory(root: String, declarations: Array) -> Dictionary:
+## Formal loose payload has one reserved root. Personal files belong in config/.
+static func inventory(root: String) -> Dictionary:
 	var files: Array[String] = []
 	var directories: Array[String] = []
-	var issue: String = validate(declarations)
-	if not issue.is_empty():
-		return {"ok": false, "error": issue}
-	for entry: String in declarations:
-		var path: String = root.path_join(entry.trim_suffix("/"))
-		var current: String = root
-		for part: String in entry.trim_suffix("/").split("/"):
-			var parent: DirAccess = DirAccess.open(current)
-			if parent != null and parent.is_link(part):
-				return {"ok": false, "error": "External path contains a link: " + path}
-			current = current.path_join(part)
-		if entry.ends_with("/"):
-			issue = _walk(root, entry.trim_suffix("/"), files, directories)
-		elif not FileAccess.file_exists(path):
-			issue = "Missing external file: " + path
-		elif DirAccess.open(path.get_base_dir()).is_link(path.get_file()):
-			issue = "External file is a link: " + path
-		else:
-			files.append(entry)
+	if DirAccess.dir_exists_absolute(root.path_join("external")):
+		var issue: String = _walk(root, "external", files, directories)
 		if not issue.is_empty():
 			return {"ok": false, "error": issue}
+	files.sort()
+	directories.sort()
 	return {"ok": true, "files": files, "directories": directories}
 
 static func _walk(root: String, relative: String, files: Array[String], directories: Array[String]) -> String:
@@ -101,25 +69,13 @@ static func copy_payload(source: String, destination: String, files: Array, dire
 	return OK
 
 ## Build copies keep loose data out of the import pipeline. These markers never ship.
-static func stage_payload(source: String, destination: String, declarations: Array, files: Array, directories: Array) -> Error:
+static func stage_payload(source: String, destination: String, files: Array, directories: Array) -> Error:
 	var error: Error = copy_payload(source, destination, files, directories)
-	if error != OK:
+	if error != OK or directories.is_empty():
 		return error
-	for entry: String in declarations:
-		var marker_path: String = ""
-		var marker_text: String = ""
-		if entry.ends_with("/"):
-			marker_path = destination.path_join(entry).path_join(".gdignore")
-		else:
-			marker_path = destination.path_join(entry + ".import")
-			marker_text = "[remap]\nimporter=\"keep\"\n"
-		var marker: FileAccess = FileAccess.open(marker_path, FileAccess.WRITE)
-		if marker == null:
-			return FileAccess.get_open_error()
-		marker.store_string(marker_text)
-		marker.flush()
-		error = marker.get_error()
-		marker.close()
-		if error != OK:
-			return error
+	var marker: FileAccess = FileAccess.open(destination.path_join("external/.gdignore"), FileAccess.WRITE)
+	if marker == null:
+		return FileAccess.get_open_error()
+	marker.store_string("")
+	marker.close()
 	return OK

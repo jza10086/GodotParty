@@ -6,7 +6,7 @@
 
 ## 形象与玩家颜色
 
-`default_player_config()` 返回 `color`（不透明 #RRGGBB）、`avatar_2d`、`character_3d`。两个选择都是 `{package_id, resource_key}`，互不覆盖。`validate_player_config(value)` 校验数据结构；`get_appearance(value)` 返回独立快照。目录负责资源依赖，消费方负责实际类型检查，不把缺失资源静默视为正确安装。
+`default_player_config()` 返回 `color`（不透明 #RRGGBB）、`avatar_2d`、`character_3d`。两个选择都是 `{package_id, resource_path}`，互不覆盖。`validate_player_config(value)` 校验数据结构；`get_appearance(value)` 返回独立快照。目录负责资源依赖，消费方负责实际类型检查，不把缺失资源静默视为正确安装。
 
 2D 公开资源为六个 Bot 正面头像 Node2D 场景：银紫短发、蜂蜜金双马尾、鼠尾草绿长发、灰粉短发、浅蓝侧编发、栗棕低马尾，默认银紫短发。保留原图背景与颜色，底部标记显示玩家颜色，原点 (0,0) 位于表现底部。六张原始 PNG 和来源说明存放在 `avatars/godot_party_default_avatars_2d/avatar_sources/bot_avatars_upright/`；公开资源键为 `avatar_silver_lavender` 等，位于独立包 godot_party_default_avatars_2d。旧 Godot 图标占位已移除；旧资料如仍引用它，需重新选择头像，不自动映射。默认 3D 为原版形象包公开的 Cube `godot_party_default_avatars/character_3d`，一米高、脚底原点、Y 向上、面向 -Z。2D 和 3D 均提供 `apply_color(Color)`；Cube 使用实例独立的材质。没有碰撞、输入、根节点移动、authority 或逐帧网络同步。本机颜色是入房偏好；房主在冲突时分配剩余颜色，也可在大厅强制交换颜色，不改写本机偏好。
 
@@ -156,7 +156,7 @@ Millionaire 当前仍是独立 F6 视觉原型：读取同一资料槽的协议�
 公开资源 `player_cursors` 为 `player_cursors.tscn`（Control 多人指针场景）。实例化后先 `setup(api)`，再作为实际交互区域（例如棋盘）的子节点加入；场景铺满父节点并忽略鼠标事件。同一活动只挂载一份，同一坐标面上的玩家应使用相同内容布局。连连看与空白小游戏已接入；空白小游戏以全屏为坐标面，仅在正式游戏阶段显示，个人结束等待期间保留，准备和结算时隐藏。
 
 ```gdscript
-var scene: PackedScene = api.load_asset({"package_id": "godot_party_default_protocol", "resource_key": "player_cursors"}) as PackedScene
+var scene: PackedScene = api.load_asset({"package_id": "godot_party_default_ui", "resource_path": "player_cursors.tscn"}) as PackedScene
 var cursors: Control = scene.instantiate()
 cursors.setup(api)
 board_area.add_child(cursors)

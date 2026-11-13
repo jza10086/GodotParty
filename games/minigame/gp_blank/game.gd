@@ -1,4 +1,9 @@
 extends Control
+
+## Content-owned gameplay rules, independent of package compatibility.
+static func party_definition() -> Dictionary:
+	return {"player_counts": [1, 2, 3, 4, 5, 6, 7, 8]}
+
 ## Formal entry: protocol readiness, authoritative press order and final publication.
 ## DemoHub owns editable demonstrations, input presentation and local audio controls.
 const DemoHub: GDScript = preload("examples/demo_hub.gd")
@@ -160,7 +165,7 @@ func _message(sender: Dictionary, topic: StringName, payload: Variant) -> void:
 		return
 	if payload.get("session") != api.session_id or payload.get("scope") != api.scope_id or not payload.get("result") is Dictionary:
 		return
-	var contract_script: Script = api.load_asset({"package_id": api.protocol_id, "resource_key": "contract"}) as Script
+	var contract_script: Script = api.load_asset({"package_id": api.protocol_id, "resource_path": "protocol.gd"}) as Script
 	if contract_script == null:
 		api.fail("contract_missing", "原版协议缺少结果契约。")
 		return

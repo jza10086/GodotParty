@@ -12,11 +12,14 @@ func run() -> void:
 	var output: String = ""
 	var request_path: String = ""
 	var stage_source: String = ""
+	var workspace: String = ""
 	for argument: String in OS.get_cmdline_user_args():
 		if argument.begins_with("--output="):
 			output = argument.trim_prefix("--output=")
 		elif argument.begins_with("--stage-source="):
 			stage_source = argument.trim_prefix("--stage-source=")
+		elif argument.begins_with("--workspace="):
+			workspace = argument.trim_prefix("--workspace=")
 		elif argument.begins_with("--request="):
 			request_path = argument.trim_prefix("--request=")
 	if output.is_empty() or not output.is_absolute_path():
@@ -41,7 +44,7 @@ func run() -> void:
 		for id: String in selection.ids:
 			for path: String in Catalog.files(catalog.packages[id]._root):
 				var relative: String = path.trim_prefix(catalog.packages[id]._root + "/")
-				if Packages.External.contains(catalog.packages[id].get("external_files", []), relative.trim_suffix(".import").trim_suffix(".uid")):
+				if Packages.External.contains(relative.trim_suffix(".import").trim_suffix(".uid")):
 					continue
 				var target: String = stage_source.path_join(path.trim_prefix("res://"))
 				var error: Error = DirAccess.make_dir_recursive_absolute(target.get_base_dir())
@@ -51,11 +54,11 @@ func run() -> void:
 					_fail("Cannot stage " + path + ": " + error_string(error))
 					return
 			var manifest: Dictionary = catalog.packages[id]
-			var payload: Dictionary = Packages.External.inventory(manifest._root, manifest.get("external_files", []))
+			var payload: Dictionary = Packages.External.inventory(manifest._root)
 			if not payload.ok:
 				_fail(payload.error)
 				return
-			var error: Error = Packages.External.stage_payload(manifest._root, stage_source.path_join(manifest._root.trim_prefix("res://")), manifest.get("external_files", []), payload.files, payload.directories)
+			var error: Error = Packages.External.stage_payload(manifest._root, stage_source.path_join(manifest._root.trim_prefix("res://")), payload.files, payload.directories)
 			if error != OK:
 				_fail("Cannot stage external payload: " + error_string(error))
 				return
@@ -63,6 +66,8 @@ func run() -> void:
 		quit()
 		return
 	var builder: RefCounted = preload("res://core/dev/party_shared_pack_builder.gd").new()
+	if not workspace.is_empty():
+		builder.work_directory = workspace
 	var outputs: Dictionary = {}
 	for id: String in selection.ids:
 		var destination: String = output.path_join(Paths.package_relative(catalog.packages[id]))

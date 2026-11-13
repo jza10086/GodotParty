@@ -1,4 +1,4 @@
-# GodotParty 6.0
+# GodotParty 0.0.1
 
 开发检出使用 `git clone --recurse-submodules <主仓地址>` 获取主仓记录的小游戏版本。在 `games/minigame/<id>/` 中切到小游戏自己的分支，修改、提交和推送后，重启游戏就能使用本机检出的内容。只有需要更新主仓为其他人锁定的子模块版本时，才提交版本指针。
 
@@ -15,11 +15,11 @@
 
 core/ 负责联机协调、注入式 PartyAPI、输入设置、内容安装挂载及基础 UI；协议包负责协议与准备/结算薄适配；主游戏负责长期状态、编排与纯归约；小游戏负责本局状态和表现。games/assets/ 是独立叶子资产包，不依赖其他资产包。avatars 位于所属协议目录下；doc/ 存放文档和作者技能。
 
-框架 6.0.0 / 公共 API 6 / 联机协议 19 / manifest_version 2 / 生成描述格式 5。版本事实来源为 core/runtime/party_data.gd。原型仅支持当前格式；旧 GPActivity 接口不再是作者接入方式。
+框架 0.0.1，唯一版本来源为 core/framework_version.gd，与用户维护的 Godot 项目版本独立。原型仅支持当前格式；旧 GPActivity 接口不再是作者接入方式。
 
 现已提供 [GodotPartyDefaultProtocol 1.0](games/protocols/godot_party_default_protocol/doc/README.md) 及默认占位形象包：玩家颜色、2D Godot 图标和 3D Cube。主菜单“协议 → 个人资料与形象”可配置。已安装[原版小游戏轮换](games/maingame/godot_party_default_maingame_minigame_playlist/README.md)，可从正式大厅创建房间，游玩水果武士、云间跃行、纸牌会客厅及心理博弈。旧测试内容恢复点为 `1a9e842`。
 
-每个包 ID 安装一个当前版本，依赖精确匹配；启动派生可用包与不可用原因。加入仅检查当前房间协议、主游戏及必需依赖，开始检查所选小游戏池。内容更新下载为待安装 ZIP，下次启动生效；不可用额外内容不妨碍可用房间。
+每个包 ID 安装一个当前版本，依赖支持精确、~ 和 ^ 范围；启动校验实际包 Hash 并缓存可用包与不可用原因。加入仅比较当前房间协议、主游戏及必需依赖的实际版本和 Hash，开始加入所选小游戏池。同版本不同内容也需要同步。更新下载为待安装 ZIP，下次启动整批验证后生效；不可用额外内容不妨碍可用房间。
 
 同进程内容拥有普通 Godot 脚本能力；框架提供开发接口和会话协调，不是沙箱。
 

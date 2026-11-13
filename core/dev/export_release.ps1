@@ -1,5 +1,5 @@
 param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'godot')
-# A private build finishes before touching the installation. Existing loose data is retained.
+# A private build finishes before touching the installation. Formal external payload joins rollback.
 $ErrorActionPreference = 'Stop'
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $request = Get-Content -LiteralPath $RequestPath -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -57,7 +57,8 @@ try {
         Check-Target $target
         if (Test-Path -LiteralPath $target -PathType Container) { throw "File conflicts with directory: $target" }
         $packageArtifact = $relative -match '^(protocols|maingame|minigame|assets)\\[^\\]+\\(avatars\\[^\\]+\\)?content\.pck(\.json)?$'
-        $replace = $relative -in 'GodotParty.exe','GodotParty.apk','GodotParty-content-android.zip' -or $packageArtifact -or $relative.StartsWith('core\notices\')
+        $formalExternal = $relative -match '^(protocols|maingame|minigame|assets)\\[^\\]+\\(avatars\\[^\\]+\\)?external\\'
+        $replace = $relative -in 'GodotParty.exe','GodotParty.apk','GodotParty-content-android.zip' -or $packageArtifact -or $formalExternal -or $relative.StartsWith('core\notices\')
         if ((Test-Path -LiteralPath $target) -and !$replace) { continue }
         $backup = Join-Path (Join-Path $buildRoot 'previous') $relative
         $existed = Test-Path -LiteralPath $target
@@ -65,7 +66,28 @@ try {
             New-Item -ItemType Directory (Split-Path $backup) -Force | Out-Null
             Copy-Item -LiteralPath $target -Destination $backup
         }
-        $writes += [pscustomobject]@{ Source=$file.FullName; Target=$target; Backup=$backup; Existed=$existed }
+        $writes += [pscustomobject]@{ Source=$file.FullName; Target=$target; Backup=$backup; Existed=$existed; Delete=$false }
+    }
+    foreach ($descriptor in Get-ChildItem -LiteralPath $stage -Recurse -Filter 'content.pck.json' -File) {
+        $relative = $descriptor.DirectoryName.Substring($stage.Length + 1)
+        $targetRoot = Join-Path $output $relative
+        $previousDescriptor = Join-Path $targetRoot 'content.pck.json'
+        if (!(Test-Path -LiteralPath $previousDescriptor -PathType Leaf)) { continue }
+        $previous = Get-Content -LiteralPath $previousDescriptor -Raw -Encoding UTF8 | ConvertFrom-Json
+        $next = Get-Content -LiteralPath $descriptor.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach ($name in $previous.external_files) {
+            if ($name -in $next.external_files) { continue }
+            if ($name -isnot [string] -or !$name.StartsWith('external/') -or $name.Contains('\') -or $name.Split('/') -contains '..') { throw 'Invalid retired external path' }
+            $target = [IO.Path]::GetFullPath((Join-Path $targetRoot $name))
+            $externalRoot = [IO.Path]::GetFullPath((Join-Path $targetRoot 'external')).TrimEnd('\') + '\'
+            if (!$target.StartsWith($externalRoot,[StringComparison]::OrdinalIgnoreCase)) { throw 'Retired payload escaped its package' }
+            Check-Target $target
+            if (!(Test-Path -LiteralPath $target -PathType Leaf)) { continue }
+            $backup = Join-Path (Join-Path (Join-Path $buildRoot 'previous') $relative) $name
+            New-Item -ItemType Directory (Split-Path $backup) -Force | Out-Null
+            Copy-Item -LiteralPath $target -Destination $backup
+            $writes += [pscustomobject]@{ Source=$null; Target=$target; Backup=$backup; Existed=$true; Delete=$true }
+        }
     }
     foreach ($dir in Get-ChildItem -LiteralPath $stage -Recurse -Directory) {
         $target = Join-Path $output $dir.FullName.Substring($stage.Length + 1)
@@ -76,7 +98,8 @@ try {
     try {
         foreach ($write in $writes) {
             $applied.Add($write)
-            Copy-Item -LiteralPath $write.Source -Destination $write.Target -Force
+            if ($write.Delete) { Remove-Item -LiteralPath $write.Target }
+            else { Copy-Item -LiteralPath $write.Source -Destination $write.Target -Force }
         }
     } catch {
         for ($i=$applied.Count-1; $i -ge 0; $i--) {

@@ -50,7 +50,7 @@ func _meta(id: String, protocol: String) -> Dictionary:
 		return {}
 	if package.kind == "minigame" and not package.get("adapters", []).any(func(adapter: Dictionary) -> bool: return adapter.get("protocol", {}).get("id") == protocol):
 		return {}
-	return {"format": 3, "kind": package.kind, "package_id": id, "package_version": package.package_version, "protocol_id": protocol, "protocol_major": selected.contract.api_major, "settings_version": catalog.schema(id).settings_version, "protocol_settings_version": catalog.schema(protocol).settings_version}
+	return {"format": 3, "kind": package.kind, "package_id": id, "package_version": package.package_version, "protocol_id": protocol, "settings_version": catalog.schema(id).settings_version, "protocol_settings_version": catalog.schema(protocol).settings_version}
 
 func validate(id: String, protocol: String, value: Dictionary) -> Dictionary:
 	last_error = ""

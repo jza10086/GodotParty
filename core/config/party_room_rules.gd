@@ -18,7 +18,7 @@ static func snapshot(room: Dictionary, game: String, catalog: RefCounted) -> Dic
 	var overrides: Dictionary = room.get("common_overrides", {}).get(game, {}).duplicate(true)
 	common.merge(overrides, true)
 	var own: Dictionary = room.settings if game == room.main else room.children.get(game, catalog.defaults(game))
-	var value: Dictionary = {"game": game, "protocol": protocol, "protocol_major": catalog.get_package(protocol).contract.api_major, "protocol_settings": catalog.schema(protocol).settings_version, "game_settings": catalog.schema(game).settings_version, "revision": room.get("rules_revision", 0), "common": common, "own": own.duplicate(true), "base": room.get("common", {}).duplicate(true), "overrides": overrides}
+	var value: Dictionary = {"game": game, "protocol": protocol, "protocol_settings": catalog.schema(protocol).settings_version, "game_settings": catalog.schema(game).settings_version, "revision": room.get("rules_revision", 0), "common": common, "own": own.duplicate(true), "base": room.get("common", {}).duplicate(true), "overrides": overrides}
 	value["id"] = JSON.stringify(Data.canonical(value)).sha256_text()
 	return value
 

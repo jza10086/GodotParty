@@ -15,7 +15,7 @@ func _init(directory: String, content_catalog: RefCounted) -> void:
 	catalog = content_catalog
 
 func branch(protocol: String) -> String:
-	return protocol + "@" + str(int(catalog.get_package(protocol).get("contract", {}).get("api_major", 0)))
+	return protocol
 
 func owner(id: String) -> String:
 	return "protocols/" + branch(id) if catalog.get_package(id).get("kind") == "protocols" else catalog.get_package(id).get("kind", "") + "/" + id
@@ -164,9 +164,6 @@ func _read_local(path: String, schema_id: String, override_only: bool = false) -
 	if error != OK or file.get_value("meta", "format", 0) != 2 or file.get_value("meta", "schema_id", "") != schema_id or file.get_value("meta", "settings_version", -1) != catalog.schema(schema_id).settings_version:
 		last_error = "配置无效或版本不匹配：" + path
 		return {}
-	if catalog.get_package(schema_id).kind == "protocols" and file.get_value("meta", "protocol_major", -1) != catalog.get_package(schema_id).contract.api_major:
-		last_error = "协议契约主版本不匹配：" + path
-		return {}
 	var revision_value: Variant = file.get_value("meta", "revision", 0)
 	if not revision_value is int or revision_value < 0:
 		last_error = "配置修订号无效：" + path
@@ -187,8 +184,6 @@ func _encoded(schema_id: String, revision_value: int, values: Dictionary) -> Str
 	file.set_value("meta", "schema_id", schema_id)
 	file.set_value("meta", "settings_version", catalog.schema(schema_id).settings_version)
 	file.set_value("meta", "revision", revision_value)
-	if catalog.get_package(schema_id).kind == "protocols":
-		file.set_value("meta", "protocol_major", catalog.get_package(schema_id).contract.api_major)
 	for key: String in values:
 		file.set_value("values", key, values[key])
 	return file.encode_to_text()

@@ -8,10 +8,15 @@ const Schema = preload("res://core/config/party_schema.gd")
 const Localization = preload("res://core/i18n/party_localization.gd")
 var i18n: RefCounted = Localization.new()
 const PlayerCounts = preload("res://core/config/party_player_counts.gd")
+const Versions = preload("res://core/content/party_versions.gd")
+const PackageHash = preload("res://core/content/party_package_hash.gd")
 const KINDS: Array[String] = ["maingame", "minigame", "protocols", "avatars", "assets"]
 var packages: Dictionary = {}
 var _schemas: Dictionary = {}
 var errors: Array[String] = []
+var unavailable: Dictionary = {}
+var artifacts: Dictionary = {}
+var adapter_issues: Dictionary = {}
 
 func scan() -> Error:
 	packages.clear()
@@ -23,7 +28,7 @@ func scan() -> Error:
 			continue
 		for directory: String in DirAccess.get_directories_at(root):
 			var path: String = root.path_join(directory).path_join("manifest.json")
-			if FileAccess.file_exists(path):
+			if "manifest.json" in DirAccess.get_files_at(path.get_base_dir()):
 				register_manifest(path)
 				if kind == "protocols":
 					var avatars: String = path.get_base_dir().path_join("avatars")
@@ -32,164 +37,160 @@ func scan() -> Error:
 					for avatar: String in DirAccess.get_directories_at(avatars):
 						register_manifest(avatars.path_join(avatar).path_join("manifest.json"))
 	_validate_config_directories()
+	_cache_adapter_issues()
 	return OK if errors.is_empty() else ERR_INVALID_DATA
 
 ## Asset identity comes from its directory, never a second author-maintained ID.
 static func read_manifest(path: String) -> Dictionary:
 	var manifest: Dictionary = Data.read_json(path)
-	if manifest.get("kind") == "assets":
-		manifest["id"] = path.get_base_dir().get_file()
+	manifest["id"] = path.get_base_dir().get_file()
+	if manifest.get("kind") == "avatars":
+		manifest["owner_protocol"] = path.get_base_dir().get_base_dir().get_base_dir().get_file()
 	return manifest
 
 func register_manifest(path: String) -> Error:
 	var manifest: Dictionary = read_manifest(path)
+	var issue: String = validate_manifest(manifest)
+	if not issue.is_empty():
+		errors.append(path + ": " + issue)
+		return ERR_INVALID_DATA
 	var relative: String = Paths.package_relative(manifest)
-	if relative.is_empty() or not path.get_base_dir().ends_with("games/" + relative):
-		errors.append("Package path must match its declared owner: " + path)
+	if not path.get_base_dir().ends_with("games/" + relative):
+		errors.append("Package path must match its kind and owner: " + path)
 		return ERR_INVALID_DATA
 	var id: String = manifest.id
-	if manifest.kind != "assets" and (manifest.get("manifest_version") != 2 or manifest.get("core_api_major") != Data.API_VERSION):
-		errors.append(id + ": unsupported manifest/API")
-		return ERR_INVALID_DATA
 	if packages.has(id):
 		errors.append("DUPLICATE_PACKAGE: " + id)
 		return ERR_ALREADY_EXISTS
-	if manifest.has("streams") or manifest.has("native_channels"):
-		errors.append(id + ": API 6 uses call-site transfer modes and fixed native channels; remove streams/native_channels")
-		return ERR_INVALID_DATA
-	if manifest.kind == "protocols" and not manifest.get("config_directories") is Dictionary:
-		errors.append(id + ": missing config_directories")
-		return ERR_INVALID_DATA
-	if manifest.kind not in ["avatars", "assets"]:
-		var issue: String = Localization.validate_declaration(manifest.get("localization"))
-		if not issue.is_empty():
-			errors.append(id + ": " + issue)
-			return ERR_INVALID_DATA
-		i18n.declare_package(id, manifest.localization, path.get_base_dir())
+	manifest["_declaration"] = manifest.duplicate(true)
 	manifest["_root"] = path.get_base_dir()
+	var metadata: Dictionary = source_metadata(manifest)
+	manifest.merge(metadata)
 	packages[id] = manifest
+	i18n.declare_package(id, manifest.localization, manifest._root)
 	return OK
 
-func validate_manifest(manifest: Dictionary) -> String:
-	if manifest.get("kind") == "assets":
-		for key: String in ["name", "kind", "package_version", "remark", "framework_version"]:
-			if not manifest.get(key) is String or (key != "remark" and manifest[key].is_empty()):
-				return "Invalid asset declaration: " + key
-		for key: String in manifest:
-			if key not in ["name", "kind", "package_version", "remark", "framework_version", "id", "_root"]:
-				return "Unsupported asset declaration field: " + key
-		if not Paths.folder(manifest.get("id")):
-			return "Invalid asset directory name"
-		if manifest.framework_version != Data.VERSION:
-			return "Asset requires framework " + manifest.framework_version
-		return ""
-	if manifest.get("kind") != "avatars":
-		if not manifest.get("supported_systems") is Array or manifest.supported_systems.is_empty():
-			return "Missing supported_systems"
-		for system: Variant in manifest.supported_systems:
-			if not Data.valid_system(system):
-				return "Invalid supported_systems"
-	var external_issue: String = External.validate(manifest.get("external_files", []))
-	if not external_issue.is_empty():
-		return external_issue
-	for obsolete: String in ["fields", "defaults", "input_actions"]:
-		if manifest.has(obsolete):
-			return "Superseded configuration declaration: " + obsolete
-	if manifest.kind != "assets" and (manifest.get("manifest_version") != 2 or manifest.get("core_api_major") != Data.API_VERSION):
-		return "Unsupported manifest/API; only current format is accepted"
-	if not manifest.get("id") is String or not Data.identifier(manifest["id"]):
-		return "Invalid package ID"
-	if manifest.get("kind") not in KINDS or not manifest.get("package_version") is String or manifest["package_version"].is_empty():
-		return "Missing package kind/version"
-	if manifest["kind"] != "avatars" and (not manifest.get("entry") is String or not Data.relative_path(manifest["entry"])):
-		return "Missing entry relative to package root"
-	if manifest.kind not in ["avatars", "assets"]:
-		var localization_issue: String = Localization.validate_declaration(manifest.get("localization"))
-		if not localization_issue.is_empty():
-			return localization_issue
-	for key: String in ["name", "introduction"]:
-		if manifest.has(key) and not manifest[key] is String:
-			return key + " must be a translation message string"
-	for key: String in ["pools", "tags", "player_fields"]:
-		if not manifest.get(key, []) is Array:
-			return key + " must be an array"
-	for key: String in ["controls"]:
-		if not manifest.get(key, {}) is Dictionary:
-			return key + " must be an object"
-	for key: String in ["room_scene", "config_panel", "player_config_panel", "config_validator", "cover", "config_schema", "settings_runtime"]:
-		if manifest.has(key) and (not manifest[key] is String or not Data.relative_path(manifest[key])):
-			return "Invalid path: " + key
-	for pool: Variant in manifest.get("pools", []):
-		if not pool is String or pool.is_empty() or manifest["pools"].count(pool) != 1:
-			return "Invalid or duplicate pool"
-	var player_count_issue: String = PlayerCounts.validate(manifest)
-	if not player_count_issue.is_empty():
-		return player_count_issue
-	for field: Variant in manifest.get("player_fields", []):
-		if not field is Dictionary or not field.get("key") is String or field.get("type") not in ["bool", "int", "float", "string", "enum"]:
-			return "Invalid field declaration"
-		if field.get("type") == "enum" and not field.get("options") is Array:
-			return "Enum options must be an array"
-	if not manifest.get("dependencies", {}) is Dictionary or not manifest.get("resources", {}) is Dictionary:
-		return "Dependencies/resources must be dictionaries"
-	for dependency: Variant in manifest.get("dependencies", {}):
-		if not dependency is String or not Data.identifier(dependency) or not manifest["dependencies"][dependency] is String:
-			return "Invalid dependency"
-	for path: Variant in manifest.get("resources", {}).values():
-		if not path is String or not Data.relative_path(path):
-			return "Invalid public resource path"
-	if manifest["kind"] == "maingame":
-		if not _protocol_reference(manifest.get("protocol")):
-			return "Main game requires one protocol"
-		if not manifest.get("room_scene") is String or not Data.relative_path(manifest.room_scene):
-			return "Main game requires a room_scene"
-		if not manifest.get("minigames", []) is Array:
-			return "Main game minigames must be an array"
-		for mini: Variant in manifest.get("minigames", []):
-			if not mini is String or not Data.identifier(mini):
-				return "Invalid main-game minigame ID"
-	if Paths.package_relative(manifest).is_empty():
-		return "Invalid installation directory or avatar owner_protocol"
-	if manifest["kind"] == "protocols":
-		var directories: Variant = manifest.get("config_directories")
-		if not directories is Dictionary or directories.size() != 2 or not Paths.folder(directories.get("maingame")) or not Paths.folder(directories.get("minigame")):
-			return "Protocol requires safe maingame/minigame config_directories"
+## Build tools extract content-owned definitions once. Installed catalogs use the hash-covered descriptor.
+static func source_metadata(manifest: Dictionary) -> Dictionary:
+	var root: String = manifest._root
+	var result: Dictionary = {}
+	if manifest.kind in ["maingame", "minigame"]:
+		result.entry = "game.tscn"
+		var scene: PackedScene = load(root.path_join(result.entry))
+		var entry: Script = _entry_script(scene.get_state())
+		result.merge(entry.party_definition())
+	elif manifest.kind == "protocols":
+		result.entry = "protocol.gd"
+		var entry: Script = load(root.path_join(result.entry))
+		result.merge(entry.party_definition())
+	elif manifest.kind == "avatars":
+		var entry: Script = load(root.path_join("appearance.gd"))
+		result.appearance_resources = entry.choices()
+	var conventions: Dictionary = {"config_schema": "settings.gd", "config_panel": "config_panel.tscn", "player_config_panel": "profile_panel.tscn", "config_validator": "config_validator.gd", "settings_runtime": "settings_runtime.gd", "room_scene": "room.tscn"}
+	for key: String in conventions:
+		if FileAccess.file_exists(root.path_join(conventions[key])):
+			result[key] = conventions[key]
+	for extension: String in ["png", "svg", "webp", "jpg"]:
+		if FileAccess.file_exists(root.path_join("cover." + extension)):
+			result.cover = "cover." + extension
+			break
+	result.localization = {"supported_locales": [], "fallback_locale": "zh_Hans", "translations": {}}
+	for file: String in (DirAccess.get_files_at(root.path_join("i18n")) if DirAccess.dir_exists_absolute(root.path_join("i18n")) else PackedStringArray()):
+		if file.ends_with(".po"):
+			var locale: String = file.get_basename()
+			result.localization.supported_locales.append(locale)
+			result.localization.translations[locale] = "i18n/" + file
+	if manifest.kind == "minigame":
+		result.adapters = []
+		for file: String in (DirAccess.get_files_at(root.path_join("adapters")) if DirAccess.dir_exists_absolute(root.path_join("adapters")) else PackedStringArray()):
+			if file.ends_with(".gd"):
+				var adapter_script: Script = load(root.path_join("adapters/" + file))
+				var adapter: Dictionary = adapter_script.party_definition()
+				adapter.protocol = {"id": file.get_basename()}
+				adapter.entry = "adapters/" + file
+				result.adapters.append(adapter)
+		result.playable = not result.adapters.is_empty()
+	return result
 
-		var contract: Variant = manifest.get("contract")
-		if not contract is Dictionary or typeof(contract.get("api_major")) != TYPE_INT or typeof(contract.get("api_minor")) != TYPE_INT:
-			return "Invalid protocol contract"
-	if manifest["kind"] == "minigame":
-		if not manifest.get("playable", true) is bool or not manifest.get("adapters") is Array:
-			return "Invalid minigame availability or adapters"
-		if manifest.get("playable", true) == manifest.adapters.is_empty():
-			return "Playable minigames require adapters; disabled prototypes must declare none"
-		var ids: Dictionary = {}
-		for adapter: Variant in manifest["adapters"]:
-			if not adapter is Dictionary or not _protocol_reference(adapter.get("protocol")):
-				return "Invalid adapter"
-			var protocol_id: String = adapter["protocol"]["id"]
-			if ids.has(protocol_id):
-				return "One adapter per protocol is required"
-			ids[protocol_id] = true
-			if not adapter.get("dependencies", {}) is Dictionary:
-				return "Adapter dependencies must be an object"
-			for dependency: Variant in adapter.get("dependencies", {}):
-				if not dependency is String or not Data.identifier(dependency) or not adapter["dependencies"][dependency] is String:
-					return "Invalid adapter dependency"
-			if adapter.has("entry") and (not adapter["entry"] is String or not Data.relative_path(adapter["entry"])):
-				return "Invalid adapter entry"
-	if manifest.has("streams") or manifest.has("native_channels"):
-		return "API 6 does not use streams/native_channels declarations"
+static func _entry_script(state: SceneState) -> Script:
+	for index: int in state.get_node_property_count(0):
+		if state.get_node_property_name(0, index) == &"script":
+			return state.get_node_property_value(0, index)
+	var inherited: PackedScene = state.get_node_instance(0)
+	return _entry_script(inherited.get_state())
+
+## Freeze validated descriptors once after startup mounting. No menu/join path rescans disk.
+func use_installed(descriptions: Dictionary, roots: Dictionary, failures: Dictionary) -> Error:
+	packages.clear()
+	_schemas.clear()
+	artifacts.clear()
+	unavailable = failures.duplicate()
+	for id: String in descriptions:
+		if unavailable.has(id):
+			continue
+		var description: Dictionary = descriptions[id]
+		var manifest: Dictionary = description.declaration.duplicate(true)
+		manifest.id = id
+		if description.kind == "avatars":
+			manifest.owner_protocol = description.owner_protocol
+		manifest["_declaration"] = manifest.duplicate(true)
+		manifest["_root"] = "res://games/" + Paths.package_relative(description)
+		manifest.package_hash = description.package_hash
+		manifest.merge(description.content.duplicate(true))
+		packages[id] = manifest
+		var distribution_files: Array[Dictionary] = []
+		var names: Array = ["content.pck", "content.pck.json"]
+		names.append_array(description.external_files)
+		for name: String in names:
+			var file: FileAccess = FileAccess.open(str(roots[id]).path_join(name), FileAccess.READ)
+			if file == null:
+				errors.append("Cannot open distribution artifact: " + id + "/" + name)
+				return FileAccess.get_open_error()
+			distribution_files.append({"path": name, "size": file.get_length()})
+			file.close()
+		artifacts[id] = {"root": roots[id], "description": description.duplicate(true), "files": distribution_files}
+		i18n.declare_package(id, manifest.localization, manifest._root)
+	_cache_adapter_issues()
+	return OK
+
+func _cache_adapter_issues() -> void:
+	adapter_issues.clear()
+	for id: String in ids("minigame"):
+		for item: Dictionary in packages[id].adapters:
+			var issue: String = _dependencies(item.get("dependencies", {}), {}, {})
+			if not protocol_matches(item.protocol):
+				issue = "缺少协议：" + item.protocol.id
+			if not issue.is_empty():
+				adapter_issues[id + "/" + item.protocol.id] = issue
+
+func validate_manifest(manifest: Dictionary) -> String:
+	for key: String in ["name", "kind", "package_version", "framework_version", "remark"]:
+		if not manifest.get(key) is String or (key != "remark" and manifest[key].is_empty()):
+			return "Invalid declaration field: " + key
+	for key: String in manifest:
+		if key not in ["name", "kind", "package_version", "framework_version", "remark", "dependencies", "id", "owner_protocol"]:
+			return "Unsupported declaration field: " + key
+	if manifest.kind not in KINDS or Paths.package_relative(manifest).is_empty():
+		return "Invalid package kind/directory"
+	if Versions.parse(manifest.package_version).is_empty() or Versions.parse(manifest.framework_version).is_empty():
+		return "Versions must be numeric major.minor.patch triples"
+	if not manifest.get("dependencies", {}) is Dictionary:
+		return "Dependencies must be an object"
+	if manifest.kind == "assets" and not manifest.get("dependencies", {}).is_empty():
+		return "Asset packs must be dependency-free"
+	for dependency: Variant in manifest.get("dependencies", {}):
+		if not dependency is String or not Data.identifier(dependency) or not Versions.valid_range(manifest.dependencies[dependency]):
+			return "Invalid dependency/version range"
 	return ""
 
 func _protocol_reference(value: Variant) -> bool:
-	return value is Dictionary and value.get("id") is String and Data.identifier(value["id"]) and typeof(value.get("api_major")) == TYPE_INT and typeof(value.get("min_api_minor", 0)) == TYPE_INT
+	return value is Dictionary and value.get("id") is String and Data.identifier(value.id)
 
 func get_package(id: String) -> Dictionary:
 	var result: Dictionary = packages.get(id, {}).duplicate(true)
 	if not result.is_empty() and result.kind not in ["avatars", "assets"]:
 		for key: String in ["name", "introduction"]:
-			if result.get(key) is String and not result[key].is_empty():
+			if result.get(key) is String and not result[key].is_empty() and result.localization.translations.has("zh_Hans") and i18n.has_message(id, result[key]):
 				result[key] = i18n.text(id, result[key])
 	return result
 
@@ -208,34 +209,24 @@ func path(id: String, relative: String) -> String:
 
 ## Loose data resolves beside source packages in-editor and installed PCKs in releases.
 func external_path(id: String, relative: String) -> String:
-	var manifest: Dictionary = packages[id]
-	if not External.safe_path(relative) or not External.contains(manifest.get("external_files", []), relative):
-		push_error("Undeclared external path: " + id + "/" + relative)
+	if not External.safe_path(relative):
+		push_error("Invalid external path: " + id + "/" + relative)
 		return ""
-	var source: String = ProjectSettings.globalize_path(manifest._root)
-	if OS.has_feature("editor") and source.is_absolute_path() and FileAccess.file_exists(source.path_join("manifest.json")):
-		return source.path_join(relative)
-	var installation: String = Paths.application_root()
-	for argument: String in OS.get_cmdline_user_args():
-		if argument.begins_with("--party-pack-dir="):
-			installation = argument.trim_prefix("--party-pack-dir=")
-	return installation.path_join(Paths.package_relative(manifest)).path_join(relative)
+	return str(artifacts[id].root).path_join(relative)
 
 func load_entry(id: String) -> Resource:
 	var manifest: Dictionary = packages.get(id, {})
 	return load(path(id, manifest.get("entry", ""))) if not manifest.is_empty() else null
 
 func protocol_matches(reference: Dictionary) -> bool:
-	var manifest: Dictionary = packages.get(reference.get("id", ""), {})
-	var contract: Variant = manifest.get("contract")
-	return manifest.get("kind") == "protocols" and contract is Dictionary and contract.get("api_major") == reference.get("api_major") and int(contract.get("api_minor", -1)) >= int(reference.get("min_api_minor", 0))
+	return packages.get(reference.get("id", ""), {}).get("kind") == "protocols" and not unavailable.has(reference.id)
 
 func adapter(mini: String, protocol_id: String) -> Dictionary:
 	var manifest: Dictionary = packages.get(mini, {})
-	if manifest.get("kind") != "minigame" or manifest.get("playable", true) != true or not manifest.get("adapters") is Array:
+	if manifest.get("kind") != "minigame" or unavailable.has(mini):
 		return {}
-	for item: Variant in manifest.adapters:
-		if item is Dictionary and _protocol_reference(item.get("protocol")) and item.protocol.id == protocol_id and protocol_matches(item.protocol):
+	for item: Dictionary in manifest.adapters:
+		if item.protocol.id == protocol_id and not adapter_issues.has(mini + "/" + protocol_id):
 			return item.duplicate(true)
 	return {}
 
@@ -260,56 +251,27 @@ func connection_requirements(selected: Dictionary) -> Dictionary:
 	var required: Dictionary = {}
 	for id: String in selected:
 		var manifest: Dictionary = packages[id]
-		var systems: Array = [] if manifest.kind == "assets" else (packages[manifest.owner_protocol].supported_systems if manifest.kind == "avatars" else manifest.supported_systems)
-		required[id] = {"name": manifest.get("name", id), "version": manifest.package_version, "kind": manifest.kind, "supported_systems": systems.duplicate()}
-	return {"framework": {"name": Data.FRAMEWORK_NAME, "version": Data.VERSION}, "packages": required}
+		required[id] = {"version": manifest.package_version, "hash": manifest.package_hash}
+	return {"framework": {"version": Data.VERSION}, "packages": required}
 
-## Compare only host-required names and versions. Additional client packages are allowed.
-## The requirement list is network input; no file fingerprints are computed.
 func requirements_issue(required: Variant) -> String:
-	if not required is Dictionary or not required.get("framework") is Dictionary or not required.get("packages") is Dictionary:
+	if not required is Dictionary or not required.get("framework") is Dictionary or not required.get("packages") is Dictionary or not required.framework.get("version") is String:
 		return "房主未提供有效的框架与内容包清单"
-	for key: String in ["name", "version"]:
-		if not required.framework.get(key) is String or required.framework[key].is_empty():
-			return "房主框架名称或版本格式无效"
 	var issues: Array[String] = []
-	if required.framework.name != Data.FRAMEWORK_NAME:
-		issues.append("框架名称不同（当前名称：%s；所需名称：%s）" % [Data.FRAMEWORK_NAME, required.framework.name])
 	if required.framework.version != Data.VERSION:
 		issues.append("框架版本不同（当前版本：%s；所需版本：%s）" % [Data.VERSION, required.framework.version])
 	for id: Variant in required.packages:
 		var entry: Variant = required.packages[id]
-		if not id is String or not Data.identifier(id) or not entry is Dictionary:
+		if not id is String or not Data.identifier(id) or not entry is Dictionary or Versions.parse(entry.get("version")).is_empty() or not PackageHash.valid(entry.get("hash")):
 			return "房主内容包清单格式无效"
-		for key: String in ["name", "version"]:
-			if not entry.get(key) is String or entry[key].is_empty():
-				return "房主内容包名称或版本格式无效：" + id
-		if entry.get("kind") not in KINDS or not entry.get("supported_systems") is Array or (entry.kind != "assets" and entry.supported_systems.is_empty()):
-			return "房主内容包平台声明无效：" + id
-		for system: Variant in entry.supported_systems:
-			if not Data.valid_system(system):
-				return "房主内容包平台声明无效：" + id
-		if entry.kind == "assets" and not entry.supported_systems.is_empty():
-			return "资产包不声明平台：" + id
-		if entry.kind != "assets" and not Data.supports_system(entry.supported_systems):
-			issues.append(entry.name + "：平台不支持（" + Data.SYSTEM + "）")
-		var label: String = "%s（%s）" % [entry.name, id]
 		if not packages.has(id):
-			issues.append("缺少内容包 %s（当前版本：未安装；所需版本：%s）" % [label, entry.version])
-			continue
-		var manifest: Dictionary = packages[id]
-		if manifest.kind != entry.kind:
-			issues.append("内容包类型不同：" + id)
-		var current_name: String = manifest.get("name", id)
-		if current_name != entry.name:
-			issues.append("%s 名称不同（当前名称：%s；所需名称：%s）" % [id, current_name, entry.name])
-		if not manifest.get("package_version") is String:
-			issues.append("%s 版本声明无效（当前值：%s；所需版本：%s）" % [label, str(manifest.get("package_version")), entry.version])
-		elif manifest.package_version != entry.version:
-			issues.append("%s 版本不同（当前版本：%s；所需版本：%s）" % [label, manifest.package_version, entry.version])
+			issues.append("缺少内容包 %s（所需版本：%s）" % [id, entry.version])
+		elif packages[id].package_version != entry.version:
+			issues.append("%s 版本不同（当前：%s；所需：%s）" % [id, packages[id].package_version, entry.version])
+		elif packages[id].package_hash != entry.hash:
+			issues.append("%s 内容不同（版本：%s）" % [id, entry.version])
 	return "\n".join(issues)
 
-## Resolves only the selected adapter dependencies, never all advertised protocols.
 func resolve(main_id: String, pools: Dictionary, appearances: Array = []) -> Dictionary:
 	var main: Dictionary = packages.get(main_id, {})
 	if main.get("kind") != "maingame" or not _protocol_reference(main.get("protocol")) or not protocol_matches(main.protocol):
@@ -341,8 +303,13 @@ func resolve(main_id: String, pools: Dictionary, appearances: Array = []) -> Dic
 		_collect_refs(appearance, references)
 		for ref: Dictionary in references:
 			var pack: Dictionary = packages.get(ref["package_id"], {})
-			if not pack.get("resources", {}).has(ref["resource_key"]):
-				return Data.failure("RESOURCE_MISSING", "玩家形象资源不存在：%s/%s（内容包版本：%s）。请在协议资料中重新选择头像或形象。" % [ref.package_id, ref.resource_key, pack.get("package_version", "未安装")])
+			var present: bool = packages.has(ref.package_id) and Data.relative_path(ref.resource_path)
+			if present:
+				var target: String = path(ref.package_id, ref.resource_path)
+				var index: Array = artifacts[ref.package_id].description.files
+				present = index.has(target) or index.has(target + ".import")
+			if not present:
+				return Data.failure("RESOURCE_MISSING", "玩家形象资源不存在：%s/%s（内容包版本：%s）。请在协议资料中重新选择头像或形象。" % [ref.package_id, ref.resource_path, pack.get("package_version", "未安装")])
 			error = _visit(ref["package_id"], selected, visiting)
 			if not error.is_empty():
 				return Data.failure("DEPENDENCY_MISSING", error)
@@ -353,29 +320,24 @@ func _visit(id: String, selected: Dictionary, visiting: Dictionary) -> String:
 		return "Dependency cycle: " + id
 	if selected.has(id):
 		return ""
+	if unavailable.has(id):
+		return unavailable[id]
 	if not packages.has(id):
 		return "缺少内容包：" + id
 	visiting[id] = true
 	var manifest: Dictionary = packages[id]
-	var error: String = _dependencies(manifest.get("dependencies", {}), selected, visiting)
-	if not error.is_empty():
-		return error
-	var issue: String = _prepare_schema(id)
+	if manifest.framework_version != Data.VERSION:
+		return id + " requires framework " + manifest.framework_version
+	var issue: String = _dependencies(manifest.get("dependencies", {}), selected, visiting)
 	if not issue.is_empty():
 		return issue
-	var required: Array = manifest.get("resources", {}).values()
-	if manifest.has("entry"):
-		required.append(manifest["entry"])
-	for relative: String in required:
-		if not ResourceLoader.exists(path(id, relative)):
-			return "缺少已声明的资源：" + id + "/" + relative
 	visiting.erase(id)
-	selected[id] = {"version": manifest["package_version"]}
+	selected[id] = {"version": manifest.package_version, "hash": manifest.get("package_hash", "")}
 	return ""
 
 func _dependencies(dependencies: Dictionary, selected: Dictionary, visiting: Dictionary) -> String:
 	for id: String in dependencies:
-		if packages.get(id, {}).get("package_version") != dependencies[id]:
+		if not Versions.matches(packages.get(id, {}).get("package_version", ""), dependencies[id]):
 			return "%s 依赖版本不符（当前版本：%s；所需版本：%s）" % [id, packages.get(id, {}).get("package_version", "未安装"), dependencies[id]]
 		var error: String = _visit(id, selected, visiting)
 		if not error.is_empty():
@@ -384,7 +346,7 @@ func _dependencies(dependencies: Dictionary, selected: Dictionary, visiting: Dic
 
 func _collect_refs(value: Variant, output: Array) -> void:
 	if value is Dictionary:
-		if value.get("package_id") is String and value.get("resource_key") is String:
+		if value.get("package_id") is String and value.get("resource_path") is String:
 			output.append(value)
 		for item: Variant in value.values():
 			_collect_refs(item, output)
@@ -394,25 +356,18 @@ func _collect_refs(value: Variant, output: Array) -> void:
 
 func asset(ref: Dictionary, active: Dictionary) -> Resource:
 	var id: String = ref.get("package_id", "")
-	var key: String = ref.get("resource_key", "")
-	if not active.has(id):
+	var relative: String = ref.get("resource_path", "")
+	if not active.has(id) or not Data.relative_path(relative):
 		return null
-	var relative: String = packages.get(id, {}).get("resources", {}).get(key, "")
-	return load(path(id, relative)) if not relative.is_empty() else null
+	return load(path(id, relative))
 
-## A schema is shared by its consumers and loaded once, when settings are first needed.
 func _prepare_schema(id: String) -> String:
 	var manifest: Dictionary = packages[id]
 	if _schemas.has(id):
 		return ""
-	var manifest_issue: String = validate_manifest(manifest)
-	if not manifest_issue.is_empty():
-		return id + ": " + manifest_issue
 	var configuration: Dictionary = Schema.empty()
 	if manifest.has("config_schema"):
-		var declaration: Resource = load(path(id, manifest.config_schema))
-		if not declaration is Script or not declaration.has_method("schema"):
-			return id + ": config_schema must name a script exposing static schema()"
+		var declaration: Script = load(path(id, manifest.config_schema))
 		configuration = declaration.schema()
 	var schema_issue: String = Schema.validate(configuration, manifest.kind)
 	if schema_issue.is_empty():
@@ -422,28 +377,9 @@ func _prepare_schema(id: String) -> String:
 	_schemas[id] = configuration
 	return ""
 
-## Publishing checks the full declaration, schema and translations for the requested package.
+## Publishing validates the author declaration; Godot reports resource errors at actual load.
 func publication_issue(id: String) -> String:
-	var manifest: Dictionary = packages[id]
-	var issue: String = _prepare_schema(id)
-	if not issue.is_empty() or manifest.kind == "avatars":
-		return issue
-	if manifest.kind == "assets":
-		for file: String in files(manifest._root):
-			if file.get_extension() not in ["gd", "tscn", "tres", "res", "scn", "gdshader"]:
-				continue
-			for dependency: String in ResourceLoader.get_dependencies(file):
-				var target: String = dependency.get_slice("::", dependency.get_slice_count("::") - 1)
-				if target.begins_with("uid://"):
-					target = ResourceUID.get_id_path(ResourceUID.text_to_id(target))
-				if not target.begins_with(manifest._root + "/") and not target.begins_with("res://core/"):
-					return "Asset reference outside package/core: " + file + " -> " + target
-		return ""
-	if i18n.register_package(id, manifest.localization, manifest._root) != OK:
-		return i18n.last_error
-	if i18n.validate_messages(id, manifest, _schemas[id]) != OK:
-		return i18n.last_error
-	return ""
+	return validate_manifest(packages[id]._declaration)
 
 func schema(id: String) -> Dictionary:
 	if not packages.has(id):
@@ -486,9 +422,10 @@ static func files(root: String) -> Array[String]:
 		if file.begins_with(".") or file.contains("~") or file.get_extension().to_lower() in ["tmp", "bak", "pending"]:
 			continue
 		result.append(root.path_join(file))
-	var protocol_root: bool = FileAccess.file_exists(root.path_join("manifest.json")) and Data.read_json(root.path_join("manifest.json")).get("kind") == "protocols"
+	var package_root: bool = "manifest.json" in DirAccess.get_files_at(root)
+	var protocol_root: bool = package_root and Data.read_json(root.path_join("manifest.json")).get("kind") == "protocols"
 	for directory: String in DirAccess.get_directories_at(root):
-		if not directory.begins_with(".") and not (directory == "config" and FileAccess.file_exists(root.path_join("manifest.json"))) and not (protocol_root and directory == "avatars"):
+		if not directory.begins_with(".") and not (directory == "config" and package_root) and not (protocol_root and directory == "avatars"):
 			result.append_array(files(root.path_join(directory)))
 	result.sort()
 	return result

@@ -36,9 +36,9 @@ func configure(value: Dictionary, editable: bool, context: Dictionary = {}) -> v
 			var manifest: Dictionary = context.resources[package_id]
 			for key: String in manifest.get("appearance_resources", {}):
 				var info: Variant = manifest.appearance_resources[key]
-				if not info is Dictionary or info.get("protocol") != protocol_id or info.get("slot") != slot or not manifest.get("resources", {}).has(key):
+				if not info is Dictionary or manifest.owner_protocol != protocol_id or info.get("slot") != slot:
 					continue
-				var ref: Dictionary = {"package_id": package_id, "resource_key": key}
+				var ref: Dictionary = {"package_id": package_id, "resource_path": key}
 				choice.add_item(info.get("name", key))
 				choice.set_item_metadata(choice.item_count - 1, ref)
 		var selected: int = -1
@@ -46,7 +46,7 @@ func configure(value: Dictionary, editable: bool, context: Dictionary = {}) -> v
 			if choice.get_item_metadata(index) == _value[slot]:
 				selected = index
 		if selected == -1:
-			choice.add_item("缺失资源 · " + str(_value[slot].resource_key))
+			choice.add_item("缺失资源 · " + str(_value[slot].resource_path))
 			selected = choice.item_count - 1
 			choice.set_item_metadata(selected, _value[slot].duplicate(true))
 		choice.select(selected)

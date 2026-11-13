@@ -3,17 +3,20 @@ extends RefCounted
 const Paths = preload("res://core/config/party_paths.gd")
 const External = preload("res://core/content/party_external_files.gd")
 const ScriptClasses = preload("res://core/content/party_script_classes.gd")
-const DESCRIPTOR_FORMAT: int = Data.DESCRIPTOR_FORMAT
+const Versions = preload("res://core/content/party_versions.gd")
+const PackageHash = preload("res://core/content/party_package_hash.gd")
+const Selection = preload("res://core/content/party_content_selection.gd")
 const Data = preload("res://core/runtime/party_data.gd")
 const Catalog = preload("res://core/content/party_catalog.gd")
 var last_error: String = ""
 var mounted: Dictionary = {}
 var installed: Dictionary = {}
 var unavailable: Dictionary = {}
+var roots: Dictionary = {}
 
 func export_source(catalog: RefCounted, id: String, output: String) -> Error:
-	if catalog.packages.get(id, {}).get("kind") == "assets" and output.get_file().get_basename() != id:
-		return _error("Asset source ZIP filename must match package ID")
+	if output.get_file().get_basename() != id:
+		return _error("Source ZIP filename must match package ID")
 	if not catalog.packages.has(id):
 		return ERR_DOES_NOT_EXIST
 	var issue: String = catalog.publication_issue(id)
@@ -21,7 +24,7 @@ func export_source(catalog: RefCounted, id: String, output: String) -> Error:
 		return _error(issue)
 	var manifest: Dictionary = catalog.packages[id]
 	var root: String = manifest["_root"]
-	var payload: Dictionary = External.inventory(root, manifest.get("external_files", []))
+	var payload: Dictionary = External.inventory(root)
 	if not payload.ok:
 		return _error(payload.error)
 	var writer: ZIPPacker = ZIPPacker.new()
@@ -67,30 +70,21 @@ static func descriptors(directory: String) -> Array[String]:
 	return result
 
 func validate_descriptor(description: Dictionary) -> String:
-	if description.get("format") != DESCRIPTOR_FORMAT:
-		return "Unsupported package descriptor; re-export core and content together"
-	if not description.get("dependencies") is Dictionary or not description.get("name") is String:
-		return "Missing package dependency/name declaration"
-	for dependency: Variant in description.dependencies:
-		if not dependency is String or not Data.identifier(dependency) or not description.dependencies[dependency] is String or description.dependencies[dependency].is_empty():
-			return "Invalid installed dependency"
-	if description.get("kind") == "assets" and not description.dependencies.is_empty():
-		return "Asset packs must remain dependency-free"
-	if description.get("kind") == "assets":
-		if description.has("supported_systems"):
-			return "Asset packs do not declare platforms"
-	else:
-		if not description.get("supported_systems") is Array or description.supported_systems.is_empty():
-			return "Missing supported_systems declaration"
-		for system: Variant in description.supported_systems:
-			if not Data.valid_system(system):
-				return "Invalid supported_systems declaration"
-	if Paths.package_relative(description).is_empty() or not description.get("version") is String or description.version.is_empty():
-		return "Invalid installed package descriptor"
+	if not description.get("declaration") is Dictionary or not description.get("content") is Dictionary:
+		return "Missing package declaration/content definition"
+	var declaration: Dictionary = description.declaration.duplicate(true)
+	declaration.id = description.get("id")
+	if description.get("kind") == "avatars":
+		declaration.owner_protocol = description.get("owner_protocol")
+	var issue: String = Catalog.new().validate_manifest(declaration)
+	if not issue.is_empty():
+		return issue
+	if description.get("name") != declaration.name or description.get("kind") != declaration.kind or description.get("version") != declaration.package_version or description.get("framework_version") != declaration.framework_version or description.get("dependencies") != declaration.get("dependencies", {}):
+		return "Descriptor identity differs from declaration"
+	if Paths.package_relative(description).is_empty() or not PackageHash.valid(description.get("package_hash")) or description.get("artifact") != "content.pck":
+		return "Invalid package directory/artifact/hash"
 	if not description.get("files") is Array or description.files.is_empty() or not description.get("uids") is Dictionary:
 		return "Missing package file/UID index"
-	if description.get("core") != Data.VERSION or description.get("engine") != Engine.get_version_info()["string"]:
-		return "Package requires another core/engine build"
 	var loose: Variant = description.get("external_files", [])
 	var folders: Variant = description.get("external_directories", [])
 	if not loose is Array or not folders is Array:
@@ -120,103 +114,106 @@ func validate_descriptor(description: Dictionary) -> String:
 			return "Invalid resource UID index"
 	return ScriptClasses.validate(description.get("script_classes"), root, description.files)
 
-## Restart after installing/updating. Structural checks do not prove byte-for-byte equality.
-func mount_directory(directory: String, choices: Dictionary = {}) -> Error:
+## Validate the final startup candidate set once, before mounting or replacing anything.
+## Replacement roots point at staged payloads; successful results survive transaction publication.
+func prepare(directory: String, replacements: Dictionary = {}, required: Array = []) -> Error:
 	last_error = ""
 	installed.clear()
+	roots.clear()
 	unavailable.clear()
-	var paths: Dictionary = {}
-	var uids: Dictionary = {}
-	var planned: Dictionary = {}
-	var existing_classes: Array[Dictionary] = ProjectSettings.get_global_class_list()
+	var candidates: Dictionary = {}
 	for descriptor_path: String in descriptors(directory):
 		var description: Dictionary = Data.read_json(descriptor_path)
+		var relative: String = descriptor_path.get_base_dir().trim_prefix(directory.trim_suffix("/") + "/")
+		var id: String = relative.get_file()
+		if candidates.has(id):
+			return _error("Duplicate package ID: " + id)
+		candidates[id] = {"description": description, "root": descriptor_path.get_base_dir(), "relative": relative}
+	for id: String in replacements:
+		var root: String = replacements[id]
+		var description: Dictionary = Data.read_json(root.path_join("content.pck.json"))
+		candidates[id] = {"description": description, "root": root, "relative": Paths.package_relative(description)}
+	var declarations: Dictionary = {}
+	for id: String in candidates:
+		var candidate: Dictionary = candidates[id]
+		var description: Dictionary = candidate.description
 		var issue: String = validate_descriptor(description)
+		if issue.is_empty() and (description.id != id or Paths.package_relative(description) != candidate.relative):
+			issue = "Package installed under the wrong folder: " + candidate.root
+		if issue.is_empty() and description.framework_version != Data.VERSION:
+			issue = "Framework version differs: " + description.framework_version + " / " + Data.VERSION
+		if issue.is_empty():
+			issue = _check_payload(candidate.root, description)
+		if issue.is_empty():
+			var checked: Dictionary = PackageHash.compute(candidate.root, description)
+			if not checked.ok:
+				issue = checked.error
+			elif checked.hash != description.package_hash:
+				issue = "Package hash differs: " + id
 		if not issue.is_empty():
-			return _error(descriptor_path + ": " + issue)
-		var expected: String = directory.path_join(Paths.package_relative(description))
-		if descriptor_path.get_base_dir().simplify_path() != expected.simplify_path() or description.get("artifact") != "content.pck":
-			return _error("Package installed under the wrong folder: " + descriptor_path)
-		issue = _check_payload(expected, description)
-		if not issue.is_empty():
-			return _error(issue)
-		var id: String = description.id
+			unavailable[id] = issue
+			continue
 		installed[id] = description
-		if not FileAccess.file_exists(expected.path_join("content.pck")):
-			return _error("Missing PCK: " + expected)
-		var root: String = "res://games/" + Paths.package_relative(description)
-		if FileAccess.file_exists(root.path_join("manifest.json")):
-			var choice: String = choices.get(id, "")
-			if choice == "source":
-				continue
-			if choice != "pck":
-				return _error("SOURCE_SELECTION_REQUIRED: " + id + " has source and PCK; select source or pck and restart")
-		if mounted.has(id) or planned.has(id):
-			return _error("Duplicate installed package: " + id)
-		for path: String in description.files:
-			if paths.has(path):
-				return _error("Conflicting package path: " + path)
-			paths[path] = id
-		for uid_text: String in description.uids:
-			var uid: int = ResourceUID.text_to_id(uid_text)
-			if (ResourceUID.has_id(uid) and ResourceUID.get_id_path(uid) != description.uids[uid_text]) or (uids.has(uid_text) and uids[uid_text] != description.uids[uid_text]):
-				return _error("UID conflict: " + uid_text)
-			uids[uid_text] = description.uids[uid_text]
-		planned[id] = description
-	var source_catalog: RefCounted = Catalog.new()
-	if source_catalog.scan() != OK:
-		return _error(str(source_catalog.errors))
-	var declarations: Dictionary = source_catalog.packages.duplicate(true)
-	for id: String in planned:
-		var declaration: Dictionary = planned[id].duplicate(true)
-		declaration.package_version = declaration.version
+		roots[id] = candidate.root
+		var declaration: Dictionary = description.declaration.duplicate(true)
+		declaration.id = id
+		if description.kind == "avatars":
+			declaration.owner_protocol = description.owner_protocol
 		declarations[id] = declaration
-	unavailable = preload("res://core/content/party_content_selection.gd").unavailable_packages(declarations)
-	for id: String in unavailable:
-		planned.erase(id)
-	var merged: Dictionary = ScriptClasses.merge(existing_classes, planned)
+	unavailable.merge(Selection.unavailable_packages(declarations))
+	for id: String in required:
+		if unavailable.has(id):
+			return _error("Update rejected: " + id + ": " + unavailable[id])
+	# File, UID and class conflicts invalidate a batch before publication as well.
+	return _check_conflicts()
+
+func _check_conflicts() -> Error:
+	var files: Dictionary = {}
+	var uids: Dictionary = {}
+	var planned: Dictionary = {}
+	for id: String in installed:
+		if unavailable.has(id):
+			continue
+		var description: Dictionary = installed[id]
+		planned[id] = description
+		for path: String in description.files:
+			if files.has(path):
+				return _error("Conflicting package path: " + path)
+			files[path] = id
+		for uid: String in description.uids:
+			var resource_uid: int = ResourceUID.text_to_id(uid)
+			if ResourceUID.has_id(resource_uid) and ResourceUID.get_id_path(resource_uid) != description.uids[uid]:
+				return _error("UID conflicts with loaded registry: " + uid)
+			if uids.has(uid) and uids[uid] != description.uids[uid]:
+				return _error("Conflicting package UID: " + uid)
+			uids[uid] = description.uids[uid]
+	var merged: Dictionary = ScriptClasses.merge(ProjectSettings.get_global_class_list(), planned)
+	return OK if merged.ok else _error(merged.error)
+
+## Only prepared artifacts may enter this process. Source/PCK ambiguity is resolved at startup.
+func mount_prepared(directory: String) -> Error:
+	var planned: Dictionary = {}
+	for id: String in installed:
+		if not unavailable.has(id):
+			planned[id] = installed[id]
+	var merged: Dictionary = ScriptClasses.merge(ProjectSettings.get_global_class_list(), planned)
 	if not merged.ok:
 		return _error(merged.error)
-	# Mount every resource first. No content script is parsed before its dependencies and types exist.
 	for id: String in planned:
 		var description: Dictionary = planned[id]
-		var expected: String = directory.path_join(Paths.package_relative(description))
-		var root: String = "res://games/" + Paths.package_relative(description)
-		if not ProjectSettings.load_resource_pack(expected.path_join("content.pck"), false):
-			return _error("Cannot mount " + expected)
-		var manifest: Dictionary = Catalog.read_manifest(root.path_join("manifest.json"))
-		if manifest.get("id") != id or manifest.get("package_version") != description.version or manifest.get("kind") != description.kind or Paths.package_relative(manifest) != Paths.package_relative(description):
-			return _error("Mounted manifest differs from descriptor; restart required: " + id)
+		if not ProjectSettings.load_resource_pack(roots[id].path_join("content.pck"), true):
+			return _error("Cannot mount package: " + id)
 		for uid_text: String in description.uids:
 			var uid: int = ResourceUID.text_to_id(uid_text)
+			if ResourceUID.has_id(uid) and ResourceUID.get_id_path(uid) != description.uids[uid_text]:
+				return _error("UID conflict: " + uid_text)
 			if not ResourceUID.has_id(uid):
 				ResourceUID.add_id(uid, description.uids[uid_text])
 		mounted[id] = description
-	if planned.is_empty():
-		return OK
-	var catalog: RefCounted = Catalog.new()
-	if catalog.scan() != OK:
-		return _error(str(catalog.errors))
-	for id: String in planned:
-		var manifest: Dictionary = catalog.packages[id]
-		var systems: Array = [] if manifest.kind == "assets" else (catalog.packages[manifest.owner_protocol].supported_systems if manifest.kind == "avatars" else manifest.supported_systems)
-		if manifest.get("dependencies", {}) != planned[id].dependencies:
-			return _error(id + ": mounted dependencies differ from descriptor")
-		if systems != planned[id].get("supported_systems", []):
-			return _error(id + ": mounted platform declaration differs from descriptor")
-		for dependency: String in catalog.packages[id].get("dependencies", {}):
-			var version: String = catalog.packages[id].dependencies[dependency]
-			if catalog.get_package(dependency).get("package_version") != version:
-				return _error(id + ": missing/conflicting dependency " + dependency + " " + version)
-	if merged.has_content_classes:
+	if merged.has_content_classes or OS.has_feature("editor"):
 		var error: Error = ScriptClasses.register(directory, merged.classes)
 		if error != OK:
-			return _error("Cannot register content script classes: " + error_string(error))
-	for id: String in planned:
-		for entry: Dictionary in planned[id].script_classes:
-			var script: Script = load(entry.path)
-			if script == null or (not script.can_instantiate() and not script.is_abstract()) or script.get_global_name() != entry["class"]:
-				return _error(id + ": cannot load registered class " + entry["class"] + " at " + entry.path)
+			return _error("Cannot register content classes: " + error_string(error))
 	return OK
 
 ## Install into its declared category; updating a running installation is deliberately refused.
@@ -267,14 +264,18 @@ func import_source(archive: String, destination: String = "res://games", replace
 		return error
 	var raw: Variant = JSON.parse_string(reader.read_file("manifest.json").get_string_from_utf8())
 	var manifest: Dictionary = Data._json_numbers(raw) if raw is Dictionary else {}
-	if manifest.get("kind") == "assets":
-		manifest["id"] = archive.get_file().get_basename()
+	manifest["id"] = archive.get_file().get_basename()
+	if manifest.get("kind") == "avatars":
+		if not destination.trim_suffix("/").ends_with("/avatars"):
+			reader.close()
+			return _error("Choose the owning protocol avatars/ directory")
+		manifest.owner_protocol = destination.trim_suffix("/").get_base_dir().get_file()
 	var catalog: RefCounted = Catalog.new()
 	var issue: String = catalog.validate_manifest(manifest)
 	if not issue.is_empty():
 		reader.close()
 		return _error(issue)
-	var target: String = destination.path_join(Paths.package_relative(manifest))
+	var target: String = destination.path_join(manifest.id) if manifest.kind == "avatars" else destination.path_join(Paths.package_relative(manifest))
 	if DirAccess.dir_exists_absolute(target) and not replace_existing:
 		reader.close()
 		return ERR_ALREADY_EXISTS
@@ -332,7 +333,7 @@ func import_source(archive: String, destination: String = "res://games", replace
 				classes[name_value] = path
 	catalog.scan()
 	for dependency: String in manifest.get("dependencies", {}):
-		if catalog.get_package(dependency).get("package_version") != manifest["dependencies"][dependency]:
+		if not Versions.matches(catalog.get_package(dependency).get("package_version", ""), manifest["dependencies"][dependency]):
 			reader.close()
 			return _error("Import dependency first: " + dependency)
 	var stage: String = "res://tmp/content_stage_" + Data.token()
@@ -360,7 +361,7 @@ func import_source(archive: String, destination: String = "res://games", replace
 			reader.close()
 			return error
 	reader.close()
-	var payload: Dictionary = External.inventory(stage, manifest.get("external_files", []))
+	var payload: Dictionary = External.inventory(stage)
 	if not payload.ok:
 		return _error(payload.error)
 	error = DirAccess.make_dir_recursive_absolute(target.get_base_dir())

@@ -138,8 +138,7 @@ func _build_games() -> void:
 	_games.clear()
 	for id: String in app.catalog.ids("maingame"):
 		var binding: Dictionary = app.catalog.get_package(id).get("protocol", {})
-		var contract: Dictionary = app.catalog.get_package(selected_protocol).get("contract", {})
-		if binding.get("id") == selected_protocol and binding.get("api_major") == contract.get("api_major") and int(binding.get("min_api_minor", 0)) <= int(contract.get("api_minor", 0)):
+		if binding.get("id") == selected_protocol and app.catalog.protocol_matches(binding):
 			_games.append(id)
 	var options: Array[String] = app.catalog.ids("protocols") if _create_step == "protocol" else _games
 	var picker: OptionButton = _create.get_node("Game")

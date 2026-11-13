@@ -37,10 +37,12 @@ static func validate(entries: Variant, root: String, files: Array) -> String:
 		paths[entry.path] = true
 	return ""
 
-## Merge with core (and editor source) registrations; validate all added inheritance chains.
+## Merge registrations and reject name conflicts. Godot resolves inheritance at actual load.
 static func merge(existing: Array[Dictionary], descriptions: Dictionary) -> Dictionary:
 	var classes: Dictionary = {}
 	for entry: Dictionary in existing:
+		if str(entry.path).begins_with("res://games/"):
+			continue
 		classes[str(entry["class"])] = entry.duplicate(true)
 	var added: Dictionary = {}
 	for id: String in descriptions:
@@ -52,16 +54,6 @@ static func merge(existing: Array[Dictionary], descriptions: Dictionary) -> Dict
 				return {"ok": false, "error": "Class name conflict: " + name_value + " in " + id + " and " + str(classes[name_value].path)}
 			added[name_value] = id
 			classes[name_value] = entry.duplicate(true)
-	for name_value: String in added:
-		var chain: Dictionary = {}
-		var current: String = name_value
-		while not ClassDB.class_exists(current):
-			if not classes.has(current):
-				return {"ok": false, "error": added[name_value] + ": missing base type " + current + " for " + name_value}
-			if chain.has(current):
-				return {"ok": false, "error": added[name_value] + ": cyclic class inheritance at " + current}
-			chain[current] = true
-			current = str(classes[current].base)
 	var result: Array[Dictionary] = []
 	for name_value: String in classes:
 		result.append(classes[name_value])

@@ -1,6 +1,11 @@
 ## GodotPartyDefaultProtocol 1.0. Pure contracts, never a wallet or item-effect runner.
 ## Hosts validate ownership/consent against main-game state before authorizing a request.
 extends RefCounted
+
+## Content-owned gameplay rules, independent of package compatibility.
+static func party_definition() -> Dictionary:
+	return {"player_counts": [1, 2, 3, 4, 5, 6, 7, 8], "config_directories": {"maingame": "godot_party_default_v1", "minigame": "godot_party_default_v1"}}
+
 const ID: String = "godot_party_default_protocol"
 ## Eight room identities: red, green, blue, bright cyan, purple, yellow, black and white.
 const COLORS: Array[String] = ["#e53935", "#43b047", "#2962ff", "#00d9e8", "#9c42d4", "#ffda24", "#252832", "#f5f5f5"]
@@ -48,11 +53,11 @@ func _data(value: Variant, depth: int = 0) -> bool:
 	return false
 
 func _reference(value: Variant) -> bool:
-	return value is Dictionary and _keys(value, ["package_id", "resource_key"]) and _text(value.package_id) and _text(value.resource_key)
+	return value is Dictionary and _keys(value, ["package_id", "resource_path"]) and _text(value.package_id) and _text(value.resource_path)
 
 ## Profile values are independent snapshots; the color is opaque sRGB RRGGBB.
 func default_player_config() -> Dictionary:
-	return {"color": COLORS[2], "avatar_2d": {"package_id": "godot_party_default_avatars_2d", "resource_key": "avatar_silver_lavender"}, "character_3d": {"package_id": "godot_party_default_avatars", "resource_key": "character_3d"}}
+	return {"color": COLORS[2], "avatar_2d": {"package_id": "godot_party_default_avatars_2d", "resource_path": "avatar_silver_lavender.tscn"}, "character_3d": {"package_id": "godot_party_default_avatars", "resource_path": "character_3d.tscn"}}
 
 func validate_player_config(value: Dictionary) -> Dictionary:
 	if not _keys(value, ["color", "avatar_2d", "character_3d"]) or not value.color is String:

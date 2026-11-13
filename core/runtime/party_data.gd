@@ -1,20 +1,14 @@
 ## Internal value validation and deterministic fingerprints. Never decodes objects.
 extends RefCounted
 
-const API_VERSION: int = 6
-const WIRE_VERSION: int = 19
-const DESCRIPTOR_FORMAT: int = 5
-const VERSION: String = "6.0.0"
+const VERSION: String = preload("res://core/framework_version.gd").VERSION
 const FRAMEWORK_NAME: String = "GodotParty"
-## Editor is an independent identity with Windows compatibility until specified otherwise.
+## Platform identity is informational; compatibility uses the framework version.
 const SYSTEM: String = "editor"
 const SYSTEMS: Array[String] = ["editor", "windows", "android", "ios"]
 
 static func valid_system(system: Variant) -> bool:
 	return system is String and system in SYSTEMS
-
-static func supports_system(systems: Array, system: String = SYSTEM) -> bool:
-	return system in systems or (system == "editor" and "windows" in systems)
 
 ## Wire messages may use integer entity IDs as map keys; persisted state keeps string keys.
 static func valid(value: Variant, depth: int = 0, integer_keys: bool = false) -> bool:

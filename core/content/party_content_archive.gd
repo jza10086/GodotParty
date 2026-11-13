@@ -1,5 +1,5 @@
 ## Portable content ZIPs are validated at import and applied before any PCK is mounted.
-## APK updates replace packaged artifacts, preserving player configuration and loose edits.
+## Formal external payload is replaced transactionally; personal config stays outside the payload.
 extends RefCounted
 const Packages = preload("res://core/content/party_packages.gd")
 const Paths = preload("res://core/config/party_paths.gd")
@@ -45,7 +45,9 @@ func inspect(path: String) -> Dictionary:
 			reader.close()
 			return _failure("Content ZIP is missing " + file)
 	var parent_folders: Dictionary = {}
-	for file: String in files:
+	for folder: String in folders:
+		parent_folders[folder + "/"] = true
+	for file: String in files.keys() + folders.keys():
 		var parent: String = file.get_base_dir()
 		while not parent.is_empty():
 			parent_folders[parent + "/"] = true
@@ -55,7 +57,7 @@ func inspect(path: String) -> Dictionary:
 			reader.close()
 			return _failure("Unexpected or duplicate ZIP entry: " + file)
 	reader.close()
-	return {"ok": true, "id": header.id, "files": files, "directories": folders.keys()}
+	return {"ok": true, "id": header.id, "files": files, "directories": folders.keys(), "descriptions": descriptions}
 
 ## Queue updates for next launch; never mutate already-mounted PCKs.
 func queue_update(source: String, directory: String, active: Callable = Callable(), progress: Callable = Callable()) -> Error:
@@ -105,77 +107,128 @@ func queue_update(source: String, directory: String, active: Callable = Callable
 			last_error += "; cannot clear temporary copy: " + error_string(cleanup)
 	return error
 
-func bootstrap(directory: String) -> Error:
+## Merge bundled and downloaded updates into one candidate set; verify before publication.
+func bootstrap(directory: String, packages: RefCounted, source_roots: Dictionary = {}) -> Error:
+	var archives: Array[Dictionary] = []
 	var bundled: String = "res://core/bundled_content.zip"
 	var marker: String = directory.path_join("tmp/bundled_content_id.txt")
+	var bundle_id: String = ""
 	if FileAccess.file_exists(bundled):
 		var checked: Dictionary = inspect(bundled)
 		if not checked.ok:
 			return ERR_INVALID_DATA
-		var installed: String = FileAccess.get_file_as_string(marker) if FileAccess.file_exists(marker) else ""
-		if installed != checked.id:
-			var error: Error = apply(bundled, directory, checked)
-			if error != OK:
-				return error
-			error = _write(marker, checked.id.to_utf8_buffer())
-			if error != OK:
-				last_error = "Cannot record bundled content version: " + error_string(error)
-				return error
+		var previous: String = FileAccess.get_file_as_string(marker) if FileAccess.file_exists(marker) else ""
+		if previous != checked.id:
+			bundle_id = checked.id
+			archives.append({"path": bundled, "checked": checked})
 	var pending: String = directory.path_join("tmp/content_update.zip")
 	if FileAccess.file_exists(pending):
 		var checked: Dictionary = inspect(pending)
 		if not checked.ok:
 			return ERR_INVALID_DATA
-		var error: Error = apply(pending, directory, checked)
+		archives.append({"path": pending, "checked": checked})
+	if archives.is_empty():
+		var error: Error = packages.prepare(directory, source_roots)
+		last_error = packages.last_error
+		return error
+	var error: Error = _apply_batch(archives, directory, packages, source_roots)
+	if error != OK:
+		return error
+	if not bundle_id.is_empty():
+		error = _write(marker, bundle_id.to_utf8_buffer())
 		if error != OK:
+			last_error = "Cannot record bundled content version: " + error_string(error)
 			return error
+	if FileAccess.file_exists(pending):
 		error = DirAccess.remove_absolute(pending)
 		if error != OK:
 			last_error = "Cannot clear applied content update: " + error_string(error)
-			return error
-	return OK
+	return error
 
-## Stage and back up all replacements before writing; restore them if publication fails.
+## Public offline install follows the same candidate validation and rollback path.
 func apply(source: String, directory: String, checked: Dictionary) -> Error:
-	var reader: ZIPReader = ZIPReader.new()
-	var error: Error = reader.open(source)
-	if error != OK:
-		last_error = "Cannot open content ZIP: " + error_string(error)
-		return error
+	return _apply_batch([{"path": source, "checked": checked}], directory, Packages.new(), {})
+
+func _apply_batch(archives: Array, directory: String, packages: RefCounted, source_roots: Dictionary) -> Error:
 	var stage: String = directory.path_join("tmp/content_install/" + Data.token())
-	var writes: Array[Dictionary] = []
-	for folder: String in checked.directories:
-		error = DirAccess.make_dir_recursive_absolute(directory.path_join(folder))
+	var replacements: Dictionary = source_roots.duplicate()
+	var updated: Dictionary = {}
+	var error: Error = OK
+	for archive: Dictionary in archives:
+		var reader: ZIPReader = ZIPReader.new()
+		error = reader.open(archive.path)
 		if error != OK:
-			break
-	if error == OK:
-		for relative: String in checked.files:
-			if relative == "bundle.json":
-				continue
-			var target: String = directory.path_join(relative)
+			last_error = "Cannot open update archive: " + error_string(error)
+			return error
+		for id: String in archive.checked.descriptions:
+			var description: Dictionary = archive.checked.descriptions[id]
+			var relative: String = Paths.package_relative(description)
+			var root: String = stage.path_join("next").path_join(relative)
+			replacements[id] = root
+			updated[id] = description
+			var names: Array = ["content.pck", "content.pck.json"]
+			names.append_array(description.external_files)
+			for name: String in names:
+				error = _write(root.path_join(name), reader.read_file(relative.path_join(name)))
+				if error != OK:
+					break
+			if error != OK:
+				break
+			for folder: String in description.external_directories:
+				error = DirAccess.make_dir_recursive_absolute(root.path_join(folder))
+				if error != OK:
+					break
+		reader.close()
+		if error != OK:
+			last_error = "Cannot stage content: " + error_string(error)
+			return error
+	error = packages.prepare(directory, replacements, updated.keys())
+	if error != OK:
+		last_error = packages.last_error
+		var cleanup: Error = _remove_stage(stage)
+		if cleanup != OK:
+			last_error += "; staging retained: " + stage
+		return error
+	var writes: Array[Dictionary] = []
+	for id: String in updated:
+		var description: Dictionary = updated[id]
+		var relative: String = Paths.package_relative(description)
+		var target_root: String = directory.path_join(relative)
+		var old_path: String = target_root.path_join("content.pck.json")
+		var old: Dictionary = Data.read_json(old_path) if FileAccess.file_exists(old_path) else {}
+		var names: Array = ["content.pck", "content.pck.json"]
+		names.append_array(description.external_files)
+		# Retired formal files are deletions in the same transaction, never orphaned payload.
+		for name: String in old.get("external_files", []):
+			if Packages.External.safe_path(name) and name not in names:
+				names.append(name)
+		for name: String in names:
+			var target: String = target_root.path_join(name)
+			var backup: String = stage.path_join("previous").path_join(relative).path_join(name)
 			var existed: bool = FileAccess.file_exists(target)
-			if existed and not checked.files[relative]:
-				continue
-			var staged: String = stage.path_join("next").path_join(relative)
-			var backup: String = stage.path_join("previous").path_join(relative)
-			error = _write(staged, reader.read_file(relative))
-			if error == OK and existed:
+			var staged: String = replacements[id].path_join(name)
+			if existed:
 				error = DirAccess.make_dir_recursive_absolute(backup.get_base_dir())
 				if error == OK:
 					error = DirAccess.copy_absolute(target, backup)
 			if error == OK:
 				error = DirAccess.make_dir_recursive_absolute(target.get_base_dir())
 			if error != OK:
-				break
-			writes.append({"target": target, "staged": staged, "backup": backup, "existed": existed})
-	reader.close()
-	if error != OK:
-		last_error = "Cannot stage content: " + error_string(error)
-		return error
+				last_error = "Cannot back up content: " + error_string(error)
+				return error
+			writes.append({"target": target, "staged": staged, "backup": backup, "existed": existed, "delete": name not in description.external_files and name not in ["content.pck", "content.pck.json"]})
+		for folder: String in description.external_directories:
+			error = DirAccess.make_dir_recursive_absolute(target_root.path_join(folder))
+			if error != OK:
+				last_error = "Cannot create external directory: " + error_string(error)
+				return error
 	var applied: Array[Dictionary] = []
 	for write: Dictionary in writes:
 		applied.append(write)
-		error = DirAccess.rename_absolute(write.staged, write.target)
+		if write.delete:
+			error = DirAccess.remove_absolute(write.target) if write.existed else OK
+		else:
+			error = DirAccess.rename_absolute(write.staged, write.target)
 		if error != OK:
 			break
 	if error != OK:
@@ -186,9 +239,11 @@ func apply(source: String, directory: String, checked: Dictionary) -> Error:
 				push_error("Content rollback failed: " + write.target + " " + error_string(rollback))
 		last_error = "Cannot install content: " + error_string(error) + "; backups: " + stage
 		return error
+	for id: String in updated:
+		packages.roots[id] = directory.path_join(Paths.package_relative(updated[id]))
 	error = _remove_stage(stage)
 	if error != OK:
-		last_error = "Content installed but cannot clear staging directory: " + stage
+		last_error = "Content installed but staging cleanup failed: " + stage
 	return error
 
 ## Only called for the fresh transaction directory created by apply(), never an archive path.

@@ -2,22 +2,9 @@
 
 主菜单右上角手动选择简体中文或 English，首次默认 `zh_Hans`，不读取系统语言，不提供 auto。选择保存到框架 `core/config/settings.json` 的 `localization.locale` 后刷新主菜单；保存失败保留原语言和配置。偏好只属于本机，不进入房间规则、网络消息或兼容性判断。
 
-## 每包声明
+## 每包语言文件
 
-框架在 `core/i18n/localization.json` 声明语言；协议、主游戏、小游戏必须在各自 manifest.json 中声明，包括单语言包：
-
-```json
-"localization": {
-  "supported_locales": ["zh_Hans", "en"],
-  "fallback_locale": "zh_Hans",
-  "translations": {
-    "zh_Hans": "i18n/zh_Hans.po",
-    "en": "i18n/en.po"
-  }
-}
-```
-
-初版接受 zh_Hans 和 en，回退要求为 zh_Hans。中文包只列 zh_Hans。路径相对所属包；框架路径相对 core/i18n/。PO 的 Language 头必须与声明一致。使用 Godot 原生 Translation 资源，但不加入全局 TranslationServer，不依赖引擎系统语言或全局回退。
+内容语言固定从 `i18n/<locale>.po` 自动发现，无 manifest 语言声明。当前界面提供 `zh_Hans` 和 `en`，回退语言为 `zh_Hans`；PO 的 Language 头必须与文件名一致。框架自身仍用 `core/i18n/localization.json`。资源按首次使用加载，不做启动全包翻译预审。
 
 每个包根据原始本机偏好独立选择，不继承框架、协议或主游戏已回退的语言。缺少英文条目时使用本包中文条目。缺失资源、无效声明、错误资源类型、语言不符、命名占位符不一致和缺少中文条目明确失败；缺少中文不是正常回退。
 
@@ -37,7 +24,7 @@ var language: String = api.i18n.effective_locale()
 
 ## 清单与设置
 
-清单 name、introduction 及 Schema 的 title、description、placeholder、suffix、disabled_reason、labels 直接作为 PO 消息键。可以用中文源文作为键，也可以填写稳定键并在中文 PO 提供译文。首次显示时加载所用语言并缓存；发布包时检查这些键的中文条目和占位符。
+清单 name 和玩法界面文案及 Schema 的 title、description、placeholder、suffix、disabled_reason、labels 直接作为 PO 消息键。可以用中文源文作为键，也可以填写稳定键并在中文 PO 提供译文。首次显示时加载所用语言并缓存；实际读取时报告缺失翻译。
 
 翻译不修改 default、values、enabled_when、字段 ID、动作名或保存值。选择控件用 labels 提供可译标签，多选开关用 items.labels，与 items.values 一一对应。继承的协议设置仍使用协议语言。昵称、聊天、预设名称及用户输入的文本偏好原样显示。
 
@@ -47,6 +34,6 @@ var language: String = api.i18n.effective_locale()
 
 英语覆盖主菜单首页、加入页面、创建/直连/资料/退出弹窗、键鼠提示，以及 空白小游戏（gp_blank）的名称、简介、设置样例及结束按钮提示。系统设置、连接诊断详情、协议、大游戏、其他小游戏及框架设置控件通用操作提示仍使用中文。用户填写的中文内容不自动翻译。
 
-PO 与所属包一起发布。现有源码 ZIP/PCK 导出递归收集包内资源，无中央翻译索引；新增语言时必须同步声明、PO 和显示位置。
+PO 与所属包一起发布。现有源码 ZIP/PCK 导出递归收集包内资源，无中央翻译索引；新增语言时提供对应 PO 并接入显示位置。
 
 本次回归脚本、场景、日志、截图、PCK 及配置夹具均位于忽略目录 tmp/test/localization/，不进入生产依赖。自动检查覆盖独立回退、同名键隔离、错误声明、占位符、配置值不变、选择持久化、实际菜单/小游戏/表单和导出资源收集。人工多人及干净导出安装验收另外进行。

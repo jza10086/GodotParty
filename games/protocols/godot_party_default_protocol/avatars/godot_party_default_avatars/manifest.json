@@ -1,19 +1,7 @@
 {
-  "manifest_version": 2,
-  "core_api_major": 6,
-  "package_version": "1.0.3",
-  "id": "godot_party_default_avatars",
   "name": "GodotPartyDefaultAvatars",
   "kind": "avatars",
-  "resources": {
-    "character_3d": "character_3d.tscn"
-  },
-  "appearance_resources": {
-    "character_3d": {
-      "protocol": "godot_party_default_protocol",
-      "slot": "character_3d",
-      "name": "Cube · 3D 占位"
-    }
-  },
-  "owner_protocol": "godot_party_default_protocol"
+  "package_version": "0.0.1",
+  "framework_version": "0.0.1",
+  "remark": ""
 }

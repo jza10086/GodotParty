@@ -17,7 +17,7 @@ Android 在左上角提供常态隐藏的 ESC 虚拟按钮（`core/ui/party_touc
 
 ## 主游戏房间入口
 
-主游戏还必须声明 `room_scene`（包内场景路径），提供自己的大厅视图。原版轮换的 `room.tscn` 继承公共 `games/assets/godot_party_default_ui/source/ui/lobby_page.tscn`，场景驱动位于轮换包中。框架负责挂载、切换、连接与配置服务。
+主游戏还必须提供固定的 `room.tscn`，提供自己的大厅视图。原版轮换的 `room.tscn` 继承公共 `games/assets/godot_party_default_ui/source/ui/lobby_page.tscn`，场景驱动位于轮换包中。框架负责挂载、切换、连接与配置服务。
 
 房间脚本实现 `room_setup(context)`、`room_refresh()`、`room_focus()`、`room_stop()`。setup 在入树前调用；stop 必须可重复调用。context 来自公开 `core/api/party_room_api.gd`：`get_state()` 返回房间和玩家快照，`get_game_name(id)` 读取内容名称；`ready_or_start()`、`leave()`、`show_player(peer)`、`open_settings(panel)` 和 `show_notice(message)` 调用框架服务。panel 支持 pool/main/preferences/protocol/rules/system；preferences 打开当前主游戏的本地偏好与协议继承设置。`activity` 为本次大厅作用域 PartyAPI，配置变更或离开时关闭；通过 `on_close` 清理语音等资源。房间代码不依赖框架前端的私有节点。`update_main_settings(values)` 在房主大厅合并并应用部分主游戏规则，保留选池及其他配置，复用现有校验与同步流程；客机或恢复中的房间不能修改。
 
@@ -53,47 +53,34 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 
 采用原版 `solo_round` 的单参赛者游戏须实现 `solo_setup(input, text_source)`、`solo_start()`、可重复的 `solo_stop()` 与画质/音频目标方法，并发出 `completed(metrics)`。入口在准备阶段创建本机玩法、注入依赖并转发协议挂点，观战端不运行模拟；正式开始等待公共准备页完成。F6 输入只读包内默认绑定，正式使用 PartyInput。完整边界见协议文档的[单参赛者接入](../../games/protocols/godot_party_default_protocol/doc/README.md#单参赛者接入)。
 
-## 最小清单
+## 内容声明与入口
 
-所有协议、主游戏与小游戏须声明独立语言及回退资源，见 [本地化](localization.md)。
+所有内容包统一使用以下声明。包 ID 取目录名，形象包的所属协议取父目录；作者不重复填写身份。
 
 ```json
 {
-  "manifest_version": 2,
-  "id": "author.example",
+  "name": "示例游戏",
   "kind": "minigame",
-  "package_version": "1.0.0",
-  "core_api_major": 6,
-  "supported_systems": ["windows"],
-  "player_counts": [2, 3, 4, 5, 6, 7, 8],
-  "entry": "game.tscn",
-  "localization": {
-    "supported_locales": ["zh_Hans"],
-    "fallback_locale": "zh_Hans",
-    "translations": {"zh_Hans": "i18n/zh_Hans.po"}
-  },
-  "adapters": [
-    {"id": "ranked", "protocol": {"id": "your.protocol", "api_major": 1, "min_api_minor": 0}}
-  ]
+  "package_version": "0.0.1",
+  "framework_version": "0.0.1",
+  "remark": "",
+  "dependencies": {"godot_party_default_protocol": "~0.0.1"}
 }
 ```
 
-已登记但尚不能从框架开局的原型须声明 `playable: false` 和空的 `adapters` 数组，并提供包内状态场景作为 entry。目录仍可读取这些包，大游戏无法选择它们。可玩包默认 `playable: true`，至少声明一个真正支持的适配器。
+`remark` 为必需字符串，可以为空。`dependencies` 没有依赖时省略，资产包必须无依赖。声明只维护这些字段；入口、资源别名、平台、协议 API 主次版本、语言清单和玩法参数不进入 manifest。
 
-协议、主游戏和小游戏用 `supported_systems` 字符串数组声明支持的系统，例如 `["windows", "android"]`。入房时检查协议、主游戏及依赖，开始前检查所选小游戏及依赖；不支持当前系统时禁止下载并阻止开始。该声明不代表真机验收，不随导出平台自动增加支持项。形象包继承所属协议声明。当前原版协议、小游戏轮换和竞拍大师声明 windows、android，其余现有游戏先声明 windows；作者适配其他系统后修改声明并递增包版本。共享 PCK 同时包含桌面/移动纹理导入资源，但不会自动适配键鼠、触摸或原生扩展。
+主游戏和小游戏入口固定为 `game.tscn`，协议入口固定为 `protocol.gd`。入口脚本的 `static func party_definition() -> Dictionary` 只返回玩法拥有的数据：`player_counts`、可选 `player_count_rules` / `tags` / `controls`；主游戏另给出 `protocol: {"id": "..."}`、`pools` 及可选 `minigames`。协议可声明自己的 `config_directories`，保持配置目录与包版本无关。人数计算见 [可开局人数](player_counts.md)。
 
-框架在 `core/runtime/party_data.gd` 的 `SYSTEM` 常量声明本机构建系统：编辑器源码为独立标识 `editor`，暂时接受 `windows` 的兼容声明，也接受显式 `editor`；可视化 Windows / Android 导出器在隔离构建副本中分别写入 `windows` / `android`。此字段不检测宿主操作系统，不改写原工程；平台判断统一使用 `PartyData` 模块的 `supports_system`，不改变物理输入或配置。
+小游戏适配器固定为 `adapters/<协议ID>.gd`，实现 `check_request(request)`、`make_config(request)`、`map_result(result, request)`；其 `party_definition()` 只声明该适配器的可选条件依赖 `dependencies`。只在选择该协议时检查这些依赖。无适配器的原型仍可列入目录，但不进入可玩池。
 
-没有适配脚本时，setup 的 config 就是原协议请求，finish 的字典就是协议结果。
-协议、大游戏和小游戏均须声明 `player_counts`；配置依赖的限制与交集规则见 [可开局人数](player_counts.md)。
-需要转换时，接入条目提供 entry，指向实现 make_config(request)、map_result(raw_result, request) 的脚本。
-大厅的小游戏配置通过 api.get_settings() 读取，不隐式混入协议请求。
+配置固定为 `settings.gd`，自定义面板为 `config_panel.tscn`，协议资料页为 `profile_panel.tscn`，设置效果脚本为 `settings_runtime.gd`，可选配置校验器为 `config_validator.gd`，主游戏大厅为 `room.tscn`。封面按 `cover.png`、`cover.svg`、`cover.webp`、`cover.jpg` 的顺序发现。玩法介绍写入 README 或所属玩法界面。语言按 `i18n/<locale>.po` 发现，见 [本地化](localization.md)。
 
-旧计时示例已清理；按本文钩子编写自己的小游戏。自行决定 Node/Node2D/Node3D/Control 根节点、内部状态机、碰撞、输入算法与联网算法。
+框架版本只由 `core/framework_version.gd` 声明，与用户维护的 Godot 项目版本独立。依赖支持精确版本、`~`、`^`，规则及包 Hash 见 [内容打包](source_packages.md)。构建和代码修改均不自动递增版本。
 
 ## 标准模板的职责与目录
 
-空白模板同时提供正式接入骨架和可移植演示。`game.gd` 持有 PartyAPI、阶段、网络消息、准备与结算；`ui/briefing.tscn` 和 `ui/settlement.tscn` 继承协议页面，`ui/round_pages.tscn` 在 CanvasLayer 中静态组合它们；`examples/demo_hub.tscn` 组合演示；`examples/graphics/`、`examples/navigation_2d/`、`examples/audio/` 分别保存各功能的场景、脚本和专用资源。`adapter.gd` 只检查/转换协议请求与结果，`settings.gd` 声明配置，`i18n/` 保存语言模板。可选的大型美术资源留在包内 `assets/`。
+空白模板同时提供正式接入骨架和可移植演示。`game.gd` 持有 PartyAPI、阶段、网络消息、准备与结算；`ui/briefing.tscn` 和 `ui/settlement.tscn` 继承协议页面，`ui/round_pages.tscn` 在 CanvasLayer 中静态组合它们；`examples/demo_hub.tscn` 组合演示；`examples/graphics/`、`examples/navigation_2d/`、`examples/audio/` 分别保存各功能的场景、脚本和专用资源。`adapters/<协议ID>.gd` 只检查/转换协议请求与结果，`settings.gd` 声明配置，`i18n/` 保存语言模板。可选的大型美术资源留在包内 `assets/`。
 
 随机题库、地图、图片可参考空白模板的 [随机统计组件用法](../../games/minigame/gp_blank/README.md#通用随机统计模板)：主机从本机最少次数项中选取，各端对主机本局序列去重并更新自己的统计；正式入口注入存储路径，F6 只用内存。实现由协议的 `random/least_played_pool.gd` 提供，直接引用已声明的协议依赖，不复制模板代码，也不依赖空白模板包。
 
@@ -121,7 +108,7 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 
 键名显式绑定到节点，动作显式绑定到 Callable 或枚举。不要根据当前显示文字或节点名字推断翻译键、网络动作或业务含义。修改示例文案、翻译和动作相互独立。固定容器不重建；玩家数量变化才增删行，比分变化只更新该行。假名、手牌或身份示例不得进入真实游戏状态、网络快照或结算；私有视图只使用本机获准收到的数据。
 
-F6 默认语言直接读取包声明的回退 Translation，使用与正式 `api.i18n.text()` 相同的键和命名参数，不再维护一份脚本字符串字典。只有提供独立预览的组件才处理未注入 API 的状态，正式依赖缺失必须失败。
+F6 默认语言直接读取包内 `i18n/zh_Hans.po`，使用与正式 `api.i18n.text()` 相同的键和命名参数，不再维护一份脚本字符串字典。只有提供独立预览的组件才处理未注入 API 的状态，正式依赖缺失必须失败。
 
 ## 生命周期、输入与计算模型
 
@@ -167,7 +154,7 @@ F6 默认语言直接读取包声明的回退 Translation，使用与正式 `api
 - 音效只保留实际使用的最终音频作为运行输入，不同时导入同一内容的母版和多种备用转码。图片只保留实际使用的成品；图集与单图若并存，须分别有明确运行用途。共享素材由所属协议或显式依赖包提供，不复制到每个小游戏。
 - 保留并提交正式资源的 `.import` 设置和 `.uid`，移动资源保留身份并更新引用；不通过删 `.import` 重置导入，不提交 `.godot/` 缓存。正式场景、脚本和清单不得引用 `authoring/`。
 - `core/ui/source/` 是现有运行时 UI 实现，不能仅凭 source 目录名将其当作创作素材排除。
-- 原样读取、允许外部编辑的运行数据仍通过 `external_files` 声明，优先集中在包内 `external/`；它属于交付内容，不放进 `authoring/`。构建副本中的外置目录禁止自动导入，外置图片/音频不再同时作为普通资源打包。
+- 正式原样运行数据固定放在包内 `external/`，由工具自动收集；个人可编辑数据放到 `config/` 或存档目录；它属于交付内容，不放进 `authoring/`。构建副本中的外置目录禁止自动导入，外置图片/音频不再同时作为普通资源打包。
 - 玩家 `config/`、测试 `tmp/test/`、受限素材 `third_party_assets/` 和未解决来源的 `private_assets/` 继续遵守各自边界，不迁入 `authoring/`。发布所需许可证和署名必须随正式素材保留，不能只留在被忽略的目录中。
 
 发布检查区分三个问题：开发素材是否进入构建目录、同一资源是否被重复收集、PCK 是否同时保留了已转换的原文件和导入产物。以路径清单、导入日志、导入参数和实际资源加载验证，不做文件哈希校验。共享包中的桌面/移动纹理变体是不同运行需求，不作为重复资源删除。核心与内容的独立干净工程仍各自需要导入，本规则不宣称跨工程零导入。

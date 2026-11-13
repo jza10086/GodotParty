@@ -1,6 +1,6 @@
 ---
 name: godot-party-authoring
-description: Author or integrate GodotParty API 6 games, protocol packages and appearances in the complete framework project; use for lifecycle, networking, state commits, configuration and content publishing.
+description: Author or integrate GodotParty games, protocol packages and appearances in the complete framework project; use for lifecycle, networking, state commits, configuration and content publishing.
 ---
 
 # GodotParty authoring
@@ -26,7 +26,7 @@ Paths are relative to the project root.
 
 ## Decisions that matter
 
-- Use only current API 6. Do not recreate GPActivityRuntime, controller inheritance, compatibility aliases or old Resource activity definitions.
+- Use only the current public API. Do not recreate GPActivityRuntime, controller inheritance, compatibility aliases or old Resource activity definitions.
 - setup runs before entering the tree; it cannot use @onready. party_stop must be safe before setup/tree entry and on repeated close; release only initialized resources. Explicitly mark_ready after initialization. Simulation starts in party_start.
 - Host owns final publication; authors choose local/host/mixed judgement. A spectator host still runs coordination and host game logic.
 - finish OK accepts a candidate, not a durable reward. Main-game reducers are pure; never award again from round_committed.
@@ -36,11 +36,11 @@ Paths are relative to the project root.
 - Appearance data and its editor belong to the protocol. Do not assume color, portrait or first/third-person fields unless its DOC defines them.
 - Identity is player_id; peer_id is transport routing. Returned player/settings data are snapshots.
 - Main controller/state persist across a foreground minigame; the view is released and rebuilt only across foreground activity switches. Ordinary commits restore authoritative state and emit state_committed while retaining the view; update its existing controls. Main entries do not implement a required get_state hook. Old scope callbacks must not mutate new games.
-- Main games declare room_scene and own their lobby presentation through core/api/party_room_api.gd. Reuse documented public room scenes and framework panels; do not depend on private frontend nodes. Room activations close on rule changes and leaving. Optional minigames limits pool candidates; every declared pool must be nonempty before start.
+- Main games provide room.tscn and own their lobby presentation through core/api/party_room_api.gd. Reuse documented public room scenes and framework panels; do not depend on private frontend nodes. Room activations close on rule changes and leaving. Optional minigames limits pool candidates; every declared pool must be nonempty before start.
 - Use native @rpc or PartyNet with call-site reliability. Do not declare streams/native_channels. Send only necessary data; send discrete data once and animate locally. Never periodically broadcast whole gameplay/world snapshots. Read doc/api/networking.md for channel ownership, native spawning, input rates and interpolation.
 - Source and PCK use the same paths and runtime. Publish only after a clean host without author source/cache can run the package.
 - Same-process content has ordinary Godot abilities. API correctness checks are not a security sandbox.
-- Protocol and game manifests declare supported_systems, such as ["windows", "android"]. Join checks enforce protocol/main dependencies; start checks enforce selected minigames and dependencies. Unsupported systems cannot download or start. SYSTEM is editor in source, temporarily also accepting windows declarations; exporters stamp windows/android/ios into their framework build copies. Shared PCKs include desktop/mobile texture imports, without adding platform support declarations. Bump package_version after changing content or platform support. See doc/api/authoring.md.
+- All manifests use name, kind, package_version, framework_version, remark (empty allowed), and optional dependencies. IDs and avatar ownership come from directories. Framework 0.0.1 is declared separately in core/framework_version.gd; never modify the user-owned Godot project version. Dependency ranges support exact, ~ and ^. Startup verifies package SHA-256 once; joins compare cached actual version/hash, without platform or separate API gates. See doc/api/source_packages.md.
 
 Use typed GDScript without :=. Keep public docs and protocol examples aligned with behavior.
 Run the narrow tests for the changed boundary; separate automated checks from manual editor and external-network acceptance.
@@ -54,12 +54,12 @@ in flight can still produce engine path errors after cancellation. See doc/testi
 ## Layered settings and voice (4.1)
 
 - For preferences, inherited input bindings, runtime effects or room edits, read doc/api/configuration.md first; for media/endpoints/routing read doc/api/voice.md. Exact signatures remain in implementation comments and doc/api/reference.md.
-- Protocols own common preference semantics/defaults. Games independently inherit and override the selected protocol ID/major; a child never inherits the main game's overrides. Only explicit clear/unset restores inheritance; false, zero and empty bindings are valid overrides.
+- Protocols own common preference semantics/defaults. Games independently inherit and override the selected protocol ID; a child never inherits the main game's overrides. Only explicit clear/unset restores inheritance; false, zero and empty bindings are valid overrides.
 - Keep local preferences, RoomDraft, immutable RuleSnapshot and adapter request data separate. Never broadcast snapshot_effective or read new room rules when settling an old round.
 - Preference persistence does not prove engine effects are applied. Respect apply stages and report unsupported/deferred effects without rewriting desired values.
 - A settings runtime owns one activation. Enter before game tree insertion, attach after insertion, and clean up callbacks, players, buses and viewport changes in leave. Do not write Master or another scope's input actions.
 - Voice routing is host-owned; local endpoints still require device consent and a registered bus. Only one protocol runtime or explicitly delegated game controls an endpoint. Never infer groups or distances from arbitrary business state.
-- Read current manifest 2/declaration schema 3 only. Business-owned settings.gd exposes static schema() with fields and recursive layout; manifest config_schema points to that script. User files are JSON values, never UI declarations. Do not recreate legacy fields/defaults/input_actions, CFG readers or migration paths.
+- Use the current five-field manifest plus optional dependencies and settings schema 3. Business-owned settings.gd exposes static schema() with fields and recursive layout; The filename is fixed. User files are JSON values, never UI declarations. Do not recreate legacy fields/defaults/input_actions, CFG readers or migration paths.
 - For this increment, keep checks to relevant data and smoke paths. Four-player audio, real devices, weak networks, stress and clean exported-host acceptance are pending the original protocol stage.
 
 ## Original protocol
@@ -68,14 +68,14 @@ For GodotPartyDefault content, read games/protocols/godot_party_default_protocol
 
 - Default-protocol graphics: read games/protocols/godot_party_default_protocol/doc/README.md. Reuse its settings runtime and view registration; do not duplicate quality exports or write the same viewport/global rendering properties from games. Lighting composition stays in game scenes; frame limit and VSync stay in core.
 
-- Default-protocol appearance: the default 3D reference is godot_party_default_avatars/character_3d (Cube); the protocol depends on godot_party_default_avatars_2d for its six 2D avatars. Load appearances through PartyAPI, then apply the player's color. Games own movement, collision and networking. The default Cube has no animation API or native runtime dependency.
+- Default-protocol appearance: the default 3D reference is godot_party_default_avatars/character_3d.tscn (Cube); the protocol depends on godot_party_default_avatars_2d for its six 2D avatars. Load appearances through PartyAPI, then apply the player's color. Games own movement, collision and networking. The default Cube has no animation API or native runtime dependency.
 
-- Portable layout and presets: read doc/api/configuration.md. Avatar packs belong to their protocol and declare owner_protocol. Core retains player_id only; protocol profile.json owns display names/appearance. Install protocols, maingame and minigame in distinct root folders. Preset filenames are their names; load edits drafts, explicit Apply commits. Never calculate file hashes.
+- Portable layout and presets: read doc/api/configuration.md. Avatar packs belong to their protocol and derive ownership from their directory. Core retains player_id only; protocol profile.json owns display names/appearance. Install protocols, maingame and minigame in distinct root folders. Preset filenames are their names; load edits drafts, explicit Apply commits. Package identity and build-cache fingerprinting are product features; do not hash files for development copying/download verification.
 
-- Visual export has three entries in Project → Tools: GodotParty：导出 Windows 可玩包, GodotParty：导出 Android 可玩包 and GodotParty：导出 iOS 可玩包. All use content checkboxes and an output directory; omit core for content-only updates. Declare loose payloads in manifest external_files (directory paths end in /), and resolve them with api.get_external_path. See doc/api/source_packages.md. Personal config/ is excluded from publication.
+- Visual export has three entries in Project → Tools: GodotParty：导出 Windows 可玩包, GodotParty：导出 Android 可玩包 and GodotParty：导出 iOS 可玩包. All use content checkboxes and an output directory; omit core for content-only updates. Place formal loose payloads under external/ for automatic collection, and resolve them with api.get_external_path. See doc/api/source_packages.md. Personal config/ is excluded from publication.
 
 iOS export uses core/dev/export_ios_cloud.ps1 and GitHub macOS/Xcode builds. It builds the pushed HEAD and selected package IDs, not uncommitted local sources. The IPA requires SideStore re-signing; player data lives in the app sandbox. See doc/api/source_packages.md.
 
-- Original content keeps non-shipping creative sources, candidate audio/images and offline generators in package-local `authoring/` with a tracked `.gdignore`. Keep one canonical runtime input per logical asset; preserve its `.import` settings and UID. Shared assets belong to declared dependencies. Keep loose runtime data in `external_files`, licenses with shipped assets, and tests under `tmp/test/`. Read the resource development section in doc/api/authoring.md before adding or reorganizing media. Runtime `core/ui/source/` is not an authoring directory.
+- Original content keeps non-shipping creative sources, candidate audio/images and offline generators in package-local `authoring/` with a tracked `.gdignore`. Keep one canonical runtime input per logical asset; preserve its `.import` settings and UID. Shared assets belong to declared dependencies. Keep formal loose runtime data in `external/`, licenses with shipped assets, and tests under `tmp/test/`. Read the resource development section in doc/api/authoring.md before adding or reorganizing media. Runtime `core/ui/source/` is not an authoring directory.
 
-- Asset packages: games/assets/<id>/ uses a five-field manifest (name, kind, package_version, remark, framework_version); directory identity, exact framework version, no platform or package dependencies. Assets may contain code/media/docs and reference only themselves or public core content. Games/protocols declare exact dependencies and reference paths directly. Original UI lives in godot_party_default_ui 1.0.3; protocol coordination stays in the protocol.
+- Asset packages: games/assets/<id>/ uses a five-field manifest (name, kind, package_version, remark, framework_version); directory identity, exact framework version, no platform or package dependencies. Assets may contain code/media/docs and reference only themselves or public core content. Games/protocols declare dependency ranges and reference paths directly. Original UI lives in godot_party_default_ui 0.0.1; protocol coordination stays in the protocol.

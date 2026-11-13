@@ -92,7 +92,7 @@
 - Store core settings and persistent player_id in `core/config/settings.json`. User settings, profiles and room presets use JSON without CFG compatibility readers. Business settings.gd scripts declare schema 3 fields and recursive UI layout; user files persist values only. Resolve the portable root beside the project or executable through PartyInput.installation_directory(), never cwd or user://. Protocols, maingames and minigames install in separate root folders; local settings and named preset files live under each package config/. Protocol config/ is fixed; protocols declare config_directories for game override/preset subfolders. Player names and appearances belong to protocol config/profile.json. Core owns only identity, not avatar assets. See doc/api/configuration.md.
 - Keep settings local to each client. Do not synchronize physical input mappings over the network.
 - Each game has one independent preference file. Reads never materialize inherited defaults; explicit Apply persists changes.
-- Protocols define common local preferences and input actions. Main and mini games independently override the selected protocol ID/major; no parent-to-child inheritance. Room rules come only from host snapshots.
+- Protocols define common local preferences and input actions. Main and mini games independently override the selected protocol ID; no parent-to-child inheritance. Room rules come only from host snapshots.
 - Reuse common movement actions when suitable. Prefix genuinely game-specific actions, such as `shooter_fire` or `rhythm_hit`.
 - Keyboard and mouse are the initial supported devices. Keep input-reading boundaries replaceable so gamepad support can be added later, but do not build gamepad behavior now.
 
@@ -142,7 +142,7 @@
 
 ## Framework content boundary
 
-- Framework 6.0.0 uses API 6, network protocol 19, generated descriptor format 5 and manifest format 2. manifest.json is the only author-maintained content catalog entry.
+- Framework 0.0.1 is declared in core/framework_version.gd, independently of the user-owned Godot project version. Manifests use name, kind, package_version, framework_version, remark (empty allowed), and optional dependencies. Package Hash and build-cache fingerprints are product features; do not hash files for development copying or download verification. manifest.json is the only author-maintained content catalog entry.
 - Games use public core/api and documented UI contracts. Minigames (including medium tags) live under games/minigame/<id>/; main games and playlists live under games/maingame/<id>/. Avatar packs belong to their protocol under games/protocols/<protocol_id>/avatars/<id>/; exported installs use protocols/<protocol_id>/avatars/<id>/. Host code must not interpret game economy or maintain another activity runner.
 - One top-level activity may start one foreground child with a participant subset; everyone else spectates, including the host when unselected. Only the host parent applies rewards.
 - Same-process content has ordinary Godot script capabilities. Do not introduce source-publication requirements, code audits, sandboxes, system-function blacklists or permission wrappers in this iteration. Retain protocol/version/dependency/file-conflict correctness checks.

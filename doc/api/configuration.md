@@ -1,6 +1,6 @@
 # 配置继承与房间规则
 
-框架 6.0.0 / API 6 / 联机协议 19 / 清单 2 / 配置声明 Schema 3。完整工程是开发环境。
+框架 0.0.1 / 配置声明 Schema 3。完整工程是开发环境。
 
 ## 本地文件位置
 
@@ -45,7 +45,7 @@ GodotParty/
 
 ## 定义与权威来源
 
-包清单用 `"config_schema": "settings.gd"` 指向业务声明脚本；协议可用 settings_runtime 指向设置效果脚本。声明脚本继承 RefCounted，静态 schema() 返回字典，不读取用户文件、不修改运行状态。
+业务声明脚本固定为 `settings.gd`；协议的可选设置效果脚本固定为 `settings_runtime.gd`。声明脚本继承 RefCounted，静态 schema() 返回字典，不读取用户文件、不修改运行状态。
 旧 fields、defaults、input_actions 清单字段已移除。形象 player_fields 与玩家资料不属于本设置系统。
 
 Schema 包含 schema_format: 3、settings_version 正整数、fields 字典和 layout 数组。
@@ -117,7 +117,7 @@ get_settings() 只返回当前游戏锁定的 own/room 规则；小游戏 setup 
 原版协议已有渲染比例使用滑条。新增类型仅提供通用表达能力，不向正式配置添加没有实际效果的示例字段。示例中的强调色、偏移等需由游戏或协议作者实现消费逻辑。
 
 系统、身份、连接位于 core/config/settings.json；协议与游戏分别使用上表中的 JSON 文件。
-本地偏好数据格式 2 使用根对象下的 meta 和 values 对象，元数据包括 schema_id、settings_version、revision，协议文件另有 protocol_major。数据格式 2 与代码声明 Schema 3 是独立版本。游戏自身偏好与选中协议覆盖分别保存，内存聚合为 own/common_overrides。settings_version 不等于包版本。字段 key 中的点仍是键名的一部分，例如 `"values": {"graphics.render_scale": 0.8}`，不是递归路径。JSON 不支持注释；枚举值、数据类型和范围必须符合业务声明。
+本地偏好数据格式 2 使用根对象下的 meta 和 values 对象，元数据包括 schema_id、settings_version、revision。数据格式 2 与代码声明 Schema 3 是独立版本。游戏自身偏好与选中协议覆盖分别保存，内存聚合为 own/common_overrides。settings_version 不等于包版本。字段 key 中的点仍是键名的一部分，例如 `"values": {"graphics.render_scale": 0.8}`，不是递归路径。JSON 不支持注释；枚举值、数据类型和范围必须符合业务声明。
 应用以固定目标、预期 revision、set/unset 操作组成；整批校验后，写临时文件、备份并替换，成功才更新缓存及通知。
 格式或设置版本不匹配明确报错；显式重置保留 .bak，不存在自动迁移。
 系统配置读取和保存时校验显示、外观与音量；非法值不替换为默认值。协议资料仅在文件不存在时采用首次使用默认值；读取失败或资料字段错误会报告错误并停止入房或资料编辑。本机身份必须成功持久化后才能参与连接。
@@ -131,7 +131,7 @@ get_settings() 只返回当前游戏锁定的 own/room 规则；小游戏 setup 
 房主编辑 RoomDraft，客户端只读；保存命名预设是独立操作，没有自动 @recent 写入。
 协议、大游戏、小游戏均使用自己 config 目录下 presets/<名称>.json，核心没有预设。文件名即显示名称，无中央索引、无内部重复名称；直接复制或重命名文件后刷新即可识别。
 
-预设格式 3 仅保存房主规则，不保存本地偏好。JSON 的 `meta` 对象包含 format、kind、package_id、package_version、protocol_id、protocol_major、settings_version、protocol_settings_version。
+预设格式 3 仅保存房主规则，不保存本地偏好。JSON 的 `meta` 对象包含 format、kind、package_id、package_version、protocol_id、settings_version、protocol_settings_version。
 
 - 协议预设：`room_own` 对象保存协议房间基值，`room_common` 必须为空。
 - 小游戏预设：`room_own` 保存自身规则，`room_common` 保存协议规则覆盖。
@@ -145,7 +145,7 @@ get_settings() 只返回当前游戏锁定的 own/room 规则；小游戏 setup 
 右侧预设与房间规则只作用于当前查看的单个小游戏。高级设置应用前校验，应用到草稿显示“临时预设”，只在本次草稿与房间使用；预设另存是独立按钮，不写入或应用其他游戏。外层取消丢弃房间草稿；显式保存的命名预设独立保留。重新打开时按当前规则匹配已保存预设，否则显示临时预设。临时预设不会成为以后新房间的默认设置。
 
 小游戏池右侧“本机设置”打开当前高亮小游戏的本地偏好与协议继承/覆盖。无需勾选入池或开始游戏，客户端也可编辑自己的偏好；“应用并保存”直接写入本机 preferences.json 和协议目录下 overrides.json，不进入房主规则草稿，关闭外层小游戏池不会撤销已保存的本机设置。
-自定义 config_panel 仍优先于公共表单，用 configure(value, editable, context)/get_value()；必须遵守 editable。房间面板 context.pools 提供当前选池快照；载入预设时使用预设的选池，业务面板可据此显示自动局数等派生值。
+固定 `config_panel.tscn` 仍优先于公共表单，用 configure(value, editable, context)/get_value()；必须遵守 editable。房间面板 context.pools 提供当前选池快照；载入预设时使用预设的选池，业务面板可据此显示自动局数等派生值。
 公共字段表单只编辑草稿，点击应用才提交。协议规则与覆盖使用同样的批次应用边界。
 
 每次 PREPARE 生成 RuleSnapshot，包含游戏/协议/设置版本、基值、覆盖、解析结果及摘要；所有端确认摘要再 READY。
@@ -174,7 +174,7 @@ leave 必须幂等并清理自身回调、播放器、总线和视口修改；�
 可用 party_settings_changed(common_keys, own_keys) 钩子或 effective_changed 信号，避免同时处理两次。
 原生 Input 读取仍由作者负责焦点和活跃门控；api.input 已处理观战、弹窗与松键重置。
 
-协议在自己的包目录声明 config_schema 和可选 settings_runtime。旧测试协议源码已清理；原版协议 1.0 已提供形象与资源契约，公共输入/音频偏好待具体玩法需求确定。
+协议在自己的包目录提供 settings.gd 和可选 settings_runtime.gd。旧测试协议源码已清理；原版协议 1.0 已提供形象与资源契约，公共输入/音频偏好待具体玩法需求确定。
 
 原版协议的四档画质、独立效果开关和三维视图登记见 [原版协议画质](../../games/protocols/godot_party_default_protocol/doc/README.md#共享画质本地偏好)。后续原版内容复用该设置 runtime，不再复制画质实现；场景美术参数保持游戏所有。
 

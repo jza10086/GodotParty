@@ -63,12 +63,6 @@ func _ready() -> void:
 		push_error("无法加载系统配置：" + settings.settings_path + " · " + error_string(settings_error))
 		return
 	packages = Packages.new()
-	var archive: RefCounted = ContentArchive.new()
-	var bootstrap_error: Error = archive.bootstrap(str(_arguments.get("pack-dir", InputSettings.installation_directory())))
-	if bootstrap_error != OK:
-		_content_error = archive.last_error
-		push_error(_content_error)
-		return
 	var source_choices: JsonConfig = JsonConfig.new()
 	var source_error: Error = source_choices.load(settings.settings_path.get_base_dir().path_join("party_sources.json"))
 	if source_error != OK and source_error != ERR_FILE_NOT_FOUND:
@@ -79,14 +73,35 @@ func _ready() -> void:
 		var pair: PackedStringArray = str(_arguments["source"]).split(":", true, 1)
 		if pair.size() == 2:
 			choices[pair[0]] = pair[1]
-	if _content_error.is_empty():
-		var mount_error: Error = packages.mount_directory(str(_arguments.get("pack-dir", InputSettings.installation_directory())), choices)
-		if mount_error != OK:
-			_content_error = packages.last_error
+	var directory: String = str(_arguments.get("pack-dir", InputSettings.installation_directory()))
+	var source_roots: Dictionary = {}
+	if OS.has_feature("editor") and not _arguments.has("pack-dir"):
+		var builder: RefCounted = load("res://core/dev/party_shared_pack_builder.gd").new()
+		var generation: String = await builder.prepare_distribution(directory.path_join("tmp/content_distribution"))
+		if generation.is_empty():
+			_content_error = builder.last_error
 			push_error(_content_error)
 			return
+		for descriptor: String in Packages.descriptors(generation):
+			var built: Dictionary = Packages.Data.read_json(descriptor)
+			var installed: String = directory.path_join(Packages.Paths.package_relative(built)).path_join("content.pck.json")
+			if choices.get(built.id, "pck" if FileAccess.file_exists(installed) else "source") == "source":
+				source_roots[built.id] = descriptor.get_base_dir()
+	var archive: RefCounted = ContentArchive.new()
+	var bootstrap_error: Error = archive.bootstrap(directory, packages, source_roots)
+	if bootstrap_error != OK:
+		_content_error = archive.last_error
+		push_error(_content_error)
+		return
+	var mount_error: Error = packages.mount_prepared(directory)
+	if mount_error != OK:
+		_content_error = packages.last_error
+		push_error(_content_error)
+		return
 	catalog = Catalog.new()
-	catalog.scan()
+	if catalog.use_installed(packages.installed, packages.roots, packages.unavailable) != OK:
+		push_error(str(catalog.errors))
+		return
 	var declaration: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://core/i18n/localization.json"))
 	if catalog.i18n.register_package("core", declaration, "res://core/i18n") != OK:
 		push_error(catalog.i18n.last_error)

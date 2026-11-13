@@ -8,8 +8,7 @@ const Data = preload("res://core/runtime/party_data.gd")
 const Packages = preload("res://core/content/party_packages.gd")
 const Paths = preload("res://core/config/party_paths.gd")
 const ScriptClasses = preload("res://core/content/party_script_classes.gd")
-const DESCRIPTOR_FORMAT: int = Packages.DESCRIPTOR_FORMAT
-const PACK_BUILD_REVISION: int = 2
+const PackageHash = preload("res://core/content/party_package_hash.gd")
 var last_error: String = ""
 var work_directory: String = Paths.application_root().path_join("tmp/content_build")
 
@@ -39,7 +38,7 @@ func _build_in_stage(catalog: RefCounted, selected_ids: Array, outputs: Dictiona
 		var manifest: Dictionary = catalog.packages[selected]
 		for path: String in Catalog.files(manifest._root):
 			var relative: String = path.trim_prefix(manifest._root + "/")
-			if not External.contains(manifest.get("external_files", []), relative.trim_suffix(".import").trim_suffix(".uid")):
+			if not External.contains(relative.trim_suffix(".import").trim_suffix(".uid")):
 				files.append(path)
 	for source: String in files:
 		if source.begins_with("res://core/saves/") or source == "res://core/bundled_content.zip" or (source.begins_with("res://core/config/") and source.get_extension() == "json"):
@@ -53,11 +52,11 @@ func _build_in_stage(catalog: RefCounted, selected_ids: Array, outputs: Dictiona
 			return error
 	for selected: String in selected_ids:
 		var manifest: Dictionary = catalog.packages[selected]
-		var inventory: Dictionary = External.inventory(manifest._root, manifest.get("external_files", []))
+		var inventory: Dictionary = External.inventory(manifest._root)
 		if not inventory.ok:
 			last_error = inventory.error
 			return ERR_INVALID_DATA
-		var error: Error = External.stage_payload(manifest._root, stage.path_join(manifest._root.trim_prefix("res://")), manifest.get("external_files", []), inventory.files, inventory.directories)
+		var error: Error = External.stage_payload(manifest._root, stage.path_join(manifest._root.trim_prefix("res://")), inventory.files, inventory.directories)
 		if error != OK:
 			last_error = "Cannot stage external files: " + error_string(error)
 			return error
@@ -133,7 +132,7 @@ func export_imported_pack(catalog: RefCounted, id: String, output: String) -> Er
 		return _error(issue)
 	var manifest: Dictionary = catalog.packages[id]
 	var root: String = manifest["_root"]
-	var payload: Dictionary = External.inventory(root, manifest.get("external_files", []))
+	var payload: Dictionary = External.inventory(root)
 	if not payload.ok:
 		return _error(payload.error)
 	var paths: Dictionary = {}
@@ -141,7 +140,7 @@ func export_imported_pack(catalog: RefCounted, id: String, output: String) -> Er
 	var imported_sources: Array[String] = []
 	for path: String in Catalog.files(root):
 		var relative: String = path.trim_prefix(root + "/")
-		if External.contains(manifest.get("external_files", []), relative.trim_suffix(".import").trim_suffix(".uid")):
+		if External.contains(relative.trim_suffix(".import").trim_suffix(".uid")):
 			continue
 		paths[path] = path
 		if path.ends_with(".import"):
@@ -194,10 +193,14 @@ func export_imported_pack(catalog: RefCounted, id: String, output: String) -> Er
 	error = packer.flush()
 	if error != OK:
 		return error
-	var description: Dictionary = {"format": DESCRIPTOR_FORMAT, "engine": Engine.get_version_info()["string"], "core": Data.VERSION, "id": id, "version": manifest["package_version"], "kind": manifest["kind"], "artifact": output.get_file(), "files": index, "uids": uid_index}
-	if manifest.kind != "assets":
-		description.supported_systems = catalog.packages[manifest.owner_protocol].supported_systems.duplicate() if manifest.kind == "avatars" else manifest.supported_systems.duplicate()
-	description.name = manifest.get("name", id)
+	var description: Dictionary = {"framework_version": Data.VERSION, "id": id, "version": manifest["package_version"], "kind": manifest["kind"], "artifact": output.get_file(), "files": index, "uids": uid_index}
+	description.declaration = manifest._declaration.duplicate(true)
+	description.declaration.erase("id")
+	description.declaration.erase("owner_protocol")
+	description.content = manifest.duplicate(true)
+	for key: String in ["id", "owner_protocol", "_root", "_declaration", "package_hash", "name", "kind", "package_version", "framework_version", "remark", "dependencies"]:
+		description.content.erase(key)
+	description.name = manifest.name
 	description.dependencies = manifest.get("dependencies", {}).duplicate(true)
 	description.script_classes = ScriptClasses.collect(paths)
 	description.external_files = payload.files
@@ -208,64 +211,119 @@ func export_imported_pack(catalog: RefCounted, id: String, output: String) -> Er
 	if error != OK:
 		return _error("Cannot copy external payload: " + error_string(error))
 
+	var identity: Dictionary = PackageHash.compute(output.get_base_dir(), description)
+	if not identity.ok:
+		return _error(identity.error)
+	description.package_hash = identity.hash
 	var file: FileAccess = FileAccess.open(output + ".json", FileAccess.WRITE)
 	if file == null:
 		return FileAccess.get_open_error()
 	file.store_string(JSON.stringify(description, "\t"))
-	return OK
-
-## Editor distribution cache. Publish the pointer only after export and payload checks.
-## Package versions identify immutable releases; changed source requires a version bump.
-func distribution_root(catalog: RefCounted, id: String, cache_directory: String) -> String:
-	last_error = ""
-	work_directory = cache_directory.get_base_dir().path_join("content_build")
-	var manifest: Dictionary = catalog.packages[id]
-	var key: String = Paths.package_relative(manifest).path_join("v_" + str(manifest.package_version).uri_encode()).path_join(Data.VERSION.uri_encode()).path_join(str(Engine.get_version_info().string).uri_encode())
-	var cache: String = cache_directory.path_join(key).path_join("build_" + str(PACK_BUILD_REVISION))
-	var pointer: String = cache.path_join("current.json")
-	if FileAccess.file_exists(pointer):
-		var record: Variant = JSON.parse_string(FileAccess.get_file_as_string(pointer))
-		if not record is Dictionary or not record.get("generation") is String or not Paths.folder(record.generation):
-			_error("Invalid distribution cache index: " + pointer)
-			return ""
-		var existing: String = cache.path_join(record.generation)
-		var descriptor: String = existing.path_join("content.pck.json")
-		if FileAccess.file_exists(descriptor):
-			var description: Variant = JSON.parse_string(FileAccess.get_file_as_string(descriptor))
-			if description is Dictionary and Packages.new().validate_descriptor(description).is_empty() and description.get("id") == id and description.get("version") == manifest.package_version and description.get("artifact") == "content.pck" and FileAccess.file_exists(existing.path_join("content.pck")) and Packages.new()._check_payload(existing, description).is_empty():
-				return existing
-		# An interrupted or incomplete cache can be rebuilt without touching the old generation.
-	var generation: String = Data.token()
-	var destination: String = cache.path_join(generation)
-	var error: Error = DirAccess.make_dir_recursive_absolute(destination)
-	if error == OK:
-		error = await build(catalog, {id: destination.path_join("content.pck")}, work_directory)
-	if error != OK:
-		if last_error.is_empty():
-			_error("Cannot build distribution package: " + error_string(error))
-		return ""
-	var description: Dictionary = Data.read_json(destination.path_join("content.pck.json"))
-	var issue: String = Packages.new().validate_descriptor(description)
-	if issue.is_empty():
-		issue = Packages.new()._check_payload(destination, description)
-	if not issue.is_empty():
-		_error(issue)
-		return ""
-	var file: FileAccess = FileAccess.open(pointer + ".pending", FileAccess.WRITE)
-	if file == null:
-		_error("Cannot write distribution cache index: " + error_string(FileAccess.get_open_error()))
-		return ""
-	file.store_string(JSON.stringify({"generation": generation}))
 	file.flush()
 	error = file.get_error()
 	file.close()
-	if error == OK:
-		error = DirAccess.rename_absolute(pointer + ".pending", pointer)
+	return error
+
+## Select one source-derived generation before loading any gameplay resource in the app.
+## Fingerprints are product cache keys, never release versions or network identities.
+func prepare_distribution(cache_directory: String) -> String:
+	var files: Array[String] = Catalog.files("res://core")
+	var roots: Array[String] = []
+	for kind: String in ["protocols", "maingame", "minigame", "assets"]:
+		var base: String = "res://games/" + kind
+		for id: String in DirAccess.get_directories_at(base):
+			var root: String = base.path_join(id)
+			if "manifest.json" not in DirAccess.get_files_at(root):
+				continue
+			roots.append(root)
+			if kind == "protocols":
+				for avatar: String in DirAccess.get_directories_at(root.path_join("avatars")):
+					roots.append(root.path_join("avatars").path_join(avatar))
+	for root: String in roots:
+		files.append_array(Catalog.files(root))
+		var payload: Dictionary = External.inventory(root)
+		if not payload.ok:
+			_error(payload.error)
+			return ""
+		for relative: String in payload.files:
+			files.append(root.path_join(relative))
+	var fingerprint: Dictionary = source_fingerprint(files)
+	if not fingerprint.ok:
+		_error(fingerprint.error)
+		return ""
+	var generation: String = fingerprint.key
+	var error: Error = OK
+	var cache: String = cache_directory.path_join(generation)
+	var pointer: String = cache.path_join("current.json")
+	if FileAccess.file_exists(pointer):
+		var record: Dictionary = Data.read_json(pointer)
+		if not Paths.folder(record.get("generation")):
+			_error("Invalid distribution cache index: " + pointer)
+			return ""
+		var existing: String = cache.path_join(record.generation)
+		for root: String in roots:
+			var installed: String = existing.path_join(root.trim_prefix("res://games/"))
+			if not FileAccess.file_exists(installed.path_join("content.pck")) or not FileAccess.file_exists(installed.path_join("content.pck.json")):
+				_error("Incomplete distribution generation: " + installed)
+				return ""
+		return existing
+	# Each startup owns its output directory, including concurrent editor instances.
+	var token: String = Data.token()
+	var destination: String = cache.path_join(token)
+	error = DirAccess.make_dir_recursive_absolute(destination)
 	if error != OK:
-		_error("Cannot publish distribution cache: " + error_string(error))
+		_error("Cannot create distribution cache: " + error_string(error))
+		return ""
+	var project: String = ProjectSettings.globalize_path("res://")
+	error = await _run(project, ["--script", "res://core/dev/export_content.gd", "--", "--output=" + destination, "--workspace=" + cache_directory.get_base_dir().path_join("content_build")], destination.path_join("build.log"), "CONTENT_EXPORT_PASS")
+	if error != OK:
+		return ""
+	var pending: String = pointer + "." + token + ".pending"
+	var marker: FileAccess = FileAccess.open(pending, FileAccess.WRITE)
+	if marker == null:
+		_error("Cannot publish distribution generation")
+		return ""
+	marker.store_string(JSON.stringify({"generation": token}))
+	marker.flush()
+	error = marker.get_error()
+	marker.close()
+	if error != OK:
+		_error("Cannot save distribution generation")
+		return ""
+	error = DirAccess.rename_absolute(pending, pointer)
+	if error != OK:
+		_error("Cannot publish distribution index: " + error_string(error))
 		return ""
 	return destination
 
+## Build cache inputs include file bytes and import/build parameters, independently of package_version.
+static func source_fingerprint(files: Array[String]) -> Dictionary:
+	files.sort()
+	var context: HashingContext = HashingContext.new()
+	var error: Error = context.start(HashingContext.HASH_SHA256)
+	if error == OK:
+		error = PackageHash._blob(context, str(Engine.get_version_info().string).to_utf8_buffer())
+	for path: String in files:
+		if path.begins_with("res://core/saves/") or path == "res://core/bundled_content.zip" or (path.begins_with("res://core/config/") and path.get_extension() == "json"):
+			continue
+		if error != OK:
+			break
+		var file: FileAccess = FileAccess.open(path, FileAccess.READ)
+		if file == null:
+			return {"ok": false, "error": "Cannot read build input: " + path}
+		error = PackageHash._blob(context, path.to_utf8_buffer())
+		if error == OK:
+			error = PackageHash._length(context, file.get_length())
+		while error == OK and file.get_position() < file.get_length():
+			var bytes: PackedByteArray = file.get_buffer(mini(1048576, file.get_length() - file.get_position()))
+			if bytes.is_empty():
+				error = ERR_FILE_CANT_READ
+			else:
+				error = context.update(bytes)
+		file.close()
+	if error != OK:
+		return {"ok": false, "error": "Cannot fingerprint build inputs: " + error_string(error)}
+	return {"ok": true, "key": context.finish().hex_encode()}
 
 func _error(message: String) -> Error:
 	last_error = message
