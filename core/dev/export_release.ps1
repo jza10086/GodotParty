@@ -1,4 +1,4 @@
-param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'godot')
+﻿param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'godot')
 # A private build finishes before touching the installation. Formal external payload joins rollback.
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'export_build.ps1')
@@ -42,13 +42,15 @@ try {
         & (Join-Path $PSScriptRoot 'export_android.ps1') -GodotPath $GodotPath -RequestPath $RequestPath
     } elseif ($request.core) {
         Status 'Exporting Windows core'
-        & (Join-Path $PSScriptRoot 'export_windows_host.ps1') -GodotPath $GodotPath -BuildRoot (Join-Path $buildRoot 'host') -OutputDirectory $stage | Out-Null
+        & (Join-Path $PSScriptRoot 'export_windows_host.ps1') -GodotPath $GodotPath -BuildRoot (Join-Path $buildRoot 'host') -OutputDirectory $stage -ProgressJob $buildRoot | Out-Null
     }
     if ($platform -eq 'Windows' -and $request.packages.Count -gt 0) {
+        Set-PartyExportStage $buildRoot 'content' '导入并打包所选内容'
         Status 'Exporting content and dependencies'
         $log = Join-Path $buildRoot 'content.log'
         Invoke-PartyGodot $GodotPath -LogPath $log -Marker 'CONTENT_EXPORT_PASS' -EngineArguments @('--headless','--path',$projectRoot,'--log-file',(Join-Path $buildRoot 'content-engine.log'),'--script','res://core/dev/export_content.gd','--',"--output=$stage", "--request=$RequestPath", "--workspace=$(Join-Path $buildRoot 'content_work')")
     }
+    Set-PartyExportStage $buildRoot 'publish' '发布构建产物'
     Status 'Publishing completed build'
     # Preflight every output, and save overwritten build artifacts for rollback.
     $writes = @()

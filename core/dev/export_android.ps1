@@ -1,4 +1,4 @@
-param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'godot')
+﻿param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'godot')
 # Build Android resources in isolated projects. Never reuse desktop texture import caches.
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'export_build.ps1')
@@ -24,7 +24,10 @@ $bundlePath = Join-Path $job 'mobile_content.zip'
 Copy-Item -LiteralPath $bundlePath -Destination (Join-Path $stage 'GodotParty-content-android.zip')
 if ($request.core) {
     Status 'Building Android APK'
-    $hostText = New-PartyMobileProject $projectRoot $hostProject 'Android'
+    Set-PartyExportStage $job 'core_prepare' '准备 Android 核心'
+    $contentProject = Join-Path $job 'mobile_content'
+    $hostText = New-PartyMobileProject $projectRoot $hostProject 'Android' -CoreSource $contentProject
+    Copy-PartyCoreImports $contentProject $hostProject
     $preset = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'android_export_presets.cfg') -Raw -Encoding UTF8
     $versionValue = ConvertTo-Json -InputObject (Get-PartyProjectVersion $projectRoot) -Compress
     $preset = Set-PartyProjectValue $preset 'preset.0.options' 'version/name' $versionValue
@@ -37,11 +40,13 @@ if ($request.core) {
     }
     Copy-Item -LiteralPath $bundlePath -Destination (Join-Path $hostProject 'core/bundled_content.zip')
     Copy-Item -LiteralPath (Join-Path $projectRoot 'doc/credits.md') -Destination (Join-Path $hostProject 'core/project-credits.md')
+    Set-PartyExportStage $job 'core_import' '检查并导入核心资源'
     Invoke-PartyGodot $GodotPath -LogPath (Join-Path $job 'android-host-import.log') -EngineArguments @('--headless','--path',$hostProject,'--log-file',(Join-Path $job 'android-host-import-engine.log'),'--import')
     Enable-PartyTheme $projectRoot $hostProject $hostText
     $previousSdkPath = $env:GODOTPARTY_ANDROID_SDK_PATH
     try {
         if ($androidSdkPath) { $env:GODOTPARTY_ANDROID_SDK_PATH = $androidSdkPath }
+        Set-PartyExportStage $job 'core_export' '生成 Android APK'
         Invoke-PartyGodot $GodotPath -LogPath (Join-Path $job 'android-apk.log') -EngineArguments @('--headless','--path',$hostProject,'--log-file',(Join-Path $job 'android-apk-engine.log'),'--export-debug','Android',(Join-Path $stage 'GodotParty.apk'))
     } finally { $env:GODOTPARTY_ANDROID_SDK_PATH = $previousSdkPath }
     if (!(Test-Path -LiteralPath (Join-Path $stage 'GodotParty.apk') -PathType Leaf)) { throw 'Android export did not produce an APK' }

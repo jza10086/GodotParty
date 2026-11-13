@@ -1,7 +1,8 @@
-param(
+﻿param(
     [string]$GodotPath = 'godot',
     [string]$BuildRoot,
-    [string]$OutputDirectory
+    [string]$OutputDirectory,
+    [string]$ProgressJob = ""
 )
 # Build the core from a clean copy. User data and content never enter the EXE.
 $ErrorActionPreference = 'Stop'
@@ -15,12 +16,8 @@ if (Test-Path -LiteralPath $sourceRoot) { throw 'Use a fresh core build director
 New-Item -ItemType Directory -Path $sourceRoot, $OutputDirectory -Force | Out-Null
 $utf8 = New-Object Text.UTF8Encoding($false)
 $coreFiles = @(Get-PartyCoreFiles $projectRoot)
-foreach ($file in $coreFiles) {
-    $relative = $file.FullName.Substring($projectRoot.Length + 1)
-    $destination = Join-Path $sourceRoot $relative
-    New-Item -ItemType Directory -Path (Split-Path $destination) -Force | Out-Null
-    Copy-Item -LiteralPath $file.FullName -Destination $destination
-}
+Set-PartyExportStage $ProgressJob 'core_prepare' '复制核心资源'
+Copy-PartyBuildFiles $projectRoot $sourceRoot $coreFiles
 # Stamp only the staged framework; the editor declaration remains editor.
 $dataFile = Join-Path $sourceRoot 'core/runtime/party_data.gd'
 $dataText = (Get-Content -LiteralPath $dataFile -Raw -Encoding UTF8).Replace('const SYSTEM: String = "editor"', 'const SYSTEM: String = "windows"')
@@ -44,8 +41,10 @@ $importProjectText = $projectText -replace '(?m)^theme/custom(?:_font)?=.*\r?\n'
 foreach ($step in @('import','export')) {
     $log = Join-Path $BuildRoot ($step + '.log')
     if ($step -eq 'import') {
+        Set-PartyExportStage $ProgressJob 'core_import' '导入核心资源'
         $engineArguments = @('--headless', '--path', $sourceRoot, '--log-file', (Join-Path $BuildRoot 'import-engine.log'), '--import')
     } else {
+        Set-PartyExportStage $ProgressJob 'core_export' '生成 Windows 程序'
         $engineArguments = @('--headless', '--path', $sourceRoot, '--log-file', (Join-Path $BuildRoot 'export-engine.log'), '--export-release', 'Windows Desktop', (Join-Path $OutputDirectory 'GodotParty.exe'))
     }
     try {

@@ -1,6 +1,7 @@
-param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'godot')
+﻿param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'godot')
 # Detached editor job. Owns its lock, persistent log and completion result, not the editor lifetime.
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'export_build.ps1')
 $job = Split-Path -Parent ([IO.Path]::GetFullPath($RequestPath))
 $utf8 = New-Object Text.UTF8Encoding($false)
 $lock = [IO.File]::Open((Join-Path $job 'job.lock'),[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
@@ -11,9 +12,11 @@ if (Test-Path -LiteralPath (Join-Path $job 'job-result.json')) {
 $exitCode = 1
 try {
     $request = Get-Content -LiteralPath $RequestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    Initialize-PartyExportProgress $job $request
     $backend = if ($request.platform -eq 'iOS') { 'export_ios_cloud.ps1' } else { 'export_release.ps1' }
     & (Join-Path $PSScriptRoot $backend) -RequestPath $RequestPath -GodotPath $GodotPath *> (Join-Path $job 'export.log')
     $output = if ($request.platform -eq 'iOS') { Get-Content -LiteralPath (Join-Path $job 'result.txt') -Raw -Encoding UTF8 } else { $request.output }
+    Set-PartyExportStage $job 'complete' '导出完成'
     $result = @{ok=$true; output=$output; error=''}
     $exitCode = 0
 } catch {

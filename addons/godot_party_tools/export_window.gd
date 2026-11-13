@@ -10,6 +10,8 @@ var _directory: LineEdit
 var _browse: Button
 var _picker: FileDialog
 var _status: Label
+var _progress: ProgressBar
+var _progress_label: Label
 var _items: Dictionary[String, TreeItem] = {}
 var _requested: Array[String] = []
 var _core: TreeItem
@@ -60,6 +62,17 @@ func _ready() -> void:
 		_directory.text = path
 		_update_button())
 	_browse.pressed.connect(func() -> void: _picker.popup_centered_ratio(0.7))
+	_progress = ProgressBar.new()
+	_progress.name = "ExportProgress"
+	_progress.show_percentage = false
+	_progress.custom_minimum_size.y = 20
+	_progress.hide()
+	body.add_child(_progress)
+	_progress_label = Label.new()
+	_progress_label.name = "ExportProgressLabel"
+	_progress_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_progress_label.hide()
+	body.add_child(_progress_label)
 	_status = Label.new()
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_status.custom_minimum_size = Vector2(620, 70)
@@ -72,6 +85,8 @@ func open() -> void:
 	if _busy():
 		popup_centered()
 		return
+	_progress.hide()
+	_progress_label.hide()
 	_catalog = Catalog.new()
 	_catalog.scan()
 	_tree.clear()
@@ -219,9 +234,27 @@ func _start_export() -> void:
 		group.set_editable(0, false)
 	_directory.editable = false
 	_browse.disabled = true
+	_progress.max_value = 1
+	_progress.value = 0
+	_progress.indeterminate = false
+	_progress.show()
+	_progress_label.text = "准备导出"
+	_progress_label.show()
+	_poll = 0.0
 	_status.text = "正在导出…\n构建日志：" + _job
 	_update_button()
 	set_process(true)
+
+## Progress counts completed build stages, not estimated time. The worker replaces this file atomically.
+func _read_progress() -> void:
+	var path: String = _job.path_join("progress.json")
+	if not FileAccess.file_exists(path):
+		return
+	var record: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
+	_progress.max_value = record.total
+	_progress.value = record.completed
+	_progress.indeterminate = record.indeterminate
+	_progress_label.text = "阶段 %d/%d · %s" % [record.completed, record.total, record.stage]
 
 ## The job continues independently if the dialog/plugin/editor closes.
 func _process(delta: float) -> void:
@@ -229,6 +262,7 @@ func _process(delta: float) -> void:
 	if _poll > 0.0:
 		return
 	_poll = 0.5
+	_read_progress()
 	if OS.is_process_running(_pid):
 		var path: String = _job.path_join("status.txt")
 		if FileAccess.file_exists(path):
@@ -246,11 +280,15 @@ func _process(delta: float) -> void:
 	_refresh_selection()
 	var result_path: String = _job.path_join("job-result.json")
 	var result: Variant = JSON.parse_string(FileAccess.get_file_as_string(result_path)) if FileAccess.file_exists(result_path) else null
+	_progress.indeterminate = false
 	if code == 0 and result is Dictionary and result.get("ok") == true:
+		_progress.value = _progress.max_value
+		_progress_label.text = "导出完成"
 		_status.text = "导出完成：" + str(result.output)
 		if platform == "iOS":
 			_status.text += "\nIPA 需要通过 SideStore 重签后安装。"
 	else:
+		_progress_label.text = "导出失败"
 		var reason: String = str(result.get("error", "")) if result is Dictionary else "后台任务未写入完成结果，请查看 export.log。"
 		_status.text = "导出失败（%d）：\n%s" % [code, reason]
 	_status.text += "\n构建日志：" + _job

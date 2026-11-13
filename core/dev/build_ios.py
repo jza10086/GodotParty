@@ -48,6 +48,12 @@ def prepare_host(content_project, host, bundle, root, build_number):
     data = host / "core/runtime/party_data.gd"
     if not re.search(r'(?m)^const SYSTEM: String = "ios"$', data.read_text(encoding="utf-8")):
         raise RuntimeError("Mobile staging did not declare framework SYSTEM ios")
+    # Reuse only this job's core imports; Godot still scans/validates the isolated host.
+    imports = json.loads((content_project.parent / "core_import_files.json").read_text(encoding="utf-8"))
+    for relative in imports:
+        target = host / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(content_project / relative, target)
     shutil.copyfile(bundle, host / "core/bundled_content.zip")
     notices = host / "core/notices"
     notices.mkdir(exist_ok=True)

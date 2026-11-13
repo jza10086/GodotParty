@@ -1,6 +1,7 @@
-param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'godot')
+﻿param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'godot')
 # Windows editor bridge: dispatch an immutable pushed revision and download its artifacts.
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'export_build.ps1')
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $job = Split-Path -Parent ([IO.Path]::GetFullPath($RequestPath))
 $request = Get-Content -LiteralPath $RequestPath -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -50,6 +51,7 @@ $requestId = [guid]::NewGuid().ToString('N')
 $body = @{ref='main'; inputs=@{revision=$revision; request_id=$requestId; godot_version=$engineVersion; core=$request.core.ToString().ToLowerInvariant(); packages=(ConvertTo-Json -InputObject @($request.packages) -Compress)}}
 $dispatchPath = Join-Path $job 'dispatch.json'
 [IO.File]::WriteAllText($dispatchPath,($body | ConvertTo-Json -Depth 6),$utf8)
+Set-PartyExportStage $job 'cloud' '等待云端构建' $true
 Status "Dispatching GitHub iOS build`n$notice"
 $null = Native 'gh' @('api',"repos/$repo/actions/workflows/build-ios.yml/dispatches",'--method','POST','--input',$dispatchPath)
 $deadline = [DateTime]::UtcNow.AddMinutes(50)
@@ -67,6 +69,7 @@ while ([DateTime]::UtcNow -lt $deadline) {
     if ($runId) {
         $run = Native 'gh' @('run','view',$runId,'--repo',$repo,'--json','status,conclusion,jobs') | ConvertFrom-Json
         $steps = @($run.jobs | ForEach-Object { $_.steps } | Where-Object { $_.status -eq 'in_progress' } | ForEach-Object { $_.name })
+        Set-PartyExportStage $job 'cloud' ("云端构建：" + ($steps -join ", ")) $true
         Status "$($run.status): $($steps -join ', ')`n$url`n$notice"
         [IO.File]::WriteAllText((Join-Path $job 'run.json'),(@{id=$runId;url=$url;revision=$revision;request=$requestId} | ConvertTo-Json),$utf8)
         if ($run.status -eq 'completed') {
@@ -78,6 +81,7 @@ while ([DateTime]::UtcNow -lt $deadline) {
 }
 if (!$runId -or $run.status -ne 'completed') { throw "Timed out waiting for iOS build; it may still be running: $url" }
 $download = Join-Path $job 'download'
+Set-PartyExportStage $job 'download' '下载云端产物' $true
 Status "Downloading completed IPA/content`n$url`n$notice"
 $null = Native 'gh' @('run','download',$runId,'--repo',$repo,'--name','GodotParty-iOS-SideStore','--dir',$download)
 $metadata = Get-Content -LiteralPath (Join-Path $download 'build-info.json') -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -86,6 +90,7 @@ $expected = @('GodotParty-content-ios.zip','build-info.json','INSTALL.txt')
 if ($request.core) { $expected += 'GodotParty-iOS-SideStore.ipa' }
 foreach ($name in $expected) { if (!(Test-Path -LiteralPath (Join-Path $download $name) -PathType Leaf)) { throw "Artifact missing: $name" } }
 # Each build gets a fresh directory, so unrelated exports and player files are never overwritten.
+Set-PartyExportStage $job 'publish' '保存云端产物'
 $target = Join-Path $output ("ios-" + $revision.Substring(0,12) + "-" + $runId)
 Check-Target $target
 if (Test-Path -LiteralPath $target) { throw "Output already exists: $target" }
