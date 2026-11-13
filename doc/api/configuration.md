@@ -17,7 +17,6 @@ GodotParty/
   GodotParty.exe                         # 内嵌框架核心，双击运行
   core/
     config/settings.json                # 系统、连接、唯一 player_id
-    config/party_sources.json            # 开发时源码/PCK 来源选择
     saves/                              # 框架会话记录
     notices/                            # 必需许可信息
   protocols/<protocol_id>/

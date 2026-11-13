@@ -9,8 +9,10 @@ const Localization = preload("res://core/i18n/party_localization.gd")
 var i18n: RefCounted = Localization.new()
 const PlayerCounts = preload("res://core/config/party_player_counts.gd")
 const Versions = preload("res://core/content/party_versions.gd")
+const Selection = preload("res://core/content/party_content_selection.gd")
 const PackageHash = preload("res://core/content/party_package_hash.gd")
 const KINDS: Array[String] = ["maingame", "minigame", "protocols", "avatars", "assets"]
+var source_mode: bool = false
 var packages: Dictionary = {}
 var _schemas: Dictionary = {}
 var errors: Array[String] = []
@@ -19,6 +21,9 @@ var artifacts: Dictionary = {}
 var adapter_issues: Dictionary = {}
 
 func scan() -> Error:
+	source_mode = true
+	artifacts.clear()
+	unavailable.clear()
 	packages.clear()
 	_schemas.clear()
 	errors.clear()
@@ -37,6 +42,7 @@ func scan() -> Error:
 					for avatar: String in DirAccess.get_directories_at(avatars):
 						register_manifest(avatars.path_join(avatar).path_join("manifest.json"))
 	_validate_config_directories()
+	unavailable = Selection.unavailable_packages(packages)
 	_cache_adapter_issues()
 	return OK if errors.is_empty() else ERR_INVALID_DATA
 
@@ -121,6 +127,7 @@ static func _entry_script(state: SceneState) -> Script:
 
 ## Freeze validated descriptors once after startup mounting. No menu/join path rescans disk.
 func use_installed(descriptions: Dictionary, roots: Dictionary, failures: Dictionary) -> Error:
+	source_mode = false
 	packages.clear()
 	_schemas.clear()
 	artifacts.clear()
@@ -218,7 +225,7 @@ func external_path(id: String, relative: String) -> String:
 	if not External.safe_path(relative):
 		push_error("Invalid external path: " + id + "/" + relative)
 		return ""
-	return str(artifacts[id].root).path_join(relative)
+	return ProjectSettings.globalize_path(path(id, relative)) if source_mode else str(artifacts[id].root).path_join(relative)
 
 func load_entry(id: String) -> Resource:
 	var manifest: Dictionary = packages.get(id, {})
@@ -257,24 +264,32 @@ func connection_requirements(selected: Dictionary) -> Dictionary:
 	var required: Dictionary = {}
 	for id: String in selected:
 		var manifest: Dictionary = packages[id]
-		required[id] = {"version": manifest.package_version, "hash": manifest.package_hash}
-	return {"framework": {"version": Data.VERSION}, "packages": required}
+		required[id] = {"version": manifest.package_version}
+		if not source_mode:
+			required[id].hash = manifest.package_hash
+	return {"mode": "source" if source_mode else "pck", "framework": {"version": Data.VERSION}, "packages": required}
 
 func requirements_issue(required: Variant) -> String:
 	if not required is Dictionary or not required.get("framework") is Dictionary or not required.get("packages") is Dictionary or not required.framework.get("version") is String:
 		return "房主未提供有效的框架与内容包清单"
+	if required.get("mode") not in ["source", "pck"]:
+		return "房主未声明有效的内容运行模式"
+	if (required.mode == "source") != source_mode:
+		return "编辑器源码测试与发布版不能互联"
 	var issues: Array[String] = []
 	if required.framework.version != Data.VERSION:
 		issues.append("框架版本不同（当前版本：%s；所需版本：%s）" % [Data.VERSION, required.framework.version])
 	for id: Variant in required.packages:
 		var entry: Variant = required.packages[id]
-		if not id is String or not Data.identifier(id) or not entry is Dictionary or Versions.parse(entry.get("version")).is_empty() or not PackageHash.valid(entry.get("hash")):
+		if not id is String or not Data.identifier(id) or not entry is Dictionary or Versions.parse(entry.get("version")).is_empty() or (not source_mode and not PackageHash.valid(entry.get("hash"))) or (source_mode and entry.has("hash")):
 			return "房主内容包清单格式无效"
 		if not packages.has(id):
 			issues.append("缺少内容包 %s（所需版本：%s）" % [id, entry.version])
+		elif unavailable.has(id):
+			issues.append(id + " 不可用：" + str(unavailable[id]))
 		elif packages[id].package_version != entry.version:
 			issues.append("%s 版本不同（当前：%s；所需：%s）" % [id, packages[id].package_version, entry.version])
-		elif packages[id].package_hash != entry.hash:
+		elif not source_mode and packages[id].package_hash != entry.hash:
 			issues.append("%s 内容不同（版本：%s）" % [id, entry.version])
 	return "\n".join(issues)
 
@@ -312,8 +327,11 @@ func resolve(main_id: String, pools: Dictionary, appearances: Array = []) -> Dic
 			var present: bool = packages.has(ref.package_id) and Data.relative_path(ref.resource_path)
 			if present:
 				var target: String = path(ref.package_id, ref.resource_path)
-				var index: Array = artifacts[ref.package_id].description.files
-				present = index.has(target) or index.has(target + ".import")
+				if source_mode:
+					present = ResourceLoader.exists(target)
+				else:
+					var index: Array = artifacts[ref.package_id].description.files
+					present = index.has(target) or index.has(target + ".import")
 			if not present:
 				return Data.failure("RESOURCE_MISSING", "玩家形象资源不存在：%s/%s（内容包版本：%s）。请在协议资料中重新选择头像或形象。" % [ref.package_id, ref.resource_path, pack.get("package_version", "未安装")])
 			error = _visit(ref["package_id"], selected, visiting)
@@ -338,7 +356,9 @@ func _visit(id: String, selected: Dictionary, visiting: Dictionary) -> String:
 	if not issue.is_empty():
 		return issue
 	visiting.erase(id)
-	selected[id] = {"version": manifest.package_version, "hash": manifest.get("package_hash", "")}
+	selected[id] = {"version": manifest.package_version}
+	if not source_mode:
+		selected[id].hash = manifest.package_hash
 	return ""
 
 func _dependencies(dependencies: Dictionary, selected: Dictionary, visiting: Dictionary) -> String:

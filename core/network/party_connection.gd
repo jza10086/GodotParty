@@ -453,6 +453,9 @@ func _accept_hello(sender: int, identity: Dictionary) -> void:
 	if not Data.valid_system(identity.get("system")):
 		_send(sender, {"kind": "rejected", "payload": {"message": "无效的系统声明"}})
 		return
+	if (identity.system == "editor") != catalog.source_mode:
+		_send(sender, {"kind": "rejected", "payload": {"message": "编辑器源码测试与发布版不能互联"}})
+		return
 	if not room.has("closure"):
 		_send(sender, {"kind": "rejected", "payload": {"message": "房主内容不可用：\n" + status}})
 		return

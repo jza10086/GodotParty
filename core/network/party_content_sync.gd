@@ -181,11 +181,11 @@ func reset() -> void:
 	_deadline = 0
 	changed.emit()
 
-## Offers reference the immutable artifacts selected and verified at process startup.
+## Source tests exchange version requirements only; released hosts offer verified PCK artifacts.
 func offer(peer: int, requirements: Dictionary, stage: String = "join", token: String = "") -> void:
 	_uploads.erase(peer)
 	var offered: Dictionary = {}
-	for id: String in requirements.packages:
+	for id: String in (requirements.packages.keys() if not connection.catalog.source_mode else []):
 		var required: Dictionary = requirements.packages[id]
 		var manifest: Dictionary = connection.catalog.packages[id]
 		var artifact: Dictionary = connection.catalog.artifacts[id]
@@ -245,13 +245,36 @@ func receive_offer(payload: Dictionary) -> void:
 		connection.leave("无效的内容同步清单")
 		return
 	var requirements: Dictionary = payload.requirements
-	if not requirements.get("packages") is Dictionary or payload.items.size() != requirements.packages.size():
+	if not requirements.get("packages") is Dictionary:
 		connection.leave("内容同步清单不完整")
 		return
-	var framework_check: Dictionary = {"framework": requirements.get("framework"), "packages": {}}
+	var framework_check: Dictionary = {"mode": requirements.get("mode"), "framework": requirements.get("framework"), "packages": {}}
 	var issue: String = connection.catalog.requirements_issue(framework_check)
 	if not issue.is_empty():
-		connection.leave(issue + "\n请手动更新框架")
+		connection.leave(issue)
+		return
+	if connection.catalog.source_mode:
+		if not payload.items.is_empty():
+			connection.leave("源码测试不能接收分发包")
+			return
+		reset()
+		phase = payload.phase
+		check_id = payload.check_id
+		message = connection.catalog.requirements_issue(requirements)
+		if phase == "join":
+			if not message.is_empty():
+				connection.leave("源码内容检查失败，请同步工程后重新运行：\n" + message)
+				return
+			connection._send(1, {"kind": "hello", "payload": connection.profiles.identity()})
+		else:
+			if message.is_empty():
+				message = connection._room_content_issue({"room": connection.room, "players": connection.players}, true)
+			_checked = message.is_empty()
+			connection.connection_state = "connected"
+		changed.emit()
+		return
+	if payload.items.size() != requirements.packages.size():
+		connection.leave("内容同步清单不完整")
 		return
 	reset()
 	phase = payload.phase

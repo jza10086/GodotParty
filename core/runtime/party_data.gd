@@ -3,7 +3,7 @@ extends RefCounted
 
 const VERSION: String = preload("res://core/framework_version.gd").VERSION
 const FRAMEWORK_NAME: String = "GodotParty"
-## Platform identity is informational; compatibility uses the framework version.
+## Published platforms interoperate; editor identity is restricted to source-only internal tests.
 const SYSTEM: String = "editor"
 const SYSTEMS: Array[String] = ["editor", "windows", "android", "ios"]
 

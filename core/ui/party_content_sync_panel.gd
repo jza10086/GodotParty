@@ -46,7 +46,7 @@ func refresh() -> void:
 	if _layout != layout:
 		_close()
 	if not is_instance_valid(dialog):
-		var content: VBoxContainer = app._modal("等待客机下载" if host_view else ("更新完成" if completed else "同步房间内容"))
+		var content: VBoxContainer = app._modal(("等待客机检查" if app.catalog.source_mode else "等待客机下载") if host_view else ("更新完成" if completed else "同步房间内容"))
 		dialog = app._dialog
 		_layout = layout
 		dialog.dialog_hide_on_ok = false

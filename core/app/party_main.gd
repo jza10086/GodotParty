@@ -63,45 +63,28 @@ func _ready() -> void:
 		push_error("无法加载系统配置：" + settings.settings_path + " · " + error_string(settings_error))
 		return
 	packages = Packages.new()
-	var source_choices: JsonConfig = JsonConfig.new()
-	var source_error: Error = source_choices.load(settings.settings_path.get_base_dir().path_join("party_sources.json"))
-	if source_error != OK and source_error != ERR_FILE_NOT_FOUND:
-		push_error("无法加载内容来源配置：" + error_string(source_error))
-		return
-	var choices: Dictionary = source_choices.get_value("sources", "choices", {})
-	if _arguments.has("source"):
-		var pair: PackedStringArray = str(_arguments["source"]).split(":", true, 1)
-		if pair.size() == 2:
-			choices[pair[0]] = pair[1]
+	catalog = Catalog.new()
 	var directory: String = str(_arguments.get("pack-dir", InputSettings.installation_directory()))
-	var source_roots: Dictionary = {}
-	if OS.has_feature("editor") and not _arguments.has("pack-dir"):
-		var builder: RefCounted = load("res://core/dev/party_shared_pack_builder.gd").new()
-		var generation: String = await builder.prepare_distribution(directory.path_join("tmp/content_distribution"))
-		if generation.is_empty():
-			_content_error = builder.last_error
+	if OS.has_feature("editor"):
+		# Editor instances run the project sources. Importing/building distributable PCKs is an export operation.
+		if catalog.scan() != OK:
+			push_error(str(catalog.errors))
+			return
+	else:
+		var archive: RefCounted = ContentArchive.new()
+		var bootstrap_error: Error = archive.bootstrap(directory, packages)
+		if bootstrap_error != OK:
+			_content_error = archive.last_error
 			push_error(_content_error)
 			return
-		for descriptor: String in Packages.descriptors(generation):
-			var built: Dictionary = Packages.Data.read_json(descriptor)
-			var installed: String = directory.path_join(Packages.Paths.package_relative(built)).path_join("content.pck.json")
-			if choices.get(built.id, "pck" if FileAccess.file_exists(installed) else "source") == "source":
-				source_roots[built.id] = descriptor.get_base_dir()
-	var archive: RefCounted = ContentArchive.new()
-	var bootstrap_error: Error = archive.bootstrap(directory, packages, source_roots)
-	if bootstrap_error != OK:
-		_content_error = archive.last_error
-		push_error(_content_error)
-		return
-	var mount_error: Error = packages.mount_prepared(directory)
-	if mount_error != OK:
-		_content_error = packages.last_error
-		push_error(_content_error)
-		return
-	catalog = Catalog.new()
-	if catalog.use_installed(packages.installed, packages.roots, packages.unavailable) != OK:
-		push_error(str(catalog.errors))
-		return
+		var mount_error: Error = packages.mount_prepared(directory)
+		if mount_error != OK:
+			_content_error = packages.last_error
+			push_error(_content_error)
+			return
+		if catalog.use_installed(packages.installed, packages.roots, packages.unavailable) != OK:
+			push_error(str(catalog.errors))
+			return
 	var declaration: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://core/i18n/localization.json"))
 	if catalog.i18n.register_package("core", declaration, "res://core/i18n") != OK:
 		push_error(catalog.i18n.last_error)
@@ -721,8 +704,8 @@ func _package_dialog() -> void:
 	var path: LineEdit = box.get_node("Path")
 	var info: Label = box.get_node("Status")
 	var unavailable_lines: PackedStringArray = []
-	for id: String in packages.unavailable:
-		unavailable_lines.append(id + "：" + str(packages.unavailable[id]))
+	for id: String in catalog.unavailable:
+		unavailable_lines.append(id + "：" + str(catalog.unavailable[id]))
 	info.text = "\n".join(unavailable_lines)
 	box.get_node("ImportArchive").pressed.connect(func() -> void:
 		_choose_transfer("content", info))
@@ -742,26 +725,11 @@ func _package_dialog() -> void:
 		var error: Error = packages.install(source, InputSettings.installation_directory())
 		info.text = "已安装，请重新启动" if error == OK else packages.last_error + " " + error_string(error))
 
-	var choices_file: JsonConfig = JsonConfig.new()
-	var choices_path: String = settings.settings_path.get_base_dir().path_join("party_sources.json")
-	choices_file.load(choices_path)
-	var choices: Dictionary = choices_file.get_value("sources", "choices", {})
-	var picker: OptionButton = box.get_node("Sources/Package")
-	var source: OptionButton = box.get_node("Sources/Source")
-	source.add_item("源码")
-	source.add_item("PCK")
-	for id: String in catalog.ids():
-		picker.add_item(id)
-	var show_source: Callable = func(index: int) -> void:
-		source.select(1 if choices.get(picker.get_item_text(index)) == "pck" else 0)
-	picker.item_selected.connect(show_source)
-	source.disabled = picker.item_count == 0
-	if not source.disabled:
-		show_source.call(0)
-	source.item_selected.connect(func(index: int) -> void: choices[picker.get_item_text(picker.selected)] = "pck" if index == 1 else "source")
-	_dialog.confirmed.connect(func() -> void:
-		choices_file.set_value("sources", "choices", choices)
-		_check(preload("res://core/config/party_config_store.gd").write_configs({choices_path: choices_file.encode_to_text()})))
+	box.get_node("Sources").hide()
+	if catalog.source_mode:
+		path.hide()
+		box.get_node("Install").hide()
+		box.get_node("ImportArchive").hide()
 
 ## Android's system picker grants access to the selected document without broad storage access.
 func _choose_transfer(operation: String, info: Label) -> void:

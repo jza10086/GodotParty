@@ -1,5 +1,5 @@
 ## Build selected PCKs in an isolated source project with both texture import families.
-## The running host polls subprocess completion so networking remains responsive.
+## Export jobs poll subprocess completion; editor playtests never invoke this builder.
 extends RefCounted
 const Catalog = preload("res://core/content/party_catalog.gd")
 const Selection = preload("res://core/content/party_content_selection.gd")
@@ -229,107 +229,6 @@ func export_imported_pack(catalog: RefCounted, id: String, output: String) -> Er
 	error = file.get_error()
 	file.close()
 	return error
-
-## Select one source-derived generation before loading any gameplay resource in the app.
-## Fingerprints are product cache keys, never release versions or network identities.
-func prepare_distribution(cache_directory: String) -> String:
-	var files: Array[String] = Catalog.files("res://core")
-	var roots: Array[String] = []
-	for kind: String in ["protocols", "maingame", "minigame", "assets"]:
-		var base: String = "res://games/" + kind
-		for id: String in DirAccess.get_directories_at(base):
-			var root: String = base.path_join(id)
-			if "manifest.json" not in DirAccess.get_files_at(root):
-				continue
-			roots.append(root)
-			if kind == "protocols":
-				for avatar: String in DirAccess.get_directories_at(root.path_join("avatars")):
-					roots.append(root.path_join("avatars").path_join(avatar))
-	for root: String in roots:
-		files.append_array(Catalog.files(root))
-		var payload: Dictionary = External.inventory(root)
-		if not payload.ok:
-			_error(payload.error)
-			return ""
-		for relative: String in payload.files:
-			files.append(root.path_join(relative))
-	var fingerprint: Dictionary = source_fingerprint(files)
-	if not fingerprint.ok:
-		_error(fingerprint.error)
-		return ""
-	var generation: String = fingerprint.key
-	var error: Error = OK
-	var cache: String = cache_directory.path_join(generation)
-	var pointer: String = cache.path_join("current.json")
-	if FileAccess.file_exists(pointer):
-		var record: Dictionary = Data.read_json(pointer)
-		if not Paths.folder(record.get("generation")):
-			_error("Invalid distribution cache index: " + pointer)
-			return ""
-		var existing: String = cache.path_join(record.generation)
-		for root: String in roots:
-			var installed: String = existing.path_join(root.trim_prefix("res://games/"))
-			if not FileAccess.file_exists(installed.path_join("content.pck")) or not FileAccess.file_exists(installed.path_join("content.pck.json")):
-				_error("Incomplete distribution generation: " + installed)
-				return ""
-		return existing
-	# Each startup owns its output directory, including concurrent editor instances.
-	var token: String = Data.token()
-	var destination: String = cache.path_join(token)
-	error = DirAccess.make_dir_recursive_absolute(destination)
-	if error != OK:
-		_error("Cannot create distribution cache: " + error_string(error))
-		return ""
-	var project: String = ProjectSettings.globalize_path("res://")
-	error = await _run(project, ["--script", "res://core/dev/export_content.gd", "--", "--output=" + destination, "--workspace=" + cache_directory.get_base_dir().path_join("content_build")], destination.path_join("build.log"), "CONTENT_EXPORT_PASS")
-	if error != OK:
-		return ""
-	var pending: String = pointer + "." + token + ".pending"
-	var marker: FileAccess = FileAccess.open(pending, FileAccess.WRITE)
-	if marker == null:
-		_error("Cannot publish distribution generation")
-		return ""
-	marker.store_string(JSON.stringify({"generation": token}))
-	marker.flush()
-	error = marker.get_error()
-	marker.close()
-	if error != OK:
-		_error("Cannot save distribution generation")
-		return ""
-	error = DirAccess.rename_absolute(pending, pointer)
-	if error != OK:
-		_error("Cannot publish distribution index: " + error_string(error))
-		return ""
-	return destination
-
-## Build cache inputs include file bytes and import/build parameters, independently of package_version.
-static func source_fingerprint(files: Array[String]) -> Dictionary:
-	files.sort()
-	var context: HashingContext = HashingContext.new()
-	var error: Error = context.start(HashingContext.HASH_SHA256)
-	if error == OK:
-		error = PackageHash._blob(context, str(Engine.get_version_info().string).to_utf8_buffer())
-	for path: String in files:
-		if path.begins_with("res://core/saves/") or path == "res://core/bundled_content.zip" or (path.begins_with("res://core/config/") and path.get_extension() == "json"):
-			continue
-		if error != OK:
-			break
-		var file: FileAccess = FileAccess.open(path, FileAccess.READ)
-		if file == null:
-			return {"ok": false, "error": "Cannot read build input: " + path}
-		error = PackageHash._blob(context, path.to_utf8_buffer())
-		if error == OK:
-			error = PackageHash._length(context, file.get_length())
-		while error == OK and file.get_position() < file.get_length():
-			var bytes: PackedByteArray = file.get_buffer(mini(1048576, file.get_length() - file.get_position()))
-			if bytes.is_empty():
-				error = ERR_FILE_CANT_READ
-			else:
-				error = context.update(bytes)
-		file.close()
-	if error != OK:
-		return {"ok": false, "error": "Cannot fingerprint build inputs: " + error_string(error)}
-	return {"ok": true, "key": context.finish().hex_encode()}
 
 func _error(message: String) -> Error:
 	last_error = message
