@@ -82,9 +82,8 @@ static func source_metadata(manifest: Dictionary) -> Dictionary:
 	var result: Dictionary = {}
 	if manifest.kind in ["maingame", "minigame"]:
 		result.entry = "game.tscn"
-		var scene: PackedScene = load(root.path_join(result.entry))
-		var entry: Script = _entry_script(scene.get_state())
-		result.merge(entry.party_definition())
+		var definition: Script = load(root.path_join("definition.gd"))
+		result.merge(definition.party_definition())
 	elif manifest.kind == "protocols":
 		result.entry = "protocol.gd"
 		var entry: Script = load(root.path_join(result.entry))
@@ -117,13 +116,6 @@ static func source_metadata(manifest: Dictionary) -> Dictionary:
 				result.adapters.append(adapter)
 		result.playable = not result.adapters.is_empty()
 	return result
-
-static func _entry_script(state: SceneState) -> Script:
-	for index: int in state.get_node_property_count(0):
-		if state.get_node_property_name(0, index) == &"script":
-			return state.get_node_property_value(0, index)
-	var inherited: PackedScene = state.get_node_instance(0)
-	return _entry_script(inherited.get_state())
 
 ## Freeze validated descriptors once after startup mounting. No menu/join path rescans disk.
 func use_installed(descriptions: Dictionary, roots: Dictionary, failures: Dictionary) -> Error:

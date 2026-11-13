@@ -6,6 +6,7 @@ API 5 / manifest 2 / 配置 Schema 3；1–8 人；只实现原版协议 standar
 ## 目录与职责
 
 ```text
+definition.gd              轻量玩法定义：目录扫描读取，不加载游戏场景
 game.tscn / game.gd         正式入口：阶段、准备、结果、网络、提交
 adapter.gd                 standard 请求检查与结果映射
 settings.gd / manifest.json 配置声明、包信息与依赖

@@ -1,6 +1,6 @@
 # 可开局人数
 
-协议、大游戏、小游戏的入口脚本 `static func party_definition() -> Dictionary` 返回 `player_counts`：1–8 之间不重复的整数数组。连续区间也逐一列出；数组顺序不影响结果。头像包不需要声明。人数规则不进入内容 manifest。
+主游戏和小游戏的 `definition.gd`、协议的 `protocol.gd` 通过 `static func party_definition() -> Dictionary` 返回 `player_counts`：1–8 之间不重复的整数数组。连续区间也逐一列出；数组顺序不影响结果。头像包不需要声明。人数规则不进入内容 manifest。
 
 ```gdscript
 static func party_definition() -> Dictionary:

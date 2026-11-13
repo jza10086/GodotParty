@@ -1,9 +1,5 @@
 extends Control
 
-## Content-owned gameplay rules, independent of package compatibility.
-static func party_definition() -> Dictionary:
-	return {"player_counts": [1, 2, 3, 4, 5, 6, 7, 8]}
-
 ## Formal entry: protocol readiness, authoritative press order and final publication.
 ## DemoHub owns editable demonstrations, input presentation and local audio controls.
 const DemoHub: GDScript = preload("examples/demo_hub.gd")

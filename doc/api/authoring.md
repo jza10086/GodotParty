@@ -71,7 +71,7 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 
 `remark` 为必需字符串，可以为空。`supported_languages` 为必需的非空语言代码数组，元素不得为空或重复；当前所有内容声明 `["zh-CN"]`（简体中文）。`dependencies` 没有依赖时省略，资产包必须无依赖。声明只维护这些字段；入口、资源别名、平台、协议 API 主次版本、翻译文件路径和玩法参数不进入 manifest。
 
-主游戏和小游戏入口固定为 `game.tscn`，协议入口固定为 `protocol.gd`。入口脚本的 `static func party_definition() -> Dictionary` 只返回玩法拥有的数据：`player_counts`、可选 `player_count_rules` / `tags` / `controls`；主游戏另给出 `protocol: {"id": "..."}`、`pools` 及可选 `minigames`。协议可声明自己的 `config_directories`，保持配置目录与包版本无关。人数计算见 [可开局人数](player_counts.md)。
+主游戏和小游戏入口固定为 `game.tscn`，协议入口固定为 `protocol.gd`。主游戏和小游戏在包根目录的 `definition.gd`（继承 `RefCounted`）中实现 `static func party_definition() -> Dictionary`，只返回玩法拥有的数据：`player_counts`、可选 `player_count_rules` / `tags` / `controls`；主游戏另给出 `protocol: {"id": "..."}`、`pools` 及可选 `minigames`。`definition.gd` 不引用玩法脚本、场景或素材；目录扫描只加载定义，实际启动玩法时才加载 `game.tscn`。协议仍在 `protocol.gd` 中提供 `party_definition()`，可声明自己的 `config_directories`，保持配置目录与包版本无关。人数计算见 [可开局人数](player_counts.md)。
 
 小游戏适配器固定为 `adapters/<协议ID>.gd`，实现 `check_request(request)`、`make_config(request)`、`map_result(result, request)`；其 `party_definition()` 只声明该适配器的可选条件依赖 `dependencies`。只在选择该协议时检查这些依赖。无适配器的原型仍可列入目录，但不进入可玩池。
 
