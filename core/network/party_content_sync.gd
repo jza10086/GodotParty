@@ -6,6 +6,10 @@ const Paths = preload("res://core/config/party_paths.gd")
 const Packages = preload("res://core/content/party_packages.gd")
 const Archive = preload("res://core/content/party_content_archive.gd")
 const CHUNK: int = 32768
+const WINDOW: int = 8
+const UPLOAD_QUEUE_LIMIT: int = 16
+const CHUNKS_PER_FRAME: int = 16
+const FLUSH_BYTES: int = 1048576
 const MAX_FILE: int = 2147483648
 signal changed()
 var connection: Node
@@ -14,6 +18,14 @@ var rows: Array[Dictionary] = []
 var message: String = ""
 var staged: bool = false
 var _offers: Dictionary = {}
+var _uploads: Dictionary = {}
+var _upload_cursor: int = 0
+var _task: String = ""
+var _generation: int = 0
+var _pending_chunks: Dictionary = {}
+var _requested_offset: int = 0
+var _flush_bytes: int = 0
+var _finishing: bool = false
 var _active: String = ""
 var _index: int = 0
 var _offset: int = 0
@@ -81,6 +93,7 @@ func stop_start() -> void:
 	for player: Dictionary in connection.players:
 		if player.peer_id != 1:
 			_offers.erase(player.peer_id)
+			_uploads.erase(player.peer_id)
 			if player.connected:
 				connection._send(player.peer_id, {"kind": "content_stop", "payload": {"check_id": previous}})
 	changed.emit()
@@ -91,6 +104,7 @@ func stop_received(payload: Dictionary) -> void:
 		connection.connection_state = "connected"
 
 func peer_left(peer: int) -> void:
+	_uploads.erase(peer)
 	_offers.erase(peer)
 	if waiting:
 		var player: Dictionary = connection._player_peer(peer)
@@ -146,6 +160,10 @@ func _report_progress() -> void:
 
 
 func reset() -> void:
+	_generation += 1
+	_end_task(true)
+	_stage = ""
+	_uploads.clear()
 	waiting = false
 	reports.clear()
 	phase = "join"
@@ -166,6 +184,7 @@ func reset() -> void:
 
 ## Advertise source packages immediately; build only the package actually requested.
 func offer(peer: int, requirements: Dictionary, stage: String = "join", token: String = "") -> void:
+	_uploads.erase(peer)
 	var offered: Dictionary = {}
 	for id: String in requirements.packages:
 		var required: Dictionary = requirements.packages[id]
@@ -190,7 +209,7 @@ func _describe(row: Dictionary, root: String) -> void:
 	var description: Variant = JSON.parse_string(FileAccess.get_file_as_string(descriptor)) if FileAccess.file_exists(descriptor) else null
 	var validator: RefCounted = Packages.new()
 	if not description is Dictionary or not validator.validate_descriptor(description).is_empty() or description.get("id") != row.id or description.get("version") != row.version or Paths.package_relative(description) != row.relative or description.get("artifact") != "content.pck" or description.get("supported_systems", []) != row.supported_systems or description.get("kind") != row.kind:
-		row.error = "房主缺少对应版本的可分发 PCK"
+		row.error = "房主缺少对应版本的可分发 PCK，请重新导出"
 		return
 	var names: Array = ["content.pck.json", "content.pck"]
 	names.append_array(description.get("external_files", []))
@@ -203,8 +222,9 @@ func _describe(row: Dictionary, root: String) -> void:
 
 ## Resolve a fixed generation before sending its file list; peers never see partial exports.
 func prepare(peer: int, payload: Dictionary) -> void:
-	if not _offers.has(peer) or not payload.get("id") is String or not _offers[peer].has(payload.id):
+	if not _offers.has(peer) or not payload.get("task") is String or payload.task.length() != 32 or not payload.get("id") is String or not _offers[peer].has(payload.id):
 		return
+	_uploads[peer] = {"task": payload.task, "id": payload.id, "queue": [], "file": null, "index": 0, "requested": 0, "served": 0, "complete": false}
 	var row: Dictionary = _offers[peer][payload.id]
 	var manifest: Dictionary = connection.catalog.packages[row.id]
 	var root: String = directory.path_join(row.relative)
@@ -214,13 +234,13 @@ func prepare(peer: int, payload: Dictionary) -> void:
 	elif _editor_source(manifest):
 		while _building:
 			await get_tree().process_frame
-			if not _offers.has(peer) or not is_same(_offers[peer].get(payload.id), row):
+			if not _offers.has(peer) or not is_same(_offers[peer].get(payload.id), row) or _uploads.get(peer, {}).get("task") != payload.task:
 				return
 		_building = true
-		var exporter: RefCounted = Packages.new()
+		var exporter: RefCounted = load("res://core/dev/party_shared_pack_builder.gd").new()
 		root = await exporter.distribution_root(connection.catalog, row.id, directory.path_join("tmp/content_distribution"))
 		_building = false
-		if not _offers.has(peer) or not is_same(_offers[peer].get(payload.id), row):
+		if not _offers.has(peer) or not is_same(_offers[peer].get(payload.id), row) or _uploads.get(peer, {}).get("task") != payload.task:
 			return
 		if root.is_empty():
 			row.error = "房主自动生成分发包失败：" + exporter.last_error
@@ -230,10 +250,10 @@ func prepare(peer: int, payload: Dictionary) -> void:
 		row["_root"] = root
 	if connection._player_peer(peer).is_empty():
 		connection._hello_peers[peer] = Time.get_ticks_msec() + 600000
-	connection._send(peer, {"kind": "content_prepared", "payload": {"id": row.id, "files": row.files, "error": row.error}})
+	connection._send(peer, {"kind": "content_prepared", "payload": {"task": payload.task, "id": row.id, "files": row.files, "error": row.error}})
 
 func receive_prepared(payload: Dictionary) -> void:
-	if _active.is_empty() or payload.get("id") != _active or not _preparing:
+	if _active.is_empty() or payload.get("task") != _task or payload.get("id") != _active or not _preparing:
 		return
 	if not payload.get("error") is String:
 		_fail("无效的分发包准备结果")
@@ -283,7 +303,7 @@ func receive_offer(payload: Dictionary) -> void:
 	reset()
 	phase = payload.phase
 	check_id = payload.check_id
-	_stage = directory.path_join("tmp/content_download/" + Data.token())
+
 	var ids: Dictionary = {}
 	for value: Variant in payload.items:
 		if not value is Dictionary or not value.get("id") is String or not Paths.folder(value.id) or not value.get("name") is String or not value.get("version") is String or not value.get("relative") is String or not value.get("files") is Array or not value.get("error") is String:
@@ -296,7 +316,7 @@ func receive_offer(payload: Dictionary) -> void:
 			connection.leave("无效的平台声明")
 			return
 		for system: Variant in value.supported_systems:
-			if not system is String:
+			if not Data.valid_system(system):
 				connection.leave("无效的平台声明")
 				return
 		ids[value.id] = true
@@ -346,6 +366,8 @@ func download(id: String) -> void:
 	_next()
 
 func download_all() -> void:
+	if _finishing or staged:
+		return
 	if not rows.is_empty() and rows.all(func(row: Dictionary) -> bool: return row.state == "done"):
 		_finish()
 		return
@@ -353,8 +375,14 @@ func download_all() -> void:
 		download(row.id)
 
 func _next() -> void:
-	if not _active.is_empty() or _queue.is_empty():
+	if _finishing or staged or not _active.is_empty() or _queue.is_empty():
 		return
+	if _stage.is_empty():
+		_stage = directory.path_join("tmp/content_download/" + Data.token())
+	_task = Data.token()
+	_pending_chunks.clear()
+	_requested_offset = 0
+	_flush_bytes = 0
 	_active = _queue.pop_front()
 	_index = 0
 	_offset = 0
@@ -363,7 +391,7 @@ func _next() -> void:
 	_row().received = 0
 	_row().speed = 0.0
 	_deadline = Time.get_ticks_msec() + 600000
-	connection._send(1, {"kind": "content_prepare", "payload": {"id": _active}})
+	connection._send(1, {"kind": "content_prepare", "payload": {"task": _task, "id": _active}})
 	changed.emit()
 
 func _row() -> Dictionary:
@@ -378,12 +406,10 @@ func _request() -> void:
 		row.state = "done"
 		row.speed = 0.0
 		_active = ""
+		_task = ""
 		_deadline = 0
 		changed.emit()
-		var complete: bool = true
-		for item: Dictionary in rows:
-			complete = complete and item.state == "done"
-		if complete:
+		if rows.all(func(item: Dictionary) -> bool: return item.state == "done"):
 			_finish()
 		else:
 			_next()
@@ -401,36 +427,84 @@ func _request() -> void:
 			return
 	row.state = "下载中 %d/%d" % [_index + 1, row.files.size()]
 	_deadline = Time.get_ticks_msec() + 30000
-	connection._send(1, {"kind": "content_get", "payload": {"id": _active, "index": _index, "offset": _offset}})
+	while _pending_chunks.size() < WINDOW and (_requested_offset < entry.size or entry.size == 0 and _pending_chunks.is_empty()):
+		_pending_chunks[_requested_offset] = mini(CHUNK, entry.size - _requested_offset)
+		var error: Error = connection._send(1, {"kind": "content_get", "payload": {"task": _task, "id": _active, "index": _index, "offset": _requested_offset}})
+		if error != OK:
+			_fail("请求下载失败：" + error_string(error))
+			return
+		_requested_offset += mini(CHUNK, entry.size - _requested_offset)
+		if entry.size == 0:
+			break
 	changed.emit()
 
+## Requests enter a bounded per-peer queue; disk IO happens fairly in _process.
 func serve(peer: int, payload: Dictionary) -> void:
-	if not _offers.has(peer) or not payload.get("id") is String or not payload.get("index") is int or not payload.get("offset") is int:
+	if not _uploads.has(peer) or not payload.get("index") is int or not payload.get("offset") is int:
 		return
-	var offered: Dictionary = _offers[peer]
-	if not offered.has(payload.id):
+	var upload: Dictionary = _uploads[peer]
+	if payload.get("task") != upload.task or payload.get("id") != upload.id or payload.index != upload.index or payload.offset != upload.requested or upload.complete:
 		return
-	var row: Dictionary = offered[payload.id]
-	if not row.has("_root") or not row.error.is_empty() or payload.index < 0 or payload.index >= row.files.size():
+	var row: Dictionary = _offers[peer][upload.id]
+	if not row.has("_root") or not row.error.is_empty() or upload.index >= row.files.size() or upload.queue.size() >= UPLOAD_QUEUE_LIMIT:
 		return
-	var entry: Dictionary = row.files[payload.index]
+	var entry: Dictionary = row.files[upload.index]
 	if payload.offset < 0 or payload.offset > entry.size:
 		return
-	var input: FileAccess = FileAccess.open(str(row._root).path_join(entry.path), FileAccess.READ)
-	var reply: Dictionary = {"id": payload.id, "index": payload.index, "offset": payload.offset, "error": "", "bytes": PackedByteArray()}
-	if input == null or input.get_length() != entry.size:
+	upload.queue.append(payload.duplicate())
+	upload.requested += mini(CHUNK, entry.size - payload.offset)
+	upload.complete = upload.requested == entry.size
+
+func finish_upload(peer: int, payload: Dictionary, cancelled: bool) -> void:
+	if not _uploads.has(peer):
+		return
+	var upload: Dictionary = _uploads[peer]
+	if payload.get("task") != upload.task or payload.get("id") != upload.id:
+		return
+	if cancelled:
+		_uploads.erase(peer)
+		return
+	var row: Dictionary = _offers[peer][upload.id]
+	if payload.get("index") != upload.index or not upload.queue.is_empty() or upload.served != row.files[upload.index].size:
+		return
+	upload.file = null
+	upload.index += 1
+	upload.requested = 0
+	upload.served = 0
+	upload.complete = false
+	if upload.index == row.files.size():
+		_uploads.erase(peer)
+
+func _serve_queued(peer: int) -> void:
+	var upload: Dictionary = _uploads[peer]
+	var payload: Dictionary = upload.queue.pop_front()
+	var row: Dictionary = _offers[peer][upload.id]
+	var entry: Dictionary = row.files[upload.index]
+	var reply: Dictionary = {"task": upload.task, "id": upload.id, "index": upload.index, "offset": payload.offset, "error": "", "bytes": PackedByteArray()}
+	if upload.file == null:
+		upload.file = FileAccess.open(str(row._root).path_join(entry.path), FileAccess.READ)
+	if upload.file == null or upload.file.get_length() != entry.size:
 		reply.error = "房主文件已变化，请重新加入"
 	else:
+		var input: FileAccess = upload.file
 		input.seek(payload.offset)
-		reply.bytes = input.get_buffer(mini(CHUNK, entry.size - payload.offset))
-		if reply.bytes.size() != mini(CHUNK, entry.size - payload.offset):
+		var size: int = mini(CHUNK, entry.size - payload.offset)
+		reply.bytes = input.get_buffer(size)
+		if reply.bytes.size() != size:
 			reply.error = "读取房主文件失败"
+		else:
+			upload.served += size
 	if connection._player_peer(peer).is_empty():
 		connection._hello_peers[peer] = Time.get_ticks_msec() + 600000
-	connection._send(peer, {"kind": "content_chunk", "payload": reply})
+	var error: Error = connection._send(peer, {"kind": "content_chunk", "payload": reply})
+	if error != OK or not reply.error.is_empty():
+		_uploads.erase(peer)
 
 func receive_chunk(payload: Dictionary) -> void:
-	if _active.is_empty() or payload.get("id") != _active or payload.get("index") != _index or payload.get("offset") != _offset:
+	if _active.is_empty() or payload.get("task") != _task:
+		return
+	if payload.get("id") != _active or payload.get("index") != _index or payload.get("offset") != _offset or not _pending_chunks.has(_offset):
+		_fail("下载文件或偏移不匹配")
 		return
 	if not payload.get("error") is String or not payload.get("bytes") is PackedByteArray:
 		_fail("无效的下载数据")
@@ -439,56 +513,107 @@ func receive_chunk(payload: Dictionary) -> void:
 		_fail(payload.error)
 		return
 	var row: Dictionary = _row()
-	var expected: int = mini(CHUNK, int(row.files[_index].size) - _offset)
+	var expected: int = _pending_chunks[_offset]
 	if payload.bytes.size() != expected:
 		_fail("下载长度不匹配")
 		return
+	_pending_chunks.erase(_offset)
 	_file.store_buffer(payload.bytes)
-	_file.flush()
+	_offset += expected
+	_flush_bytes += expected
+	row.received += expected
+	var complete: bool = _offset == row.files[_index].size
+	if _flush_bytes >= FLUSH_BYTES or complete:
+		_file.flush()
+		_flush_bytes = 0
 	if _file.get_error() != OK:
 		_fail("写入失败：" + error_string(_file.get_error()))
 		return
-	_offset += expected
-	row.received += expected
-	if _offset == row.files[_index].size:
+	if complete:
+		_file.close()
 		_file = null
+		var error: Error = connection._send(1, {"kind": "content_complete", "payload": {"task": _task, "id": _active, "index": _index}})
+		if error != OK:
+			_fail("完成下载失败：" + error_string(error))
+			return
 		_index += 1
 		_offset = 0
+		_requested_offset = 0
 	_request()
 
 ## Queue one bundle only after every requested version is present.
 func _finish() -> void:
+	if _finishing or staged:
+		return
+	_finishing = true
+	var generation: int = _generation
+	var stage: String = _stage
+	var zip_path: String = stage.path_join("download.zip")
+	var error: Error = await _write_bundle(zip_path, generation)
+	var archive: RefCounted = Archive.new()
+	if error == OK and generation == _generation:
+		error = await archive.queue_update(zip_path, directory, func() -> bool: return generation == _generation, func(done: int, total: int) -> void:
+			message = "整理文件 %d%%" % (100 * done / maxi(1, total))
+			changed.emit())
+	if generation != _generation:
+		var cleanup_error: Error = archive._remove_stage(stage)
+		if cleanup_error != OK:
+			push_error("Cannot clear cancelled download: " + stage + " " + error_string(cleanup_error))
+		_finishing = false
+		_next()
+		return
+	_finishing = false
+	if error != OK:
+		_fail("同步安装计划失败：" + archive.last_error + " " + error_string(error))
+		return
+	staged = true
+	message = "更新后需要重启"
+	_end_task(true)
+	changed.emit()
+
+func _write_bundle(zip_path: String, generation: int) -> Error:
 	for row: Dictionary in rows:
-		var raw: Variant = JSON.parse_string(FileAccess.get_file_as_string(_stage.path_join(row.relative).path_join("content.pck.json")))
-		if not raw is Dictionary or raw.get("id") != row.id or raw.get("version") != row.version or Paths.package_relative(raw) != row.relative or raw.get("supported_systems", []) != row.supported_systems or raw.get("kind") != row.kind:
-			row.state = "失败，可重试"
-			message = "下载包与房主声明不一致：" + row.id
-			changed.emit()
-			return
-	var zip_path: String = _stage.path_join("download.zip")
+		var raw: Dictionary = Data.read_json(_stage.path_join(row.relative).path_join("content.pck.json"))
+		if raw.get("id") != row.id or raw.get("version") != row.version or Paths.package_relative(raw) != row.relative or raw.get("supported_systems", []) != row.supported_systems or raw.get("kind") != row.kind:
+			return ERR_INVALID_DATA
 	var writer: ZIPPacker = ZIPPacker.new()
 	var error: Error = writer.open(zip_path)
 	if error != OK:
-		message = error_string(error)
-		changed.emit()
-		return
+		return error
 	var directories: Array[String] = []
+	var total: int = 0
+	var done: int = 0
+	var budget: int = 0
+	for row: Dictionary in rows:
+		total += row.total
 	for row: Dictionary in rows:
 		directories.append(row.relative)
 		for entry: Dictionary in row.files:
-			if error == OK:
-				error = writer.start_file(row.relative.path_join(entry.path))
-			if error == OK:
-				var input: FileAccess = FileAccess.open(_stage.path_join(row.relative).path_join(entry.path), FileAccess.READ)
-				if input == null:
-					error = FileAccess.get_open_error()
+			if error != OK:
+				break
+			error = writer.start_file(row.relative.path_join(entry.path))
+			if error != OK:
+				break
+			var input: FileAccess = FileAccess.open(_stage.path_join(row.relative).path_join(entry.path), FileAccess.READ)
+			if input == null:
+				error = FileAccess.get_open_error()
+				break
+			while input.get_position() < input.get_length() and error == OK:
+				var bytes: PackedByteArray = input.get_buffer(CHUNK)
+				if bytes.is_empty():
+					error = ERR_FILE_CANT_READ
 				else:
-					while input.get_position() < input.get_length() and error == OK:
-						var bytes: PackedByteArray = input.get_buffer(CHUNK)
-						if bytes.is_empty():
-							error = ERR_FILE_CANT_READ
-						else:
-							error = writer.write_file(bytes)
+					error = writer.write_file(bytes)
+					done += bytes.size()
+					budget += bytes.size()
+				if budget >= FLUSH_BYTES:
+					message = "整理文件 %d%%" % (100 * done / maxi(1, total))
+					changed.emit()
+					await get_tree().process_frame
+					budget = 0
+					if generation != _generation:
+						error = ERR_SKIP
+			input.close()
 			if error == OK:
 				error = writer.close_file()
 	if error == OK:
@@ -498,24 +623,35 @@ func _finish() -> void:
 	if error == OK:
 		error = writer.close_file()
 	var close_error: Error = writer.close()
-	if error == OK:
-		error = close_error
-	var archive: RefCounted = Archive.new()
-	if error == OK:
-		error = archive.queue_update(zip_path, directory)
-	staged = error == OK
-	message = "更新后需要重启" if staged else "同步安装计划失败：" + archive.last_error + " " + error_string(error)
-	changed.emit()
+	return error if error != OK else close_error
 
-func _fail(reason: String) -> void:
-	_preparing = false
-	_row().state = "失败，可重试"
-	_row().speed = 0.0
+## Shared task exit: close IO, invalidate requests and reclaim only this download task.
+func _end_task(remove_stage: bool) -> void:
+	if not _task.is_empty() and connection.online and not connection.host:
+		connection._send(1, {"kind": "content_cancel", "payload": {"task": _task, "id": _active}})
+	_task = ""
+	if _file != null:
+		_file.close()
 	_file = null
+	_pending_chunks.clear()
+	_preparing = false
 	_active = ""
 	_queue.clear()
 	_deadline = 0
+	if remove_stage and not _stage.is_empty() and not _finishing:
+		var archive: RefCounted = Archive.new()
+		var error: Error = archive._remove_stage(_stage)
+		if error != OK:
+			message += "；无法清理下载目录：" + error_string(error)
+		_stage = ""
+
+func _fail(reason: String) -> void:
 	message = reason
+	for row: Dictionary in rows:
+		row.state = "失败，可重试"
+		row.speed = 0.0
+		row.received = 0
+	_end_task(true)
 	changed.emit()
 
 ## Report each package across all of its files; MB uses 1,000,000 bytes.
@@ -530,6 +666,13 @@ func _file_bytes(files: Array) -> int:
 	return total
 
 func _process(_delta: float) -> void:
+	var peers: Array = _uploads.keys()
+	if not peers.is_empty():
+		for work: int in CHUNKS_PER_FRAME:
+			var peer: int = peers[_upload_cursor % peers.size()]
+			_upload_cursor += 1
+			if _uploads.has(peer) and not _uploads[peer].queue.is_empty():
+				_serve_queued(peer)
 	var now: int = Time.get_ticks_msec()
 	if _deadline > 0 and now > _deadline:
 		_fail("下载超时，请重试或返回")

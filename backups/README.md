@@ -1,7 +1,5 @@
 # Avalon presentation backup
 
-`avalon_before_table_animations_20261027_233728.zip` preserves the complete identity-party package before the crown handoff, team portrait row, synchronized ballot flip, and five-cell quest-result animations added on 2026-10-27.
+The worktree archive was retired during the architecture refactor. Recovery commit: `93a5311`. Historical path: `backups/avalon_before_table_animations_20261027_233728.zip`.
 
-The archive contains the `gp_avalon` folder, including its original UI, rules, assets, scenes and UID companions. To restore the earlier implementation, close the running game and copy this folder from the archive over `games/minigame/gp_avalon`, replacing matching files. The newly added `avalon_table_effects.gd` is unused by the restored UI and may remain in place. Other project files and local settings are outside this backup.
-
-The ZIP entry list was checked for the original Avalon UI script; no file hashes were calculated. This directory is excluded from Godot imports by `.gdignore`.
+Restore the ZIP from that Git commit when needed. It preserves the complete `gp_avalon` package before the 2026-10-27 table animations, including scripts, scenes, UID companions, fonts and original license notices. The archive keeps each asset's original license; removing the worktree duplicate does not remove Git history or any live font files.

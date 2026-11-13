@@ -22,6 +22,8 @@
 !/maingame/.gdignore
 /minigame/*
 !/minigame/.gdignore
+/assets/*
+!/assets/.gdignore
 /core/config/settings.json
 /core/config/settings.json.bak
 /core/config/settings.json.pending

@@ -24,16 +24,11 @@ foreach ($file in $coreFiles) {
 $dataFile = Join-Path $sourceRoot 'core/runtime/party_data.gd'
 $dataText = (Get-Content -LiteralPath $dataFile -Raw -Encoding UTF8).Replace('const SYSTEM: String = "editor"', 'const SYSTEM: String = "windows"')
 [IO.File]::WriteAllText($dataFile, $dataText, $utf8)
-# The formal application uses this small argument reader.
-New-Item -ItemType Directory -Path (Join-Path $sourceRoot 'core/dev') -Force | Out-Null
-foreach ($name in @('party_arguments.gd','party_export_selection.gd')) {
-    Copy-Item -LiteralPath (Join-Path $projectRoot ('core/dev/' + $name)) -Destination (Join-Path $sourceRoot 'core/dev')
-}
 Copy-Item -LiteralPath (Join-Path $projectRoot 'icon.svg') -Destination $sourceRoot
 $presetText = (Get-Content -LiteralPath (Join-Path $projectRoot 'export_presets.cfg') -Raw -Encoding UTF8) -split '(?m)^\[preset\.1\]'
 $presetText = $presetText[0] -replace 'debug/export_console_wrapper=\d+', 'debug/export_console_wrapper=0'
 $presetText = $presetText -replace 'binary_format/embed_pck=false', 'binary_format/embed_pck=true'
-$presetText = $presetText -replace '(?m)^exclude_filter=.*$', 'exclude_filter="core/config/*.json,core/config/*.bak,core/config/*.pending,core/saves/*"'
+$presetText = $presetText -replace '(?m)^exclude_filter=.*$', 'exclude_filter="core/dev/*,core/config/*.json,core/config/*.bak,core/config/*.pending,core/saves/*"'
 [IO.File]::WriteAllText((Join-Path $sourceRoot 'export_presets.cfg'), $presetText, $utf8)
 $projectText = Get-Content -LiteralPath (Join-Path $projectRoot 'project.godot') -Raw -Encoding UTF8
 $projectText = $projectText -replace '(?ms)^\[autoload\].*?(?=^\[)', '' -replace '(?ms)^\[editor_plugins\].*?(?=^\[)', ''

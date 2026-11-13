@@ -121,7 +121,7 @@
 | --- | --- | --- | --- |
 | **L01 · Atomic Realm · Sea Assets – Ships Demo<br>当前目录 24 文件** | Atomic Realm | [作者产品页](https://atomicrealm.itch.io/sea-assets)；`third_party_assets/custom_no_redistribution/files/atomic_realm/sea_assets_ships/`：原 ZIP、许可证图片、2 张纹理、完整／摧毁帆船与划艇的 FBX/OBJ/GLB 版本。 [逐文件登记](../third_party_assets/custom_no_redistribution/assets.md)。 | 自定义许可：允许商业／非商业项目使用和修改；禁止重新打包、转售或再分发素材。当前作者页还要求署名链接；本地 `2. License.png` 已目视核对。 |
 | **L02 · ShellShock Live 事件视觉参考截图（5 张）<br>当前目录 5 文件** | kChamp Games（官方）；Steam 社区截图上传者待补 | `private_assets/shellshock_event_reference/`；[官方商店](https://store.steampowered.com/app/326460/ShellShock_Live/)、[官方更新](https://store.steampowered.com/news/posts/?appids=326460&enddate=1645653731)、[社区截图](https://steamcommunity.com/sharedfiles/filedetails/?id=2069384920)。 | 未见独立再发行许可；已有记录限定本地视觉参考。逐图来源与社区作者的对应见 U04。 |
-| **L03 · 阿瓦隆历史备份 ZIP<br>当前目录 1 文件** | 原资产作者分别为 GPT（代码生成）、Kenney、Noto 字体贡献者 | `backups/avalon_before_table_animations_20261027_233728.zip`；只读查看 ZIP 目录，含旧脚本／SVG／Kenney 纹理／字体及各来源文件。 | 混合许可，沿用各资产原许可；备份本身不授予统一新许可。 |
+| **L03 · 阿瓦隆历史备份 ZIP<br>Git 历史保存** | 原资产作者分别为 GPT（代码生成）、Kenney、Noto 字体贡献者 | 恢复提交 `93a5311` 中的 `backups/avalon_before_table_animations_20261027_233728.zip`（工作树副本已删除）；只读查看 ZIP 目录，含旧脚本／SVG／Kenney 纹理／字体及各来源文件。 | 混合许可，沿用各资产原许可；备份本身不授予统一新许可。 |
 
 ## 第三方包、引擎与离线制作依赖
 

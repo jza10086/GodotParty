@@ -1,4 +1,4 @@
-# GodotParty 5.0
+# GodotParty 6.0
 
 开发检出使用 `git clone --recurse-submodules <主仓地址>` 获取主仓记录的小游戏版本。在 `games/minigame/<id>/` 中切到小游戏自己的分支，修改、提交和推送后，重启游戏就能使用本机检出的内容。只有需要更新主仓为其他人锁定的子模块版本时，才提交版本指针。
 
@@ -13,11 +13,13 @@
 - [协议及玩家形象](doc/api/protocols_and_briefing.md)
 - [源码与 PCK 发布](doc/api/source_packages.md)
 
-core/ 存放框架；games/maingame、minigame、protocols 存放内容；avatars 位于所属协议目录下；doc/ 存放文档和 AI skill。
+core/ 负责联机协调、注入式 PartyAPI、输入设置、内容安装挂载及基础 UI；协议包负责协议与准备/结算薄适配；主游戏负责长期状态、编排与纯归约；小游戏负责本局状态和表现。games/assets/ 是独立叶子资产包，不依赖其他资产包。avatars 位于所属协议目录下；doc/ 存放文档和作者技能。
 
-框架 5.0.0 / 公共 API 5 / 联机协议 17 / manifest_version 2。原型仅支持当前格式；旧 GPActivity 接口不再是作者接入方式。
+框架 6.0.0 / 公共 API 6 / 联机协议 19 / manifest_version 2 / 生成描述格式 5。版本事实来源为 core/runtime/party_data.gd。原型仅支持当前格式；旧 GPActivity 接口不再是作者接入方式。
 
 现已提供 [GodotPartyDefaultProtocol 1.0](games/protocols/godot_party_default_protocol/doc/README.md) 及默认占位形象包：玩家颜色、2D Godot 图标和 3D Cube。主菜单“协议 → 个人资料与形象”可配置。已安装[原版小游戏轮换](games/maingame/godot_party_default_maingame_minigame_playlist/README.md)，可从正式大厅创建房间，游玩水果武士、云间跃行、纸牌会客厅及心理博弈。旧测试内容恢复点为 `1a9e842`。
+
+每个包 ID 安装一个当前版本，依赖精确匹配；启动派生可用包与不可用原因。加入仅检查当前房间协议、主游戏及必需依赖，开始检查所选小游戏池。内容更新下载为待安装 ZIP，下次启动生效；不可用额外内容不妨碍可用房间。
 
 同进程内容拥有普通 Godot 脚本能力；框架提供开发接口和会话协调，不是沙箱。
 
@@ -25,16 +27,15 @@ core/ 存放框架；games/maingame、minigame、protocols 存放内容；avatar
 - [配置继承与设置作用域](doc/api/configuration.md)
 - [基础语音](doc/api/voice.md)
 
-4.1 增量包含配置来源/覆盖、下一轮规则快照以及 16 kHz PCM 房主转发语音。
-本轮仅做配置数据、正式生命周期与双进程媒体冒烟；真实麦克风听感、四人、弱网和导出回归留待原版协议开发。
+配置支持来源/覆盖与下一轮规则快照，基础语音使用房主转发。设备听感、真机和外网结果需单独验收。
 
 ## 正式界面
 
 唯一启动入口是 `core/app/party_main.tscn`，F5 运行正式框架。
-界面使用 GodotPartyUI 的独立页面、设置组件与蓝色主题；组件保存在 `core/ui/source/`，在 `core/ui/frontend/party_frontend.gd` 接入按钮行为，在 `core/ui/source/ui/theme/ui_config.tres` 调整全局外观。
+界面使用 Ambient Reveal 原生页面和 Schema 设置组件；组件保存在 `core/ui/source/`，在 `core/ui/frontend/party_frontend.gd` 接入按钮行为，在 `core/ui/source/ui/theme/ui_config.tres` 调整全局外观。
 
 - 创建房间 → 选择已安装大游戏、填写房间名和监听端口 → 确认后建房；同一端口同时接受 IPv4 / IPv6。
-- 加入房间 → 房间页 → IP 直连 → 分别填写房主 IP 和端口 → 握手成功后进入大厅。IPv6 可填写 `2001:db8::1` 或 `[2001:db8::1]`，不要在地址栏附加端口。
+- 加入房间 → 房间页 → IP 直连 → 填写地址与可选端口 → 握手成功后进入大厅。IPv6 可填写 `2001:db8::1` 或 `[2001:db8::1]`，带 IPv6 端口时使用 `[地址]:端口`。
 - 大厅显示真实玩家、准备状态和游戏配置；不填充模拟玩家。
 - 设置 → 协议与游戏页签提供内容安装和房主存档恢复入口。
 - 房间发现、密码和好友可见性尚未实现，界面明确禁用。
@@ -55,7 +56,7 @@ core/ 存放框架；games/maingame、minigame、protocols 存放内容；avatar
 
 [GodotPartyDefault · 小游戏轮换](games/maingame/godot_party_default_maingame_minigame_playlist/README.md) 是自动连续小游戏的大游戏入口，包 ID 为 `godot_party_default_maingame_minigame_playlist`。在正式大厅配置 minigames 池，可选择顺序或随机、总局数、是否重复及局间间隔。只选一个小游戏并开启重复即可连续测试；无需逐局手动启动。关闭重复时，实际局数不超过所选小游戏数量。
 
-玩家安装包分为 protocols/、maingame/、minigame/；框架内嵌在 GodotParty.exe。每包配置放在局部 config/，协议指定游戏覆盖目录；独立预设文件可直接重命名和分享。详见[便携目录与预设](doc/api/configuration.md)。
+玩家安装包分为 protocols/、maingame/、minigame/、assets/；框架内嵌在 GodotParty.exe。每包配置放在局部 config/，协议指定游戏覆盖目录；独立预设文件可直接重命名和分享。详见[便携目录与预设](doc/api/configuration.md)。
 
 - [原创内容许可与第三方例外](ASSET_LICENSES.md)
 - [受限资产分类登记](third_party_assets/README.md)

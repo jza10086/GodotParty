@@ -63,7 +63,7 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
   "id": "author.example",
   "kind": "minigame",
   "package_version": "1.0.0",
-  "core_api_major": 5,
+  "core_api_major": 6,
   "supported_systems": ["windows"],
   "player_counts": [2, 3, 4, 5, 6, 7, 8],
   "entry": "game.tscn",

@@ -5,7 +5,6 @@
 ```text
 party_setup(api, settings)
 create_new_state(settings) -> Dictionary
-get_state() -> Dictionary
 restore_state(state)
 create_view() -> Node
 reduce_round_result(old_state, result) -> Dictionary
@@ -16,7 +15,8 @@ party_stop(reason)
 ```
 
 create_new_state 仅在新会话房主调用。restore_state 只应用权威快照，不再发放奖励。
-create_view 返回尚未挂树的视图。进入小游戏时释放视图，返回时重建，控制器持续存在。
+create_view 返回尚未挂树的视图，由框架全尺寸内容容器承载；布局边距由内容自身声明。普通状态提交调用 restore_state 并发出 state_committed，不替换视图，视图需更新已有控件并保持焦点与滚动位置。进入小游戏时释放视图，返回时重建，控制器持续存在。
+权威状态只取显式提交记录；主游戏入口不再要求 get_state。PartyRoomAPI.get_state 仍供房间界面读取快照。
 非持久的 UI 动画、相机和临时对象不应放进可保存状态。
 
 ## 提交

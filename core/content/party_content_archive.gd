@@ -58,18 +58,51 @@ func inspect(path: String) -> Dictionary:
 	return {"ok": true, "id": header.id, "files": files, "directories": folders.keys()}
 
 ## Queue updates for next launch; never mutate already-mounted PCKs.
-func queue_update(source: String, directory: String) -> Error:
+func queue_update(source: String, directory: String, active: Callable = Callable(), progress: Callable = Callable()) -> Error:
 	var checked: Dictionary = inspect(source)
 	if not checked.ok:
 		return ERR_INVALID_DATA
 	var target: String = directory.path_join("tmp/content_update.zip")
+	var pending: String = target + "." + Data.token() + ".pending"
 	var error: Error = DirAccess.make_dir_recursive_absolute(target.get_base_dir())
+	if error != OK:
+		last_error = "Cannot create update directory: " + error_string(error)
+		return error
+	var input: FileAccess = FileAccess.open(source, FileAccess.READ)
+	if input == null:
+		return FileAccess.get_open_error()
+	var output: FileAccess = FileAccess.open(pending, FileAccess.WRITE)
+	if output == null:
+		return FileAccess.get_open_error()
+	while input.get_position() < input.get_length():
+		if active.is_valid() and not active.call():
+			error = ERR_SKIP
+			break
+		var bytes: PackedByteArray = input.get_buffer(mini(1048576, input.get_length() - input.get_position()))
+		if bytes.is_empty():
+			error = ERR_FILE_CANT_READ
+			break
+		output.store_buffer(bytes)
+		error = output.get_error()
+		if error != OK:
+			break
+		if progress.is_valid():
+			progress.call(input.get_position(), input.get_length())
+		await Engine.get_main_loop().process_frame
+	input.close()
+	output.flush()
 	if error == OK:
-		error = DirAccess.copy_absolute(source, target + ".pending")
+		error = output.get_error()
+	output.close()
+	if error == OK and active.is_valid() and not active.call():
+		error = ERR_SKIP
 	if error == OK:
-		error = DirAccess.rename_absolute(target + ".pending", target)
+		error = DirAccess.rename_absolute(pending, target)
 	if error != OK:
 		last_error = "Cannot queue content update: " + error_string(error)
+		var cleanup: Error = DirAccess.remove_absolute(pending)
+		if cleanup != OK:
+			last_error += "; cannot clear temporary copy: " + error_string(cleanup)
 	return error
 
 func bootstrap(directory: String) -> Error:

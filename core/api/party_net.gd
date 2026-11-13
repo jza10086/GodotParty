@@ -4,6 +4,7 @@ extends RefCounted
 
 const NATIVE_CHANNEL_MAX: int = 7
 const CONTROL_CHANNEL: int = 0
+const CONTENT_CHANNEL: int = 8
 const CLOCK_CHANNEL: int = 9
 const MEDIA_CHANNEL: int = 10
 const MESSAGE_CHANNEL_BASE: int = 11

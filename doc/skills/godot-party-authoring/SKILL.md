@@ -1,6 +1,6 @@
 ---
 name: godot-party-authoring
-description: Author or integrate GodotParty API 5 games, protocol packages and appearances in the complete framework project; use for lifecycle, networking, state commits, configuration and content publishing.
+description: Author or integrate GodotParty API 6 games, protocol packages and appearances in the complete framework project; use for lifecycle, networking, state commits, configuration and content publishing.
 ---
 
 # GodotParty authoring
@@ -26,8 +26,8 @@ Paths are relative to the project root.
 
 ## Decisions that matter
 
-- Use only current API 5. Do not recreate GPActivityRuntime, controller inheritance, compatibility aliases or old Resource activity definitions.
-- setup runs before entering the tree; it cannot use @onready. Explicitly mark_ready after initialization. Simulation starts in party_start.
+- Use only current API 6. Do not recreate GPActivityRuntime, controller inheritance, compatibility aliases or old Resource activity definitions.
+- setup runs before entering the tree; it cannot use @onready. party_stop must be safe before setup/tree entry and on repeated close; release only initialized resources. Explicitly mark_ready after initialization. Simulation starts in party_start.
 - Host owns final publication; authors choose local/host/mixed judgement. A spectator host still runs coordination and host game logic.
 - finish OK accepts a candidate, not a durable reward. Main-game reducers are pure; never award again from round_committed.
 - Economy belongs to the main game. Ranking is not a wallet settlement. Never invent resources or claim compatibility without implementing protocol semantics.
@@ -35,7 +35,7 @@ Paths are relative to the project root.
 - Independent PCKs support direct `class_name` references: the exporter records package-owned types and the loader registers the merged core/content types before parsing content. Use globally unique names for shared types, declare cross-package dependencies, and finish editor imports before export. Validate changed types through room creation and affected game entries in an exported EXE; see doc/api/source_packages.md for descriptor upgrades.
 - Appearance data and its editor belong to the protocol. Do not assume color, portrait or first/third-person fields unless its DOC defines them.
 - Identity is player_id; peer_id is transport routing. Returned player/settings data are snapshots.
-- Main controller/state persist across a foreground minigame; the view is released and rebuilt. Old scope callbacks must not mutate new games.
+- Main controller/state persist across a foreground minigame; the view is released and rebuilt only across foreground activity switches. Ordinary commits restore authoritative state and emit state_committed while retaining the view; update its existing controls. Main entries do not implement a required get_state hook. Old scope callbacks must not mutate new games.
 - Main games declare room_scene and own their lobby presentation through core/api/party_room_api.gd. Reuse documented public room scenes and framework panels; do not depend on private frontend nodes. Room activations close on rule changes and leaving. Optional minigames limits pool candidates; every declared pool must be nonempty before start.
 - Use native @rpc or PartyNet with call-site reliability. Do not declare streams/native_channels. Send only necessary data; send discrete data once and animate locally. Never periodically broadcast whole gameplay/world snapshots. Read doc/api/networking.md for channel ownership, native spawning, input rates and interpolation.
 - Source and PCK use the same paths and runtime. Publish only after a clean host without author source/cache can run the package.
@@ -78,4 +78,4 @@ iOS export uses core/dev/export_ios_cloud.ps1 and GitHub macOS/Xcode builds. It 
 
 - Original content keeps non-shipping creative sources, candidate audio/images and offline generators in package-local `authoring/` with a tracked `.gdignore`. Keep one canonical runtime input per logical asset; preserve its `.import` settings and UID. Shared assets belong to declared dependencies. Keep loose runtime data in `external_files`, licenses with shipped assets, and tests under `tmp/test/`. Read the resource development section in doc/api/authoring.md before adding or reorganizing media. Runtime `core/ui/source/` is not an authoring directory.
 
-- Asset packages: games/assets/<id>/ uses a five-field manifest (name, kind, package_version, remark, framework_version); directory identity, exact framework version, no platform or package dependencies. Assets may contain code/media/docs and reference only themselves or public core content. Games/protocols declare exact dependencies and reference paths directly. Original UI lives in godot_party_default_ui 1.0.1; protocol coordination stays in the protocol.
+- Asset packages: games/assets/<id>/ uses a five-field manifest (name, kind, package_version, remark, framework_version); directory identity, exact framework version, no platform or package dependencies. Assets may contain code/media/docs and reference only themselves or public core content. Games/protocols declare exact dependencies and reference paths directly. Original UI lives in godot_party_default_ui 1.0.3; protocol coordination stays in the protocol.

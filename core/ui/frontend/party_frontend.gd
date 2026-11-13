@@ -344,7 +344,7 @@ func submit_profile() -> void:
 func refresh() -> void:
 	_sync_room()
 	if _joining and app.connection.online:
-		var stage: String = {"resolving": "正在解析地址…", "connecting": "正在连接…", "handshaking": "正在检查房主全部游戏…", "connected": "已连接"}.get(app.connection.connection_state, "")
+		var stage: String = {"resolving": "正在解析地址…", "connecting": "正在连接…", "handshaking": "正在检查房间所需内容…", "connected": "已连接"}.get(app.connection.connection_state, "")
 		_direct.get_node("Error").text = stage
 	if _joining and not app.connection.online:
 		_joining = false

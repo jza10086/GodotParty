@@ -101,7 +101,7 @@ func _create_scope(id: String, package_id: String, round: String, participants: 
 	var root: Node = packed.instantiate()
 	var hooks: Array[String] = ["party_setup", "party_start", "party_stop"]
 	if round.is_empty():
-		hooks.append_array(["create_new_state", "get_state", "restore_state", "create_view", "reduce_round_result", "party_suspend", "party_resume"])
+		hooks.append_array(["create_new_state", "restore_state", "create_view", "reduce_round_result", "party_suspend", "party_resume"])
 	for hook: String in hooks:
 		if not root.has_method(hook):
 			root.free()
@@ -127,18 +127,19 @@ func _create_scope(id: String, package_id: String, round: String, participants: 
 
 	api.net._native_api = multiplayer
 	api.net._root = root
-	var scope: Dictionary = {"id": id, "package": package_id, "round": round, "participants": participants.duplicate(), "request": request.duplicate(true), "api": api, "root": root, "phase": "preparing", "accepted": "", "view": null, "stopped": false, "ready_requested": false, "mouse_mode": Input.mouse_mode}
+	var scope: Dictionary = {"id": id, "package": package_id, "round": round, "participants": participants.duplicate(), "request": request.duplicate(true), "api": api, "root": root, "phase": "preparing", "accepted": "", "view": null, "stopped": false, "ready_requested": false, "setup_started": false, "entered_tree": false, "mouse_mode": Input.mouse_mode}
 	# Register before setup, including its callbacks; setup is intentionally off-tree.
 	_scopes[id] = scope
 	if not _activate_effects(scope):
 		_close_scope(id, "settings_failed")
 		return {}
+	scope["setup_started"] = true
 	root.party_setup(api, config.duplicate(true) if round.is_empty() else request.duplicate(true))
 	if not api.is_open():
-		root.free()
-		_scopes.erase(id)
+		_close_scope(id, "setup_closed")
 		return {}
 	add_child(root)
+	scope["entered_tree"] = true
 	if not round.is_empty() and not scope.effects.attach(root):
 		_close_scope(id, "settings_attach_failed")
 		return {}
@@ -444,13 +445,14 @@ func _create_view(scope: Dictionary) -> bool:
 		return false
 	view.name = "View"
 	scope["view"] = view
-	scope["root"].add_child(view)
+	var content: Control = Control.new()
+	content.name = "Content"
+	content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	scope["root"].add_child(content)
+	content.add_child(view)
 	if view is Control:
 		view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		view.offset_left = 40
-		view.offset_top = 220
-		view.offset_right = -40
-		view.offset_bottom = -40
 	return scope.effects.attach(view)
 
 func _enter_child(payload: Dictionary) -> void:
@@ -555,8 +557,9 @@ func _apply_commit(candidate: Dictionary) -> void:
 		finished.emit(presentation)
 	else:
 		phase = "main"
-		_release_view(main)
-		_create_view(main)
+		if main["view"] == null and not _create_view(main):
+			cleanup("main_view_failed")
+			return
 	main["api"].state_committed.emit(record["revision"])
 	changed.emit()
 
@@ -593,8 +596,9 @@ func _restore_parent(reason: String) -> void:
 func _release_view(scope: Dictionary) -> void:
 	var view: Node = scope.get("view")
 	if is_instance_valid(view):
-		view.get_parent().remove_child(view)
-		view.queue_free()
+		var content: Node = view.get_parent()
+		content.get_parent().remove_child(content)
+		content.queue_free()
 	scope["view"] = null
 
 ## Reliable native despawns must precede the framework close on channel zero.

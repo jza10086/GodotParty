@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "core_api_major": 5,
-  "package_version": "1.1.23",
+  "core_api_major": 6,
+  "package_version": "1.1.24",
   "id": "godot_party_default_maingame_minigame_playlist",
   "name": "GodotPartyDefault · 小游戏轮换",
   "kind": "maingame",
@@ -32,8 +32,8 @@
     8
   ],
   "dependencies": {
-    "godot_party_default_protocol": "1.0.13",
-    "godot_party_default_ui": "1.0.2"
+    "godot_party_default_protocol": "1.0.14",
+    "godot_party_default_ui": "1.0.3"
   },
   "config_schema": "settings.gd",
   "config_panel": "advanced_settings.tscn",

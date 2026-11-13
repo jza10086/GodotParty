@@ -3,13 +3,13 @@ extends RefCounted
 const Paths = preload("res://core/config/party_paths.gd")
 const External = preload("res://core/content/party_external_files.gd")
 const ScriptClasses = preload("res://core/content/party_script_classes.gd")
-const DESCRIPTOR_FORMAT: int = 4
-const PACK_BUILD_REVISION: int = 1
+const DESCRIPTOR_FORMAT: int = Data.DESCRIPTOR_FORMAT
 const Data = preload("res://core/runtime/party_data.gd")
 const Catalog = preload("res://core/content/party_catalog.gd")
 var last_error: String = ""
 var mounted: Dictionary = {}
-var work_directory: String = Paths.application_root().path_join("tmp/content_build")
+var installed: Dictionary = {}
+var unavailable: Dictionary = {}
 
 func export_source(catalog: RefCounted, id: String, output: String) -> Error:
 	if catalog.packages.get(id, {}).get("kind") == "assets" and output.get_file().get_basename() != id:
@@ -46,152 +46,6 @@ func export_source(catalog: RefCounted, id: String, output: String) -> Error:
 			return error
 	return writer.close()
 
-## Imported assets ship only their runtime outputs and remaps; source ZIPs retain originals.
-func export_pack(catalog: RefCounted, id: String, output: String) -> Error:
-	last_error = ""
-	if not catalog.packages.has(id):
-		return ERR_DOES_NOT_EXIST
-	var issue: String = catalog.publication_issue(id)
-	if not issue.is_empty():
-		return _error(issue)
-	if not ProjectSettings.get_setting("content/shared_import", false):
-		var builder: RefCounted = preload("res://core/content/party_shared_pack_builder.gd").new()
-		var build_error: Error = await builder.build(catalog, id, output, work_directory)
-		last_error = builder.last_error
-		return build_error
-	var manifest: Dictionary = catalog.packages[id]
-	var root: String = manifest["_root"]
-	var payload: Dictionary = External.inventory(root, manifest.get("external_files", []))
-	if not payload.ok:
-		return _error(payload.error)
-	var paths: Dictionary = {}
-	var uid_index: Dictionary = {}
-	var imported_sources: Array[String] = []
-	for path: String in Catalog.files(root):
-		var relative: String = path.trim_prefix(root + "/")
-		if External.contains(manifest.get("external_files", []), relative.trim_suffix(".import").trim_suffix(".uid")):
-			continue
-		paths[path] = path
-		if path.ends_with(".import"):
-			var imported: ConfigFile = ConfigFile.new()
-			if imported.load(path) != OK:
-				return _error("Invalid import remap: " + path)
-			var has_runtime_remap: bool = false
-			for key: String in imported.get_section_keys("remap"):
-				if key == "path" or key.begins_with("path."):
-					var target: String = imported.get_value("remap", key)
-					if not target.begins_with("res://.godot/imported/") or not FileAccess.file_exists(target):
-						return _error("Missing/invalid imported resource: " + target)
-					has_runtime_remap = true
-			if has_runtime_remap:
-				var source: String = path.trim_suffix(".import")
-				imported_sources.append(source)
-				if imported.has_section_key("remap", "uid"):
-					uid_index[imported.get_value("remap", "uid")] = source
-			for section: String in ["remap", "deps"]:
-				for key: String in imported.get_section_keys(section):
-					var value: Variant = imported.get_value(section, key)
-					if value is String and value.begins_with("res://.godot/imported/"):
-						paths[value] = value
-					elif value is PackedStringArray:
-						for dependency: String in value:
-							if dependency.begins_with("res://.godot/imported/"):
-								paths[dependency] = dependency
-		if path.ends_with(".uid"):
-			var uid: String = FileAccess.get_file_as_string(path).strip_edges()
-			uid_index[uid] = path.trim_suffix(".uid")
-		elif path.get_extension() in ["tscn", "tres", "res", "scn", "png", "svg", "glb", "ogg", "wav", "otf", "ttf"]:
-			var uid: int = ResourceLoader.get_resource_uid(path)
-			if uid != ResourceUID.INVALID_ID:
-				uid_index[ResourceUID.id_to_text(uid)] = path
-	# Remove originals after collection so directory iteration order cannot re-add them.
-	for source: String in imported_sources:
-		paths.erase(source)
-	var packer: PCKPacker = PCKPacker.new()
-	var error: Error = packer.pck_start(output)
-	if error != OK:
-		return error
-	var index: Array[String] = []
-	for path: String in paths:
-		if not FileAccess.file_exists(path):
-			return _error("Import the project before export; missing " + path)
-		index.append(path)
-		error = packer.add_file(path, paths[path])
-		if error != OK:
-			return error
-	error = packer.flush()
-	if error != OK:
-		return error
-	var description: Dictionary = {"format": DESCRIPTOR_FORMAT, "engine": Engine.get_version_info()["string"], "core": Data.VERSION, "id": id, "version": manifest["package_version"], "kind": manifest["kind"], "artifact": output.get_file(), "files": index, "uids": uid_index}
-	if manifest.kind != "assets":
-		description.supported_systems = catalog.packages[manifest.owner_protocol].supported_systems.duplicate() if manifest.kind == "avatars" else manifest.supported_systems.duplicate()
-	description.script_classes = ScriptClasses.collect(paths)
-	description.external_files = payload.files
-	description.external_directories = payload.directories
-	if manifest.kind == "avatars":
-		description.owner_protocol = manifest.owner_protocol
-	error = External.copy_payload(root, output.get_base_dir(), payload.files, payload.directories)
-	if error != OK:
-		return _error("Cannot copy external payload: " + error_string(error))
-
-	var file: FileAccess = FileAccess.open(output + ".json", FileAccess.WRITE)
-	if file == null:
-		return FileAccess.get_open_error()
-	file.store_string(JSON.stringify(description, "\t"))
-	return OK
-
-## Editor distribution cache. Publish the pointer only after export and payload checks.
-## Package versions identify immutable releases; changed source requires a version bump.
-func distribution_root(catalog: RefCounted, id: String, cache_directory: String) -> String:
-	last_error = ""
-	work_directory = cache_directory.get_base_dir().path_join("content_build")
-	var manifest: Dictionary = catalog.packages[id]
-	var key: String = Paths.package_relative(manifest).path_join("v_" + str(manifest.package_version).uri_encode()).path_join(Data.VERSION.uri_encode()).path_join(str(Engine.get_version_info().string).uri_encode())
-	var cache: String = cache_directory.path_join(key).path_join("build_" + str(PACK_BUILD_REVISION))
-	var pointer: String = cache.path_join("current.json")
-	if FileAccess.file_exists(pointer):
-		var record: Variant = JSON.parse_string(FileAccess.get_file_as_string(pointer))
-		if not record is Dictionary or not record.get("generation") is String or not Paths.folder(record.generation):
-			_error("Invalid distribution cache index: " + pointer)
-			return ""
-		var existing: String = cache.path_join(record.generation)
-		var descriptor: String = existing.path_join("content.pck.json")
-		if FileAccess.file_exists(descriptor):
-			var description: Variant = JSON.parse_string(FileAccess.get_file_as_string(descriptor))
-			if description is Dictionary and validate_descriptor(description).is_empty() and description.get("id") == id and description.get("version") == manifest.package_version and description.get("artifact") == "content.pck" and FileAccess.file_exists(existing.path_join("content.pck")) and _check_payload(existing, description).is_empty():
-				return existing
-		# An interrupted or incomplete cache can be rebuilt without touching the old generation.
-	var generation: String = Data.token()
-	var destination: String = cache.path_join(generation)
-	var error: Error = DirAccess.make_dir_recursive_absolute(destination)
-	if error == OK:
-		error = await export_pack(catalog, id, destination.path_join("content.pck"))
-	if error != OK:
-		if last_error.is_empty():
-			_error("Cannot build distribution package: " + error_string(error))
-		return ""
-	var description: Dictionary = Data.read_json(destination.path_join("content.pck.json"))
-	var issue: String = validate_descriptor(description)
-	if issue.is_empty():
-		issue = _check_payload(destination, description)
-	if not issue.is_empty():
-		_error(issue)
-		return ""
-	var file: FileAccess = FileAccess.open(pointer + ".pending", FileAccess.WRITE)
-	if file == null:
-		_error("Cannot write distribution cache index: " + error_string(FileAccess.get_open_error()))
-		return ""
-	file.store_string(JSON.stringify({"generation": generation}))
-	file.flush()
-	error = file.get_error()
-	file.close()
-	if error == OK:
-		error = DirAccess.rename_absolute(pointer + ".pending", pointer)
-	if error != OK:
-		_error("Cannot publish distribution cache: " + error_string(error))
-		return ""
-	return destination
-
 ## Only fixed install locations are scanned. Configuration files are never catalog entries.
 static func descriptors(directory: String) -> Array[String]:
 	var result: Array[String] = []
@@ -215,6 +69,13 @@ static func descriptors(directory: String) -> Array[String]:
 func validate_descriptor(description: Dictionary) -> String:
 	if description.get("format") != DESCRIPTOR_FORMAT:
 		return "Unsupported package descriptor; re-export core and content together"
+	if not description.get("dependencies") is Dictionary or not description.get("name") is String:
+		return "Missing package dependency/name declaration"
+	for dependency: Variant in description.dependencies:
+		if not dependency is String or not Data.identifier(dependency) or not description.dependencies[dependency] is String or description.dependencies[dependency].is_empty():
+			return "Invalid installed dependency"
+	if description.get("kind") == "assets" and not description.dependencies.is_empty():
+		return "Asset packs must remain dependency-free"
 	if description.get("kind") == "assets":
 		if description.has("supported_systems"):
 			return "Asset packs do not declare platforms"
@@ -222,7 +83,7 @@ func validate_descriptor(description: Dictionary) -> String:
 		if not description.get("supported_systems") is Array or description.supported_systems.is_empty():
 			return "Missing supported_systems declaration"
 		for system: Variant in description.supported_systems:
-			if not system is String or system.is_empty():
+			if not Data.valid_system(system):
 				return "Invalid supported_systems declaration"
 	if Paths.package_relative(description).is_empty() or not description.get("version") is String or description.version.is_empty():
 		return "Invalid installed package descriptor"
@@ -262,6 +123,8 @@ func validate_descriptor(description: Dictionary) -> String:
 ## Restart after installing/updating. Structural checks do not prove byte-for-byte equality.
 func mount_directory(directory: String, choices: Dictionary = {}) -> Error:
 	last_error = ""
+	installed.clear()
+	unavailable.clear()
 	var paths: Dictionary = {}
 	var uids: Dictionary = {}
 	var planned: Dictionary = {}
@@ -278,6 +141,9 @@ func mount_directory(directory: String, choices: Dictionary = {}) -> Error:
 		if not issue.is_empty():
 			return _error(issue)
 		var id: String = description.id
+		installed[id] = description
+		if not FileAccess.file_exists(expected.path_join("content.pck")):
+			return _error("Missing PCK: " + expected)
 		var root: String = "res://games/" + Paths.package_relative(description)
 		if FileAccess.file_exists(root.path_join("manifest.json")):
 			var choice: String = choices.get(id, "")
@@ -297,6 +163,17 @@ func mount_directory(directory: String, choices: Dictionary = {}) -> Error:
 				return _error("UID conflict: " + uid_text)
 			uids[uid_text] = description.uids[uid_text]
 		planned[id] = description
+	var source_catalog: RefCounted = Catalog.new()
+	if source_catalog.scan() != OK:
+		return _error(str(source_catalog.errors))
+	var declarations: Dictionary = source_catalog.packages.duplicate(true)
+	for id: String in planned:
+		var declaration: Dictionary = planned[id].duplicate(true)
+		declaration.package_version = declaration.version
+		declarations[id] = declaration
+	unavailable = preload("res://core/content/party_content_selection.gd").unavailable_packages(declarations)
+	for id: String in unavailable:
+		planned.erase(id)
 	var merged: Dictionary = ScriptClasses.merge(existing_classes, planned)
 	if not merged.ok:
 		return _error(merged.error)
@@ -323,6 +200,8 @@ func mount_directory(directory: String, choices: Dictionary = {}) -> Error:
 	for id: String in planned:
 		var manifest: Dictionary = catalog.packages[id]
 		var systems: Array = [] if manifest.kind == "assets" else (catalog.packages[manifest.owner_protocol].supported_systems if manifest.kind == "avatars" else manifest.supported_systems)
+		if manifest.get("dependencies", {}) != planned[id].dependencies:
+			return _error(id + ": mounted dependencies differ from descriptor")
 		if systems != planned[id].get("supported_systems", []):
 			return _error(id + ": mounted platform declaration differs from descriptor")
 		for dependency: String in catalog.packages[id].get("dependencies", {}):

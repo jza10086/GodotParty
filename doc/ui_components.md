@@ -20,7 +20,6 @@ Ambient Reveal 是项目主主题，项目设置 gui/theme/custom 指向 ambient
 |---|---|
 | `frontend/party_frontend.tscn` | 承载按可用空间缩放的前端页面。前端弹窗和通用弹窗挂在主场景的全窗口 DialogHost 下，遮罩铺满窗口，面板按窗口中心定位 |
 | `frontend/party_frontend.gd` | 真实连接、Catalog、玩家资料、准备/开始、预设与页面导航；固定高度单行 Label 垂直居中、状态徽标水平居中 |
-| `components/settings_page.gd` | 继承源设置页，仅调整宿主容器尺寸和底部操作区 |
 | `party_system_settings.gd` | 系统设置草稿、取消、默认值及保存后应用 |
 | `party_protocol_page.gd` | 协议目录、独立草稿、revision 校验、偏好与形象入口 |
 | `party_config_form.gd` | 按业务 Schema 的 fields/layout 组合同行控件、最多三级层级、继承与条件禁用，维护全部分类的草稿 |
@@ -41,24 +40,15 @@ Ambient Reveal 是项目主主题，项目设置 gui/theme/custom 指向 ambient
 
 ## 设置 API
 
-框架宿主实例化 `res://games/assets/godot_party_default_ui/components/settings_page.tscn`。组件提供：
+设置统一使用 Schema → party_config_form → settings_workspace / settings_editor。表单维护草稿，业务调用者在 Apply 时持久化；不提供旧设置 API 或格式转换器。
 
-- `configure(tabs: Array) -> bool`，错误见 `last_error`；稳定且唯一的 tab/option ID。
-- `add_tab` / `add_option`、`get_value` / `get_values`、`set_value(id, value, notify = false)`。
-- `get_control` / `get_number_control`；数值框提交由框架 Apply 处理。
-- `setting_changed(id, value)`、`back_requested()`；单项 `callback(value, id)`，动作项 `callback(id)`。
-- 支持 `label/select/toggle/number/slider/note/divider/action/group/keybinding/bindings_header`，下拉项为 `{label, value}`，组用 `children`，条件显隐用 `visible_when`。
-- 框架额外提供 `actions: HBoxContainer` 放入保存/默认按钮，`focus_back()` 恢复返回按钮焦点，`add_content(tab_id, content)` 将配置表单加入已有页签；重新 configure 会释放旧表单。
-
-组件只维护草稿，不保存、不操作 InputMap、不联网。系统 Apply 先写配置，成功后才应用；写入失败恢复内存并保留草稿。协议切换保留各自草稿，返回丢弃未应用部分，恢复默认仅取消显式覆盖，Apply 才持久化。
-
-源 `keybinding` API 接受两个带修饰键掩码的逻辑键整数。业务表单使用 `settings/binding.tscn` 和 `binding_slot.tscn`：主按键、备用按键最多两个记录，保存 `{kind, code, physical}` 与可选 ctrl/alt/shift/meta，不强转为源整数格式。键盘通过录入按钮修改，鼠标按钮通过下拉枚举修改；Esc 取消录入，独立清除按钮清空槽位，Delete/Backspace 可绑定。combinations:false 只允许录入单键；readonly:true 固定键只显示主槽，不能修改或持久化。
+按键使用 settings/binding.tscn 和 binding_slot.tscn，主键与备用键保存 {kind, code, physical} 及可选修饰键；保持当前输入配置契约。
 
 系统、协议页、游戏偏好和房间规则实例化 `party_config_form.tscn` 后调用 configure。configure(value, editable, context) 的 context 包含 schema、audience；需要继承的页面另传 base、overrides、inherit 和 inherit_label，按阶段锁定的字段传 locked。get_value() 返回有效值，explicit_values() 返回待保存的显式值。表单只维护草稿，业务调用者负责 Apply。
 
 Schema 由业务 settings.gd 的 schema() 声明，通过 fields 的 type/control 和 layout 生成 `settings/` 下的预制体：toggle、select、text、number、numbers、switches、color、path、binding。单选统一下拉；数值统一数字框加有界滑条；多选复用开关组；区间/分量复用紧凑的 number_component；文件/目录使用原生选择器；主键和备用键各占一行。setting_section 的名称、控件、继承开关同排，有 children 才显示折叠箭头。继承或 enabled_when 不成立时禁用编辑并保留草稿。
 
-系统设置、协议设置和游戏本机偏好由 settings_workspace 承载。顶层分组成为分类标签，分类下最多三级；支持字段 children。add_form(form, prefix) 接入表单，add_page(title, content, description) 接入资料/内容操作页，actions 与 tools_row 分别放置底部操作和顶部辅助控件。右侧说明由表单 help_requested 更新；分类切换保留草稿，“恢复默认设置”重置本页可编辑草稿，点击应用后保存。游戏本机偏好通过同一全屏页面打开。旧 components/settings_page 仍保留原源组件 API，本地 Schema 设置不再经它转换 option 格式。
+系统设置、协议设置和游戏本机偏好由 settings_workspace 承载。顶层分组成为分类标签，分类下最多三级；支持字段 children。add_form(form, prefix) 接入表单，add_page(title, content, description) 接入资料/内容操作页，actions 与 tools_row 分别放置底部操作和顶部辅助控件。右侧说明由表单 help_requested 更新；分类切换保留草稿，“恢复默认设置”重置本页可编辑草稿，点击应用后保存。游戏本机偏好通过同一全屏页面打开。
 
 弹窗打开时隔离背景键盘焦点和玩法输入，关闭恢复焦点；未保存的业务草稿仍由对应配置会话管理。
 
@@ -93,7 +83,7 @@ Gamepad 可在编辑器中预览手柄图标，Follow Input Device 默认开启�
 
 ## 内容包浏览
 
-主菜单的“内容包”打开 `core/ui/content_browser/content_browser.tscn` 固定页面，按协议、主游戏、小游戏分类，并支持名称或 ID 搜索。选中内容包后显示版本和本机配置路径；“配置本机设置”复用偏好设置页，显式应用后写入 JSON。主游戏使用绑定协议，小游戏可选择已安装且适配的协议。无可用协议时只编辑自身设置，保留已有协议覆盖文件。房主规则仍由大厅配置。
+主菜单的“内容包”打开 `core/ui/content_browser/content_browser.tscn` 固定页面，按协议、主游戏、小游戏分类，并支持名称或 ID 搜索。不可用安装包仍显示名称、版本和依赖原因，禁止打开其设置；选中可用内容包后显示版本和本机配置路径；“配置本机设置”复用偏好设置页，显式应用后写入 JSON。主游戏使用绑定协议，小游戏可选择已安装且适配的协议。无可用协议时只编辑自身设置，保留已有协议覆盖文件。房主规则仍由大厅配置。
 
 大厅右栏以 16:9 预览图和主游戏设置卡片组成。轮换包的 `preview.svg` 是可替换的占位封面，同时登记为 manifest 的 cover；`room.tscn` 直接引用，编辑器可预览。卡片首行并列轮换模式下拉框（顺序轮换／随机轮换）和小游戏池按钮，下方整行“高级设置”打开完整房间规则。房主切换模式后立即应用并同步，客机只读显示。
 

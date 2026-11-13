@@ -52,7 +52,7 @@ function New-AndroidProject([string]$destination) {
     $dataText = (Get-Content -LiteralPath $dataFile -Raw -Encoding UTF8).Replace('const SYSTEM: String = "editor"', 'const SYSTEM: String = "android"')
     [IO.File]::WriteAllText($dataFile, $dataText, $utf8)
     New-Item -ItemType Directory -Path (Join-Path $destination 'core/dev') -Force | Out-Null
-    foreach ($name in @('party_arguments.gd','export_content.gd','party_export_selection.gd','export_shared_pack.gd')) {
+    foreach ($name in @('export_content.gd','party_shared_pack_builder.gd','export_shared_pack.gd')) {
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination (Join-Path $destination 'core/dev')
     }
     Copy-Item -LiteralPath (Join-Path $projectRoot 'icon.svg') -Destination $destination

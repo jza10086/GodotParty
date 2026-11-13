@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "core_api_major": 5,
-  "package_version": "1.0.13",
+  "core_api_major": 6,
+  "package_version": "1.0.14",
   "id": "godot_party_default_protocol",
   "name": "GodotPartyDefaultProtocol",
   "kind": "protocols",
@@ -27,9 +27,9 @@
   },
   "player_config_panel": "profile_panel.tscn",
   "dependencies": {
-    "godot_party_default_avatars": "1.0.2",
-    "godot_party_default_avatars_2d": "1.0.2",
-    "godot_party_default_ui": "1.0.2"
+    "godot_party_default_avatars": "1.0.3",
+    "godot_party_default_avatars_2d": "1.0.3",
+    "godot_party_default_ui": "1.0.3"
   },
   "resources": {
     "contract": "protocol.gd",

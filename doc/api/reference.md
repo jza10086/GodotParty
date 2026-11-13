@@ -1,6 +1,6 @@
 # PartyAPI / PartyNet 参考
 
-版本：框架 5.0.0，API 5，联机协议 17。实例由 core 注入，不要自行创建“当前游戏”全局单例。
+版本：框架 6.0.0，API 6，联机协议 19。实例由 core 注入，不要自行创建“当前游戏”全局单例。
 
 ## PartyAPI
 
@@ -73,7 +73,7 @@ finish、commit_state 的后续写入失败由 commit_failed 通知；候选保�
 
 OK 仅表示本地提交成功。关闭返回 ERR_UNAVAILABLE，参数无效返回 ERR_INVALID_PARAMETER，越权广播返回 ERR_UNAUTHORIZED，非法类型或超过 1 MiB 返回 ERR_INVALID_DATA，传输错误原样返回。调用方必须停止依赖本次发送的操作，不能继续切回合或假装已送达。
 
-API 5 移除 broadcast_stream、get_native_channel_base 和清单流声明；直接更新当前调用方，不保留旧别名。完整组合与示例见[内容网络通信指南](networking.md)。
+API 6 移除 broadcast_stream、get_native_channel_base 和清单流声明；直接更新当前调用方，不保留旧别名。完整组合与示例见[内容网络通信指南](networking.md)。
 
 ## PartyInput
 

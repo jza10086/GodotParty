@@ -2,7 +2,7 @@
 ## Platform release picker. Business/export policy lives in core/dev and package manifests.
 extends ConfirmationDialog
 const Catalog = preload("res://core/content/party_catalog.gd")
-const Selection = preload("res://core/dev/party_export_selection.gd")
+const Selection = preload("res://core/content/party_content_selection.gd")
 var platform: String = "Windows"
 var _catalog: RefCounted
 var _tree: Tree

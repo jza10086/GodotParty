@@ -5,13 +5,15 @@ signal preferences_requested(package_id: String, protocol_id: String)
 const Row: PackedScene = preload("res://core/ui/content_browser/package_row.tscn")
 const Paths = preload("res://core/config/party_paths.gd")
 @onready var page: Control = %Workspace
+var installation: RefCounted
 var catalog: RefCounted
 var store: RefCounted
 var selected: String = ""
 var _rows: Dictionary = {}
 var _groups: Array[VBoxContainer] = []
 
-func configure(content_catalog: RefCounted, config_store: RefCounted) -> void:
+func configure(content_catalog: RefCounted, config_store: RefCounted, installed_packages: RefCounted) -> void:
+	installation = installed_packages
 	catalog = content_catalog
 	store = config_store
 	page.set_title(_t("内容包"))
@@ -29,9 +31,13 @@ func configure(content_catalog: RefCounted, config_store: RefCounted) -> void:
 	var titles: Array[String] = ["协议", "主游戏", "小游戏", "资产包"]
 	for index: int in kinds.size():
 		var group: VBoxContainer = _groups[index]
-		for id: String in catalog.ids(kinds[index]):
+		var ids: Array[String] = catalog.ids(kinds[index])
+		for id: String in installation.unavailable:
+			if installation.installed.has(id) and installation.installed[id].kind == kinds[index] and id not in ids:
+				ids.append(id)
+		for id: String in ids:
 			var row: Button = Row.instantiate()
-			var definition: Dictionary = catalog.get_package(id)
+			var definition: Dictionary = _definition(id)
 			row.text = str(definition.name) + "  ·  " + str(definition.package_version)
 			row.tooltip_text = id
 			row.pressed.connect(_select.bind(id))
@@ -79,7 +85,13 @@ func _select_visible(group: VBoxContainer) -> void:
 
 func _select(id: String) -> void:
 	selected = id
-	var definition: Dictionary = catalog.get_package(id)
+	var definition: Dictionary = _definition(id)
+	if installation.unavailable.has(id):
+		%Configure.disabled = true
+		%Protocol.clear()
+		%Protocol.disabled = true
+		_details()
+		return
 	var protocols: Array[String] = []
 	if definition.kind == "protocols":
 		protocols.append(id)
@@ -107,12 +119,16 @@ func _select(id: String) -> void:
 	_details()
 
 func _details() -> void:
-	var definition: Dictionary = catalog.get_package(selected)
+	var definition: Dictionary = _definition(selected)
+	if installation.unavailable.has(selected):
+		page.show_help(definition.name, str(installation.unavailable[selected]), "ID: " + selected)
+		page.status.text = "不可用 · " + str(definition.package_version)
+		return
 	if definition.kind == "assets":
 		var users: Array[String] = []
 		for id: String in catalog.packages:
 			if catalog.packages[id].get("dependencies", {}).has(selected):
-				users.append(catalog.get_package(id).name)
+				users.append(_definition(id).name)
 		page.show_help(definition.name, definition.remark, "ID: " + selected + "\n" + definition.framework_version + "\n" + ", ".join(users))
 		page.status.text = definition.package_version
 		return
@@ -122,3 +138,11 @@ func _details() -> void:
 		detail += "\n\n" + _t("协议覆盖文件：") + "\n" + Paths.configuration(store.root, catalog, selected, protocol).path_join("overrides.json")
 	page.show_help(definition.name, str(definition.get("description", "")), detail)
 	page.status.text = _t("修改后点击应用保存；房间规则仍在大厅中配置。")
+
+
+func _definition(id: String) -> Dictionary:
+	if catalog.packages.has(id):
+		return catalog.get_package(id)
+	var description: Dictionary = installation.installed[id].duplicate(true)
+	description.package_version = description.version
+	return description

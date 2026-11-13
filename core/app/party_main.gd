@@ -9,7 +9,7 @@ const Catalog = preload("res://core/content/party_catalog.gd")
 const Connection = preload("res://core/network/party_connection.gd")
 const InputSettings = preload("res://core/api/party_input.gd")
 const Presets = preload("res://core/runtime/party_presets.gd")
-const Arguments = preload("res://core/dev/party_arguments.gd")
+const Arguments = preload("res://core/app/party_arguments.gd")
 const Packages = preload("res://core/content/party_packages.gd")
 const ContentArchive = preload("res://core/content/party_content_archive.gd")
 const PreferencesPanel: PackedScene = preload("res://core/ui/party_preferences_panel.tscn")
@@ -67,6 +67,8 @@ func _ready() -> void:
 	var bootstrap_error: Error = archive.bootstrap(str(_arguments.get("pack-dir", InputSettings.installation_directory())))
 	if bootstrap_error != OK:
 		_content_error = archive.last_error
+		push_error(_content_error)
+		return
 	var source_choices: JsonConfig = JsonConfig.new()
 	var source_error: Error = source_choices.load(settings.settings_path.get_base_dir().path_join("party_sources.json"))
 	if source_error != OK and source_error != ERR_FILE_NOT_FOUND:
@@ -81,6 +83,8 @@ func _ready() -> void:
 		var mount_error: Error = packages.mount_directory(str(_arguments.get("pack-dir", InputSettings.installation_directory())), choices)
 		if mount_error != OK:
 			_content_error = packages.last_error
+			push_error(_content_error)
+			return
 	catalog = Catalog.new()
 	catalog.scan()
 	var declaration: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://core/i18n/localization.json"))
@@ -608,7 +612,7 @@ func _content_browser_dialog() -> void:
 	_settings_focus = get_viewport().gui_get_focus_owner()
 	_settings_page = preload("res://core/ui/content_browser/content_browser.tscn").instantiate()
 	%Pages.add_child(_settings_page)
-	_settings_page.configure(catalog, runner.config_store)
+	_settings_page.configure(catalog, runner.config_store, packages)
 	_settings_page.back_requested.connect(_close_settings)
 	_settings_page.preferences_requested.connect(_preferences_dialog)
 	_frontend.hide()
@@ -701,6 +705,10 @@ func _package_dialog() -> void:
 	var box: VBoxContainer = _modal("内容包 · 安装或更改后重新启动", preload("res://core/ui/dialogs/packages.tscn"))
 	var path: LineEdit = box.get_node("Path")
 	var info: Label = box.get_node("Status")
+	var unavailable_lines: PackedStringArray = []
+	for id: String in packages.unavailable:
+		unavailable_lines.append(id + "：" + str(packages.unavailable[id]))
+	info.text = "\n".join(unavailable_lines)
 	box.get_node("ImportArchive").pressed.connect(func() -> void:
 		_choose_transfer("content", info))
 	box.get_node("ExportSettings").pressed.connect(func() -> void:
@@ -754,11 +762,13 @@ func _choose_transfer(operation: String, info: Label) -> void:
 	picker.file_selected.connect(func(source: String) -> void:
 		if operation == "content":
 			var archive: RefCounted = ContentArchive.new()
-			var error: Error = archive.queue_update(source, InputSettings.installation_directory())
-			info.text = "内容包已接收，请退出并重新打开游戏。" if error == OK else archive.last_error
+			var error: Error = await archive.queue_update(source, InputSettings.installation_directory())
+			if is_instance_valid(info):
+				info.text = "内容包已接收，请退出并重新打开游戏。" if error == OK else archive.last_error
 		else:
 			info.text = _transfer_system_settings(source, operation == "export_settings")
-		picker.queue_free())
+		if is_instance_valid(picker):
+			picker.queue_free())
 	picker.popup_centered_ratio(0.8)
 
 ## Transfer editable system preferences while retaining this installation's persistent player identity.

@@ -8,6 +8,12 @@ var _busy: bool = false
 var _queued: bool = false
 var _wait: float = 0.0
 var _message: Label
+var _summary: Label
+var _scores: Label
+var _queue_label: Label
+var _retry_button: Button
+var _end_button: Button
+var _last_button: Button
 
 func party_setup(value: PartyAPI, _settings: Dictionary) -> void:
 	api = value
@@ -37,9 +43,6 @@ func _ready() -> void:
 func create_new_state(settings: Dictionary) -> Dictionary:
 	return Rules.initial(api.get_pool("minigames"), settings, api.get_players(), api.get_seed())
 
-func get_state() -> Dictionary:
-	return state.duplicate(true)
-
 func restore_state(value: Dictionary) -> void:
 	state = value.duplicate(true)
 
@@ -47,40 +50,39 @@ func reduce_round_result(old_state: Dictionary, result: Dictionary) -> Dictionar
 	return Rules.settle(old_state, result)
 
 func create_view() -> Node:
-	var root: MarginContainer = MarginContainer.new()
+	var root: Control = Control.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.theme = GPPartyTheme.create()
-	for edge: String in ["left", "right", "top", "bottom"]:
-		root.add_theme_constant_override("margin_" + edge, 32)
+	root.add_child(GPPartyTheme.Background.instantiate())
+	var layout: MarginContainer = MarginContainer.new()
+	layout.name = "Layout"
+	layout.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	for edge: String in ["left", "right", "bottom"]:
+		layout.add_theme_constant_override("margin_" + edge, 48)
+	# This playlist presents content below the app actions; other main games own their layout.
+	layout.add_theme_constant_override("margin_top", 160)
+	root.add_child(layout)
 	var scroll: ScrollContainer = ScrollContainer.new()
+	scroll.name = "Scroll"
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	root.add_child(scroll)
+	layout.add_child(scroll)
 	var column: VBoxContainer = VBoxContainer.new()
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", 18)
 	scroll.add_child(column)
 	_label(column, "原版 · 小游戏轮换", 40)
-	_label(column, "已完成 %d / %d 局 · %s · %s" % [state.get("completed", 0), state.get("queue", []).size(), state.get("rotation", "顺序"), "避免重复" if state.avoid_repeat else "允许重复"], 26)
+	_summary = _label(column, "已完成 %d / %d 局 · %s · %s" % [state.get("completed", 0), state.get("queue", []).size(), state.get("rotation", "顺序"), "避免重复" if state.avoid_repeat else "允许重复"], 26)
 	if state.get("queue", []).size() < int(state.get("requested_rounds", 0)):
 		_label(column, "避免重复已开启，实际局数以所选小游戏数量为上限。", 20)
 	_message = _label(column, _status_text(), 24)
-	var score_lines: PackedStringArray = []
-	for row: Dictionary in _presentation().rows:
-		score_lines.append("%s  %s · %d 分" % [str(row.rank) + "." if row.rank > 0 else "—", _player_name(row.player_id), row.metrics.points])
-	_label(column, "\n".join(score_lines), 24)
+	_scores = _label(column, "", 24)
 	_label(column, "每局完成者获得「参赛人数 − 名次」积分，并列同分，退出者不获本局积分。", 20)
-	if not state.get("pause_reason", "").is_empty():
-		_button(column, "重试本局", _retry, not api.is_host())
-		_button(column, "结束轮换并结算", _end, not api.is_host())
-	if not state.get("last", {}).is_empty():
-		_button(column, "查看上一局成绩", _show_last, false)
+	_retry_button = _button(column, "重试本局", _retry, not api.is_host())
+	_end_button = _button(column, "结束轮换并结算", _end, not api.is_host())
+	_last_button = _button(column, "查看上一局成绩", _show_last, false)
 	_label(column, "本次轮换队列", 28)
-	var queue_lines: PackedStringArray = []
-	var queue: Array = state.get("queue", [])
-	for index: int in queue.size():
-		var marker: String = "已完成" if index < int(state.get("cursor", 0)) else ("下一局" if index == int(state.get("cursor", 0)) else "待进行")
-		queue_lines.append("%d. %s · %s" % [index + 1, _game_name(queue[index]), marker])
-	_label(column, "\n".join(queue_lines), 22)
+	_queue_label = _label(column, "", 22)
+	_refresh_view()
 	return root
 
 func _label(parent: Node, value: String, font_size: int) -> Label:
@@ -91,13 +93,14 @@ func _label(parent: Node, value: String, font_size: int) -> Label:
 	parent.add_child(label)
 	return label
 
-func _button(parent: Node, caption: String, callback: Callable, disabled: bool) -> void:
+func _button(parent: Node, caption: String, callback: Callable, disabled: bool) -> Button:
 	var button: Button = Button.new()
 	button.text = caption
 	button.custom_minimum_size.y = 54
 	button.disabled = disabled
 	button.pressed.connect(callback)
 	parent.add_child(button)
+	return button
 
 func _game_name(id: String) -> String:
 	return api.get_game_name(id)
@@ -206,6 +209,7 @@ func _commit(next: Dictionary) -> void:
 		_notice("状态提交未被接受：" + error_string(error))
 
 func _state_committed(_revision: int) -> void:
+	_refresh_view()
 	_busy = false
 	if active and api.is_host() and _publish_standings():
 		_queue_advance()
@@ -255,3 +259,24 @@ func _commit_failed(_code: String, message: String) -> void:
 func _notice(message: String) -> void:
 	if is_instance_valid(_message):
 		_message.text = message
+
+
+## Refresh existing controls so state commits retain keyboard focus and scroll position.
+func _refresh_view() -> void:
+	if not is_instance_valid(_message):
+		return
+	_summary.text = "已完成 %d / %d 局 · %s · %s" % [state.get("completed", 0), state.get("queue", []).size(), state.get("rotation", "顺序"), "避免重复" if state.avoid_repeat else "允许重复"]
+	_message.text = _status_text()
+	var score_lines: PackedStringArray = []
+	for row: Dictionary in _presentation().rows:
+		score_lines.append("%s  %s · %d 分" % [str(row.rank) + "." if row.rank > 0 else "—", _player_name(row.player_id), row.metrics.points])
+	_scores.text = "\n".join(score_lines)
+	_retry_button.visible = not state.get("pause_reason", "").is_empty()
+	_end_button.visible = _retry_button.visible
+	_last_button.visible = not state.get("last", {}).is_empty()
+	var queue_lines: PackedStringArray = []
+	var queue: Array = state.get("queue", [])
+	for index: int in queue.size():
+		var marker: String = "已完成" if index < int(state.get("cursor", 0)) else ("下一局" if index == int(state.get("cursor", 0)) else "待进行")
+		queue_lines.append("%d. %s · %s" % [index + 1, _game_name(queue[index]), marker])
+	_queue_label.text = "\n".join(queue_lines)

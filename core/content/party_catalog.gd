@@ -55,7 +55,7 @@ func register_manifest(path: String) -> Error:
 		errors.append("DUPLICATE_PACKAGE: " + id)
 		return ERR_ALREADY_EXISTS
 	if manifest.has("streams") or manifest.has("native_channels"):
-		errors.append(id + ": API 5 uses call-site transfer modes and fixed native channels; remove streams/native_channels")
+		errors.append(id + ": API 6 uses call-site transfer modes and fixed native channels; remove streams/native_channels")
 		return ERR_INVALID_DATA
 	if manifest.kind == "protocols" and not manifest.get("config_directories") is Dictionary:
 		errors.append(id + ": missing config_directories")
@@ -83,6 +83,12 @@ func validate_manifest(manifest: Dictionary) -> String:
 		if manifest.framework_version != Data.VERSION:
 			return "Asset requires framework " + manifest.framework_version
 		return ""
+	if manifest.get("kind") != "avatars":
+		if not manifest.get("supported_systems") is Array or manifest.supported_systems.is_empty():
+			return "Missing supported_systems"
+		for system: Variant in manifest.supported_systems:
+			if not Data.valid_system(system):
+				return "Invalid supported_systems"
 	var external_issue: String = External.validate(manifest.get("external_files", []))
 	if not external_issue.is_empty():
 		return external_issue
@@ -173,7 +179,7 @@ func validate_manifest(manifest: Dictionary) -> String:
 			if adapter.has("entry") and (not adapter["entry"] is String or not Data.relative_path(adapter["entry"])):
 				return "Invalid adapter entry"
 	if manifest.has("streams") or manifest.has("native_channels"):
-		return "API 5 does not use streams/native_channels declarations"
+		return "API 6 does not use streams/native_channels declarations"
 	return ""
 
 func _protocol_reference(value: Variant) -> bool:
@@ -281,7 +287,7 @@ func requirements_issue(required: Variant) -> String:
 		if entry.get("kind") not in KINDS or not entry.get("supported_systems") is Array or (entry.kind != "assets" and entry.supported_systems.is_empty()):
 			return "房主内容包平台声明无效：" + id
 		for system: Variant in entry.supported_systems:
-			if not system is String:
+			if not Data.valid_system(system):
 				return "房主内容包平台声明无效：" + id
 		if entry.kind == "assets" and not entry.supported_systems.is_empty():
 			return "资产包不声明平台：" + id

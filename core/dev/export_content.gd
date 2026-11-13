@@ -3,7 +3,7 @@ extends SceneTree
 const Catalog = preload("res://core/content/party_catalog.gd")
 const Packages = preload("res://core/content/party_packages.gd")
 const Paths = preload("res://core/config/party_paths.gd")
-const Selection = preload("res://core/dev/party_export_selection.gd")
+const Selection = preload("res://core/content/party_content_selection.gd")
 
 func _initialize() -> void:
 	run.call_deferred()
@@ -62,16 +62,26 @@ func run() -> void:
 		print("CONTENT_SOURCE_STAGE_PASS")
 		quit()
 		return
-	var packages: RefCounted = Packages.new()
+	var builder: RefCounted = preload("res://core/dev/party_shared_pack_builder.gd").new()
+	var outputs: Dictionary = {}
 	for id: String in selection.ids:
 		var destination: String = output.path_join(Paths.package_relative(catalog.packages[id]))
 		var error: Error = DirAccess.make_dir_recursive_absolute(destination)
-		if error == OK:
-			error = await packages.export_pack(catalog, id, destination.path_join("content.pck"))
 		if error != OK:
-			_fail(id + ": " + packages.last_error + " " + error_string(error))
+			_fail("Cannot create export directory: " + error_string(error))
 			return
-		print("EXPORTED ", id)
+		outputs[id] = destination.path_join("content.pck")
+	if ProjectSettings.get_setting("content/shared_import", false):
+		for id: String in outputs:
+			var error: Error = builder.export_imported_pack(catalog, id, outputs[id])
+			if error != OK:
+				_fail(id + ": " + builder.last_error + " " + error_string(error))
+				return
+	else:
+		var error: Error = await builder.build(catalog, outputs, builder.work_directory)
+		if error != OK:
+			_fail(builder.last_error + " " + error_string(error))
+			return
 	print("CONTENT_EXPORT_PASS")
 	quit(0)
 

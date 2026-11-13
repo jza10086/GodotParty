@@ -351,6 +351,9 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 	if kind == "content_prepare" and host and room.get("phase") == "lobby":
 		content_sync.prepare(sender, payload)
 		return
+	if kind in ["content_complete", "content_cancel"] and host and room.get("phase") == "lobby":
+		content_sync.finish_upload(sender, payload, kind == "content_cancel")
+		return
 	if kind == "content_get" and host and room.get("phase") == "lobby":
 		content_sync.serve(sender, payload)
 		return
@@ -447,7 +450,7 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 		_profile_response(payload)
 
 func _accept_hello(sender: int, identity: Dictionary) -> void:
-	if identity.get("system") not in ["editor", "windows", "android"]:
+	if not Data.valid_system(identity.get("system")):
 		_send(sender, {"kind": "rejected", "payload": {"message": "无效的系统声明"}})
 		return
 	if not room.has("closure"):
@@ -906,7 +909,7 @@ func _send(target: int, packet: Dictionary) -> Error:
 	else:
 		packet["wire"] = Data.WIRE_VERSION
 		packet["session"] = session_id
-		error = _scene.send_bytes(var_to_bytes(packet), target, MultiplayerPeer.TRANSFER_MODE_RELIABLE, PartyNet.CONTROL_CHANNEL) if packet_fits(packet) else ERR_INVALID_DATA
+		error = _scene.send_bytes(var_to_bytes(packet), target, MultiplayerPeer.TRANSFER_MODE_RELIABLE, PartyNet.CONTENT_CHANNEL if packet.kind in ["content_prepare", "content_prepared", "content_get", "content_chunk", "content_complete", "content_cancel"] else PartyNet.CONTROL_CHANNEL) if packet_fits(packet) else ERR_INVALID_DATA
 	if error != OK:
 		_send_failed(error, str(packet.get("kind", "")))
 	return error
@@ -1065,7 +1068,7 @@ func _valid_room_snapshot(payload: Dictionary) -> bool:
 			return false
 		if not player.get("peer_id") is int or player["peer_id"] < 1 or not player.get("connected") is bool or not player.get("ready") is bool:
 			return false
-		if player.get("system") not in ["editor", "windows", "android"]:
+		if not Data.valid_system(player.get("system")):
 			return false
 		if not player.get("profile") is Dictionary or not player.get("appearance") is Dictionary:
 			return false
