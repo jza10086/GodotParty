@@ -1,0 +1,7 @@
+{
+  "name": "原版 UI",
+  "kind": "assets",
+  "package_version": "1.0.0",
+  "remark": "框架之外供协议、主游戏和小游戏复用的 UI 内容；当前为空包。",
+  "framework_version": "5.0.0"
+}
