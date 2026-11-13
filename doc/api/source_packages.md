@@ -81,11 +81,11 @@ iOS 配置和内置内容安装到应用私有存储，保留已有玩家配置�
 
 ## 统一资源收集边界
 
-Windows 与 Android 核心构建共用 `core/dev/export_source_files.ps1`，iOS 使用同一移动暂存工程；核心资源、署名收集均跳过含 `.gdignore` 的整个子树。普通内容收集使用同样的目录约定，协议不包含其独立 avatars 子包。隐藏文件/目录、临时备份、包内玩家配置不发布；正式 `.import` 与 `.uid` 保留。
+Windows 与 Android 核心构建共用 `core/dev/export_source_files.ps1`，iOS 使用同一移动暂存工程；核心资源、署名收集均按目录名跳过 `authoring/`，同时继续跳过其他含 `.gdignore` 的子树。普通内容收集使用同样的目录约定，协议不包含其独立 avatars 子包。隐藏文件/目录、临时备份、包内玩家配置不发布；正式 `.import` 与 `.uid` 保留。
 
 内容暂存完整复制作者的导入设置，再由所选 Godot 在干净工程中生成目标资源。声明的外置文件只由外置流程复制一次；构建专用 `.gdignore` 或 Keep File 导入标记阻止它们被再次转换，标记不随外置文件发布。可玩 PCK 的普通导入资源只保留重映射与运行产物；原样文件按其使用方式保留，不按音频/图片扩展名盲目删源文件。
 
-不发布的开发资源统一采用包内 `authoring/.gdignore`；具体分类和音效/图片单一正式路径规则见 [原版资源开发规范](authoring.md#原版资源开发与发布目录)。
+不发布的开发资源统一放入包内 `authoring/`，不使用 `.gdignore` 隐藏开发目录。PowerShell 暂存与 Godot 内容收集均直接排除该目录名（包含嵌套目录），源码 ZIP、PCK 与 Windows / Android / iOS 发布使用相同边界；具体分类和音效/图片单一正式路径规则见 [原版资源开发规范](authoring.md#原版资源开发与发布目录)。
 
 ## 资产包
 

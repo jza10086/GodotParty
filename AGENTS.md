@@ -42,6 +42,8 @@
 
 ## External assets
 
+- Keep non-shipping development tools, editable prototypes and creative sources in package-local `authoring/`. Do not hide it with `.gdignore`; Godot must display and run its development scenes normally. Shared publication collectors exclude directories named `authoring` from source ZIPs, staging and PCKs. Runtime files must not depend on this directory. Other intentional `.gdignore` boundaries (such as `tmp/` and restricted assets) remain in effect.
+
 - Keep confirmed non-redistributable external assets in project-root `third_party_assets/<license_type>/files/`, including downloads, extracted sources, converted copies and discovered duplicates. Keep each `files/` ignored by Git and the entire `third_party_assets/` ignored by Godot (`.gdignore`); track only registration documents and ignore rules. Each license category has an `assets.md` four-column table sorted alphabetically by asset name. Unresolved private references remain under ignored `private_assets/`; public packages must work without both directories.
 - License project-owner/GPT original code under MIT and original media under CC0-1.0 as scoped in `ASSET_LICENSES.md`; preserve all third-party licenses, notices and unresolved provenance records. New independently exported content packages must include their license texts and scope.
 

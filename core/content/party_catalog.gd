@@ -419,10 +419,10 @@ func validate_settings(id: String, value: Dictionary) -> Dictionary:
 			return checked
 	return report
 
-## Match Godot's ignored-directory boundary, including archived prototypes and their import remaps.
+## Publication excludes authoring without hiding it in Godot; other ignored subtrees stay excluded.
 static func files(root: String) -> Array[String]:
 	var result: Array[String] = []
-	if FileAccess.file_exists(root.path_join(".gdignore")):
+	if root.trim_suffix("/").get_file().to_lower() == "authoring" or FileAccess.file_exists(root.path_join(".gdignore")):
 		return result
 	for file: String in DirAccess.get_files_at(root):
 		if file.begins_with(".") or file.contains("~") or file.get_extension().to_lower() in ["tmp", "bak", "pending"]:

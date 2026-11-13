@@ -1,9 +1,9 @@
 # Shared Windows/Android source boundary. iOS consumes the Android staging output.
-# Keep import settings and UIDs; never copy an ignored subtree without its marker.
+# Keep authoring visible in Godot; exclude it only from publication. Preserve import settings and UIDs.
 function Get-PartySourceFiles([string]$Root) {
     $directory = Get-Item -LiteralPath $Root -Force
     if ($directory.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Cannot export linked directory: $Root" }
-    if (Test-Path -LiteralPath (Join-Path $Root '.gdignore')) { return }
+    if ($directory.Name -eq 'authoring' -or (Test-Path -LiteralPath (Join-Path $Root '.gdignore'))) { return }
     $package = Test-Path -LiteralPath (Join-Path $Root 'manifest.json')
     $protocol = $package -and ((Get-Content -LiteralPath (Join-Path $Root 'manifest.json') -Raw -Encoding UTF8 | ConvertFrom-Json).kind -eq 'protocols')
     foreach ($entry in Get-ChildItem -LiteralPath $Root -Force | Sort-Object Name) {
