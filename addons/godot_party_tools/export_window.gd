@@ -106,7 +106,7 @@ func open() -> void:
 	popup_centered()
 
 func _add_package(parent: TreeItem, id: String) -> TreeItem:
-	var manifest: Dictionary = _catalog.get_package(id)
+	var manifest: Dictionary = _catalog.packages[id]
 	var item: TreeItem = _tree.create_item(parent)
 	item.set_cell_mode(0, TreeItem.CELL_MODE_CHECK)
 	item.set_metadata(0, id)
@@ -117,7 +117,7 @@ func _add_package(parent: TreeItem, id: String) -> TreeItem:
 	return item
 
 func _package_label(manifest: Dictionary) -> String:
-	var label: String = manifest.get("name", manifest.id)
+	var label: String = manifest.name
 	if manifest.kind == "avatars":
 		var slots: Array = []
 		for info: Dictionary in manifest.get("appearance_resources", {}).values():
@@ -165,7 +165,7 @@ func _refresh_selection() -> void:
 		var required: bool = ids.has(id) and not _requested.has(id)
 		item.set_checked(0, ids.has(id) or _requested.has(id))
 		item.set_editable(0, not required and _catalog.packages[id].get("playable", true))
-		item.set_text(0, _package_label(_catalog.get_package(id)) + ("（依赖）" if required else ""))
+		item.set_text(0, _package_label(_catalog.packages[id]) + ("（依赖）" if required else ""))
 	for group: TreeItem in _tree.get_root().get_children():
 		if group == _core:
 			continue

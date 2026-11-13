@@ -2,7 +2,7 @@
 
 ## 声明、版本与包身份
 
-作者清单只有 `name`、`kind`、`package_version`、`framework_version`、`remark`，以及需要时的 `dependencies`。备注允许为空。身份来自目录，形象包归属来自协议父目录。所有现有包从 `0.0.1` 开始；当前框架版本在 `core/framework_version.gd`，不使用或修改 Godot 项目版本。
+作者清单只有 `name`、`kind`、`package_version`、`framework_version`、`remark`、`supported_languages`，以及需要时的 `dependencies`。备注允许为空。`supported_languages` 是作者声明的支持语言数组，当前统一为 `["zh-CN"]`，不根据已有翻译文件推断完整语言支持。身份来自目录，形象包归属来自协议父目录。所有现有包从 `0.0.1` 开始；当前框架版本在 `core/framework_version.gd`，不使用或修改 Godot 项目版本。
 
 版本必须是没有前导零的三段非负整数；每段不超过 GDScript int64 上限。依赖值仅支持精确三段版本、`~` 和 `^`，不支持预发布、构建后缀、通配符和范围组合。`~0.0.1` 接受 `0.0.2`、`0.0.10`，不接受 `0.1.0`；`^0.0.1` 只接受 `0.0.1`；`^0.1.2` 接受同一 `0.1` 下不小于 `0.1.2` 的版本；`^1.2.3` 接受小于 `2.0.0` 且不小于下限的版本。框架版本始终精确匹配。没有独立 API、联机协议或引擎版本兼容门槛；构建不自动升版本。
 
@@ -30,7 +30,7 @@
 
 ## 可视化 Windows 导出
 
-编辑器打开“项目 → 工具 → GodotParty：导出 Windows 可玩包”。界面只需勾选核心、协议及形象包、主游戏、小游戏，再选择输出目录。点击开始导出后显示进度、错误和构建日志目录。
+编辑器打开“项目 → 工具 → GodotParty：导出 Windows 可玩包”。界面只需勾选核心、协议及形象包、主游戏、小游戏，再选择输出目录。点击开始导出后显示进度、错误和构建日志目录。每次打开窗口都会扫描 `games/` 下各类型包目录；小游戏来自 `games/minigame/<id>/manifest.json`，列表名称直接读取声明的 `name`，不经过翻译替换。目录 ID 继续用于依赖引用和导出安装路径。
 
 勾选内容会自动补齐满足范围的依赖、所属协议以及小游戏适配器的协议和依赖；自动勾选项标注“依赖”。导出会包含所选小游戏的全部已声明适配器依赖。主游戏的小游戏池由房主在运行时选择，导出主游戏不会自动打包所有候选小游戏。仅勾选内容可生成独立更新包，勾选核心时同时构建 Windows x64 EXE。
 
@@ -89,7 +89,7 @@ Windows 与 Android 核心构建共用 `core/dev/export_source_files.ps1`，iOS 
 
 ## 资产包
 
-资产包位于 `games/assets/<id>/`，安装到 `assets/<id>/content.pck` 与 `content.pck.json`。目录名是 ID；作者 manifest 仅含 `name`、`kind: "assets"`、`package_version`、`remark`、`framework_version` 五个字段，框架版本精确匹配。资产包可包含代码、场景、素材、文档等公共内容，不声明平台、入口、设置或其他内容依赖；包内互相引用，包外仅引用框架公开内容。资产包之间不得相互引用。
+资产包位于 `games/assets/<id>/`，安装到 `assets/<id>/content.pck` 与 `content.pck.json`。目录名是 ID；作者 manifest 仅含 `name`、`kind: "assets"`、`package_version`、`remark`、`framework_version`、`supported_languages` 六个字段，框架版本精确匹配。资产包可包含代码、场景、素材、文档等公共内容，不声明平台、入口、设置或其他内容依赖；包内互相引用，包外仅引用框架公开内容。资产包之间不得相互引用。
 
 协议和游戏用原有 dependencies 声明资产包的版本范围，在编辑器直接引用资产包路径。导出自动补齐依赖，PCK 仅收集所属包的文件与导入产物；下载、来源选择、排队安装和重启规则保持一致。资产包源码 ZIP 文件名必须是 `<id>.zip`，导入时据此恢复目录身份。PCK 描述仍由工具生成，不增加作者维护字段，使用相同包级 Hash。
 

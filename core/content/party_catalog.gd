@@ -168,8 +168,14 @@ func validate_manifest(manifest: Dictionary) -> String:
 		if not manifest.get(key) is String or (key != "remark" and manifest[key].is_empty()):
 			return "Invalid declaration field: " + key
 	for key: String in manifest:
-		if key not in ["name", "kind", "package_version", "framework_version", "remark", "dependencies", "id", "owner_protocol"]:
+		if key not in ["name", "kind", "package_version", "framework_version", "remark", "supported_languages", "dependencies", "id", "owner_protocol"]:
 			return "Unsupported declaration field: " + key
+	var languages: Variant = manifest.get("supported_languages")
+	if not languages is Array or languages.is_empty():
+		return "supported_languages must be a nonempty array"
+	for language: Variant in languages:
+		if not language is String or language.strip_edges().is_empty() or language != language.strip_edges() or languages.count(language) != 1:
+			return "Invalid or duplicate supported language"
 	if manifest.kind not in KINDS or Paths.package_relative(manifest).is_empty():
 		return "Invalid package kind/directory"
 	if Versions.parse(manifest.package_version).is_empty() or Versions.parse(manifest.framework_version).is_empty():

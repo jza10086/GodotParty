@@ -64,11 +64,12 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
   "package_version": "0.0.1",
   "framework_version": "0.0.1",
   "remark": "",
+  "supported_languages": ["zh-CN"],
   "dependencies": {"godot_party_default_protocol": "~0.0.1"}
 }
 ```
 
-`remark` 为必需字符串，可以为空。`dependencies` 没有依赖时省略，资产包必须无依赖。声明只维护这些字段；入口、资源别名、平台、协议 API 主次版本、语言清单和玩法参数不进入 manifest。
+`remark` 为必需字符串，可以为空。`supported_languages` 为必需的非空语言代码数组，元素不得为空或重复；当前所有内容声明 `["zh-CN"]`（简体中文）。`dependencies` 没有依赖时省略，资产包必须无依赖。声明只维护这些字段；入口、资源别名、平台、协议 API 主次版本、翻译文件路径和玩法参数不进入 manifest。
 
 主游戏和小游戏入口固定为 `game.tscn`，协议入口固定为 `protocol.gd`。入口脚本的 `static func party_definition() -> Dictionary` 只返回玩法拥有的数据：`player_counts`、可选 `player_count_rules` / `tags` / `controls`；主游戏另给出 `protocol: {"id": "..."}`、`pools` 及可选 `minigames`。协议可声明自己的 `config_directories`，保持配置目录与包版本无关。人数计算见 [可开局人数](player_counts.md)。
 
@@ -159,4 +160,4 @@ F6 默认语言直接读取包内 `i18n/zh_Hans.po`，使用与正式 `api.i18n.
 
 发布检查区分三个问题：开发素材是否进入构建目录、同一资源是否被重复收集、PCK 是否同时保留了已转换的原文件和导入产物。以路径清单、导入日志、导入参数和实际资源加载验证，不做文件哈希校验。共享包中的桌面/移动纹理变体是不同运行需求，不作为重复资源删除。核心与内容的独立干净工程仍各自需要导入，本规则不宣称跨工程零导入。
 
-公共 UI 和代码可进入 `games/assets/<id>/` 资产包，使用方声明精确依赖后直接引用资源路径；资产包只引用自身和框架，不引用其他内容包。五字段声明及安装规则见 [资产包](source_packages.md#资产包)。原版 UI 已从原版协议提取至 `godot_party_default_ui`。
+公共 UI 和代码可进入 `games/assets/<id>/` 资产包，使用方声明精确依赖后直接引用资源路径；资产包只引用自身和框架，不引用其他内容包。六字段声明及安装规则见 [资产包](source_packages.md#资产包)。原版 UI 已从原版协议提取至 `godot_party_default_ui`。
