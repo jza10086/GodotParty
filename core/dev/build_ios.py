@@ -46,11 +46,8 @@ def prepare_host(content_project, host, bundle, root, build_number):
     shutil.copyfile(content_project / "icon.svg", host / "icon.svg")
     shutil.copyfile(content_project / "project.godot", host / "project.godot")
     data = host / "core/runtime/party_data.gd"
-    text, count = re.subn(r'(?m)^const SYSTEM: String = "android"$',
-                         'const SYSTEM: String = "ios"', data.read_text(encoding="utf-8"))
-    if count != 1:
-        raise RuntimeError("Mobile staging did not declare framework SYSTEM android")
-    data.write_text(text, encoding="utf-8")
+    if not re.search(r'(?m)^const SYSTEM: String = "ios"$', data.read_text(encoding="utf-8")):
+        raise RuntimeError("Mobile staging did not declare framework SYSTEM ios")
     shutil.copyfile(bundle, host / "core/bundled_content.zip")
     notices = host / "core/notices"
     notices.mkdir(exist_ok=True)
@@ -58,7 +55,19 @@ def prepare_host(content_project, host, bundle, root, build_number):
         shutil.copyfile(root / name, notices / name)
     shutil.copyfile(root / "doc/credits.md", notices / "credits.md")
     preset = (root / "core/dev/ios_export_presets.cfg").read_text(encoding="utf-8")
-    preset = preset.replace('application/version="1"', f'application/version="{build_number}"')
+    project_text = (host / "project.godot").read_text(encoding="utf-8")
+    application = re.search(r"(?ms)^\[application\]\n.*?(?=^\[|\Z)", project_text)
+    version_match = re.search(r"(?m)^config/version=(.+)$", application.group(0)) if application else None
+    if not version_match:
+        raise RuntimeError("project.godot must declare application/config/version")
+    application_version = json.loads(version_match.group(1))
+    if not isinstance(application_version, str) or not application_version.strip():
+        raise RuntimeError("Invalid application/config/version")
+    for key, value in (("application/short_version", application_version), ("application/version", build_number)):
+        preset, count = re.subn(r"(?m)^" + re.escape(key) + r"=.*$",
+                                lambda _: key + "=" + json.dumps(value), preset)
+        if count != 1:
+            raise RuntimeError(f"iOS preset must declare {key} once")
     (host / "export_presets.cfg").write_text(preset, encoding="utf-8")
 
 
@@ -138,23 +147,22 @@ def main():
     release.mkdir()
     version = run([args.godot, "--version"], logs, "godot-version").strip()
     revision = run(["git", "-C", root, "rev-parse", "HEAD"], logs, "revision").strip()
-    import_project(args.godot, root, logs, "catalog-import")
+    if request["packages"]:
+        import_project(args.godot, root, logs, "catalog-import")
     mobile = output / "mobile"
     mobile.mkdir()
-    (mobile / "build").mkdir()
-    (mobile / "android_payload").mkdir()
     mobile_request = mobile / "request.json"
     mobile_request.write_text(json.dumps({"platform": "iOS", "core": False,
                                          "packages": request["packages"]}), encoding="utf-8")
     # No Android SDK is needed: only the common mobile content stage runs.
     try:
-        run(["pwsh", "-NoProfile", "-File", root / "core/dev/export_android.ps1",
+        run(["pwsh", "-NoProfile", "-File", root / "core/dev/export_mobile_content.ps1",
              "-RequestPath", mobile_request, "-GodotPath", args.godot], logs, "mobile-content")
     finally:
         for log in mobile.glob("*.log"):
             shutil.copyfile(log, logs / log.name)
     bundle = release / "GodotParty-content-ios.zip"
-    shutil.copyfile(mobile / "build/GodotParty-content-android.zip", bundle)
+    shutil.copyfile(mobile / "mobile_content.zip", bundle)
     with zipfile.ZipFile(bundle) as archive:
         bundle_info = json.loads(archive.read("bundle.json"))
     result = {"revision": revision, "godot": version, "build": args.build_number,
@@ -164,7 +172,7 @@ def main():
     if request["core"]:
         result["xcode"] = run(["xcodebuild", "-version"], logs, "xcode-version").strip()
         host = output / "host"
-        prepare_host(mobile / "android_content", host, bundle, root, args.build_number)
+        prepare_host(mobile / "mobile_content", host, bundle, root, args.build_number)
         import_project(args.godot, host, logs, "host-import")
         result.update(compile_ipa(args.godot, host, output, logs))
     (release / "build-info.json").write_text(json.dumps(result, indent=2), encoding="utf-8")

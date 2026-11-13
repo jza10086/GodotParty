@@ -30,9 +30,9 @@
 
 ## 可视化 Windows 导出
 
-编辑器打开“项目 → 工具 → GodotParty：导出 Windows 可玩包”。界面只需勾选核心、协议及形象包、主游戏、小游戏，再选择输出目录。点击开始导出后显示进度、错误和构建日志目录。每次打开窗口都会扫描 `games/` 下各类型包目录；小游戏来自 `games/minigame/<id>/manifest.json`，列表名称直接读取声明的 `name`，不经过翻译替换。目录 ID 继续用于依赖引用和导出安装路径。
+编辑器打开“项目 → 工具 → GodotParty：导出 Windows 可玩包”。界面分别列出核心、协议、形象包、资产包、主游戏和小游戏；各类包均可独立勾选，再选择输出目录。点击开始导出后显示进度、错误和构建日志目录。导出由独立 PowerShell 进程运行，关闭窗口、卸载插件或退出编辑器均不等待构建；任务继续完成，结果保存在任务目录的 `job-result.json`，完整记录在 `export.log`。同一编辑器内重开窗口可继续查看正在运行的任务。空闲时每次打开窗口都会扫描 `games/{protocols,maingame,minigame,assets}/<id>/manifest.json`，形象包扫描 `games/protocols/<协议ID>/avatars/<id>/manifest.json`。所有类别的列表名称直接读取声明的 `name`，不经过翻译替换。目录 ID 继续用于依赖引用和导出安装路径。
 
-勾选内容会自动补齐满足范围的依赖、所属协议以及小游戏适配器的协议和依赖；自动勾选项标注“依赖”。导出会包含所选小游戏的全部已声明适配器依赖。主游戏的小游戏池由房主在运行时选择，导出主游戏不会自动打包所有候选小游戏。仅勾选内容可生成独立更新包，勾选核心时同时构建 Windows x64 EXE。
+勾选内容会自动补齐满足范围的依赖、所属协议以及小游戏适配器的协议和依赖；自动勾选项标注“依赖”。导出会包含所选小游戏的全部已声明适配器依赖。主游戏的小游戏池由房主在运行时选择，导出主游戏不会自动打包所有候选小游戏。取消核心后，协议、形象、资产、主游戏和小游戏均可独立导出为安装目录（含各包 PCK、描述及正式外置数据），只自动补齐必需依赖，不附带其他类别的全部内容。勾选核心时同时构建 Windows x64 EXE，也可只导出核心。
 
 原版协议包含两个独立形象包。godot_party_default_avatars_2d 提供六个 2D 头像，godot_party_default_avatars 提供 Cube 3D 占位。包均位于 protocols/<协议ID>/avatars/<包ID>/，默认依赖会一起勾选。旧玩家资料中的协议内头像引用需在个人资料界面重新选择并应用。
 
@@ -42,13 +42,15 @@
 
 完整安装目录可直接通过 Windows 文件资源管理器合并。形象包保留所属协议路径。首次分发时不要附带测试启动生成的 core/config/settings.json，避免复制 player_id。应用偏好后生成的 JSON 位于各包 config/ 下，退出游戏后可以手动编辑。
 
-core/dev/export_release.ps1 是窗口使用的同一后端，接收 RequestPath 指向的 JSON。请求包含 core 布尔值、output 绝对目录和 packages 包 ID 数组。export_windows_host.ps1 可单独构建核心；export_windows_minimal.ps1 是原版轮换与阿瓦隆的预设，复用同一后端和依赖计算。运行后仍需检查正式菜单、设置和实际开局；导出成功不等于多人或外网验收。
+`core/dev/export_job.ps1` 是窗口的后台入口，接收 `RequestPath` 指向的 JSON，按平台调用本地 `export_release.ps1` 或 iOS 云导出后端。命令行也建议调用该入口，以保留任务锁和完成结果。请求包含 core 布尔值、output 绝对目录和 packages 包 ID 数组。export_windows_host.ps1 可单独构建核心；export_windows_minimal.ps1 是原版轮换与阿瓦隆的预设，复用同一后端和依赖计算。运行后仍需检查正式菜单、设置和实际开局；导出成功不等于多人或外网验收。
 
 ## 可视化 Android 导出
 
 通常使用 Godot 编辑器设置中的 SDK 路径。若运行中的编辑器反复写回旧 SDK 配置，可在本机 `tmp/local/android_export.json` 写入 `{"android_sdk_path":"F:/AndroidSDK"}`。可视化导出器会提前检查该目录，并在隔离的 APK 导出进程内应用此路径；该文件不提交、不进入可玩包，也不增加导出窗口选项。没有此文件时仍使用编辑器设置，存在但无效时明确失败，不自动猜测 SDK 位置。
 
-编辑器打开“项目 → 工具 → GodotParty：导出 Android 可玩包”。仍只需勾选内容和选择输出目录，依赖选择规则与 Windows 相同。勾选核心会生成 `GodotParty.apk`，同时生成 `GodotParty-content-android.zip`；不勾选核心则只生成内容 ZIP，用于单独更新小游戏。后端请求增加 `platform: "Android"`，省略时仍导出 Windows。
+编辑器打开“项目 → 工具 → GodotParty：导出 Android 可玩包”。仍只需勾选内容和选择输出目录，依赖选择规则与 Windows 相同。勾选核心会生成 `GodotParty.apk`，同时生成 `GodotParty-content-android.zip`；不勾选核心则只生成内容 ZIP，用于单独更新所选协议、形象、资产、主游戏或小游戏。后端请求增加 `platform: "Android"`，省略时仍导出 Windows。
+
+Android 的 `version/name` 和 iOS 的 `application/short_version` 从作者维护的 `project.godot` 的 `application/config/version` 读取，只写入隔离构建副本，不修改项目版本或框架版本。Android `version/code` 继续由 Android 预设维护，iOS 构建编号由工作流运行编号提供。仅勾选核心时仍产生可安装的空内容 ZIP，跳过内容资源导入。
 
 当前 APK 是 ARM64、横屏、调试签名的测试包，使用本机 Godot 已配置的 Android SDK、Java 和匹配导出模板。导出器在隔离工程中导入 Android 资源，使用 Compatibility 渲染器，并启用屏幕触摸模拟鼠标左键；不会把触摸变成键盘操作，也不提供虚拟摇杆。需要键盘或鼠标右键的小游戏仍须另行适配。初版选择小游戏轮换与竞拍大师。
 
@@ -72,7 +74,7 @@ APK 构建成功仅证明导出流程完成。真机验收需检查首次启动�
 
 Windows 本机需要 Git、GitHub CLI 和 PATH 上的 Godot；先运行 `gh auth login -h github.com`，账户需要该仓库 Actions 的运行权限。后端 `core/dev/export_ios_cloud.ps1` 使用 origin 指向的 GitHub 仓库，只构建已推送的当前 HEAD；未提交修改不会进入云端，尚未推送的提交明确失败。窗口显示提交、工作流链接及构建阶段；详细记录在本次 `tmp/exports/` 目录。修改源码或内容后，应先提交并推送相关小游戏子模块，再推送主仓库引用。
 
-`.github/workflows/build-ios.yml` 在 macOS/Xcode 上检出指定提交及其子模块，安装与本机 Godot 相同版本的编辑器和 iOS 模板。`core/dev/build_ios.py` 复用移动端内容导出流程，自动补齐依赖、重新导入资源，再构建独立的 iOS 框架工程。框架声明 `ios`，使用 Compatibility 渲染、横屏、触摸模拟左键；左上角 Esc 第一次触碰只显现，再点击才发送 Esc。移动端玩法仍须实际适配触摸与设备能力，包版本检查不代替真机验证。
+`.github/workflows/build-ios.yml` 在 macOS/Xcode 上检出指定提交及其子模块，安装与本机 Godot 相同版本的编辑器和 iOS 模板。`core/dev/build_ios.py` 与 Android 后端直接共用 `core/dev/export_mobile_content.ps1` 内容导出入口（不调用 Android APK 导出器），自动补齐依赖、重新导入资源，再构建独立的 iOS 框架工程。框架声明 `ios`，使用 Compatibility 渲染、横屏、触摸模拟左键；左上角 Esc 第一次触碰只显现，再点击才发送 Esc。移动端玩法仍须实际适配触摸与设备能力，包版本检查不代替真机验证。
 
 IPA 面向 ARM64 iPad/iPhone，仅带 ad-hoc 签名，必须导入 SideStore 重签安装，不能直接安装，也不是 TestFlight/App Store 包。本流程不接收 Apple 证书。GitHub 保留可玩产物 14 天、构建日志 7 天；构建失败时查看运行链接中的诊断产物。
 
@@ -81,7 +83,7 @@ iOS 配置和内置内容安装到应用私有存储，保留已有玩家配置�
 
 ## 统一资源收集边界
 
-Windows 与 Android 核心构建共用 `core/dev/export_source_files.ps1`，iOS 使用同一移动暂存工程；核心资源、署名收集均按目录名跳过 `authoring/`，同时继续跳过其他含 `.gdignore` 的子树。普通内容收集使用同样的目录约定，协议不包含其独立 avatars 子包。隐藏文件/目录、临时备份、包内玩家配置不发布；正式 `.import` 与 `.uid` 保留。
+三平台共用 `core/dev/export_source_files.ps1` 的收集边界；`export_build.ps1` 统一 Godot 子进程日志和移动构建副本设置，Android 与 iOS 共用 `export_mobile_content.ps1` 生成内容 ZIP；核心资源、署名收集均按目录名跳过 `authoring/`，同时继续跳过其他含 `.gdignore` 的子树。普通内容收集使用同样的目录约定，协议不包含其独立 avatars 子包。隐藏文件/目录、临时备份、包内玩家配置不发布；正式 `.import` 与 `.uid` 保留。
 
 内容暂存完整复制作者的导入设置，再由所选 Godot 在干净工程中生成目标资源。声明的外置文件只由外置流程复制一次；构建专用 `.gdignore` 或 Keep File 导入标记阻止它们被再次转换，标记不随外置文件发布。可玩 PCK 的普通导入资源只保留重映射与运行产物；原样文件按其使用方式保留，不按音频/图片扩展名盲目删源文件。
 
@@ -105,3 +107,9 @@ Windows 与 Android 核心构建共用 `core/dev/export_source_files.ps1`，iOS 
 内容请求、准备、数据块、完成及取消使用 CONTENT_CHANNEL=8，可靠性由 ENet 提供。每客户端一次下载一个文件，32 KiB/块、8 块在途；房主每客户端队列最多 16 项，每帧轮流处理最多 16 块。任务 ID 隔离重试与取消，接收校验文件及偏移。复用文件句柄，约 1 MiB 或文件结束刷新。ZIP 写入和入队复制按约 1 MiB 分帧，显示下载、整理文件、等待重启状态。
 
 构建成功并验证产物后删除本次 tmp/content_build 工作目录；失败保留日志，删除可再生源码及导入副本。下载成功入队、失败或明确取消时关闭句柄并回收本任务 tmp/content_download；完整待安装 tmp/content_update.zip 保留至启动安装成功，入队失败不改动此前任务。tmp/content_distribution 保留当前有效版本。不要在任一实例运行时清理其他实例的遗留目录；离线清理入口为 core/dev/clear_content_work.ps1，保留 tmp/local 与所有包 config。根 assets/ 只存安装内容并由 Git/Godot 忽略；games/assets/ 是版本控制中的开发源码。
+
+### 可玩包导出任务目录
+
+每次导出使用一个新的任务目录，包含 `request.json`、阶段日志、`export.log` 和 `job-result.json`。Windows 内容工作区通过 `--workspace` 放入本任务 `content_work/`；构建器在清理成功的导入副本前保留导入和打包日志。失败日志、请求和 `previous/` 回滚备份不会被自动删除。
+
+任务完成后可运行 `core/dev/clear_export_work.ps1 -JobDirectory <本次任务绝对目录>`，清理该任务的核心/移动源码和导入副本。该入口只接受项目 `tmp/` 下已有完成结果的任务，使用任务锁拒绝清理仍在执行的导出，预先拒绝目录链接和越界路径；保留正式输出、`build/` 成品副本、内容 ZIP、日志、请求、结果及回滚备份。可在编辑器仍打开时清理已完成的其他任务，不清理正在运行的游戏或其他任务缓存。

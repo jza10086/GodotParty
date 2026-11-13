@@ -1,4 +1,4 @@
-# Shared Windows/Android source boundary. iOS consumes the Android staging output.
+# Shared source boundary for Windows, Android and iOS staging.
 # Keep authoring visible in Godot; exclude it only from publication. Preserve import settings and UIDs.
 function Get-PartySourceFiles([string]$Root) {
     $directory = Get-Item -LiteralPath $Root -Force

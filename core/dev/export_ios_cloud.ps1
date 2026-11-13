@@ -28,6 +28,7 @@ if ($request.platform -ne 'iOS' -or $request.core -isnot [bool] -or $request.pac
 foreach ($id in $request.packages) { if ($id -isnot [string] -or $id -cnotmatch '^[a-z0-9_]+$') { throw 'Invalid package ID' } }
 if (![IO.Path]::IsPathRooted($request.output)) { throw 'Export directory must be absolute' }
 $output = [IO.Path]::GetFullPath($request.output).TrimEnd('\','/')
+if ($output -eq $job -or $output.StartsWith($job + '\',[StringComparison]::OrdinalIgnoreCase) -or $job.StartsWith($output + '\',[StringComparison]::OrdinalIgnoreCase)) { throw 'Output and build job directories must not overlap' }
 $root = $projectRoot.TrimEnd('\','/')
 $inside = $output.StartsWith($root + '\',[StringComparison]::OrdinalIgnoreCase)
 $temporary = $output.StartsWith((Join-Path $root 'tmp/releases/').Replace('/','\'),[StringComparison]::OrdinalIgnoreCase) -or $output.StartsWith((Join-Path $root 'tmp/test/').Replace('/','\'),[StringComparison]::OrdinalIgnoreCase)

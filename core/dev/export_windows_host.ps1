@@ -5,12 +5,13 @@ param(
 )
 # Build the core from a clean copy. User data and content never enter the EXE.
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'export_source_files.ps1')
+. (Join-Path $PSScriptRoot 'export_build.ps1')
 Get-Command $GodotPath -CommandType Application -ErrorAction Stop | Out-Null
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 if (!$BuildRoot) { $BuildRoot = Join-Path $projectRoot ('tmp/exports/host_' + [guid]::NewGuid().ToString('N')) }
 if (!$OutputDirectory) { $OutputDirectory = Join-Path $BuildRoot 'bin' }
 $sourceRoot = Join-Path $BuildRoot 'source'
+if (Test-Path -LiteralPath $sourceRoot) { throw 'Use a fresh core build directory' }
 New-Item -ItemType Directory -Path $sourceRoot, $OutputDirectory -Force | Out-Null
 $utf8 = New-Object Text.UTF8Encoding($false)
 $coreFiles = @(Get-PartyCoreFiles $projectRoot)
@@ -31,7 +32,7 @@ $presetText = $presetText -replace 'binary_format/embed_pck=false', 'binary_form
 $presetText = $presetText -replace '(?m)^exclude_filter=.*$', 'exclude_filter="core/dev/*,core/config/*.json,core/config/*.bak,core/config/*.pending,core/saves/*"'
 [IO.File]::WriteAllText((Join-Path $sourceRoot 'export_presets.cfg'), $presetText, $utf8)
 $projectText = Get-Content -LiteralPath (Join-Path $projectRoot 'project.godot') -Raw -Encoding UTF8
-$projectText = $projectText -replace '(?ms)^\[autoload\].*?(?=^\[)', '' -replace '(?ms)^\[editor_plugins\].*?(?=^\[)', ''
+$projectText = $projectText -replace '(?ms)^\[autoload\].*?(?=^\[|\z)', '' -replace '(?ms)^\[editor_plugins\].*?(?=^\[|\z)', ''
 $projectText = $projectText -replace '(?m)^export/convert_text_resources_to_binary=.*\r?\n', ''
 $projectText = $projectText -replace '(?m)^\[editor\]', "[editor]`nexport/convert_text_resources_to_binary=false"
 if ($projectText -notmatch '(?m)^\[editor\]') { $projectText += "`n[editor]`nexport/convert_text_resources_to_binary=false`n" }
@@ -48,18 +49,12 @@ foreach ($step in @('import','export')) {
         $engineArguments = @('--headless', '--path', $sourceRoot, '--log-file', (Join-Path $BuildRoot 'export-engine.log'), '--export-release', 'Windows Desktop', (Join-Path $OutputDirectory 'GodotParty.exe'))
     }
     try {
-        # Windows PowerShell 5 treats native stderr as ErrorRecords. Capture all of it
-        # before checking the process result instead of aborting at the first line.
-        $exitCode = & {
-            $ErrorActionPreference = 'Continue'
-            & $GodotPath @engineArguments 2>&1 | ForEach-Object { $_.ToString() } | Set-Content -LiteralPath $log -Encoding UTF8 -ErrorAction Stop
-            $LASTEXITCODE
-        }
+        Invoke-PartyGodot $GodotPath $engineArguments $log
     } finally {
         if ($step -eq 'import') { [IO.File]::WriteAllText($projectFile, $projectText, $utf8) }
     }
-    if ($exitCode -ne 0 -or (Select-String -LiteralPath $log -Pattern 'SCRIPT ERROR|ERROR:')) { throw "Core $step failed. See $log" }
 }
+if (!(Test-Path -LiteralPath (Join-Path $OutputDirectory 'GodotParty.exe') -PathType Leaf)) { throw 'Windows export did not produce an EXE' }
 $notices = Join-Path $OutputDirectory 'core/notices'
 New-Item -ItemType Directory $notices -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $projectRoot 'doc/credits.md') -Destination (Join-Path $notices 'project-credits.md')

@@ -21,6 +21,12 @@ func build(catalog: RefCounted, outputs: Dictionary, workspace: String) -> Error
 	var error: Error = await _build_in_stage(catalog, selection.ids, outputs, stage)
 	var cleanup: RefCounted = preload("res://core/content/party_content_archive.gd").new()
 	if error == OK:
+		# Preserve successful subprocess diagnostics next to the job, before removing import copies.
+		for name: String in ["import.log", "pack.log"]:
+			var saved: Error = DirAccess.copy_absolute(stage.path_join(name), workspace.path_join(stage.get_file() + "." + name))
+			if saved != OK:
+				last_error = "Cannot retain build log: " + name
+				return saved
 		error = cleanup._remove_stage(stage)
 		if error != OK:
 			last_error = "Cannot clear completed build: " + stage

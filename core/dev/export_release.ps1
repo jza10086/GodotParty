@@ -1,6 +1,7 @@
 param([Parameter(Mandatory=$true)][string]$RequestPath, [string]$GodotPath = 'godot')
 # A private build finishes before touching the installation. Formal external payload joins rollback.
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'export_build.ps1')
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $request = Get-Content -LiteralPath $RequestPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $platform = if ($request.platform) { [string]$request.platform } else { 'Windows' }
@@ -13,6 +14,7 @@ $releasePrefix = Join-Path $projectRoot 'tmp/releases'
 $testPrefix = Join-Path $projectRoot 'tmp/test'
 if ($output -eq $projectPath -or $projectPath.StartsWith($output + '\',[StringComparison]::OrdinalIgnoreCase) -or ($output.StartsWith($projectPath + '\',[StringComparison]::OrdinalIgnoreCase) -and !$output.StartsWith($releasePrefix + '\',[StringComparison]::OrdinalIgnoreCase) -and !$output.StartsWith($testPrefix + '\',[StringComparison]::OrdinalIgnoreCase))) { throw 'Choose a directory outside the development project, or under tmp/releases/ or tmp/test/' }
 $buildRoot = Split-Path -Parent ([IO.Path]::GetFullPath($RequestPath))
+if ($output -eq $buildRoot -or $output.StartsWith($buildRoot + '\',[StringComparison]::OrdinalIgnoreCase) -or $buildRoot.StartsWith($output + '\',[StringComparison]::OrdinalIgnoreCase)) { throw 'Output and build job directories must not overlap' }
 $stage = Join-Path $buildRoot 'build'
 $statusPath = Join-Path $buildRoot 'status.txt'
 $utf8 = New-Object Text.UTF8Encoding($false)
@@ -45,8 +47,7 @@ try {
     if ($platform -eq 'Windows' -and $request.packages.Count -gt 0) {
         Status 'Exporting content and dependencies'
         $log = Join-Path $buildRoot 'content.log'
-        & $GodotPath --headless --path $projectRoot --log-file (Join-Path $buildRoot 'content-engine.log') --script res://core/dev/export_content.gd -- "--output=$stage" "--request=$RequestPath" *> $log
-        if ($LASTEXITCODE -ne 0 -or (Select-String -LiteralPath $log -Pattern 'SCRIPT ERROR|ERROR:') -or !(Select-String -LiteralPath $log -Pattern 'CONTENT_EXPORT_PASS')) { throw "Content export failed. See $log" }
+        Invoke-PartyGodot $GodotPath -LogPath $log -Marker 'CONTENT_EXPORT_PASS' -EngineArguments @('--headless','--path',$projectRoot,'--log-file',(Join-Path $buildRoot 'content-engine.log'),'--script','res://core/dev/export_content.gd','--',"--output=$stage", "--request=$RequestPath", "--workspace=$(Join-Path $buildRoot 'content_work')")
     }
     Status 'Publishing completed build'
     # Preflight every output, and save overwritten build artifacts for rollback.
