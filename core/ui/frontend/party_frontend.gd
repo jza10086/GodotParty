@@ -381,7 +381,7 @@ func _sync_room() -> void:
 		return
 	var main: String = app.connection.room.main
 	var definition: Dictionary = app.catalog.get_package(main)
-	var packed: Resource = load(app.catalog.path(main, definition.room_scene))
+	var packed: Resource = app.catalog.resource(main, definition.room_scene)
 	if not packed is PackedScene:
 		app.connection.leave.call_deferred("主游戏房间入口不是有效场景：" + main)
 		return

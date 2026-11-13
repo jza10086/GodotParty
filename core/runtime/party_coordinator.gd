@@ -35,6 +35,7 @@ var _deferred_finish: Dictionary = {}
 var _ready_peers: Dictionary = {}
 var _expected: Array[int] = []
 var _deadline: int = 0
+var _load_generation: int = 0
 var _received: Dictionary = {}
 var _sent: Dictionary = {}
 var _mouse_mode: int
@@ -77,7 +78,17 @@ func begin() -> Error:
 	record["main_rules"] = Rules.snapshot(record.room, record.room.main, catalog)
 	for player: Dictionary in connection.players:
 		record["appearances"][player["player_id"]] = player["appearance"].duplicate(true)
-	var scope: Dictionary = _create_scope(_main_id, record["room"]["main"], "", _ids(connection.players), {}, record["room"]["settings"])
+	var generation: int = _load_generation
+	var packed: PackedScene = await _load_scene(_main_id, record.room.main)
+	if generation != _load_generation:
+		return ERR_SKIP
+	if not connection.content_sync.start_ready():
+		cleanup("start_cancelled")
+		return ERR_SKIP
+	if packed == null:
+		cleanup("main_load_failed")
+		return ERR_CANT_OPEN
+	var scope: Dictionary = _create_scope(_main_id, record["room"]["main"], "", _ids(connection.players), {}, record["room"]["settings"], packed)
 	if scope.is_empty():
 		return ERR_CANT_CREATE
 	_scopes[_main_id] = scope
@@ -93,10 +104,50 @@ func begin() -> Error:
 	connection._publish()
 	return OK
 
-func _create_scope(id: String, package_id: String, round: String, participants: Array, request: Dictionary, config: Dictionary, seed_value: int = 0) -> Dictionary:
-	var packed: Resource = catalog.load_entry(package_id)
+## Keep the UI/network loop alive while Godot reads the selected scene.
+## Cancelled requests are drained, but their result can never enter the scene tree.
+func _load_scene(scope_id: String, package_id: String) -> PackedScene:
+	var generation: int = _load_generation
+	phase = "loading"
+	loading = {"scope": scope_id, "package": package_id, "ready": [], "progress": 0.0}
+	changed.emit()
+	await get_tree().process_frame
+	if generation != _load_generation:
+		return null
+	var protocol: String = catalog.get_package(record.room.main).protocol.id
+	if catalog.activate(package_id, protocol) != OK:
+		failed.emit("无法加载内容包：" + catalog.last_error)
+		return null
+	var path: String = catalog.path(package_id, "game.tscn")
+	var error: Error = ResourceLoader.load_threaded_request(path, "PackedScene")
+	if error != OK:
+		failed.emit("无法加载游戏：" + package_id + " · " + error_string(error))
+		return null
+	while true:
+		var progress: Array = []
+		var status: ResourceLoader.ThreadLoadStatus = ResourceLoader.load_threaded_get_status(path, progress)
+		if status == ResourceLoader.THREAD_LOAD_LOADED:
+			var scene: Resource = ResourceLoader.load_threaded_get(path)
+			return scene as PackedScene if generation == _load_generation else null
+		if status in [ResourceLoader.THREAD_LOAD_FAILED, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE]:
+			if generation == _load_generation:
+				failed.emit("游戏资源加载失败：" + package_id)
+			return null
+		if generation == _load_generation:
+			var value: float = float(progress[0]) if not progress.is_empty() else 0.0
+			if value != loading.progress:
+				loading.progress = value
+				changed.emit()
+		await get_tree().process_frame
+	return null
+
+func _create_scope(id: String, package_id: String, round: String, participants: Array, request: Dictionary, config: Dictionary, packed: PackedScene, seed_value: int = 0) -> Dictionary:
 	if not packed is PackedScene:
 		failed.emit("入口不是场景：" + package_id)
+		return {}
+	var checked: Dictionary = catalog.validate_settings(package_id, config, true)
+	if not checked.ok:
+		failed.emit(checked.message)
 		return {}
 	var root: Node = packed.instantiate()
 	var hooks: Array[String] = ["party_setup", "party_start", "party_stop"]
@@ -269,6 +320,9 @@ func _request(payload: Dictionary) -> Error:
 	if not report.get("ok", false):
 		failed.emit(report.get("message", "Invalid request"))
 		return ERR_INVALID_PARAMETER
+	if catalog.activate(id, adapter.protocol.id) != OK:
+		failed.emit("无法加载内容包：" + catalog.last_error)
+		return ERR_CANT_OPEN
 	var implementation: RefCounted = _adapter_instance(id, adapter)
 	if implementation != null and implementation.has_method("check_request"):
 		report = implementation.check_request(payload["request"].duplicate(true))
@@ -288,7 +342,7 @@ func _request(payload: Dictionary) -> Error:
 func _adapter_instance(id: String, adapter: Dictionary) -> RefCounted:
 	if not adapter.has("entry"):
 		return null
-	var script: Script = load(catalog.path(id, adapter["entry"]))
+	var script: Script = catalog.resource(id, adapter["entry"])
 	return script.new()
 
 func _finish(scope: Dictionary, raw: Dictionary) -> Error:
@@ -402,7 +456,8 @@ func _control(sender: int, kind: String, payload: Dictionary) -> void:
 		"readiness":
 			if not loading.is_empty() and payload.scope == loading.scope:
 				loading["ready"] = payload.get("peers", []).duplicate()
-				_scopes[loading.scope]["prepared_peers"] = loading["ready"].duplicate()
+				if _scopes.has(loading.scope):
+					_scopes[loading.scope]["prepared_peers"] = loading["ready"].duplicate()
 				changed.emit()
 		"start":
 			_start_scope(payload.get("scope", ""))
@@ -428,7 +483,12 @@ func _install(payload: Dictionary) -> void:
 	if not _scopes.has(_main_id):
 		_mouse_mode = Input.mouse_mode
 		_saved_focus = weakref(get_viewport().gui_get_focus_owner())
-		_create_scope(_main_id, record["room"]["main"], "", _ids(connection.players), {}, record["room"]["settings"])
+		var generation: int = _load_generation
+		var packed: PackedScene = await _load_scene(_main_id, record.room.main)
+		if generation != _load_generation:
+			return
+		if packed != null:
+			_create_scope(_main_id, record["room"]["main"], "", _ids(connection.players), {}, record["room"]["settings"], packed)
 	if not _scopes.has(_main_id):
 		connection.control("failure", {"scope": _main_id, "reason": "Main game load failed"}, 1)
 		return
@@ -471,7 +531,14 @@ func _enter_child(payload: Dictionary) -> void:
 	_release_view(main)
 	_child_id = payload["scope"]
 	var settings_value: Dictionary = record["room"]["children"].get(payload["id"], {})
-	var scope: Dictionary = _create_scope(_child_id, payload["id"], _child_id, payload["participants"], payload["config"], settings_value, payload["seed"])
+	var generation: int = _load_generation
+	var packed: PackedScene = await _load_scene(_child_id, payload.id)
+	if generation != _load_generation:
+		return
+	if packed == null:
+		connection.control("failure", {"scope": _child_id, "reason": "Minigame resource load failed"}, 1)
+		return
+	var scope: Dictionary = _create_scope(_child_id, payload["id"], _child_id, payload["participants"], payload["config"], settings_value, packed, payload["seed"])
 	if scope.is_empty():
 		connection.control("failure", {"scope": _child_id, "reason": "Minigame load failed"}, 1)
 		return
@@ -570,6 +637,7 @@ func cancel_round(reason: String) -> void:
 	connection.control("cancel", {"reason": reason})
 
 func _restore_parent(reason: String) -> void:
+	_load_generation += 1
 	if _child_id.is_empty() or not _scopes.has(_main_id):
 		return
 	var round: String = _child_id
@@ -642,6 +710,7 @@ func _close_scope(id: String, reason: String) -> void:
 	_scopes.erase(id)
 
 func cleanup(reason: String = "closed") -> void:
+	_load_generation += 1
 	var ids: Array = _scopes.keys()
 	ids.reverse()
 	for id: String in ids:
@@ -776,7 +845,7 @@ func _withdraw(peer: int) -> void:
 func _connection_changed() -> void:
 	if _lobby_api != null:
 		_lobby_api.players_changed.emit()
-	if not connection.online and not _scopes.is_empty():
+	if not connection.online and (not _scopes.is_empty() or phase != "idle"):
 		cleanup("disconnected")
 	for scope: Dictionary in _scopes.values():
 		scope["api"].players_changed.emit()
@@ -913,7 +982,7 @@ func _network_stats_changed() -> void:
 		_lobby_api.net.stats_changed.emit()
 	for scope: Dictionary in _scopes.values():
 		scope.api.net.stats_changed.emit()
-	if not loading.is_empty() and _scopes[loading.scope].ready_requested:
+	if not loading.is_empty() and _scopes.has(loading.scope) and _scopes[loading.scope].ready_requested:
 		_report_ready(loading.scope)
 
 ## Only the network boundary validates control shapes; internal handlers use the checked contract.

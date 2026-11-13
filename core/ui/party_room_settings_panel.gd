@@ -13,11 +13,11 @@ func configure(room: Dictionary, catalog: RefCounted, editable: bool, running: b
 	main_id = room.main
 	protocol_id = catalog.get_package(room.main).protocol.id
 	_preset_controls(protocol_id, editable and not running)
-	_section("协议规则", "protocol_base", "", catalog.schema(protocol_id), room.common, {}, editable, running)
+	_section("协议规则", "protocol_base", "", catalog.localized_schema(protocol_id), room.common, {}, editable, running)
 	for game: String in [String(room.main)] + room.children.keys():
 		_preset_controls(game, editable and not running)
-		_section(catalog.get_package(game).name + " · 协议覆盖", "game_common", game, catalog.schema(protocol_id), room.common_overrides.get(game, {}), room.common, editable, running)
-		_section(catalog.get_package(game).name + " · 专属规则", "game_own", game, catalog.schema(game), room.settings if game == main_id else room.children[game], {}, editable, running)
+		_section(catalog.get_package(game).name + " · 协议覆盖", "game_common", game, catalog.localized_schema(protocol_id), room.common_overrides.get(game, {}), room.common, editable, running)
+		_section(catalog.get_package(game).name + " · 专属规则", "game_own", game, catalog.localized_schema(game), room.settings if game == main_id else room.children[game], {}, editable, running)
 
 func _section(title: String, target: String, game: String, schema: Dictionary, original: Dictionary, base: Dictionary, editable: bool, running: bool) -> void:
 	var locked: Array = []

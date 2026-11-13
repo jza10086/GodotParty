@@ -181,15 +181,15 @@ func reset() -> void:
 	_deadline = 0
 	changed.emit()
 
-## Source tests exchange version requirements only; released hosts offer verified PCK artifacts.
+## Source tests exchange versions; published peers offer build identities and payload sizes.
 func offer(peer: int, requirements: Dictionary, stage: String = "join", token: String = "") -> void:
 	_uploads.erase(peer)
 	var offered: Dictionary = {}
 	for id: String in (requirements.packages.keys() if not connection.catalog.source_mode else []):
 		var required: Dictionary = requirements.packages[id]
 		var manifest: Dictionary = connection.catalog.packages[id]
-		var artifact: Dictionary = connection.catalog.artifacts[id]
-		offered[id] = {"id": id, "name": manifest.name, "version": required.version, "hash": required.hash, "relative": Paths.package_relative(manifest), "kind": manifest.kind, "files": artifact.files.duplicate(true), "error": ""}
+		var files: Array[Dictionary] = connection.catalog.distribution_files(id)
+		offered[id] = {"id": id, "name": manifest.name, "version": required.version, "build_id": required.build_id, "relative": Paths.package_relative(manifest), "kind": manifest.kind, "files": files, "error": "无法读取内容文件" if files.is_empty() else ""}
 	_offers[peer] = offered
 	if connection._player_peer(peer).is_empty():
 		connection._hello_peers[peer] = Time.get_ticks_msec() + 600000
@@ -230,10 +230,10 @@ func _files_issue(files: Variant) -> String:
 		return "无效的内容文件清单"
 	var seen: Dictionary = {}
 	for entry: Variant in files:
-		if not entry is Dictionary or not entry.get("path") is String or not entry.get("size") is int or entry.size < 0 or entry.size > MAX_FILE or not Data.relative_path(entry.path) or entry.path != entry.path.simplify_path() or (entry.path not in ["content.pck", "content.pck.json"] and not Packages.External.safe_path(entry.path)) or seen.has(entry.path):
+		if not entry is Dictionary or not entry.get("path") is String or not entry.get("size") is int or entry.size < 0 or entry.size > MAX_FILE or not Data.relative_path(entry.path) or entry.path != entry.path.simplify_path() or not Packages.safe_payload_path(entry.path) or seen.has(entry.path):
 			return "无效的内容文件清单"
 		seen[entry.path] = true
-	if not seen.has("content.pck") or not seen.has("content.pck.json"):
+	if not seen.has("content.pck.json"):
 		return "分发包缺少 PCK 或描述文件"
 	return ""
 
@@ -285,26 +285,22 @@ func receive_offer(payload: Dictionary) -> void:
 		if not value is Dictionary or not value.get("id") is String or not Paths.folder(value.id) or not value.get("name") is String or not value.get("version") is String or not value.get("relative") is String or not value.get("files") is Array or not value.get("error") is String:
 			connection.leave("无效的内容包条目")
 			return
-		if ids.has(value.id) or not requirements.packages.get(value.id) is Dictionary or requirements.packages[value.id].get("version") != value.version or requirements.packages[value.id].get("hash") != value.get("hash"):
+		if ids.has(value.id) or not requirements.packages.get(value.id) is Dictionary or requirements.packages[value.id].get("version") != value.version or requirements.packages[value.id].get("build_id") != value.get("build_id"):
 			connection.leave("内容同步条目与房间要求不一致")
 			return
-		if value.get("kind") not in Packages.Catalog.KINDS or not Packages.PackageHash.valid(value.get("hash")) or Packages.Versions.parse(value.version).is_empty():
-			connection.leave("无效的包类型、版本或 Hash")
+		if value.get("kind") not in Packages.Catalog.KINDS or not Packages.valid_build_id(value.get("build_id")) or Packages.Versions.parse(value.version).is_empty():
+			connection.leave("无效的包类型、版本或构建标识")
 			return
 		ids[value.id] = true
 		var row: Dictionary = value.duplicate(true)
-		var parts: PackedStringArray = row.relative.split("/")
-		if parts.size() < 2 or parts[0] not in ["protocols", "maingame", "minigame", "assets"] or not Data.relative_path(row.relative) or row.relative != row.relative.simplify_path() or parts[-1] != row.id:
+		if not Packages.safe_payload_path(row.relative):
 			connection.leave("无效的内容安装路径")
-			return
-		if Paths.package_relative({"id": row.id, "kind": row.kind, "owner_protocol": parts[1]}) != row.relative:
-			connection.leave("内容类型与安装路径不一致")
 			return
 		if not row.files.is_empty() and not _files_issue(row.files).is_empty():
 			connection.leave("无效的内容文件清单")
 			return
 		var local: Dictionary = connection.catalog.packages.get(row.id, {})
-		if local.get("package_version") == row.version and local.get("package_hash") == row.hash:
+		if local.get("package_version") == row.version and local.get("build_id") == row.build_id:
 			continue
 		row["current"] = local.get("package_version", "未安装")
 		row["state"] = "pending"
@@ -541,7 +537,7 @@ func _finish() -> void:
 func _write_bundle(zip_path: String, generation: int) -> Error:
 	for row: Dictionary in rows:
 		var raw: Dictionary = Data.read_json(_stage.path_join(row.relative).path_join("content.pck.json"))
-		if raw.get("id") != row.id or raw.get("version") != row.version or Paths.package_relative(raw) != row.relative or raw.get("package_hash") != row.hash or raw.get("kind") != row.kind:
+		if raw.get("id") != row.id or raw.get("version") != row.version or raw.get("build_id") != row.build_id or raw.get("kind") != row.kind:
 			return ERR_INVALID_DATA
 	var writer: ZIPPacker = ZIPPacker.new()
 	var error: Error = writer.open(zip_path)

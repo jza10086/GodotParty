@@ -42,7 +42,7 @@ layout_mode = 2
 [node name="Path" parent="Panel/Layout/Scroll/Content" index="1" unique_id=1402223890 instance=ExtResource("r2")]
 unique_name_in_owner = true
 layout_mode = 2
-placeholder_text = "已导出的 .pck 文件绝对路径（旁边须有 .pck.json）"
+placeholder_text = "已导出包文件夹的绝对路径（含 content.pck.json）"
 
 [node name="Status" type="Label" parent="Panel/Layout/Scroll/Content" index="2" unique_id=287005879]
 unique_name_in_owner = true
@@ -52,7 +52,7 @@ autowrap_mode = 3
 [node name="Install" parent="Panel/Layout/Scroll/Content" index="3" unique_id=973598714 instance=ExtResource("r3")]
 unique_name_in_owner = true
 layout_mode = 2
-text = "安装 PCK 及描述文件"
+text = "安装内容包文件夹"
 
 [node name="Sources" type="HBoxContainer" parent="Panel/Layout/Scroll/Content" index="4" unique_id=747485368]
 layout_mode = 2

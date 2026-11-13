@@ -2,7 +2,6 @@
 ## Formal external payload is replaced transactionally; personal config stays outside the payload.
 extends RefCounted
 const Packages = preload("res://core/content/party_packages.gd")
-const Paths = preload("res://core/config/party_paths.gd")
 const Data = preload("res://core/runtime/party_data.gd")
 var last_error: String = ""
 
@@ -17,11 +16,14 @@ func inspect(path: String) -> Dictionary:
 		reader.close()
 		return _failure("Invalid shared content bundle; regenerate with the current framework")
 	var files: Dictionary = {"bundle.json": false}
+	var claimed_paths: Dictionary = {"bundle.json": true}
+	var claimed_parents: Dictionary = {}
 	var folders: Dictionary = {}
 	var descriptions: Dictionary = {}
+	var locations: Dictionary = {}
 	var validator: RefCounted = Packages.new()
 	for relative: Variant in header.packages:
-		if not relative is String or not Data.relative_path(relative) or relative != relative.simplify_path():
+		if not Packages.safe_payload_path(relative):
 			reader.close()
 			return _failure("Invalid package directory")
 		var descriptor: String = relative.path_join("content.pck.json")
@@ -30,14 +32,26 @@ func inspect(path: String) -> Dictionary:
 			reader.close()
 			return _failure("Missing package descriptor: " + descriptor)
 		var issue: String = validator.validate_descriptor(description)
-		if not issue.is_empty() or Paths.package_relative(description) != relative or description.get("artifact") != "content.pck" or descriptions.has(description.id):
+		if not issue.is_empty() or descriptions.has(description.id):
 			reader.close()
 			return _failure("Invalid package " + relative + ": " + issue)
 		descriptions[description.id] = description
-		files[descriptor] = true
-		files[relative.path_join("content.pck")] = true
-		for loose: String in description.get("external_files", []):
-			files[relative.path_join(loose)] = false
+		locations[description.id] = relative
+		for name: String in Packages.payload_files(description):
+			var entry: String = relative.path_join(name)
+			var normalized: String = entry.to_lower()
+			if claimed_paths.has(normalized) or claimed_parents.has(normalized):
+				reader.close()
+				return _failure("Conflicting package payload: " + entry)
+			var parent_path: String = normalized.get_base_dir()
+			while not parent_path.is_empty():
+				if claimed_paths.has(parent_path):
+					reader.close()
+					return _failure("Package file conflicts with directory: " + entry)
+				claimed_parents[parent_path] = true
+				parent_path = parent_path.get_base_dir()
+			claimed_paths[normalized] = true
+			files[entry] = true
 		for folder: String in description.get("external_directories", []):
 			folders[relative.path_join(folder)] = true
 	for file: String in files:
@@ -57,7 +71,7 @@ func inspect(path: String) -> Dictionary:
 			reader.close()
 			return _failure("Unexpected or duplicate ZIP entry: " + file)
 	reader.close()
-	return {"ok": true, "id": header.id, "files": files, "directories": folders.keys(), "descriptions": descriptions}
+	return {"ok": true, "id": header.id, "files": files, "directories": folders.keys(), "descriptions": descriptions, "locations": locations}
 
 ## Queue updates for next launch; never mutate already-mounted PCKs.
 func queue_update(source: String, directory: String, active: Callable = Callable(), progress: Callable = Callable()) -> Error:
@@ -108,7 +122,7 @@ func queue_update(source: String, directory: String, active: Callable = Callable
 	return error
 
 ## Merge bundled and downloaded updates into one candidate set; verify before publication.
-func bootstrap(directory: String, packages: RefCounted, source_roots: Dictionary = {}) -> Error:
+func bootstrap(directory: String, packages: RefCounted) -> Error:
 	var archives: Array[Dictionary] = []
 	var bundled: String = "res://core/bundled_content.zip"
 	var marker: String = directory.path_join("tmp/bundled_content_id.txt")
@@ -128,10 +142,10 @@ func bootstrap(directory: String, packages: RefCounted, source_roots: Dictionary
 			return ERR_INVALID_DATA
 		archives.append({"path": pending, "checked": checked})
 	if archives.is_empty():
-		var error: Error = packages.prepare(directory, source_roots)
+		var error: Error = packages.prepare(directory)
 		last_error = packages.last_error
 		return error
-	var error: Error = _apply_batch(archives, directory, packages, source_roots)
+	var error: Error = _apply_batch(archives, directory, packages)
 	if error != OK:
 		return error
 	if not bundle_id.is_empty():
@@ -147,13 +161,21 @@ func bootstrap(directory: String, packages: RefCounted, source_roots: Dictionary
 
 ## Public offline install follows the same candidate validation and rollback path.
 func apply(source: String, directory: String, checked: Dictionary) -> Error:
-	return _apply_batch([{"path": source, "checked": checked}], directory, Packages.new(), {})
+	return _apply_batch([{"path": source, "checked": checked}], directory, Packages.new())
 
-func _apply_batch(archives: Array, directory: String, packages: RefCounted, source_roots: Dictionary) -> Error:
+func _apply_batch(archives: Array, directory: String, packages: RefCounted) -> Error:
+	var error: Error = DirAccess.make_dir_recursive_absolute(directory)
+	if error != OK:
+		last_error = "Cannot create installation directory: " + error_string(error)
+		return error
 	var stage: String = directory.path_join("tmp/content_install/" + Data.token())
-	var replacements: Dictionary = source_roots.duplicate()
+	var replacements: Dictionary = {}
+	if packages.prepare(directory) != OK:
+		last_error = packages.last_error
+		return ERR_INVALID_DATA
+	var existing_roots: Dictionary = packages.roots.duplicate()
 	var updated: Dictionary = {}
-	var error: Error = OK
+	var locations: Dictionary = {}
 	for archive: Dictionary in archives:
 		var reader: ZIPReader = ZIPReader.new()
 		error = reader.open(archive.path)
@@ -162,12 +184,12 @@ func _apply_batch(archives: Array, directory: String, packages: RefCounted, sour
 			return error
 		for id: String in archive.checked.descriptions:
 			var description: Dictionary = archive.checked.descriptions[id]
-			var relative: String = Paths.package_relative(description)
+			var relative: String = archive.checked.locations[id]
+			locations[id] = String(existing_roots[id]).trim_prefix(directory.trim_suffix("/") + "/") if existing_roots.has(id) else relative
 			var root: String = stage.path_join("next").path_join(relative)
 			replacements[id] = root
 			updated[id] = description
-			var names: Array = ["content.pck", "content.pck.json"]
-			names.append_array(description.external_files)
+			var names: Array = Packages.payload_files(description)
 			for name: String in names:
 				error = _write(root.path_join(name), reader.read_file(relative.path_join(name)))
 				if error != OK:
@@ -192,15 +214,14 @@ func _apply_batch(archives: Array, directory: String, packages: RefCounted, sour
 	var writes: Array[Dictionary] = []
 	for id: String in updated:
 		var description: Dictionary = updated[id]
-		var relative: String = Paths.package_relative(description)
+		var relative: String = locations[id]
 		var target_root: String = directory.path_join(relative)
 		var old_path: String = target_root.path_join("content.pck.json")
 		var old: Dictionary = Data.read_json(old_path) if FileAccess.file_exists(old_path) else {}
-		var names: Array = ["content.pck", "content.pck.json"]
-		names.append_array(description.external_files)
+		var names: Array = Packages.payload_files(description)
 		# Retired formal files are deletions in the same transaction, never orphaned payload.
-		for name: String in old.get("external_files", []):
-			if Packages.External.safe_path(name) and name not in names:
+		for name: String in old.get("payload_files", []):
+			if Packages.safe_payload_path(name) and name not in names:
 				names.append(name)
 		for name: String in names:
 			var target: String = target_root.path_join(name)
@@ -216,7 +237,7 @@ func _apply_batch(archives: Array, directory: String, packages: RefCounted, sour
 			if error != OK:
 				last_error = "Cannot back up content: " + error_string(error)
 				return error
-			writes.append({"target": target, "staged": staged, "backup": backup, "existed": existed, "delete": name not in description.external_files and name not in ["content.pck", "content.pck.json"]})
+			writes.append({"target": target, "staged": staged, "backup": backup, "existed": existed, "delete": name not in Packages.payload_files(description)})
 		for folder: String in description.external_directories:
 			error = DirAccess.make_dir_recursive_absolute(target_root.path_join(folder))
 			if error != OK:
@@ -240,7 +261,7 @@ func _apply_batch(archives: Array, directory: String, packages: RefCounted, sour
 		last_error = "Cannot install content: " + error_string(error) + "; backups: " + stage
 		return error
 	for id: String in updated:
-		packages.roots[id] = directory.path_join(Paths.package_relative(updated[id]))
+		packages.roots[id] = directory.path_join(locations[id])
 	error = _remove_stage(stage)
 	if error != OK:
 		last_error = "Content installed but staging cleanup failed: " + stage

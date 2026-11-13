@@ -54,14 +54,19 @@ try {
     Status 'Publishing completed build'
     # Preflight every output, and save overwritten build artifacts for rollback.
     $writes = @()
+    $payloadPaths = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($descriptor in Get-ChildItem -LiteralPath $stage -Recurse -Filter 'content.pck.json' -File) {
+        $description = Get-Content -LiteralPath $descriptor.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach ($name in @('content.pck.json') + @($description.payload_files)) {
+            [void]$payloadPaths.Add((Join-Path $descriptor.DirectoryName $name).Substring($stage.Length + 1))
+        }
+    }
     foreach ($file in Get-ChildItem -LiteralPath $stage -Recurse -File) {
         $relative = $file.FullName.Substring($stage.Length + 1)
         $target = Join-Path $output $relative
         Check-Target $target
         if (Test-Path -LiteralPath $target -PathType Container) { throw "File conflicts with directory: $target" }
-        $packageArtifact = $relative -match '^(protocols|maingame|minigame|assets)\\[^\\]+\\(avatars\\[^\\]+\\)?content\.pck(\.json)?$'
-        $formalExternal = $relative -match '^(protocols|maingame|minigame|assets)\\[^\\]+\\(avatars\\[^\\]+\\)?external\\'
-        $replace = $relative -in 'GodotParty.exe','GodotParty.apk','GodotParty-content-android.zip' -or $packageArtifact -or $formalExternal -or $relative.StartsWith('core\notices\')
+        $replace = $relative -in 'GodotParty.exe','GodotParty.apk','GodotParty-content-android.zip' -or $payloadPaths.Contains($relative) -or $relative.StartsWith('core\notices\')
         if ((Test-Path -LiteralPath $target) -and !$replace) { continue }
         $backup = Join-Path (Join-Path $buildRoot 'previous') $relative
         $existed = Test-Path -LiteralPath $target
@@ -78,12 +83,12 @@ try {
         if (!(Test-Path -LiteralPath $previousDescriptor -PathType Leaf)) { continue }
         $previous = Get-Content -LiteralPath $previousDescriptor -Raw -Encoding UTF8 | ConvertFrom-Json
         $next = Get-Content -LiteralPath $descriptor.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
-        foreach ($name in $previous.external_files) {
-            if ($name -in $next.external_files) { continue }
-            if ($name -isnot [string] -or !$name.StartsWith('external/') -or $name.Contains('\') -or $name.Split('/') -contains '..') { throw 'Invalid retired external path' }
+        foreach ($name in $previous.payload_files) {
+            if ($name -in $next.payload_files) { continue }
+            if ($name -isnot [string] -or [IO.Path]::IsPathRooted($name) -or $name.Contains('\') -or $name.Split('/') -contains '..' -or $name.Split('/')[0] -in 'config','tmp','core' -or $name.StartsWith('.')) { throw 'Invalid retired payload path' }
             $target = [IO.Path]::GetFullPath((Join-Path $targetRoot $name))
-            $externalRoot = [IO.Path]::GetFullPath((Join-Path $targetRoot 'external')).TrimEnd('\') + '\'
-            if (!$target.StartsWith($externalRoot,[StringComparison]::OrdinalIgnoreCase)) { throw 'Retired payload escaped its package' }
+            $packageRoot = [IO.Path]::GetFullPath($targetRoot).TrimEnd('\') + '\'
+            if (!$target.StartsWith($packageRoot,[StringComparison]::OrdinalIgnoreCase)) { throw 'Retired payload escaped its package' }
             Check-Target $target
             if (!(Test-Path -LiteralPath $target -PathType Leaf)) { continue }
             $backup = Join-Path (Join-Path (Join-Path $buildRoot 'previous') $relative) $name

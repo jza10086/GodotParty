@@ -10,15 +10,22 @@ var i18n: RefCounted = Localization.new()
 const PlayerCounts = preload("res://core/config/party_player_counts.gd")
 const Versions = preload("res://core/content/party_versions.gd")
 const Selection = preload("res://core/content/party_content_selection.gd")
-const PackageHash = preload("res://core/content/party_package_hash.gd")
 const KINDS: Array[String] = ["maingame", "minigame", "protocols", "avatars", "assets"]
 var source_mode: bool = false
+var last_error: String = ""
+var package_store: RefCounted
+var _covers: Dictionary = {}
+
 var packages: Dictionary = {}
 var _schemas: Dictionary = {}
+var _schema_labels: Dictionary = {}
 var errors: Array[String] = []
 var unavailable: Dictionary = {}
 var artifacts: Dictionary = {}
 var adapter_issues: Dictionary = {}
+
+func _init() -> void:
+	i18n.content_catalog = weakref(self)
 
 func scan() -> Error:
 	source_mode = true
@@ -26,6 +33,8 @@ func scan() -> Error:
 	unavailable.clear()
 	packages.clear()
 	_schemas.clear()
+	_schema_labels.clear()
+	_covers.clear()
 	errors.clear()
 	for kind: String in ["protocols", "maingame", "minigame", "assets"]:
 		var root: String = "res://games/" + kind
@@ -76,18 +85,14 @@ func register_manifest(path: String) -> Error:
 	i18n.declare_package(id, manifest.localization, manifest._root)
 	return OK
 
-## Build tools extract content-owned definitions once. Installed catalogs use the hash-covered descriptor.
+## Build tools extract lightweight definitions once; installed catalogs read only descriptors.
 static func source_metadata(manifest: Dictionary) -> Dictionary:
 	var root: String = manifest._root
 	var result: Dictionary = {}
-	if manifest.kind in ["maingame", "minigame"]:
-		result.entry = "game.tscn"
+	if manifest.kind in ["maingame", "minigame", "protocols"]:
+		result.entry = "protocol.gd" if manifest.kind == "protocols" else "game.tscn"
 		var definition: Script = load(root.path_join("definition.gd"))
 		result.merge(definition.party_definition())
-	elif manifest.kind == "protocols":
-		result.entry = "protocol.gd"
-		var entry: Script = load(root.path_join(result.entry))
-		result.merge(entry.party_definition())
 	elif manifest.kind == "avatars":
 		var entry: Script = load(root.path_join("appearance.gd"))
 		result.appearance_resources = entry.choices()
@@ -117,40 +122,48 @@ static func source_metadata(manifest: Dictionary) -> Dictionary:
 		result.playable = not result.adapters.is_empty()
 	return result
 
-## Freeze validated descriptors once after startup mounting. No menu/join path rescans disk.
-func use_installed(descriptions: Dictionary, roots: Dictionary, failures: Dictionary) -> Error:
+## Freeze descriptors without mounting content. No menu/join path rescans disk.
+func use_installed(store: RefCounted) -> Error:
 	source_mode = false
+	package_store = store
 	packages.clear()
 	_schemas.clear()
+	_schema_labels.clear()
+	_covers.clear()
+	errors.clear()
 	artifacts.clear()
-	unavailable = failures.duplicate()
-	for id: String in descriptions:
+	unavailable = store.unavailable
+	for id: String in store.installed:
 		if unavailable.has(id):
 			continue
-		var description: Dictionary = descriptions[id]
+		var description: Dictionary = store.installed[id]
 		var manifest: Dictionary = description.declaration.duplicate(true)
 		manifest.id = id
 		if description.kind == "avatars":
 			manifest.owner_protocol = description.owner_protocol
 		manifest["_declaration"] = manifest.duplicate(true)
 		manifest["_root"] = "res://games/" + Paths.package_relative(description)
-		manifest.package_hash = description.package_hash
+		manifest.build_id = description.build_id
 		manifest.merge(description.content.duplicate(true))
 		packages[id] = manifest
-		var distribution_files: Array[Dictionary] = []
-		var names: Array = ["content.pck", "content.pck.json"]
-		names.append_array(description.external_files)
-		for name: String in names:
-			var file: FileAccess = FileAccess.open(str(roots[id]).path_join(name), FileAccess.READ)
-			if file == null:
-				errors.append("Cannot open distribution artifact: " + id + "/" + name)
-				return FileAccess.get_open_error()
-			distribution_files.append({"path": name, "size": file.get_length()})
-			file.close()
-		artifacts[id] = {"root": roots[id], "description": description.duplicate(true), "files": distribution_files}
+		artifacts[id] = {"root": store.roots[id], "description": description}
 		i18n.declare_package(id, manifest.localization, manifest._root)
 	_cache_adapter_issues()
 	return OK
+
+## Only a requested transfer opens distribution files; catalog discovery never reads PCK bytes.
+func distribution_files(id: String) -> Array[Dictionary]:
+	var artifact: Dictionary = artifacts[id]
+	var result: Array[Dictionary] = []
+	var names: Array = ["content.pck.json"]
+	names.append_array(artifact.description.payload_files)
+	for name: String in names:
+		var file: FileAccess = FileAccess.open(String(artifact.root).path_join(name), FileAccess.READ)
+		if file == null:
+			push_error("Cannot read distribution file: " + id + "/" + name)
+			return []
+		result.append({"path": name, "size": file.get_length()})
+	return result
 
 func _cache_adapter_issues() -> void:
 	adapter_issues.clear()
@@ -191,13 +204,9 @@ func validate_manifest(manifest: Dictionary) -> String:
 func _protocol_reference(value: Variant) -> bool:
 	return value is Dictionary and value.get("id") is String and Data.identifier(value.id)
 
+## Display names are catalog data, never a reason to activate translations or gameplay.
 func get_package(id: String) -> Dictionary:
-	var result: Dictionary = packages.get(id, {}).duplicate(true)
-	if not result.is_empty() and result.kind not in ["avatars", "assets"]:
-		for key: String in ["name", "introduction"]:
-			if result.get(key) is String and not result[key].is_empty() and result.localization.translations.has("zh_Hans") and i18n.has_message(id, result[key]):
-				result[key] = i18n.text(id, result[key])
-	return result
+	return packages.get(id, {}).duplicate(true)
 
 func ids(kind: String = "") -> Array[String]:
 	var result: Array[String] = []
@@ -219,9 +228,61 @@ func external_path(id: String, relative: String) -> String:
 		return ""
 	return ProjectSettings.globalize_path(path(id, relative)) if source_mode else str(artifacts[id].root).path_join(relative)
 
+## Resolve only the requested package and dependencies. Pool membership never activates content.
+func activate(id: String, protocol_id: String = "") -> Error:
+	last_error = ""
+	var selected: Dictionary = {}
+	var issue: String = _visit(id, selected, {})
+	if issue.is_empty() and not protocol_id.is_empty() and packages[id].kind == "minigame":
+		var binding: Dictionary = adapter(id, protocol_id)
+		if binding.is_empty():
+			issue = "Missing adapter: " + id + "/" + protocol_id
+		else:
+			issue = _dependencies(binding.get("dependencies", {}), selected, {})
+	if not issue.is_empty():
+		last_error = issue
+		return ERR_INVALID_DATA
+	if source_mode:
+		return OK
+	var error: Error = package_store.activate(selected.keys())
+	last_error = package_store.last_error if error != OK else ""
+	return error
+
+func resource(id: String, relative: String) -> Resource:
+	if activate(id) != OK:
+		push_error(last_error)
+		return null
+	return load(path(id, relative))
+
 func load_entry(id: String) -> Resource:
-	var manifest: Dictionary = packages.get(id, {})
-	return load(path(id, manifest.get("entry", ""))) if not manifest.is_empty() else null
+	return resource(id, packages[id].entry) if packages.has(id) else null
+
+## Preview images are loose metadata, not runtime PCK resources. Keep a bounded UI cache.
+func cover(id: String) -> Texture2D:
+	if _covers.has(id):
+		var cached: Texture2D = _covers[id]
+		_covers.erase(id)
+		_covers[id] = cached
+		return cached
+	var image_path: String = ""
+	if source_mode:
+		if packages[id].has("cover"):
+			image_path = ProjectSettings.globalize_path(path(id, packages[id].cover))
+	elif artifacts[id].description.has("preview"):
+		image_path = String(artifacts[id].root).path_join(artifacts[id].description.preview)
+	if image_path.is_empty():
+		return preload("res://core/ui/components/assets/godot_icon.svg")
+	var image: Image = Image.load_from_file(image_path)
+	if image == null:
+		return null
+	if maxi(image.get_width(), image.get_height()) > 256:
+		var ratio: float = 256.0 / maxi(image.get_width(), image.get_height())
+		image.resize(maxi(1, roundi(image.get_width() * ratio)), maxi(1, roundi(image.get_height() * ratio)))
+	var texture: Texture2D = ImageTexture.create_from_image(image)
+	if _covers.size() >= 32:
+		_covers.erase(_covers.keys()[0])
+	_covers[id] = texture
+	return texture
 
 func protocol_matches(reference: Dictionary) -> bool:
 	return packages.get(reference.get("id", ""), {}).get("kind") == "protocols" and not unavailable.has(reference.id)
@@ -258,7 +319,7 @@ func connection_requirements(selected: Dictionary) -> Dictionary:
 		var manifest: Dictionary = packages[id]
 		required[id] = {"version": manifest.package_version}
 		if not source_mode:
-			required[id].hash = manifest.package_hash
+			required[id].build_id = manifest.build_id
 	return {"mode": "source" if source_mode else "pck", "framework": {"version": Data.VERSION}, "packages": required}
 
 func requirements_issue(required: Variant) -> String:
@@ -273,7 +334,7 @@ func requirements_issue(required: Variant) -> String:
 		issues.append("框架版本不同（当前版本：%s；所需版本：%s）" % [Data.VERSION, required.framework.version])
 	for id: Variant in required.packages:
 		var entry: Variant = required.packages[id]
-		if not id is String or not Data.identifier(id) or not entry is Dictionary or Versions.parse(entry.get("version")).is_empty() or (not source_mode and not PackageHash.valid(entry.get("hash"))) or (source_mode and entry.has("hash")):
+		if not id is String or not Data.identifier(id) or not entry is Dictionary or Versions.parse(entry.get("version")).is_empty() or (not source_mode and (not entry.get("build_id") is String or entry.build_id.length() != 32 or not entry.build_id.is_valid_hex_number(false))) or (source_mode and entry.has("build_id")):
 			return "房主内容包清单格式无效"
 		if not packages.has(id):
 			issues.append("缺少内容包 %s（所需版本：%s）" % [id, entry.version])
@@ -281,7 +342,7 @@ func requirements_issue(required: Variant) -> String:
 			issues.append(id + " 不可用：" + str(unavailable[id]))
 		elif packages[id].package_version != entry.version:
 			issues.append("%s 版本不同（当前：%s；所需：%s）" % [id, packages[id].package_version, entry.version])
-		elif not source_mode and packages[id].package_hash != entry.hash:
+		elif not source_mode and packages[id].build_id != entry.build_id:
 			issues.append("%s 内容不同（版本：%s）" % [id, entry.version])
 	return "\n".join(issues)
 
@@ -322,8 +383,7 @@ func resolve(main_id: String, pools: Dictionary, appearances: Array = []) -> Dic
 				if source_mode:
 					present = ResourceLoader.exists(target)
 				else:
-					var index: Array = artifacts[ref.package_id].description.files
-					present = index.has(target) or index.has(target + ".import")
+					present = pack.get("appearance_resources", {}).has(ref.resource_path)
 			if not present:
 				return Data.failure("RESOURCE_MISSING", "玩家形象资源不存在：%s/%s（内容包版本：%s）。请在协议资料中重新选择头像或形象。" % [ref.package_id, ref.resource_path, pack.get("package_version", "未安装")])
 			error = _visit(ref["package_id"], selected, visiting)
@@ -350,7 +410,7 @@ func _visit(id: String, selected: Dictionary, visiting: Dictionary) -> String:
 	visiting.erase(id)
 	selected[id] = {"version": manifest.package_version}
 	if not source_mode:
-		selected[id].hash = manifest.package_hash
+		selected[id].build_id = manifest.build_id
 	return ""
 
 func _dependencies(dependencies: Dictionary, selected: Dictionary, visiting: Dictionary) -> String:
@@ -377,14 +437,24 @@ func asset(ref: Dictionary, active: Dictionary) -> Resource:
 	var relative: String = ref.get("resource_path", "")
 	if not active.has(id) or not Data.relative_path(relative):
 		return null
-	return load(path(id, relative))
+	return resource(id, relative)
 
 func _prepare_schema(id: String) -> String:
 	var manifest: Dictionary = packages[id]
 	if _schemas.has(id):
 		return ""
 	var configuration: Dictionary = Schema.empty()
-	if manifest.has("config_schema"):
+	if not source_mode:
+		var artifact: Dictionary = artifacts[id]
+		var metadata: Dictionary = Data.read_json(String(artifact.root).path_join(artifact.description.settings))
+		if not metadata.get("schema") is Dictionary or not metadata.get("localized") is Dictionary:
+			return "Invalid settings metadata: " + id
+		configuration = metadata.schema
+		for locale: String in manifest.localization.supported_locales:
+			if not metadata.localized.get(locale) is Dictionary:
+				return "Missing settings language: " + id + "/" + locale
+		_schema_labels[id] = metadata.localized
+	elif manifest.has("config_schema"):
 		var declaration: Script = load(path(id, manifest.config_schema))
 		configuration = declaration.schema()
 	var schema_issue: String = Schema.validate(configuration, manifest.kind)
@@ -406,15 +476,24 @@ func schema(id: String) -> Dictionary:
 	if not issue.is_empty():
 		push_error(issue)
 		return {}
-	return _schemas[id].duplicate(true) if packages[id].kind == "assets" else i18n.localize_schema(id, _schemas[id])
+	return _schemas[id].duplicate(true)
+
+func localized_schema(id: String) -> Dictionary:
+	var value: Dictionary = schema(id)
+	if packages[id].kind == "assets" or packages[id].localization.supported_locales.is_empty():
+		return value
+	if not source_mode:
+		return _schema_labels[id][i18n.effective_locale(id)].duplicate(true)
+	return i18n.localize_schema(id, value)
 
 func fields(id: String, audience: String = "room") -> Array:
-	return Schema.fields(schema(id), audience)
+	return Schema.fields(localized_schema(id), audience)
 
 func defaults(id: String) -> Dictionary:
 	return Schema.defaults(schema(id), "room")
 
-func validate_settings(id: String, value: Dictionary) -> Dictionary:
+## Catalog/rule snapshots validate data only. Explicit settings edits and activity entry may run package code.
+func validate_settings(id: String, value: Dictionary, run_custom: bool = false) -> Dictionary:
 	if not packages.has(id):
 		return Data.failure("PACKAGE_MISSING", id)
 	var issue: String = _prepare_schema(id)
@@ -424,8 +503,8 @@ func validate_settings(id: String, value: Dictionary) -> Dictionary:
 	if not report.ok:
 		return report
 	var manifest: Dictionary = packages.get(id, {})
-	if manifest.has("config_validator"):
-		var script: Script = load(path(id, manifest.config_validator))
+	if run_custom and manifest.has("config_validator"):
+		var script: Script = resource(id, manifest.config_validator)
 		var checked: Dictionary = script.new().validate(report.value.duplicate(true))
 		if not checked.get("ok", false):
 			return checked

@@ -535,7 +535,7 @@ func configure(main_id: String, configuration: Dictionary, child_settings: Dicti
 	var main: Dictionary = catalog.get_package(main_id)
 	if main.get("kind") != "maingame":
 		return ERR_INVALID_PARAMETER
-	var checked: Dictionary = catalog.validate_settings(main_id, configuration)
+	var checked: Dictionary = catalog.validate_settings(main_id, configuration, true)
 	if not checked.get("ok"):
 		status = checked.get("message", "")
 		return ERR_INVALID_PARAMETER

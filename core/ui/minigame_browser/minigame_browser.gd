@@ -17,6 +17,10 @@ var anchor: String = ""
 var temporary: Dictionary = {}
 var preset_labels: Dictionary = {}
 var rows: Dictionary[String, Control] = {}
+var _row_pool: Array[Control] = []
+var _top_space: Control
+var _bottom_space: Control
+var _row_height: float = 54.0
 @onready var row_list: VBoxContainer = %Rows
 @onready var list_scroll: ScrollContainer = %ListScroll
 @onready var search: LineEdit = %Search
@@ -76,30 +80,58 @@ func _ready() -> void:
 	folder.pressed.connect(_open_folder)
 	if not editable:
 		error_label.text = "当前为只读；房间设置由房主修改。"
-	for id: String in ids:
+	_top_space = Control.new()
+	_bottom_space = Control.new()
+	row_list.add_child(_top_space)
+	row_list.add_child(_bottom_space)
+	list_scroll.get_v_scroll_bar().value_changed.connect(func(_value: float) -> void: _render_rows())
+	list_scroll.resized.connect(_render_rows)
+	_filter_rows(search.text)
+
+## Reuse only the visible row window. Offscreen games never load previews.
+func _render_rows() -> void:
+	if _top_space == null:
+		return
+	var separation: int = row_list.get_theme_constant("separation")
+	var stride: float = _row_height + separation
+	var first: int = maxi(0, int(list_scroll.scroll_vertical / stride) - 1)
+	var count: int = mini(shown.size() - first, ceili(list_scroll.size.y / stride) + 3)
+	count = maxi(0, count)
+	while _row_pool.size() < count:
 		var row: HBoxContainer = GAME_ROW.instantiate()
+		row_list.add_child(row)
+		row_list.move_child(row, row_list.get_child_count() - 2)
 		var inspect: Button = row.get_node("%Inspect")
 		var check: CheckBox = row.get_node("%Check")
+		inspect.pressed.connect(func() -> void: _inspect_pressed(row.get_meta("game_id")))
+		check.pressed.connect(func() -> void: _check_pressed(row.get_meta("game_id"), check))
+		_row_pool.append(row)
+	rows.clear()
+	for index: int in _row_pool.size():
+		var row: Control = _row_pool[index]
+		row.visible = index < count
+		if not row.visible:
+			row.get_node("%Inspect").icon = null
+			continue
+		var id: String = shown[first + index]
+		row.set_meta("game_id", id)
+		var inspect: Button = row.get_node("%Inspect")
 		inspect.text = _title(id)
 		inspect.icon = _cover(id)
 		inspect.tooltip_text = inspect.text
-		inspect.pressed.connect(_inspect_pressed.bind(id))
+		var check: CheckBox = row.get_node("%Check")
 		check.disabled = not editable or pool_name.is_empty()
 		check.tooltip_text = "加入或移出小游戏池 · " + inspect.text
-		check.pressed.connect(_check_pressed.bind(id, check))
-		row_list.add_child(row)
 		rows[id] = row
-	_filter_rows(search.text)
+	_top_space.custom_minimum_size.y = maxf(0.0, first * stride - separation)
+	_top_space.visible = first > 0
+	var remaining: int = maxi(0, shown.size() - first - count)
+	_bottom_space.custom_minimum_size.y = maxf(0.0, remaining * stride - separation)
+	_bottom_space.visible = remaining > 0
+	_refresh_rows()
 
 func _cover(id: String) -> Texture2D:
-	var cover: String = app.catalog.get_package(id).get("cover", "")
-	if not cover.is_empty():
-		var path: String = app.catalog.path(id, cover)
-		if ResourceLoader.exists(path):
-			var resource: Resource = load(path)
-			if resource is Texture2D:
-				return resource
-	return preload("res://icon.svg")
+	return app.catalog.cover(id)
 
 func _title(id: String) -> String:
 	return str(app.catalog.get_package(id).get("name", id)).trim_prefix("GodotPartyDefault · ")
@@ -114,10 +146,7 @@ func _filter_rows(text: String) -> void:
 	shown.clear()
 	var query: String = text.strip_edges().to_lower()
 	for id: String in ids:
-		var row: Control = rows[id]
-		var button: Button = row.get_node("%Inspect")
-		row.visible = query.is_empty() or query in (button.text + " " + id).to_lower()
-		if row.visible:
+		if query.is_empty() or query in (_title(id) + " " + id).to_lower():
 			shown.append(id)
 	if focused not in shown:
 		focused = "" if shown.is_empty() else shown[0]
@@ -127,7 +156,7 @@ func _filter_rows(text: String) -> void:
 			highlighted.append(focused)
 	%NoMatches.visible = shown.is_empty()
 	list_scroll.scroll_vertical = 0
-	_refresh_rows()
+	_render_rows()
 	_refresh_inspector()
 
 ## Highlighting never changes membership. Shift follows visible order; Ctrl+Shift adds a range.
@@ -284,7 +313,7 @@ func open_advanced() -> void:
 		return
 	var id: String = focused
 	var panel: Control = app._panel(id, draft.children[id] if draft.children.has(id) else app.catalog.defaults(id), editable)
-	var context: Dictionary = {"schema": app.catalog.schema(id), "audience": "room", "pools": draft.pools.duplicate(true), "fields": app.catalog.fields(id), "resources": app.catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return app.catalog.asset(ref, app.catalog.packages)}
+	var context: Dictionary = {"schema": app.catalog.localized_schema(id), "audience": "room", "pools": draft.pools.duplicate(true), "fields": app.catalog.fields(id), "resources": app.catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return app.catalog.asset(ref, app.catalog.packages)}
 	var editor: Control = app._configuration_editor("高级设置 · " + _title(id), panel, editable, "配置此小游戏的房间规则；应用后返回小游戏池草稿。", func() -> void: panel.configure(app.catalog.defaults(id), editable, context))
 	editor.apply_button.text = "应用到草稿"
 	var protocol: String = app.catalog.get_package(draft.main).protocol.id
@@ -293,7 +322,7 @@ func open_advanced() -> void:
 	bar.show()
 	bar.configure(app.runner.config_store, id, protocol, func() -> Dictionary: return app.presets.snapshot(id, protocol, panel.get_value(), state.common), editable)
 	bar.loaded.connect(func(value: Dictionary) -> void:
-		panel.configure(app.catalog.validate_settings(id, value.room_own).value, editable, {"schema": app.catalog.schema(id), "audience": "room", "fields": app.catalog.fields(id), "resources": app.catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return app.catalog.asset(ref, app.catalog.packages)})
+		panel.configure(app.catalog.validate_settings(id, value.room_own).value, editable, {"schema": app.catalog.localized_schema(id), "audience": "room", "fields": app.catalog.fields(id), "resources": app.catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return app.catalog.asset(ref, app.catalog.packages)})
 		state.common = value.room_common.duplicate(true))
 	var hint: Label = editor.page.status
 	editor.apply_button.disabled = not editable
@@ -310,7 +339,7 @@ func open_advanced() -> void:
 func apply_advanced(id: String, value: Dictionary) -> bool:
 	if not editable:
 		return false
-	var report: Dictionary = app.catalog.validate_settings(id, value)
+	var report: Dictionary = app.catalog.validate_settings(id, value, true)
 	if not report.get("ok", false):
 		error_label.text = report.get("message", "配置无效")
 		return false

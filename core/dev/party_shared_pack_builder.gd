@@ -8,7 +8,6 @@ const Data = preload("res://core/runtime/party_data.gd")
 const Packages = preload("res://core/content/party_packages.gd")
 const Paths = preload("res://core/config/party_paths.gd")
 const ScriptClasses = preload("res://core/content/party_script_classes.gd")
-const PackageHash = preload("res://core/content/party_package_hash.gd")
 var last_error: String = ""
 var work_directory: String = Paths.application_root().path_join("tmp/content_build")
 
@@ -97,7 +96,7 @@ func _build_in_stage(catalog: RefCounted, selected_ids: Array, outputs: Dictiona
 		return error
 	var validator: RefCounted = Packages.new()
 	for id: String in outputs:
-		var description: Dictionary = Data.read_json(outputs[id] + ".json")
+		var description: Dictionary = Data.read_json(String(outputs[id]).get_base_dir().path_join("content.pck.json"))
 		var issue: String = validator.validate_descriptor(description)
 		if issue.is_empty():
 			issue = validator._check_payload(str(outputs[id]).get_base_dir(), description)
@@ -199,36 +198,60 @@ func export_imported_pack(catalog: RefCounted, id: String, output: String) -> Er
 	error = packer.flush()
 	if error != OK:
 		return error
-	var description: Dictionary = {"framework_version": Data.VERSION, "id": id, "version": manifest["package_version"], "kind": manifest["kind"], "artifact": output.get_file(), "files": index, "uids": uid_index}
+	var folder: String = output.get_base_dir()
+	var description: Dictionary = {"framework_version": Data.VERSION, "id": id, "version": manifest.package_version, "kind": manifest.kind, "build_id": Data.token(), "packs": [output.get_file()], "resource_index": "resources.json", "settings": "settings.json"}
 	description.declaration = manifest._declaration.duplicate(true)
 	description.declaration.erase("id")
 	description.declaration.erase("owner_protocol")
 	description.content = manifest.duplicate(true)
-	for key: String in ["id", "owner_protocol", "_root", "_declaration", "package_hash", "name", "kind", "package_version", "framework_version", "remark", "supported_languages", "dependencies"]:
+	for key: String in ["id", "owner_protocol", "_root", "_declaration", "build_id", "name", "kind", "package_version", "framework_version", "remark", "supported_languages", "dependencies"]:
 		description.content.erase(key)
 	description.name = manifest.name
 	description.dependencies = manifest.get("dependencies", {}).duplicate(true)
-	description.script_classes = ScriptClasses.collect(paths)
 	description.external_files = payload.files
 	description.external_directories = payload.directories
+	description.payload_files = [output.get_file(), "resources.json", "settings.json"]
+	description.payload_files.append_array(payload.files)
 	if manifest.kind == "avatars":
 		description.owner_protocol = manifest.owner_protocol
-	error = External.copy_payload(root, output.get_base_dir(), payload.files, payload.directories)
+	error = External.copy_payload(root, folder, payload.files, payload.directories)
 	if error != OK:
 		return _error("Cannot copy external payload: " + error_string(error))
+	if manifest.has("cover"):
+		var preview: Image = Image.load_from_file(ProjectSettings.globalize_path(root.path_join(manifest.cover)))
+		if preview == null:
+			return _error("Cannot read preview: " + id)
+		var ratio: float = minf(1.0, 256.0 / maxi(preview.get_width(), preview.get_height()))
+		preview.resize(maxi(1, roundi(preview.get_width() * ratio)), maxi(1, roundi(preview.get_height() * ratio)))
+		error = preview.save_png(folder.path_join("preview.png"))
+		if error != OK:
+			return error
+		description.preview = "preview.png"
+		description.payload_files.append("preview.png")
+	error = _write_json(folder.path_join("resources.json"), {"files": index, "uids": uid_index, "script_classes": ScriptClasses.collect(paths)})
+	if error != OK:
+		return error
+	var schema_issue: String = catalog._prepare_schema(id)
+	if not schema_issue.is_empty():
+		return _error(schema_issue)
+	var localized: Dictionary = {}
+	var previous_locale: String = catalog.i18n.locale
+	for locale: String in manifest.localization.supported_locales:
+		catalog.i18n.set_locale(locale)
+		localized[locale] = catalog.localized_schema(id)
+	catalog.i18n.set_locale(previous_locale)
+	error = _write_json(folder.path_join("settings.json"), {"schema": catalog.schema(id), "localized": localized})
+	if error != OK:
+		return error
+	return _write_json(folder.path_join("content.pck.json"), description)
 
-	var identity: Dictionary = PackageHash.compute(output.get_base_dir(), description)
-	if not identity.ok:
-		return _error(identity.error)
-	description.package_hash = identity.hash
-	var file: FileAccess = FileAccess.open(output + ".json", FileAccess.WRITE)
+func _write_json(path: String, value: Dictionary) -> Error:
+	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		return FileAccess.get_open_error()
-	file.store_string(JSON.stringify(description, "\t"))
+	file.store_string(JSON.stringify(value, "\t"))
 	file.flush()
-	error = file.get_error()
-	file.close()
-	return error
+	return file.get_error()
 
 func _error(message: String) -> Error:
 	last_error = message

@@ -4,7 +4,6 @@ const Paths = preload("res://core/config/party_paths.gd")
 const External = preload("res://core/content/party_external_files.gd")
 const ScriptClasses = preload("res://core/content/party_script_classes.gd")
 const Versions = preload("res://core/content/party_versions.gd")
-const PackageHash = preload("res://core/content/party_package_hash.gd")
 const Selection = preload("res://core/content/party_content_selection.gd")
 const Data = preload("res://core/runtime/party_data.gd")
 const Catalog = preload("res://core/content/party_catalog.gd")
@@ -13,6 +12,7 @@ var mounted: Dictionary = {}
 var installed: Dictionary = {}
 var unavailable: Dictionary = {}
 var roots: Dictionary = {}
+var _directory: String = ""
 
 func export_source(catalog: RefCounted, id: String, output: String) -> Error:
 	if output.get_file().get_basename() != id:
@@ -49,24 +49,33 @@ func export_source(catalog: RefCounted, id: String, output: String) -> Error:
 			return error
 	return writer.close()
 
-## Only fixed install locations are scanned. Configuration files are never catalog entries.
+## A folder is recognized by its descriptor or bundle index; physical category names are optional.
 static func descriptors(directory: String) -> Array[String]:
 	var result: Array[String] = []
-	for kind: String in ["protocols", "maingame", "minigame", "assets"]:
-		var root: String = directory.path_join(kind)
-		if not DirAccess.dir_exists_absolute(root):
+	if FileAccess.file_exists(directory.path_join("content.pck.json")):
+		result.append(directory.path_join("content.pck.json"))
+		# The existing protocol layout may contain independently installed avatars.
+		var avatars: String = directory.path_join("avatars")
+		if DirAccess.dir_exists_absolute(avatars):
+			result.append_array(descriptors(avatars))
+		return result
+	for child: String in DirAccess.get_directories_at(directory):
+		if child.begins_with(".") or child in ["core", "tmp", "config", "external"]:
 			continue
-		for id: String in DirAccess.get_directories_at(root):
-			var package: String = root.path_join(id)
-			if FileAccess.file_exists(package.path_join("content.pck.json")) or FileAccess.file_exists(package.path_join("content.pck")):
-				result.append(package.path_join("content.pck.json"))
-			var avatars: String = package.path_join("avatars")
-			if kind == "protocols" and DirAccess.dir_exists_absolute(avatars):
-				for avatar: String in DirAccess.get_directories_at(avatars):
-					var avatar_path: String = avatars.path_join(avatar)
-					if FileAccess.file_exists(avatar_path.path_join("content.pck.json")) or FileAccess.file_exists(avatar_path.path_join("content.pck")):
-						result.append(avatar_path.path_join("content.pck.json"))
+		result.append_array(descriptors(directory.path_join(child)))
 	result.sort()
+	return result
+
+## Distribution paths are relative to one package folder; personal config never belongs to payload.
+static func safe_payload_path(value: Variant) -> bool:
+	return value is String and Data.relative_path(value) and value == value.simplify_path() and value.get_slice("/", 0).to_lower() not in ["config", "tmp", "core"] and not value.begins_with(".")
+
+static func valid_build_id(value: Variant) -> bool:
+	return value is String and value.length() == 32 and value.is_valid_hex_number(false)
+
+static func payload_files(description: Dictionary) -> Array:
+	var result: Array = ["content.pck.json"]
+	result.append_array(description.payload_files)
 	return result
 
 func validate_descriptor(description: Dictionary) -> String:
@@ -81,23 +90,34 @@ func validate_descriptor(description: Dictionary) -> String:
 		return issue
 	if description.get("name") != declaration.name or description.get("kind") != declaration.kind or description.get("version") != declaration.package_version or description.get("framework_version") != declaration.framework_version or description.get("dependencies") != declaration.get("dependencies", {}):
 		return "Descriptor identity differs from declaration"
-	if Paths.package_relative(description).is_empty() or not PackageHash.valid(description.get("package_hash")) or description.get("artifact") != "content.pck":
-		return "Invalid package directory/artifact/hash"
+	if not valid_build_id(description.get("build_id")) or not description.get("packs") is Array or description.packs.is_empty():
+		return "Missing build identity/PCK list; re-export this package"
+	if not description.get("payload_files") is Array or not description.get("external_files") is Array or not description.get("external_directories") is Array:
+		return "Missing distribution payload index"
+	var seen: Dictionary = {"content.pck.json": true}
+	for path: Variant in description.payload_files:
+		if not safe_payload_path(path) or seen.has(path.to_lower()):
+			return "Invalid/conflicting distribution path"
+		seen[path.to_lower()] = true
+	for path: Variant in description.packs:
+		if not path is String or not path.ends_with(".pck") or description.packs.count(path) != 1 or not seen.has(path.to_lower()):
+			return "Invalid PCK path"
+	for key: String in ["resource_index", "settings"]:
+		if not description.get(key) is String or not seen.has(description[key].to_lower()):
+			return "Missing " + key
+	if description.has("preview") and (not description.preview is String or not seen.has(description.preview.to_lower())):
+		return "Missing preview"
+	for path: Variant in description.external_files:
+		if not External.safe_path(path) or not seen.has(path.to_lower()):
+			return "Invalid external payload"
+	for path: Variant in description.external_directories:
+		if not External.safe_path(path):
+			return "Invalid external directory"
+	return ""
+
+func _validate_index(description: Dictionary) -> String:
 	if not description.get("files") is Array or description.files.is_empty() or not description.get("uids") is Dictionary:
 		return "Missing package file/UID index"
-	var loose: Variant = description.get("external_files", [])
-	var folders: Variant = description.get("external_directories", [])
-	if not loose is Array or not folders is Array:
-		return "Invalid external payload index"
-	var external_seen: Dictionary = {}
-	for entry: Variant in loose + folders:
-		if not entry is String or not External.safe_path(entry) or external_seen.has(entry.to_lower()):
-			return "Invalid/conflicting external payload path"
-		external_seen[entry.to_lower()] = true
-	for file: String in loose:
-		for entry: String in external_seen:
-			if entry.begins_with(file.to_lower() + "/"):
-				return "External file conflicts with directory"
 	var root: String = "res://games/" + Paths.package_relative(description)
 	var seen: Dictionary = {}
 	for path: Variant in description.files:
@@ -114,42 +134,30 @@ func validate_descriptor(description: Dictionary) -> String:
 			return "Invalid resource UID index"
 	return ScriptClasses.validate(description.get("script_classes"), root, description.files)
 
-## Validate the final startup candidate set once, before mounting or replacing anything.
-## Replacement roots point at staged payloads; successful results survive transaction publication.
+## Discovery reads small descriptors only. PCKs, resource indices and payload bytes stay untouched.
 func prepare(directory: String, replacements: Dictionary = {}, required: Array = []) -> Error:
 	last_error = ""
 	installed.clear()
 	roots.clear()
 	unavailable.clear()
+	_directory = directory
 	var candidates: Dictionary = {}
 	for descriptor_path: String in descriptors(directory):
 		var description: Dictionary = Data.read_json(descriptor_path)
-		var relative: String = descriptor_path.get_base_dir().trim_prefix(directory.trim_suffix("/") + "/")
-		var id: String = relative.get_file()
+		var id: String = str(description.get("id", descriptor_path.get_base_dir().get_file()))
 		if candidates.has(id):
 			return _error("Duplicate package ID: " + id)
-		candidates[id] = {"description": description, "root": descriptor_path.get_base_dir(), "relative": relative}
+		candidates[id] = {"description": description, "root": descriptor_path.get_base_dir()}
 	for id: String in replacements:
 		var root: String = replacements[id]
-		var description: Dictionary = Data.read_json(root.path_join("content.pck.json"))
-		candidates[id] = {"description": description, "root": root, "relative": Paths.package_relative(description)}
+		candidates[id] = {"description": Data.read_json(root.path_join("content.pck.json")), "root": root}
 	var declarations: Dictionary = {}
 	for id: String in candidates:
 		var candidate: Dictionary = candidates[id]
 		var description: Dictionary = candidate.description
 		var issue: String = validate_descriptor(description)
-		if issue.is_empty() and (description.id != id or Paths.package_relative(description) != candidate.relative):
-			issue = "Package installed under the wrong folder: " + candidate.root
-		if issue.is_empty() and description.framework_version != Data.VERSION:
-			issue = "Framework version differs: " + description.framework_version + " / " + Data.VERSION
-		if issue.is_empty():
-			issue = _check_payload(candidate.root, description)
-		if issue.is_empty():
-			var checked: Dictionary = PackageHash.compute(candidate.root, description)
-			if not checked.ok:
-				issue = checked.error
-			elif checked.hash != description.package_hash:
-				issue = "Package hash differs: " + id
+		if issue.is_empty() and description.id != id:
+			issue = "Package identity differs: " + id
 		if not issue.is_empty():
 			unavailable[id] = issue
 			continue
@@ -162,98 +170,98 @@ func prepare(directory: String, replacements: Dictionary = {}, required: Array =
 		declarations[id] = declaration
 	unavailable.merge(Selection.unavailable_packages(declarations))
 	for id: String in required:
-		if unavailable.has(id):
-			return _error("Update rejected: " + id + ": " + unavailable[id])
-	# File, UID and class conflicts invalidate a batch before publication as well.
-	return _check_conflicts()
+		if unavailable.has(id) or not installed.has(id):
+			return _error("Update rejected: " + id + ": " + str(unavailable.get(id, "Missing package")))
+		var issue: String = _check_payload(roots[id], installed[id])
+		if not issue.is_empty():
+			return _error(issue)
+	return OK
 
-func _check_conflicts() -> Error:
+## Called only for a requested dependency closure, before parsing any of its runtime scripts.
+func activate(ids: Array) -> Error:
+	var planned: Dictionary = mounted.duplicate()
+	var additions: Array[String] = []
+	for id: String in ids:
+		if mounted.has(id):
+			continue
+		if unavailable.has(id) or not installed.has(id):
+			return _error(id + ": " + str(unavailable.get(id, "Missing package")))
+		var description: Dictionary = installed[id].duplicate(true)
+		var issue: String = _check_payload(roots[id], description)
+		if not issue.is_empty():
+			return _activation_error(id, issue)
+		var index: Dictionary = Data.read_json(String(roots[id]).path_join(description.resource_index))
+		for key: String in ["files", "uids", "script_classes"]:
+			if not index.has(key):
+				return _activation_error(id, "Missing resource index field: " + key)
+			description[key] = index[key]
+		issue = _validate_index(description)
+		if not issue.is_empty():
+			return _activation_error(id, issue)
+		planned[id] = description
+		additions.append(id)
+	if additions.is_empty():
+		return OK
 	var files: Dictionary = {}
 	var uids: Dictionary = {}
-	var planned: Dictionary = {}
-	for id: String in installed:
-		if unavailable.has(id):
-			continue
-		var description: Dictionary = installed[id]
-		planned[id] = description
-		for path: String in description.files:
+	for id: String in planned:
+		for path: String in planned[id].files:
 			if files.has(path):
 				return _error("Conflicting package path: " + path)
 			files[path] = id
-		for uid: String in description.uids:
-			var resource_uid: int = ResourceUID.text_to_id(uid)
-			if ResourceUID.has_id(resource_uid) and ResourceUID.get_id_path(resource_uid) != description.uids[uid]:
-				return _error("UID conflicts with loaded registry: " + uid)
-			if uids.has(uid) and uids[uid] != description.uids[uid]:
-				return _error("Conflicting package UID: " + uid)
-			uids[uid] = description.uids[uid]
-	var merged: Dictionary = ScriptClasses.merge(ProjectSettings.get_global_class_list(), planned)
-	return OK if merged.ok else _error(merged.error)
-
-## Only prepared artifacts may enter this process. Source/PCK ambiguity is resolved at startup.
-func mount_prepared(directory: String) -> Error:
-	var planned: Dictionary = {}
-	for id: String in installed:
-		if not unavailable.has(id):
-			planned[id] = installed[id]
+		for uid: String in planned[id].uids:
+			var value: int = ResourceUID.text_to_id(uid)
+			var path: String = planned[id].uids[uid]
+			if (ResourceUID.has_id(value) and ResourceUID.get_id_path(value) != path) or (uids.has(uid) and uids[uid] != path):
+				return _error("Conflicting resource UID: " + uid)
+			uids[uid] = path
 	var merged: Dictionary = ScriptClasses.merge(ProjectSettings.get_global_class_list(), planned)
 	if not merged.ok:
 		return _error(merged.error)
-	for id: String in planned:
-		var description: Dictionary = planned[id]
-		if not ProjectSettings.load_resource_pack(roots[id].path_join("content.pck"), true):
-			return _error("Cannot mount package: " + id)
-		for uid_text: String in description.uids:
+	for id: String in additions:
+		for pack: String in planned[id].packs:
+			if not ProjectSettings.load_resource_pack(String(roots[id]).path_join(pack), false):
+				return _activation_error(id, "Cannot mount package: " + pack)
+		for uid_text: String in planned[id].uids:
 			var uid: int = ResourceUID.text_to_id(uid_text)
-			if ResourceUID.has_id(uid) and ResourceUID.get_id_path(uid) != description.uids[uid_text]:
-				return _error("UID conflict: " + uid_text)
 			if not ResourceUID.has_id(uid):
-				ResourceUID.add_id(uid, description.uids[uid_text])
-		mounted[id] = description
-	if merged.has_content_classes or OS.has_feature("editor"):
-		var error: Error = ScriptClasses.register(directory, merged.classes)
+				ResourceUID.add_id(uid, planned[id].uids[uid_text])
+		mounted[id] = planned[id]
+	if merged.has_content_classes:
+		var error: Error = ScriptClasses.register(_directory, merged.classes)
 		if error != OK:
 			return _error("Cannot register content classes: " + error_string(error))
 	return OK
 
-## Install into its declared category; updating a running installation is deliberately refused.
+func _activation_error(id: String, message: String) -> Error:
+	unavailable[id] = message
+	return _error(id + ": " + message)
+
+## Import a recognizable package folder. Updates remain restart-bound.
 func install(source: String, directory: String) -> Error:
-	var description: Dictionary = Data.read_json(source + ".json")
+	var description: Dictionary = Data.read_json(source.path_join("content.pck.json"))
 	var issue: String = validate_descriptor(description)
 	if not issue.is_empty():
 		return _error(issue)
-	if not FileAccess.file_exists(source):
-		return ERR_FILE_NOT_FOUND
-	issue = _check_payload(source.get_base_dir(), description)
+	issue = _check_payload(source, description)
 	if not issue.is_empty():
 		return _error(issue)
-	var destination: String = directory.path_join(Paths.package_relative(description))
-	var target: String = destination.path_join("content.pck")
-	if FileAccess.file_exists(target) or FileAccess.file_exists(target + ".json"):
-		return _error("已安装此包；请退出后替换 content.pck 和 content.pck.json，保留 config")
-	var error: Error = DirAccess.make_dir_recursive_absolute(destination)
-	if error != OK:
-		return error
-	error = External.copy_payload(source.get_base_dir(), destination, description.get("external_files", []), description.get("external_directories", []), true)
-	if error != OK:
-		return error
-	error = DirAccess.copy_absolute(source, target + ".pending")
-	if error != OK:
-		return error
-	description.artifact = "content.pck"
-	var file: FileAccess = FileAccess.open(target + ".json.pending", FileAccess.WRITE)
-	if file == null:
-		return FileAccess.get_open_error()
-	file.store_string(JSON.stringify(description, "\t"))
-	file.flush()
-	error = file.get_error()
-	file.close()
-	if error != OK:
-		return error
-	error = DirAccess.rename_absolute(target + ".pending", target)
-	if error == OK:
-		error = DirAccess.rename_absolute(target + ".json.pending", target + ".json")
-	return error
+	var destination: String = directory.path_join(description.id)
+	if installed.has(description.id) or DirAccess.dir_exists_absolute(destination):
+		return _error("已安装此包；请退出后替换内容文件，保留 config")
+	var stage: String = directory.path_join("tmp/content_import/" + Data.token())
+	for name: String in payload_files(description):
+		var target: String = stage.path_join(name)
+		var error: Error = DirAccess.make_dir_recursive_absolute(target.get_base_dir())
+		if error == OK:
+			error = DirAccess.copy_absolute(source.path_join(name), target)
+		if error != OK:
+			return error
+	for folder: String in description.external_directories:
+		var error: Error = DirAccess.make_dir_recursive_absolute(stage.path_join(folder))
+		if error != OK:
+			return error
+	return DirAccess.rename_absolute(stage, destination)
 
 ## Validates before writing; replacement is staged and the previous source stays in tmp.
 func import_source(archive: String, destination: String = "res://games", replace_existing: bool = false) -> Error:
@@ -381,9 +389,9 @@ func import_source(archive: String, destination: String = "res://games", replace
 	return error
 
 func _check_payload(directory: String, description: Dictionary) -> String:
-	for relative: String in description.get("external_files", []):
+	for relative: String in description.payload_files:
 		if not FileAccess.file_exists(directory.path_join(relative)):
-			return "Missing external file: " + directory.path_join(relative)
+			return "Missing package payload: " + directory.path_join(relative)
 	for relative: String in description.get("external_directories", []):
 		if not DirAccess.dir_exists_absolute(directory.path_join(relative)):
 			return "Missing external directory: " + directory.path_join(relative)

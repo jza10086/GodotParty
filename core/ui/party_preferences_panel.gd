@@ -30,15 +30,15 @@ func configure(settings_store: RefCounted, target: String, protocol: String) -> 
 			error_label.text = "已重置，请重新打开设置页。" if error == OK else error_string(error))
 		return
 	revision = data.revision
-	_section("own", store.catalog.schema(target), data.own, {}, "", false)
+	_section("own", store.catalog.localized_schema(target), data.own, {}, "", false)
 	if not protocol.is_empty() and target != protocol:
 		var layers: Dictionary = store.local_layers(target, protocol)
 		if layers.is_empty():
 			error_label.text = store.last_error
 			return
-		var base: Dictionary = Schema.defaults(store.catalog.schema(protocol), "local")
+		var base: Dictionary = Schema.defaults(store.catalog.localized_schema(protocol), "local")
 		base.merge(layers.protocol, true)
-		_section("common", store.catalog.schema(protocol), layers.overrides, base, "协议 · ", true)
+		_section("common", store.catalog.localized_schema(protocol), layers.overrides, base, "协议 · ", true)
 		_all_inherit = preload("res://core/ui/settings/switch_option.tscn").instantiate()
 		_all_inherit.size_flags_horizontal = Control.SIZE_SHRINK_END
 		_all_inherit.set_value_silently(layers.overrides.is_empty())
@@ -81,7 +81,7 @@ func apply() -> Error:
 	var edits: Array = []
 	for domain: String in forms:
 		var values: Dictionary = forms[domain].explicit_values()
-		var schema: Dictionary = store.catalog.schema(protocol_id if domain == "common" else package_id)
+		var schema: Dictionary = store.catalog.localized_schema(protocol_id if domain == "common" else package_id)
 		for key: String in schema.fields:
 			var field: Dictionary = schema.fields[key]
 			if field.audience != "local" or field.get("readonly", false) or (domain == "common" and not field.overridable):

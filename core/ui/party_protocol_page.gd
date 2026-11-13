@@ -57,7 +57,7 @@ func _build() -> void:
 	var draft: Dictionary = _drafts[selected]
 	if not draft.record.is_empty():
 		_form = preload("res://core/ui/party_config_form.tscn").instantiate()
-		_form.configure(draft.own, true, {"schema": catalog.schema(selected), "audience": "local"})
+		_form.configure(draft.own, true, {"schema": catalog.localized_schema(selected), "audience": "local"})
 		_form.field_changed.connect(_changed)
 		_form.category_reset.connect(func(keys: Array[String]) -> void:
 			for key: String in keys:
@@ -76,7 +76,7 @@ func _update_labels() -> void:
 		_picker.set_item_text(index, catalog.get_package(id).name + (" *" if dirty else ""))
 
 func _changed(key: String, value: Variant) -> void:
-	var field: Dictionary = catalog.schema(selected).fields[key]
+	var field: Dictionary = catalog.localized_schema(selected).fields[key]
 	if field.get("readonly", false):
 		return
 	var checked: Dictionary = Schema.normalize(field, value)
@@ -102,7 +102,7 @@ func apply() -> Error:
 	_flush_form()
 	var draft: Dictionary = _drafts[selected]
 	var edits: Array = []
-	for field: Dictionary in Schema.fields(catalog.schema(selected), "local"):
+	for field: Dictionary in Schema.fields(catalog.localized_schema(selected), "local"):
 		var key: String = field.key
 		if field.get("readonly", false):
 			continue

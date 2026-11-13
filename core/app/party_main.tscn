@@ -13,10 +13,9 @@
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/pad_keyboard.tscn" id="keyboard"]
 [ext_resource type="Script" uid="uid://dxq3qc6w4kbl" path="res://core/ui/party_ui_navigation.gd" id="navigation"]
 [ext_resource type="Script" uid="uid://8so0i70ir5ib" path="res://core/ui/network_status.gd" id="network_status"]
+[ext_resource type="PackedScene" uid="uid://f1amq76p08uv" path="res://core/ui/notification_bar.tscn" id="notifications"]
 [ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 [ext_resource type="PackedScene" path="res://core/ui/party_touch_escape.tscn" id="touch_escape"]
-
-[ext_resource type="PackedScene" path="res://core/ui/notification_bar.tscn" id="notifications"]
 
 [node name="party_main" type="Control" unique_id=1685594889]
 layout_mode = 3
@@ -159,6 +158,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="FrontendModal" parent="FrameworkUI/DialogHost" unique_id=1039890492 instance=ExtResource("frontend_modal")]
@@ -173,6 +174,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("navigation")
 app = NodePath("../..")
@@ -191,10 +194,31 @@ z_index = 5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="NotificationBar" parent="." instance=ExtResource("notifications")]
+[node name="ResourceLoading" type="MarginContainer" parent="FrameworkUI" unique_id=465205438]
+unique_name_in_owner = true
+visible = false
+z_index = 6
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 40
+
+[node name="ResourceProgress" type="ProgressBar" parent="FrameworkUI/ResourceLoading" unique_id=910988379]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+size_flags_vertical = 8
+mouse_filter = 2
+max_value = 1.0
+step = 0.001
+
+[node name="NotificationBar" parent="." unique_id=238063149 instance=ExtResource("notifications")]
 unique_name_in_owner = true
 
-[node name="TouchEscape" parent="." instance=ExtResource("touch_escape")]
+[node name="TouchEscape" parent="." unique_id=1954567089 instance=ExtResource("touch_escape")]
 
 [connection signal="pressed" from="FrameworkUI/GameScreen/Actions/Settings" to="." method="_settings_dialog"]
 [connection signal="pressed" from="FrameworkUI/GameScreen/Actions/Rules" to="." method="_room_rules_dialog"]

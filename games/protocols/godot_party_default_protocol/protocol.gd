@@ -2,10 +2,6 @@
 ## Hosts validate ownership/consent against main-game state before authorizing a request.
 extends RefCounted
 
-## Content-owned gameplay rules, independent of package compatibility.
-static func party_definition() -> Dictionary:
-	return {"player_counts": [1, 2, 3, 4, 5, 6, 7, 8], "config_directories": {"maingame": "godot_party_default_v1", "minigame": "godot_party_default_v1"}}
-
 const ID: String = "godot_party_default_protocol"
 ## Eight room identities: red, green, blue, bright cyan, purple, yellow, black and white.
 const COLORS: Array[String] = ["#e53935", "#43b047", "#2962ff", "#00d9e8", "#9c42d4", "#ffda24", "#252832", "#f5f5f5"]

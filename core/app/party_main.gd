@@ -77,12 +77,7 @@ func _ready() -> void:
 			_content_error = archive.last_error
 			push_error(_content_error)
 			return
-		var mount_error: Error = packages.mount_prepared(directory)
-		if mount_error != OK:
-			_content_error = packages.last_error
-			push_error(_content_error)
-			return
-		if catalog.use_installed(packages.installed, packages.roots, packages.unavailable) != OK:
+		if catalog.use_installed(packages) != OK:
 			push_error(str(catalog.errors))
 			return
 	var declaration: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://core/i18n/localization.json"))
@@ -252,8 +247,7 @@ func local_display_name() -> String:
 	var protocol_id: String = str(_frontend.selected_protocol) if is_instance_valid(_frontend) else ""
 	if protocol_id.is_empty():
 		return connection.profiles.identity().name
-	var entry: Script = catalog.load_entry(protocol_id)
-	var local_profile: Dictionary = connection.profiles.read(protocol_id, entry.new())
+	var local_profile: Dictionary = connection.profiles.read_record(protocol_id)
 	if not local_profile.ok:
 		_notice(local_profile.message)
 		return "资料读取失败"
@@ -311,8 +305,8 @@ func _modal(title: String, scene: PackedScene = preload("res://core/ui/party_dia
 func _panel(package_id: String, value: Dictionary, editable: bool, profile: bool = false) -> Control:
 	var definition: Dictionary = catalog.get_package(package_id)
 	var scene: String = definition.get("player_config_panel" if profile else "config_panel", "")
-	var panel: Control = load(catalog.path(package_id, scene)).instantiate() if not scene.is_empty() else preload("res://core/ui/party_config_form.tscn").instantiate()
-	var context: Dictionary = {"schema": catalog.schema(package_id), "audience": "room", "pools": connection.room.get("pools", {}).duplicate(true), "fields": definition.get("player_fields", []) if profile else catalog.fields(package_id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)}
+	var panel: Control = catalog.resource(package_id, scene).instantiate() if not scene.is_empty() else preload("res://core/ui/party_config_form.tscn").instantiate()
+	var context: Dictionary = {"schema": catalog.localized_schema(package_id), "audience": "room", "pools": connection.room.get("pools", {}).duplicate(true), "fields": definition.get("player_fields", []) if profile else catalog.fields(package_id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)}
 	if profile and connection.host and connection.room.get("phase") == "lobby" and connection.recovery.is_empty():
 		context["room_players"] = func() -> Array: return connection.players.duplicate(true)
 		context["assign_room_profile"] = connection.assign_player_profile
@@ -451,7 +445,7 @@ func _main_configuration_dialog() -> void:
 	var revision: int = int(connection.room.get("rules_revision", 0))
 	var editable: bool = connection.host and connection.recovery.is_empty() and runner.phase == "idle"
 	var panel: Control = _panel(id, connection.room.settings, editable)
-	var context: Dictionary = {"schema": catalog.schema(id), "audience": "room", "pools": connection.room.pools.duplicate(true), "fields": catalog.fields(id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)}
+	var context: Dictionary = {"schema": catalog.localized_schema(id), "audience": "room", "pools": connection.room.pools.duplicate(true), "fields": catalog.fields(id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)}
 	var editor: Control = _configuration_editor("高级设置 · " + catalog.get_package(id).name, panel, editable, "配置主游戏规则；修改先进入草稿，应用后同步到房间。", func() -> void: panel.configure(catalog.defaults(id), editable, context))
 	var protocol: String = catalog.get_package(id).protocol.id
 	var preset_draft: Dictionary = connection.room.duplicate(true)
@@ -459,7 +453,7 @@ func _main_configuration_dialog() -> void:
 	bar.show()
 	bar.configure(runner.config_store, id, protocol, func() -> Dictionary: return presets.snapshot(id, protocol, panel.get_value(), preset_draft.common_overrides.get(id, {}), preset_draft), editable)
 	bar.loaded.connect(func(value: Dictionary) -> void:
-		panel.configure(catalog.validate_settings(id, value.room_own).value, editable, {"schema": catalog.schema(id), "audience": "room", "pools": value.room.pools.duplicate(true), "fields": catalog.fields(id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)})
+		panel.configure(catalog.validate_settings(id, value.room_own).value, editable, {"schema": catalog.localized_schema(id), "audience": "room", "pools": value.room.pools.duplicate(true), "fields": catalog.fields(id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)})
 		for key: String in ["common", "children", "pools", "common_overrides"]:
 			preset_draft[key] = value.room[key].duplicate(true)
 		context.pools = value.room.pools.duplicate(true)
@@ -719,8 +713,8 @@ func _package_dialog() -> void:
 		box.get_node("Sources").hide()
 	box.get_node("Install").pressed.connect(func() -> void:
 		var source: String = path.text.strip_edges()
-		if not source.ends_with(".pck") or not FileAccess.file_exists(source + ".json"):
-			info.text = "缺少 PCK 或同名描述文件"
+		if not DirAccess.dir_exists_absolute(source) or not FileAccess.file_exists(source.path_join("content.pck.json")):
+			info.text = "请选择包含内容描述文件的包文件夹"
 			return
 		var error: Error = packages.install(source, InputSettings.installation_directory())
 		info.text = "已安装，请重新启动" if error == OK else packages.last_error + " " + error_string(error))
@@ -860,6 +854,9 @@ func navigation_back() -> void:
 		_toggle_session_menu()
 
 func _process(_delta: float) -> void:
+	%ResourceLoading.visible = runner.loading.has("progress")
+	if %ResourceLoading.visible:
+		%ResourceProgress.value = runner.loading.progress
 	# Every foreground minigame uses the shared menu. Main games may also opt in.
 	var minimal: bool = runner._scopes.has(runner._child_id)
 	for scope: Dictionary in runner._scopes.values():

@@ -7,6 +7,7 @@ const Data = preload("res://core/runtime/party_data.gd")
 const DEFAULT_LOCALE: String = "zh_Hans"
 const LOCALES: Array[String] = ["zh_Hans", "en"]
 const DISPLAY_FIELDS: Array[String] = ["title", "description", "placeholder", "suffix", "disabled_reason"]
+var content_catalog: WeakRef
 var locale: String = DEFAULT_LOCALE
 var last_error: String = ""
 var _packages: Dictionary = {}
@@ -49,12 +50,12 @@ static func validate_declaration(value: Variant) -> String:
 
 ## Discovery records paths only. Display loads the requested language on first use.
 func declare_package(package_id: String, declaration: Dictionary, root: String) -> void:
-	_packages[package_id] = {"declaration": declaration, "root": root, "translations": {}}
+	_packages[package_id] = {"id": package_id, "declaration": declaration, "root": root, "translations": {}}
 
 func _translation(package: Dictionary, language: String) -> Translation:
 	if not package.translations.has(language):
 		var path: String = package.root.path_join(package.declaration.translations[language])
-		var resource: Resource = load(path)
+		var resource: Resource = content_catalog.get_ref().resource(package.id, package.declaration.translations[language]) if content_catalog != null else load(path)
 		if not resource is Translation or resource.locale != language:
 			push_error("Invalid translation/locale: " + path)
 			return null

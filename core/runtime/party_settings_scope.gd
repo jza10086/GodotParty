@@ -24,7 +24,7 @@ func enter(owner_api: PartyAPI, root: Node, catalog: RefCounted) -> Error:
 	api.config.failed.connect(_configuration_failed)
 	var definition: Dictionary = catalog.get_package(api.protocol_id)
 	if definition.has("settings_runtime"):
-		var script: Script = load(catalog.path(api.protocol_id, definition.settings_runtime))
+		var script: Script = catalog.resource(api.protocol_id, definition.settings_runtime)
 		if script == null:
 			return ERR_CANT_CREATE
 		runtime = script.new()

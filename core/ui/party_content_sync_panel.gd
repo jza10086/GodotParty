@@ -124,9 +124,9 @@ func _start() -> void:
 	var sync: Node = app.connection.content_sync
 	if not app.connection.host or not sync.start_ready():
 		return
-	var error: Error = app.runner.begin()
+	var error: Error = await app.runner.begin()
 	sync.stop_start()
-	if error != OK:
+	if error not in [OK, ERR_SKIP]:
 		app._notice("开始失败：" + error_string(error))
 
 func _confirm() -> void:
