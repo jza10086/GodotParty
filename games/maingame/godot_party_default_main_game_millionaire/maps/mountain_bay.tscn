@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b0acffgoywo1e"]
 
 [ext_resource type="Script" uid="uid://co5yqli6gfx6p" path="res://games/maingame/godot_party_default_main_game_millionaire/maps/city_routes.gd" id="1_5uif1"]
-[ext_resource type="FontFile" uid="uid://ycpuwgjxu5k" path="res://games/protocols/godot_party_default_protocol/fonts/NotoSansSC-UI.otf" id="4_bog0m"]
+[ext_resource type="FontFile" uid="uid://ycpuwgjxu5k" path="res://games/assets/godot_party_default_ui/fonts/NotoSansSC-UI.otf" id="4_bog0m"]
 [ext_resource type="Script" uid="uid://bopou2b0yjmew" path="res://games/maingame/godot_party_default_main_game_millionaire/maps/city_street.gd" id="11_f5u27"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ubfi2"]

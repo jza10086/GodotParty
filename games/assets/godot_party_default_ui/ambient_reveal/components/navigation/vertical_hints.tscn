@@ -1,0 +1,51 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://games/assets/godot_party_default_ui/ambient_reveal/components/navigation/vertical_hints.gd" id="logic"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/action_prompt.tscn" id="prompt"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/keyboard_w.svg" id="w"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/keyboard_a.svg" id="a"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/keyboard_s.svg" id="s"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/keyboard_d.svg" id="d"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/mouse_left.svg" id="mouse"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/keyboard_escape.svg" id="esc"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_stick_l.svg" id="stick"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_button_color_a.svg" id="accept"]
+[ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/xbox/xbox_button_menu.svg" id="menu"]
+
+[node name="VerticalHints" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_bottom = 24
+script = ExtResource("logic")
+
+[node name="Prompts" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+size_flags_horizontal = 0
+size_flags_vertical = 8
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Move" parent="Prompts" instance=ExtResource("prompt")]
+action = &""
+description = "移动"
+keyboard_icons = Array[Texture2D]([ExtResource("w"), ExtResource("a"), ExtResource("s"), ExtResource("d")])
+gamepad_icons = Array[Texture2D]([ExtResource("stick")])
+
+[node name="Interact" parent="Prompts" instance=ExtResource("prompt")]
+action = &""
+description = "交互"
+keyboard_icons = Array[Texture2D]([ExtResource("mouse")])
+gamepad_icons = Array[Texture2D]([ExtResource("accept")])
+
+[node name="Menu" parent="Prompts" instance=ExtResource("prompt")]
+action = &""
+description = "菜单"
+keyboard_icons = Array[Texture2D]([ExtResource("esc")])
+gamepad_icons = Array[Texture2D]([ExtResource("menu")])

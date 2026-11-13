@@ -25,6 +25,7 @@ var _preferences_page: Control
 var _preferences_return: Array[CanvasItem] = []
 var _preferences_focus: Control
 @onready var _frontend: Control = %PartyUI
+var _content_sync_panel: RefCounted
 var packages: RefCounted
 var _content_error: String = ""
 var _notice_text: String = ""
@@ -63,7 +64,7 @@ func _ready() -> void:
 		return
 	packages = Packages.new()
 	var archive: RefCounted = ContentArchive.new()
-	var bootstrap_error: Error = archive.bootstrap(InputSettings.installation_directory())
+	var bootstrap_error: Error = archive.bootstrap(str(_arguments.get("pack-dir", InputSettings.installation_directory())))
 	if bootstrap_error != OK:
 		_content_error = archive.last_error
 	var source_choices: JsonConfig = JsonConfig.new()
@@ -90,6 +91,9 @@ func _ready() -> void:
 	_apply_system_preferences()
 	if connection.initialize(catalog, settings) != OK:
 		return
+	connection.content_sync.directory = str(_arguments.get("pack-dir", InputSettings.installation_directory()))
+	_content_sync_panel = preload("res://core/ui/party_content_sync_panel.gd").new()
+	_content_sync_panel.initialize(self)
 	runner.configure(connection, catalog, settings)
 	_network_panel = NetworkPanelScene.instantiate()
 	_network_panel.configure(connection, catalog.i18n, _can_show_network_panel, _tab_standings, _metric)
@@ -106,6 +110,7 @@ func _ready() -> void:
 	_localize_session_menu()
 	%UINavigation.initialize()
 	connection.changed.connect(_refresh)
+	connection.host_exited.connect(_host_exited)
 	connection.profile_reply.connect(_profile_reply)
 	runner.changed.connect(_refresh)
 	runner.failed.connect(_notice)
@@ -166,6 +171,15 @@ func _refresh() -> void:
 	if _page == "game":
 		%GameStatus.text = connection.status if not connection.status.is_empty() else _notice_text
 		%RetrySave.disabled = not connection.host or runner._pending.is_empty()
+
+## Connection cleanup has completed before this notification; never retain a stale room view.
+func _host_exited() -> void:
+	_frontend.close_modal()
+	_frontend.show_page("Home")
+	_modal("房主已退出")
+	_dialog.cancel_enabled = false
+	_dialog.get_ok_button().text = "返回主菜单"
+	_dialog.popup_centered(Vector2i(800, 400))
 
 func _show_page() -> void:
 	var playing: bool = _page == "game"
@@ -643,7 +657,7 @@ func _close_settings() -> void:
 func _open_settings_surface(scene: PackedScene) -> Control:
 	_preferences_focus = get_viewport().gui_get_focus_owner()
 	_preferences_return.clear()
-	for surface: CanvasItem in [_settings_page, _frontend, _screen, _session_menu, _dialog]:
+	for surface: Variant in [_settings_page, _frontend, _screen, _session_menu, _dialog]:
 		if is_instance_valid(surface) and surface.visible:
 			_preferences_return.append(surface)
 			surface.hide()
@@ -965,7 +979,9 @@ func _preview_ui_sound() -> void:
 ## Read-only snapshots and explicit actions exposed to a main-game-owned room scene.
 func room_query(key: String, argument: Dictionary) -> Variant:
 	if key == "game_name":
-		return catalog.get_package(argument.id)["name"]
+		if catalog.packages.has(argument.id):
+			return catalog.get_package(argument.id)["name"]
+		return connection.room.start_requirements.packages[argument.id].name
 	if key == "normalize_address":
 		return Connection.normalize_address(argument.value)
 	if key == "format_endpoint":
@@ -991,7 +1007,7 @@ func room_action(operation: String, argument: Dictionary) -> void:
 			connection.leave()
 		"ready":
 			if connection.host:
-				_check(runner.begin())
+				connection.content_sync.begin_start()
 			else:
 				var own: Dictionary = connection._player_peer(connection.local_peer())
 				connection.set_ready(not own.ready)

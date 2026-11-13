@@ -5,7 +5,7 @@ const COLORS: Dictionary[String, Color] = {
 	"property": Color("#54748c"), "shop": Color("#d39a4c"),
 	"event": Color("#a17aaf"), "diamond": Color("#4caaa1")
 }
-const FONT: Font = preload("res://games/protocols/godot_party_default_protocol/fonts/NotoSansSC-UI.otf")
+const FONT: Font = preload("res://games/assets/godot_party_default_ui/fonts/NotoSansSC-UI.otf")
 
 @export var from_junction: Node3D
 @export var to_junction: Node3D

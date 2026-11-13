@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Theme" path="res://core/ui/source/ui/theme/party_theme.tres" id="shared_theme"]
+
+[ext_resource type="Script" path="res://games/assets/godot_party_default_ui/source/settings/components/tooltip_button.gd" id="b"]
+[ext_resource type="Script" path="res://games/assets/godot_party_default_ui/source/settings/components/tooltip_label.gd" id="l"]
+
+[node name="Row" type="HBoxContainer"]
+theme = ExtResource("shared_theme")
+custom_minimum_size = Vector2(0, 96)
+mouse_filter = 1
+theme_override_constants/separation = 24
+
+[node name="Function" type="Label" parent="."]
+theme_type_variation = "PartyLabelSetting"
+text = "功能名称"
+custom_minimum_size = Vector2(570, 64)
+size_flags_horizontal = 1
+size_flags_vertical = 4
+mouse_filter = 1
+vertical_alignment = 1
+clip_text = true
+text_overrun_behavior = 3
+script = ExtResource("l")
+
+[node name="Primary" type="Button" parent="."]
+theme_type_variation = "PartyButtonSetting"
+text = "未绑定"
+custom_minimum_size = Vector2(64, 64)
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 1
+clip_text = true
+text_overrun_behavior = 3
+script = ExtResource("b")
+
+[node name="Secondary" type="Button" parent="."]
+theme_type_variation = "PartyButtonSetting"
+text = "未绑定"
+custom_minimum_size = Vector2(64, 64)
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 1
+clip_text = true
+text_overrun_behavior = 3
+script = ExtResource("b")

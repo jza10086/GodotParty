@@ -26,7 +26,7 @@ func initialize() -> Error:
 
 func identity() -> Dictionary:
 	var id: String = settings.config.get_value("profile", "player_id")
-	return {"player_id": id, "name": "玩家" + id.left(6)}
+	return {"player_id": id, "name": "玩家" + id.left(6), "system": Data.SYSTEM}
 
 ## Read name and appearance together. Only an absent file uses first-use defaults.
 ## Returns {ok, name, profile} or {ok:false, message}; callers must stop on failure.

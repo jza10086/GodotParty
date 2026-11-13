@@ -43,7 +43,11 @@ func _init(context: Dictionary = {}, dispatch: Callable = Callable(), query: Cal
 	net._dispatch = _invoke
 	net._open = is_open
 	net._host = is_host
-	net._query = func(key: String, argument: Dictionary) -> Variant: return _query.call(scope_id, key, argument)
+	# A lambda captures this RefCounted strongly and creates an API -> net -> API cycle.
+	net._query = _net_query
+
+func _net_query(key: String, argument: Dictionary) -> Variant:
+	return _query.call(scope_id, key, argument)
 
 func is_host() -> bool:
 	return _context.get("is_host", false)

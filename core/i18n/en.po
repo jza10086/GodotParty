@@ -374,3 +374,6 @@ msgstr "Protocol override file:"
 
 msgid "修改后点击应用保存；房间规则仍在大厅中配置。"
 msgstr "Click Apply to save changes; room rules are configured in the lobby."
+
+msgid "资产包"
+msgstr "Assets"

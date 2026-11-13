@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://games/protocols/godot_party_default_protocol/briefing/briefing_gate.gd" id="1_gate"]
-[ext_resource type="PackedScene" path="res://games/protocols/godot_party_default_protocol/briefing/briefing_view.tscn" id="2_view"]
+[ext_resource type="PackedScene" path="res://games/assets/godot_party_default_ui/briefing/briefing_view.tscn" id="2_view"]
 
 [node name="BriefingPage" type="Control" node_paths=PackedStringArray("view")]
 layout_mode = 3

@@ -142,7 +142,7 @@
 
 ## Framework content boundary
 
-- Framework 5.0.0 uses API 5, network protocol 17 and manifest format 2. manifest.json is the only author-maintained content catalog entry.
+- Framework 5.0.0 uses API 5, network protocol 18 and manifest format 2. manifest.json is the only author-maintained content catalog entry.
 - Games use public core/api and documented UI contracts. Minigames (including medium tags) live under games/minigame/<id>/; main games and playlists live under games/maingame/<id>/. Avatar packs belong to their protocol under games/protocols/<protocol_id>/avatars/<id>/; exported installs use protocols/<protocol_id>/avatars/<id>/. Host code must not interpret game economy or maintain another activity runner.
 - One top-level activity may start one foreground child with a participant subset; everyone else spectates, including the host when unselected. Only the host parent applies rewards.
 - Same-process content has ordinary Godot script capabilities. Do not introduce source-publication requirements, code audits, sandboxes, system-function blacklists or permission wrappers in this iteration. Retain protocol/version/dependency/file-conflict correctness checks.

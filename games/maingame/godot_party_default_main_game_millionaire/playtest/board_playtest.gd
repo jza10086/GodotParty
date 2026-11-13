@@ -1,6 +1,6 @@
 ## F6 单玩家流程验证：非正式联机游戏，不接管框架会话；主地图不被加载或修改。
 extends "res://games/maingame/godot_party_default_main_game_millionaire/map_preview.gd"
-const HUD: PackedScene = preload("res://core/ui/source/ui/pages/monopoly_overlay.tscn")
+const HUD: PackedScene = preload("res://games/assets/godot_party_default_ui/source/ui/pages/monopoly_overlay.tscn")
 const Dice = preload("res://games/maingame/godot_party_default_main_game_millionaire/playtest/dice_presenter.gd")
 enum Phase { READY, ROLLING, MOVING, CHOICE, INTERACTION }
 var phase: Phase = Phase.READY

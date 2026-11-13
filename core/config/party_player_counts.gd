@@ -21,7 +21,7 @@ static func valid_counts(value: Variant) -> bool:
 static func validate(manifest: Dictionary) -> String:
 	if manifest.has("min_players") or manifest.has("max_players"):
 		return "Use player_counts instead of min_players/max_players"
-	if manifest.get("kind") != "avatars" and not valid_counts(manifest.get("player_counts")):
+	if manifest.get("kind") not in ["avatars", "assets"] and not valid_counts(manifest.get("player_counts")):
 		return "player_counts must be a nonempty set of integers between 1 and 8"
 	var rules: Variant = manifest.get("player_count_rules", [])
 	if not rules is Array:

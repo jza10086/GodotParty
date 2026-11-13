@@ -59,7 +59,7 @@ func configure(link: Node, content_catalog: RefCounted, local_settings: PartyInp
 	voice_backend.initialize(connection, settings)
 
 func begin() -> Error:
-	if phase != "idle" or not connection.host or not connection.start_reason().is_empty():
+	if phase != "idle" or not connection.host or not connection.start_reason().is_empty() or not connection.content_sync.start_ready():
 		return ERR_UNAVAILABLE
 	_close_lobby_settings()
 	_mouse_mode = Input.mouse_mode

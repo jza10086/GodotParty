@@ -49,7 +49,7 @@ func _ready() -> void:
 		return
 	_demo.finish_requested.connect(_press_finish)
 	_demo.failed.connect(_demo_failed)
-	var cursor_scene: PackedScene = api.load_asset({"package_id": api.protocol_id, "resource_key": "player_cursors"}) as PackedScene
+	var cursor_scene: PackedScene = preload("res://games/assets/godot_party_default_ui/player_cursors.tscn")
 	if cursor_scene == null:
 		api.fail("cursors_missing", "原版协议缺少玩家鼠标场景。")
 		return

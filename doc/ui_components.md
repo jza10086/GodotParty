@@ -41,7 +41,7 @@ Ambient Reveal 是项目主主题，项目设置 gui/theme/custom 指向 ambient
 
 ## 设置 API
 
-框架宿主实例化 `res://core/ui/components/settings_page.tscn`。组件提供：
+框架宿主实例化 `res://games/assets/godot_party_default_ui/components/settings_page.tscn`。组件提供：
 
 - `configure(tabs: Array) -> bool`，错误见 `last_error`；稳定且唯一的 tab/option ID。
 - `add_tab` / `add_option`、`get_value` / `get_values`、`set_value(id, value, notify = false)`。
@@ -87,7 +87,7 @@ Schema 由业务 settings.gd 的 schema() 声明，通过 fields 的 type/contro
 
 单行预制体为 core/ui/ambient_reveal/components/navigation/action_prompt.tscn，采用 Kenney 图标组加操作说明。action 读取当前 InputMap 绑定，组合键用 + 分隔、备用绑定用 / 分隔。keyboard_icons、gamepad_icons 可直接指定 Texture2D 数组，优先于 action，适合 WASD、摇杆等组合手势。description 设置说明，icon_size 设置图标高度。set_gamepad(bool) 切换键鼠／Xbox；修改映射后调用 refresh()。素材没有对应图案的罕见键使用通用键图标，绑定名称保留在提示信息中。
 
-纵向预制体为 core/ui/ambient_reveal/components/navigation/vertical_hints.tscn。在全屏 HUD Control 或 CanvasLayer 下实例化，默认使用 24 像素边距贴左下角；Inspector 的 Side 选择 Right 后贴右下角，每行仍保持图标在说明前。Prompts 下预置移动、交互和菜单三行，开启可编辑子节点后可以修改或复制这些 ActionPrompt。示例的 WASD、鼠标左键、Esc 和 Xbox 图标是显示配置，需按游戏实际绑定调整。
+纵向预制体为 games/assets/godot_party_default_ui/ambient_reveal/components/navigation/vertical_hints.tscn。在全屏 HUD Control 或 CanvasLayer 下实例化，默认使用 24 像素边距贴左下角；Inspector 的 Side 选择 Right 后贴右下角，每行仍保持图标在说明前。Prompts 下预置移动、交互和菜单三行，开启可编辑子节点后可以修改或复制这些 ActionPrompt。示例的 WASD、鼠标左键、Esc 和 Xbox 图标是显示配置，需按游戏实际绑定调整。
 
 Gamepad 可在编辑器中预览手柄图标，Follow Input Device 默认开启，在运行时随键鼠／手柄输入切换，也可关闭后由宿主调用 set_gamepad()。组件不接管游戏输入。主菜单底部提示条和协议准备提示已使用同一套图标组件；在小游戏 HUD 中使用纵向提示时，遵循 party_minimal_hud 的框架提示收起约定。
 

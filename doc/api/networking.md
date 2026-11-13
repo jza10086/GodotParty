@@ -1,6 +1,6 @@
 # 内容网络通信指南
 
-适用：框架 5.0.0 / API 5 / 联机协议 17 / manifest 2。接口签名见 [PartyNet](reference.md)，生命周期见 [准备与关闭](api.md)。
+适用：框架 5.0.0 / API 5 / 联机协议 18 / manifest 2。接口签名见 [PartyNet](reference.md)，生命周期见 [准备与关闭](api.md)。
 
 ## 首要原则
 

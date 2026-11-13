@@ -73,7 +73,7 @@ static func patch(room: Dictionary, catalog: RefCounted, revision: int, edits: A
 
 
 ## Explain rejected room settings at the network boundary, before activating the lobby.
-static func room_issue(room: Dictionary, catalog: RefCounted) -> String:
+static func room_issue(room: Dictionary, catalog: RefCounted, include_children: bool = true) -> String:
 	var main: Dictionary = catalog.get_package(room.get("main", ""))
 	if main.get("kind") != "maingame":
 		return "缺少或无效的大游戏：" + str(room.get("main", ""))
@@ -91,6 +91,8 @@ static func room_issue(room: Dictionary, catalog: RefCounted) -> String:
 	for game: Variant in room.children:
 		if not game is String or not room.children[game] is Dictionary:
 			return "小游戏配置格式无效：" + str(game)
+		if not include_children:
+			continue
 		report = catalog.validate_settings(game, room.children[game])
 		if not report.ok:
 			return "%s 配置无效：%s" % [game, report.message]

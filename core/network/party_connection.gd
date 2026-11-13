@@ -29,7 +29,9 @@ signal control_sending(kind: String, payload: Dictionary)
 signal media_received(sender: int, packet: Dictionary)
 signal packet_received(sender: int, packet: Dictionary)
 signal disconnected(peer_id: int)
+signal host_exited()
 signal profile_reply(request_id: String, accepted: bool, message: String)
+var content_sync: Node
 var catalog: RefCounted
 var settings: PartyInput
 var profiles: RefCounted
@@ -128,13 +130,17 @@ func _ready() -> void:
 	_scene.peer_packet.connect(_packet)
 	multiplayer.connected_to_server.connect(_connected)
 	multiplayer.connection_failed.connect(_connection_failed)
-	multiplayer.server_disconnected.connect(func() -> void: leave("房主已离开"))
+	multiplayer.server_disconnected.connect(_host_exited, CONNECT_DEFERRED)
 	multiplayer.peer_connected.connect(_peer_connected)
 	multiplayer.peer_disconnected.connect(_disconnected)
 
 func initialize(local_catalog: RefCounted, local_settings: PartyInput) -> Error:
 	catalog = local_catalog
 	settings = local_settings
+	content_sync = preload("res://core/network/party_content_sync.gd").new()
+	content_sync.connection = self
+	content_sync.directory = PartyInput.installation_directory()
+	add_child(content_sync)
 	profiles = Profiles.new(settings)
 	return profiles.initialize()
 
@@ -284,6 +290,7 @@ func leave(reason: String = "") -> void:
 	_acks.clear()
 	_ack_deadline = 0
 	_hello_peers.clear()
+	content_sync.reset()
 	_profile_protocol = ""
 	status = reason
 	_connection_deadline = 0
@@ -298,7 +305,7 @@ func _connected() -> void:
 	_send(1, {"kind": "hello", "payload": profiles.identity()})
 
 func _make_player(identity: Dictionary, peer: int) -> Dictionary:
-	return {"player_id": identity["player_id"], "name": identity["name"], "peer_id": peer, "connected": true, "ready": peer == 1, "profile": {}, "appearance": {}}
+	return {"player_id": identity["player_id"], "name": identity["name"], "peer_id": peer, "connected": true, "ready": peer == 1, "profile": {}, "appearance": {}, "system": identity["system"]}
 
 func _packet(sender: int, bytes: PackedByteArray) -> void:
 	if bytes.size() > MAX_PACKET_BYTES:
@@ -331,6 +338,21 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 		return
 	var payload: Variant = packet.get("payload", {})
 	if not payload is Dictionary:
+		return
+	if kind == "content_offer" and sender == 1 and not host and (room.is_empty() or room.get("phase") == "lobby"):
+		content_sync.receive_offer(payload)
+		return
+	if kind == "content_chunk" and sender == 1 and not host and (connection_state == "syncing" or content_sync.phase == "start"):
+		content_sync.receive_chunk(payload)
+		return
+	if kind == "content_prepared" and sender == 1 and not host and (connection_state == "syncing" or content_sync.phase == "start"):
+		content_sync.receive_prepared(payload)
+		return
+	if kind == "content_prepare" and host and room.get("phase") == "lobby":
+		content_sync.prepare(sender, payload)
+		return
+	if kind == "content_get" and host and room.get("phase") == "lobby":
+		content_sync.serve(sender, payload)
 		return
 	if kind == "profile_offer" and sender == 1 and not host and room.is_empty():
 		var issue: String = catalog.requirements_issue(payload.get("requirements"))
@@ -368,7 +390,7 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 			leave("加入或更新房间失败：房主发送的房间数据格式无效")
 			return
 		session_id = packet["session"]
-		var issue: String = _room_content_issue(payload)
+		var issue: String = _room_content_issue(payload, payload.room.phase != "lobby")
 		if _send(1, {"kind": "ack", "payload": {"revision": payload.room.revision, "matches": issue.is_empty(), "message": issue}}) != OK:
 			return
 		if not issue.is_empty():
@@ -393,6 +415,12 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 		_auto_profile()
 		return
 	if packet.get("session") != session_id or _player_peer(sender).is_empty():
+		return
+	if kind == "content_status" and host:
+		content_sync.receive_status(sender, payload)
+		return
+	if kind == "content_stop" and not host and sender == 1:
+		content_sync.stop_received(payload)
 		return
 	if kind == "control":
 		if payload.get("operation") is String and payload.get("data") is Dictionary:
@@ -419,8 +447,14 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 		_profile_response(payload)
 
 func _accept_hello(sender: int, identity: Dictionary) -> void:
+	if identity.get("system") not in ["editor", "windows", "android"]:
+		_send(sender, {"kind": "rejected", "payload": {"message": "无效的系统声明"}})
+		return
 	if not room.has("closure"):
 		_send(sender, {"kind": "rejected", "payload": {"message": "房主内容不可用：\n" + status}})
+		return
+	if room.get("phase") == "lobby" and _player_peer(sender).is_empty() and not content_sync._offers.has(sender):
+		content_sync.offer(sender, room["requirements"])
 		return
 	# Learn the selected protocol before publishing the player, so their own preferred
 	# color participates in allocation rather than an unrelated default placeholder.
@@ -467,9 +501,12 @@ func _accept_hello(sender: int, identity: Dictionary) -> void:
 	if not closure.ok:
 		_send(sender, {"kind": "rejected", "payload": {"message": "加入房间失败：\n" + closure.message}})
 		return
+	if content_sync.waiting and content_sync.reports.has(value.player_id):
+		value.ready = true
 	players.append(value)
 	_hello_peers.erase(sender)
-	_publish()
+	_publish(true, false)
+	content_sync.peer_joined(value)
 
 func protocol_instance() -> RefCounted:
 	var main: Dictionary = catalog.get_package(room.get("main", ""))
@@ -576,7 +613,11 @@ func set_ready(value: bool) -> void:
 
 ## Recomputed from the host room snapshot so pool and configuration edits cannot leave stale limits.
 func allowed_player_counts() -> Array[int]:
-	return PlayerCounts.room_counts(room, catalog)
+	if host:
+		return PlayerCounts.room_counts(room, catalog)
+	var counts: Array[int] = []
+	counts.assign(room.get("allowed_counts", []))
+	return counts
 
 func player_count_reason() -> String:
 	var counts: Array[int] = allowed_player_counts()
@@ -622,7 +663,7 @@ func prepare_restore(record: Dictionary) -> Error:
 	if record.get("status") != "active" or not record.get("room") is Dictionary or not record.get("appearances") is Dictionary or not _valid_room_snapshot({"players": record.get("players"), "room": record["room"]}):
 		status = "存档结构无效或会话已结束"
 		return ERR_INVALID_DATA
-	var issue: String = _room_content_issue({"players": record.players, "room": record.room})
+	var issue: String = _room_content_issue({"players": record.players, "room": record.room}, true)
 	if not issue.is_empty():
 		status = "无法恢复房间：" + issue
 		return ERR_INVALID_DATA
@@ -768,7 +809,7 @@ func _auto_profile() -> void:
 	if not local_profile.ok:
 		leave(local_profile.message)
 		return
-	var closure: Dictionary = catalog.resolve(room.main, room.pools, [protocol.get_appearance(local_profile.profile)])
+	var closure: Dictionary = catalog.resolve(room.main, {}, [protocol.get_appearance(local_profile.profile)])
 	if not closure.ok:
 		leave("本机协议资料不可用：\n" + closure.message)
 		return
@@ -787,12 +828,18 @@ func _appearances() -> Array:
 	return result
 
 ## Player readiness changes do not invalidate already accepted content and settings.
-func _publish(require_confirmation: bool = true) -> void:
+func _publish(require_confirmation: bool = true, invalidate_start: bool = true) -> void:
 	room["revision"] = room.get("revision", 0) + 1
-	room["requirements"] = catalog.connection_requirements()
+	if require_confirmation and invalidate_start and content_sync.waiting:
+		content_sync.stop_start()
+	var joining: Dictionary = catalog.resolve(room.get("main", ""), {}, _appearances())
+	if joining.ok:
+		room["requirements"] = catalog.connection_requirements(joining.packages)
+	room["allowed_counts"] = PlayerCounts.room_counts(room, catalog)
 	var closure: Dictionary = catalog.resolve(room.get("main", ""), room.get("pools", {}), _appearances())
 	if closure.get("ok", false):
 		room["closure"] = closure["packages"]
+		room["start_requirements"] = catalog.connection_requirements(closure.packages)
 	else:
 		room.erase("closure")
 		status = closure.get("message", "")
@@ -891,7 +938,19 @@ func _player_peer(peer: int) -> Dictionary:
 			return player
 	return {}
 
+## Run after ENet finishes polling: replacing its peer inside peer_disconnected can free it mid-callback.
+## Both disconnect notifications can arrive; close the session once before notifying UI.
+func _host_exited() -> void:
+	if host or not online:
+		return
+	leave("房主已退出")
+	host_exited.emit()
+
 func _disconnected(peer: int) -> void:
+	if peer == 1 and not host:
+		_host_exited.call_deferred()
+		return
+	content_sync.peer_left(peer)
 	_hello_peers.erase(peer)
 	_last_packet_msec.erase(peer)
 	_loss_first_epoch.erase(peer)
@@ -909,7 +968,7 @@ func _disconnected(peer: int) -> void:
 	else:
 		player["connected"] = false
 	disconnected.emit(peer)
-	_publish()
+	_publish(true, false)
 
 func _process(delta: float) -> void:
 	if _closing:
@@ -965,18 +1024,18 @@ func packet_fits(packet: Dictionary) -> bool:
 	return Data.valid(packet, 0, true) and var_to_bytes(packet).size() <= MAX_PACKET_BYTES
 
 ## Validate installed content before reading its configuration or constructing its room UI.
-func _room_content_issue(payload: Dictionary) -> String:
+func _room_content_issue(payload: Dictionary, full: bool = false) -> String:
 	var snapshot: Dictionary = payload.room
-	var issue: String = catalog.requirements_issue(snapshot.get("requirements"))
+	var issue: String = catalog.requirements_issue(snapshot.get("start_requirements" if full else "requirements"))
 	if not issue.is_empty():
 		return issue
 	var appearances: Array = []
 	for player: Dictionary in payload.players:
 		appearances.append(player.appearance)
-	var resolved: Dictionary = catalog.resolve(snapshot.main, snapshot.pools, appearances)
+	var resolved: Dictionary = catalog.resolve(snapshot.main, snapshot.pools if full else {}, appearances)
 	if not resolved.ok:
 		return resolved.message
-	return Rules.room_issue(snapshot, catalog)
+	return Rules.room_issue(snapshot, catalog, full)
 
 ## Reject malformed room snapshots before assigning typed collections or acknowledging a revision.
 func _valid_room_snapshot(payload: Dictionary) -> bool:
@@ -990,6 +1049,11 @@ func _valid_room_snapshot(payload: Dictionary) -> bool:
 	for key: String in ["settings", "children", "pools", "closure"]:
 		if not snapshot.get(key) is Dictionary:
 			return false
+	if not snapshot.get("allowed_counts") is Array or not snapshot.get("start_requirements") is Dictionary:
+		return false
+	for count: Variant in snapshot.allowed_counts:
+		if not count is int or count < 1 or count > 8:
+			return false
 	var identities: Dictionary = {}
 	var peers: Dictionary = {}
 	if payload["players"].is_empty() or payload["players"].size() > 8:
@@ -1000,6 +1064,8 @@ func _valid_room_snapshot(payload: Dictionary) -> bool:
 		if not player.get("player_id") is String or player["player_id"].is_empty() or not player.get("name") is String:
 			return false
 		if not player.get("peer_id") is int or player["peer_id"] < 1 or not player.get("connected") is bool or not player.get("ready") is bool:
+			return false
+		if player.get("system") not in ["editor", "windows", "android"]:
 			return false
 		if not player.get("profile") is Dictionary or not player.get("appearance") is Dictionary:
 			return false

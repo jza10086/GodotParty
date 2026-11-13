@@ -56,7 +56,7 @@ try {
         $target = Join-Path $output $relative
         Check-Target $target
         if (Test-Path -LiteralPath $target -PathType Container) { throw "File conflicts with directory: $target" }
-        $packageArtifact = $relative -match '^(protocols|maingame|minigame)\\[^\\]+\\(avatars\\[^\\]+\\)?content\.pck(\.json)?$'
+        $packageArtifact = $relative -match '^(protocols|maingame|minigame|assets)\\[^\\]+\\(avatars\\[^\\]+\\)?content\.pck(\.json)?$'
         $replace = $relative -in 'GodotParty.exe','GodotParty.apk','GodotParty-content-android.zip' -or $packageArtifact -or $relative.StartsWith('core\notices\')
         if ((Test-Path -LiteralPath $target) -and !$replace) { continue }
         $backup = Join-Path (Join-Path $buildRoot 'previous') $relative

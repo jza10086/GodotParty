@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://0nq42e86lfcc"]
+
+[ext_resource type="Script" path="res://games/assets/godot_party_default_ui/components/impact_number.gd" id="1"]
+
+[sub_resource type="SystemFont" id="NumberFont"]
+font_names = PackedStringArray("Arial", "DejaVu Sans")
+font_weight = 900
+
+[node name="ImpactNumber" type="Control" unique_id=1999860166]
+custom_minimum_size = Vector2(280, 160)
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("1")
+number_font = SubResource("NumberFont")

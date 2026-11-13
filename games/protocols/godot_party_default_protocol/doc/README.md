@@ -1,6 +1,6 @@
 # GodotPartyDefaultProtocol 1.0
 
-包 ID `godot_party_default_protocol`，包版本 1.0.11，契约 1.0，API 5 / 清单 2。显示名称以 GodotPartyDefault 为前缀，文件和包 ID 使用蛇形命名。依赖 `godot_party_default_avatars` 与 `godot_party_default_avatars_2d` 1.0.2。
+包 ID `godot_party_default_protocol`，包版本 1.0.12，契约 1.0，API 5 / 清单 2。显示名称以 GodotPartyDefault 为前缀，文件和包 ID 使用蛇形命名。依赖 `godot_party_default_avatars` 与 `godot_party_default_avatars_2d` 1.0.2。
 
 协议只校验语义、生成展示和纯结算建议，不保存钱包、执行道具效果或决定奖励。金币、钻石、道具实例和已处理请求都由大游戏持久状态管理。所有身份使用框架提供的参与者 player_id，不使用 peer_id；观战者不能提交参赛结果。
 
@@ -145,7 +145,7 @@ Millionaire 当前仍是独立 F6 视觉原型：读取同一资料槽的协议�
 
 ## 公共字体
 
-协议界面默认使用与框架相同的黑体，文件独立保存在协议 fonts/。大小游戏可通过公开资源 `font_sans`（黑体）或 `font_serif`（思源宋体 Regular）选择字体，参见 [字体调用示例](../fonts/README.md)。不依赖 core 的字体路径，也不修改框架主题。
+共用 UI 场景、交互脚本、光标与字体归属 `godot_party_default_ui` 1.0.1。直接引用 `res://games/assets/godot_party_default_ui/`，不再通过协议的字体或展示资源键加载。协议保留准备/结算协调、轮次控制及资料面板的数据适配。资料与 ranked 场景组合资产包视图，不在资产包中引用协议。
 
 ## 共享玩家鼠标
 
@@ -182,10 +182,10 @@ board_area.add_child(cursors)
 
 在游戏入口预置 CanvasLayer（参考层级 32，低于框架菜单 64），实例化这两个本地场景，初始 `visible = false`。用 `@export` 节点引用连接入口；不要在启动时 `new()`、`instantiate()` 或重新 add_child 页面。每局创建新的游戏入口，页面只激活一次，停止后不复用到下一局。独立 F6 页面显示虚构样例，不连接网络、不写配置、不提交分数；模板 `game.tscn` 的 F6 仍直接显示原有演示。
 
-固定字号、间距、边框和容器保存在场景中，脚本不会按窗口尺寸重写。玩家行外观由 `briefing_player_row` / `settlement_row` 场景定义；控件提示由 `briefing_control_hint` 定义。可继承这些子场景并设置 View 的导出场景资源。成员增减才增删准备行，状态变化更新原行；结算只实例化实际成绩行及动态指标列。编辑器样例在首次填入真实数据时移除，不进入网络或成绩数据。
+固定字号、间距、边框和容器保存在场景中，脚本不会按窗口尺寸重写。玩家行外观由 资产包的 `briefing/player_row.tscn` / `settlement/result_row.tscn` 场景定义；控件提示由 资产包的 `briefing/control_hint.tscn` 定义。可继承这些子场景并设置 View 的导出场景资源。成员增减才增删准备行，状态变化更新原行；结算只实例化实际成绩行及动态指标列。编辑器样例在首次填入真实数据时移除，不进入网络或成绩数据。
 
 - 加载：对预置页面调用 `configure(api, content)`（可在入树前或已入树后），content含title/introduction/cover/controls；`read_content(manifest_path, api)`可读取自己的简介和实际绑定。初始化后游戏正常`mark_ready()`，`party_start()`中调用`transport_started()`；等`play_requested`才启动玩法。人工确认使用Enter/空格或点击现有按键提示；绿色“准备”切换为红色“取消准备”，再次操作可取消。`briefing_gate.set_ready(bool) -> Error` 提交明确的准备状态。倒计时内仍可取消，房主立即撤回倒计时；重新全员准备后重新计时。观战无需确认；技术准备与人工准备独立，全员满足后默认3秒开始。
-- 可选玩家单选项（包版本 1.0.11）：加载 content 提供固定的 `choice_label`、`choice_options: Array[String]` 和 `choice_default`（必须属于选项）。`round_pages.prepare(game, api, request, start_play, content_overrides = {})` 的最后一个字典覆盖本轮加载页内容；游戏可用它传入由资源生成的选项。未配置选项的游戏不显示下拉框。
+- 可选玩家单选项（包版本 1.0.12）：加载 content 提供固定的 `choice_label`、`choice_options: Array[String]` 和 `choice_default`（必须属于选项）。`round_pages.prepare(game, api, request, start_play, content_overrides = {})` 的最后一个字典覆盖本轮加载页内容；游戏可用它传入由资源生成的选项。未配置选项的游戏不显示下拉框。
 - `briefing_gate.select_choice(value) -> Error` 提交本地选择；`get_choice(player_id) -> String` 读取房主确认的选择，观战者返回空字符串。准备消息同时携带选择，房主校验真实发送者、参与身份和选项后锁定；已准备或开始倒计时后不接受选项修改，取消准备后可重新选择。状态快照包含参与者的 `choices` 字典，沿用 session/scope/revision 校验。游戏在 `play_requested` 后读取所选值并启动实际玩法。
 - 纯加载 view 额外提供 `choice_selected(value)`、`set_choice(value)`；`set_state` 的玩家行必须包含唯一的 `player_id`、`name` 和 `connected`，可含 `loaded`、`ready`、`participant` 与 `choice`。这些字段由 gate 从已验证的房间状态提供；直接使用 view 时调用方遵守相同约定。面板仅显示选项文本，不追加说明标签。未准备且操作可用时允许更改选项；下拉框打开时 Enter 不会同时触发准备。
 - 结算：对预置页面调用 `configure(api, presentation, result_token)`，presentation为`{title, rows:[{player_id, rank, metrics:{score}}]}`。score是本轮小游戏分数，不是父游戏奖励；作者给定rank，视图稳定处理并列，不按分数重排。所有在线端装好页面后自动回执，默认3秒发出`continued`，没有人工准备/退出按钮。就绪回执每 0.5 秒重发仅用于覆盖另一端页面尚未挂载的窗口；重复回执不重复发布状态，等待最多 30 秒，超时报错结束该轮。传输失败停止推进，不假装完成。

@@ -24,9 +24,9 @@ func configure(content_catalog: RefCounted, config_store: RefCounted) -> void:
 	%Configure.pressed.connect(func() -> void:
 		preferences_requested.emit(selected, str(%Protocol.get_selected_metadata())))
 	%Protocol.item_selected.connect(func(_index: int) -> void: _details())
-	_groups = [%Protocols, %MainGames, %MiniGames]
-	var kinds: Array[String] = ["protocols", "maingame", "minigame"]
-	var titles: Array[String] = ["协议", "主游戏", "小游戏"]
+	_groups = [%Protocols, %MainGames, %MiniGames, %Assets]
+	var kinds: Array[String] = ["protocols", "maingame", "minigame", "assets"]
+	var titles: Array[String] = ["协议", "主游戏", "小游戏", "资产包"]
 	for index: int in kinds.size():
 		var group: VBoxContainer = _groups[index]
 		for id: String in catalog.ids(kinds[index]):
@@ -85,7 +85,7 @@ func _select(id: String) -> void:
 		protocols.append(id)
 	elif definition.kind == "maingame":
 		if catalog.protocol_matches(definition.protocol): protocols.append(definition.protocol.id)
-	else:
+	elif definition.kind == "minigame":
 		for adapter: Dictionary in definition.adapters:
 			if catalog.protocol_matches(adapter.protocol) and adapter.protocol.id not in protocols:
 				protocols.append(adapter.protocol.id)
@@ -98,13 +98,24 @@ func _select(id: String) -> void:
 		%Protocol.set_item_metadata(0, "")
 	%Protocol.select(0)
 	%Protocol.disabled = protocols.size() <= 1
-	%Configure.disabled = false
+	%Configure.disabled = definition.kind == "assets"
+	%Configure.visible = definition.kind != "assets"
+	%Protocol.visible = definition.kind != "assets"
+	%ProtocolLabel.visible = definition.kind != "assets"
 	for row_id: String in _rows:
 		_rows[row_id].set_pressed_no_signal(row_id == id)
 	_details()
 
 func _details() -> void:
 	var definition: Dictionary = catalog.get_package(selected)
+	if definition.kind == "assets":
+		var users: Array[String] = []
+		for id: String in catalog.packages:
+			if catalog.packages[id].get("dependencies", {}).has(selected):
+				users.append(catalog.get_package(id).name)
+		page.show_help(definition.name, definition.remark, "ID: " + selected + "\n" + definition.framework_version + "\n" + ", ".join(users))
+		page.status.text = definition.package_version
+		return
 	var protocol: String = str(%Protocol.get_selected_metadata())
 	var detail: String = "ID: " + selected + "\n" + _t("配置文件：") + "\n" + store.own_path(selected)
 	if not protocol.is_empty() and protocol != selected:

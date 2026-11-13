@@ -4,7 +4,7 @@
 
 界面组件与箭头图标：GodotPartyUI https://github.com/jza10086/GodotPartyUI
 中文字体：Noto Sans CJK SC（许可证：core/ui/components/assets/FONT-LICENSE.txt） https://github.com/notofonts/noto-cjk
-音游界面字体：NotoSansSC-UI.otf（复用原版协议 font_sans，许可证：games/minigame/gp_rhythm_game/assets/fonts/NOTO-SANS-LICENSE.txt） https://github.com/notofonts/noto-cjk
+音游界面字体：NotoSansSC-UI.otf（复用原版 UI 资产包 font_sans，许可证：games/minigame/gp_rhythm_game/assets/fonts/NOTO-SANS-LICENSE.txt） https://github.com/notofonts/noto-cjk
 连通性测试客户端内置字体：Noto Sans CJK SC（复用项目字体；许可证：tools/connectivity_client/project/fonts/FONT-LICENSE.txt） https://github.com/notofonts/noto-cjk
 图标：Godot 官方标志（CC BY 4.0，沿用 GodotPartyUI 原始图标） https://godotengine.org/press/
 

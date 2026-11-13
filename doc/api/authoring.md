@@ -17,7 +17,7 @@ Android 在左上角提供常态隐藏的 ESC 虚拟按钮（`core/ui/party_touc
 
 ## 主游戏房间入口
 
-主游戏还必须声明 `room_scene`（包内场景路径），提供自己的大厅视图。原版轮换的 `room.tscn` 继承公共 `core/ui/source/ui/lobby_page.tscn`，场景驱动位于轮换包中。框架负责挂载、切换、连接与配置服务。
+主游戏还必须声明 `room_scene`（包内场景路径），提供自己的大厅视图。原版轮换的 `room.tscn` 继承公共 `games/assets/godot_party_default_ui/source/ui/lobby_page.tscn`，场景驱动位于轮换包中。框架负责挂载、切换、连接与配置服务。
 
 房间脚本实现 `room_setup(context)`、`room_refresh()`、`room_focus()`、`room_stop()`。setup 在入树前调用；stop 必须可重复调用。context 来自公开 `core/api/party_room_api.gd`：`get_state()` 返回房间和玩家快照，`get_game_name(id)` 读取内容名称；`ready_or_start()`、`leave()`、`show_player(peer)`、`open_settings(panel)` 和 `show_notice(message)` 调用框架服务。panel 支持 pool/main/preferences/protocol/rules/system；preferences 打开当前主游戏的本地偏好与协议继承设置。`activity` 为本次大厅作用域 PartyAPI，配置变更或离开时关闭；通过 `on_close` 清理语音等资源。房间代码不依赖框架前端的私有节点。`update_main_settings(values)` 在房主大厅合并并应用部分主游戏规则，保留选池及其他配置，复用现有校验与同步流程；客机或恢复中的房间不能修改。
 
@@ -80,9 +80,9 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 
 已登记但尚不能从框架开局的原型须声明 `playable: false` 和空的 `adapters` 数组，并提供包内状态场景作为 entry。目录仍可读取这些包，大游戏无法选择它们。可玩包默认 `playable: true`，至少声明一个真正支持的适配器。
 
-协议、主游戏和小游戏用 `supported_systems` 字符串数组声明支持的系统，例如 `["windows", "android"]`。这是作者维护的文本说明，不参与导出筛选、加载拒绝或联机兼容判断，也不表示已经通过真机验收。导出内容包时原样保留声明，不随导出平台自动增加支持项。当前原版协议、小游戏轮换和竞拍大师声明 windows、android，其余现有游戏先声明 windows；作者适配其他系统后再修改。
+协议、主游戏和小游戏用 `supported_systems` 字符串数组声明支持的系统，例如 `["windows", "android"]`。入房时检查协议、主游戏及依赖，开始前检查所选小游戏及依赖；不支持当前系统时禁止下载并阻止开始。该声明不代表真机验收，不随导出平台自动增加支持项。形象包继承所属协议声明。当前原版协议、小游戏轮换和竞拍大师声明 windows、android，其余现有游戏先声明 windows；作者适配其他系统后修改声明并递增包版本。共享 PCK 同时包含桌面/移动纹理导入资源，但不会自动适配键鼠、触摸或原生扩展。
 
-框架在 `core/runtime/party_data.gd` 的 `SYSTEM` 常量声明本机构建系统：编辑器源码固定为 `pc`，可视化 Windows / Android 导出器按各自预设在隔离构建副本中分别写入 `windows` / `android`。此字段不检测宿主操作系统，不改写原工程，也不改变输入、配置或运行行为。
+框架在 `core/runtime/party_data.gd` 的 `SYSTEM` 常量声明本机构建系统：编辑器源码为独立标识 `editor`，暂时接受 `windows` 的兼容声明，也接受显式 `editor`；可视化 Windows / Android 导出器在隔离构建副本中分别写入 `windows` / `android`。此字段不检测宿主操作系统，不改写原工程；平台判断统一使用 `PartyData` 模块的 `supports_system`，不改变物理输入或配置。
 
 没有适配脚本时，setup 的 config 就是原协议请求，finish 的字典就是协议结果。
 协议、大游戏和小游戏均须声明 `player_counts`；配置依赖的限制与交集规则见 [可开局人数](player_counts.md)。
@@ -171,3 +171,5 @@ F6 默认语言直接读取包声明的回退 Translation，使用与正式 `api
 - 玩家 `config/`、测试 `tmp/test/`、受限素材 `third_party_assets/` 和未解决来源的 `private_assets/` 继续遵守各自边界，不迁入 `authoring/`。发布所需许可证和署名必须随正式素材保留，不能只留在被忽略的目录中。
 
 发布检查区分三个问题：开发素材是否进入构建目录、同一资源是否被重复收集、PCK 是否同时保留了已转换的原文件和导入产物。以路径清单、导入日志、导入参数和实际资源加载验证，不做文件哈希校验。共享包中的桌面/移动纹理变体是不同运行需求，不作为重复资源删除。核心与内容的独立干净工程仍各自需要导入，本规则不宣称跨工程零导入。
+
+公共 UI 和代码可进入 `games/assets/<id>/` 资产包，使用方声明精确依赖后直接引用资源路径；资产包只引用自身和框架，不引用其他内容包。五字段声明及安装规则见 [资产包](source_packages.md#资产包)。原版 UI 已从原版协议提取至 `godot_party_default_ui`。

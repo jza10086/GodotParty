@@ -10,6 +10,11 @@ var ok_button_text: String = "确定"
 var cancel_button_text: String = "取消"
 var dialog_hide_on_ok: bool = true
 var scroll_content: bool = true
+@export var cancel_enabled: bool = true:
+	set(value):
+		cancel_enabled = value
+		if is_node_ready():
+			_cancel.visible = value
 @onready var content: VBoxContainer = %Content
 @onready var _panel: Panel = %Panel
 @onready var _title: Label = %Title
@@ -45,6 +50,7 @@ func popup_centered(requested: Vector2i = Vector2i(1200, 860)) -> void:
 	_requested_size = Vector2(requested)
 	_title.text = title
 	_cancel.text = cancel_button_text
+	_cancel.visible = cancel_enabled
 	%Message.visible = not dialog_text.is_empty()
 	%Message.text = dialog_text
 	_previous_focus = get_viewport().gui_get_focus_owner()
@@ -52,7 +58,10 @@ func popup_centered(requested: Vector2i = Vector2i(1200, 860)) -> void:
 	move_to_front()
 	show()
 	_fit()
-	_cancel.grab_focus()
+	if cancel_enabled:
+		_cancel.grab_focus()
+	else:
+		_ok.grab_focus()
 
 func _fit() -> void:
 	if _panel == null:
@@ -88,6 +97,8 @@ func _restore_focus() -> void:
 	_previous_focus = null
 
 func _cancel_pressed() -> void:
+	if not cancel_enabled:
+		return
 	hide()
 	canceled.emit()
 

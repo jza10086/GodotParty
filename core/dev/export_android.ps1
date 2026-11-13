@@ -47,12 +47,12 @@ function New-AndroidProject([string]$destination) {
         New-Item -ItemType Directory -Path (Split-Path $target) -Force | Out-Null
         Copy-Item -LiteralPath $file.FullName -Destination $target
     }
-    # Stamp only the staged framework; the editor declaration remains pc.
+    # Stamp only the staged framework; the editor declaration remains editor.
     $dataFile = Join-Path $destination 'core/runtime/party_data.gd'
-    $dataText = (Get-Content -LiteralPath $dataFile -Raw -Encoding UTF8).Replace('const SYSTEM: String = "pc"', 'const SYSTEM: String = "android"')
+    $dataText = (Get-Content -LiteralPath $dataFile -Raw -Encoding UTF8).Replace('const SYSTEM: String = "editor"', 'const SYSTEM: String = "android"')
     [IO.File]::WriteAllText($dataFile, $dataText, $utf8)
     New-Item -ItemType Directory -Path (Join-Path $destination 'core/dev') -Force | Out-Null
-    foreach ($name in @('party_arguments.gd','export_content.gd','party_export_selection.gd')) {
+    foreach ($name in @('party_arguments.gd','export_content.gd','party_export_selection.gd','export_shared_pack.gd')) {
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination (Join-Path $destination 'core/dev')
     }
     Copy-Item -LiteralPath (Join-Path $projectRoot 'icon.svg') -Destination $destination
@@ -67,6 +67,8 @@ function New-AndroidProject([string]$destination) {
     $text = Set-ProjectValue $text 'rendering' 'renderer/rendering_method' '"gl_compatibility"'
     $text = Set-ProjectValue $text 'rendering' 'renderer/rendering_method.mobile' '"gl_compatibility"'
     $text = Set-ProjectValue $text 'rendering' 'textures/vram_compression/import_etc2_astc' 'true'
+    $text = Set-ProjectValue $text 'rendering' 'textures/vram_compression/import_s3tc_bptc' 'true'
+    $text = Set-ProjectValue $text 'content' 'shared_import' 'true'
     $text = Set-ProjectValue $text 'input_devices' 'pointing/emulate_mouse_from_touch' 'true'
     $text = Set-ProjectValue $text 'input_devices' 'pointing/emulate_touch_from_mouse' 'false'
     [IO.File]::WriteAllText((Join-Path $destination 'project.godot'),$text,$utf8)
@@ -90,7 +92,7 @@ Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $bundlePath = Join-Path $stage 'GodotParty-content-android.zip'
 $packages = @(Get-ChildItem -LiteralPath $payload -Recurse -Filter 'content.pck.json' | ForEach-Object { $_.DirectoryName.Substring($payload.Length+1).Replace('\','/') })
-$header = @{format=1;id=[guid]::NewGuid().ToString('N');platform=$request.platform;packages=$packages} | ConvertTo-Json -Depth 5
+$header = @{format=2;id=[guid]::NewGuid().ToString('N');packages=$packages} | ConvertTo-Json -Depth 5
 [IO.File]::WriteAllText((Join-Path $payload 'bundle.json'),$header,$utf8)
 $archive = [IO.Compression.ZipFile]::Open($bundlePath,[IO.Compression.ZipArchiveMode]::Create)
 try {

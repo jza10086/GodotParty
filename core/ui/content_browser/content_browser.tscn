@@ -53,6 +53,13 @@ theme_override_constants/separation = 12
 [node name="Empty" type="Label" parent="Workspace/Columns/List/Forms/MiniGames"]
 layout_mode = 2
 text = "没有匹配的内容包。"
+[node name="Assets" type="VBoxContainer" parent="Workspace/Columns/List/Forms"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+[node name="Empty" type="Label" parent="Workspace/Columns/List/Forms/Assets"]
+layout_mode = 2
+text = "没有匹配的内容包。"
 [node name="Configure" parent="Workspace/Actions" instance=ExtResource("button")]
 unique_name_in_owner = true
 layout_mode = 2

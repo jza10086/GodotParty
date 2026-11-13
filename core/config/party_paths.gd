@@ -14,7 +14,7 @@ static func folder(value: Variant) -> bool:
 static func package_relative(manifest: Dictionary) -> String:
 	var id: Variant = manifest.get("id", "")
 	var kind: Variant = manifest.get("kind", "")
-	if not folder(id) or kind not in ["protocols", "maingame", "minigame", "avatars"]:
+	if not folder(id) or kind not in ["protocols", "maingame", "minigame", "avatars", "assets"]:
 		return ""
 	if kind == "avatars":
 		var protocol: Variant = manifest.get("owner_protocol", "")
@@ -24,7 +24,7 @@ static func package_relative(manifest: Dictionary) -> String:
 static func configuration(root: String, catalog: RefCounted, id: String, protocol: String = "") -> String:
 	var manifest: Dictionary = catalog.get_package(id)
 	var relative: String = package_relative(manifest)
-	if relative.is_empty() or manifest.kind == "avatars":
+	if relative.is_empty() or manifest.kind in ["avatars", "assets"]:
 		return ""
 	var base: String = root.path_join(relative).path_join("config")
 	if manifest.kind == "protocols" or protocol.is_empty():

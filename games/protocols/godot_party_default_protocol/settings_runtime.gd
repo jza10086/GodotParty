@@ -1,7 +1,7 @@
 extends "res://games/protocols/godot_party_default_protocol/graphics_settings.gd"
 ## Owns protocol-local graphics, pointer appearance and per-activation game audio buses.
 ## One settings activation owns the native arrow; leaving restores the engine cursor.
-const Cursor: Script = preload("res://games/protocols/godot_party_default_protocol/appearance/player_cursor.gd")
+const Cursor: Script = preload("res://games/assets/godot_party_default_ui/appearance/player_cursor.gd")
 const AudioMixer = preload("res://games/protocols/godot_party_default_protocol/audio/audio_mixer.gd")
 var _audio_mixer: AudioMixer
 var _audio_target: PartyGameAudio

@@ -6,6 +6,9 @@ const Paths = preload("res://core/config/party_paths.gd")
 const Selection = preload("res://core/dev/party_export_selection.gd")
 
 func _initialize() -> void:
+	run.call_deferred()
+
+func run() -> void:
 	var output: String = ""
 	var request_path: String = ""
 	var stage_source: String = ""
@@ -64,7 +67,7 @@ func _initialize() -> void:
 		var destination: String = output.path_join(Paths.package_relative(catalog.packages[id]))
 		var error: Error = DirAccess.make_dir_recursive_absolute(destination)
 		if error == OK:
-			error = packages.export_pack(catalog, id, destination.path_join("content.pck"))
+			error = await packages.export_pack(catalog, id, destination.path_join("content.pck"))
 		if error != OK:
 			_fail(id + ": " + packages.last_error + " " + error_string(error))
 			return

@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://icrs0grgwvtu"]
 
-[ext_resource type="FontFile" uid="uid://ycpuwgjxu5k" path="res://games/protocols/godot_party_default_protocol/fonts/NotoSansSC-UI.otf" id="1_epily"]
+[ext_resource type="FontFile" uid="uid://ycpuwgjxu5k" path="res://games/assets/godot_party_default_ui/fonts/NotoSansSC-UI.otf" id="1_epily"]
 [ext_resource type="Script" uid="uid://ciu2l1pvqklci" path="res://games/maingame/godot_party_default_main_game_millionaire/slot_machine/slot_machine.gd" id="2_2yiya"]
-[ext_resource type="FontFile" uid="uid://dyq3c8sojauh8" path="res://games/protocols/godot_party_default_protocol/fonts/SourceHanSerifSC-Regular.otf" id="3_rh56v"]
+[ext_resource type="FontFile" uid="uid://dyq3c8sojauh8" path="res://games/assets/godot_party_default_ui/fonts/SourceHanSerifSC-Regular.otf" id="3_rh56v"]
 [ext_resource type="Script" uid="uid://dmvcub01n1h1w" path="res://games/maingame/godot_party_default_main_game_millionaire/slot_machine/slot_reel.gd" id="4_abty8"]
 
 [sub_resource type="Theme" id="Theme_3dmc1"]

@@ -6,16 +6,16 @@ const Paths = preload("res://core/config/party_paths.gd")
 const Data = preload("res://core/runtime/party_data.gd")
 var last_error: String = ""
 
-func inspect(path: String, platform: String = OS.get_name()) -> Dictionary:
+func inspect(path: String) -> Dictionary:
 	var reader: ZIPReader = ZIPReader.new()
 	var error: Error = reader.open(path)
 	if error != OK:
 		return _failure("Cannot open content ZIP: " + error_string(error))
 	var entries: PackedStringArray = reader.get_files()
 	var header: Variant = JSON.parse_string(reader.read_file("bundle.json").get_string_from_utf8()) if entries.has("bundle.json") else null
-	if not header is Dictionary or header.get("format") != 1 or header.get("platform") != platform or not header.get("id") is String or header.id.is_empty() or not header.get("packages") is Array:
+	if not header is Dictionary or header.get("format") != 2 or header.has("platform") or not header.get("id") is String or header.id.is_empty() or not header.get("packages") is Array:
 		reader.close()
-		return _failure("Invalid content bundle or wrong platform")
+		return _failure("Invalid shared content bundle; regenerate with the current framework")
 	var files: Dictionary = {"bundle.json": false}
 	var folders: Dictionary = {}
 	var descriptions: Dictionary = {}
@@ -44,8 +44,14 @@ func inspect(path: String, platform: String = OS.get_name()) -> Dictionary:
 		if not entries.has(file):
 			reader.close()
 			return _failure("Content ZIP is missing " + file)
+	var parent_folders: Dictionary = {}
+	for file: String in files:
+		var parent: String = file.get_base_dir()
+		while not parent.is_empty():
+			parent_folders[parent + "/"] = true
+			parent = parent.get_base_dir()
 	for file: String in entries:
-		if not files.has(file) or entries.count(file) != 1:
+		if (not files.has(file) and not parent_folders.has(file)) or entries.count(file) != 1:
 			reader.close()
 			return _failure("Unexpected or duplicate ZIP entry: " + file)
 	reader.close()

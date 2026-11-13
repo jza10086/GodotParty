@@ -20,13 +20,15 @@ foreach ($file in $coreFiles) {
     New-Item -ItemType Directory -Path (Split-Path $destination) -Force | Out-Null
     Copy-Item -LiteralPath $file.FullName -Destination $destination
 }
-# Stamp only the staged framework; the editor declaration remains pc.
+# Stamp only the staged framework; the editor declaration remains editor.
 $dataFile = Join-Path $sourceRoot 'core/runtime/party_data.gd'
-$dataText = (Get-Content -LiteralPath $dataFile -Raw -Encoding UTF8).Replace('const SYSTEM: String = "pc"', 'const SYSTEM: String = "windows"')
+$dataText = (Get-Content -LiteralPath $dataFile -Raw -Encoding UTF8).Replace('const SYSTEM: String = "editor"', 'const SYSTEM: String = "windows"')
 [IO.File]::WriteAllText($dataFile, $dataText, $utf8)
 # The formal application uses this small argument reader.
 New-Item -ItemType Directory -Path (Join-Path $sourceRoot 'core/dev') -Force | Out-Null
-Copy-Item -LiteralPath (Join-Path $projectRoot 'core/dev/party_arguments.gd') -Destination (Join-Path $sourceRoot 'core/dev')
+foreach ($name in @('party_arguments.gd','party_export_selection.gd')) {
+    Copy-Item -LiteralPath (Join-Path $projectRoot ('core/dev/' + $name)) -Destination (Join-Path $sourceRoot 'core/dev')
+}
 Copy-Item -LiteralPath (Join-Path $projectRoot 'icon.svg') -Destination $sourceRoot
 $presetText = (Get-Content -LiteralPath (Join-Path $projectRoot 'export_presets.cfg') -Raw -Encoding UTF8) -split '(?m)^\[preset\.1\]'
 $presetText = $presetText[0] -replace 'debug/export_console_wrapper=\d+', 'debug/export_console_wrapper=0'

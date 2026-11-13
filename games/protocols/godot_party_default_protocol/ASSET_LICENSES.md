@@ -20,8 +20,8 @@ CC0 仅适用于声明人有权处分的原创部分；第三方字体、采样�
 
 | 资产名称 | 作者 | 来源 | 许可协议 |
 | --- | --- | --- | --- |
-| F01 · Noto Sans CJK / Noto Sans CJK SC（含重命名的 Interface.ttf、ui_font.ttf） | Adobe、Google、Noto CJK 贡献者 | `fonts/NotoSansSC-UI.otf` | SIL OFL 1.1；字体不改记为 GPT。 |
-| F05 · Source Han Serif SC Regular（思源宋体） | Adobe / Source Han Serif 贡献者 | `fonts/SourceHanSerifSC-Regular.otf` | SIL OFL 1.1。 |
+
+原版 UI 字体及展示资源已迁入 [godot_party_default_ui](../../assets/godot_party_default_ui/ASSET_LICENSES.md)，保留原作者与许可证。
 
 ## 独立子包
 

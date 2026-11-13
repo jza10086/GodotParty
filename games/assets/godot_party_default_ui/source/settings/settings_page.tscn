@@ -1,0 +1,48 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://core/ui/source/ui/theme/theme_color_rect.gd" id="color_binding"]
+
+[ext_resource type="Texture2D" path="res://core/ui/components/assets/chevron_right.svg" id="4"]
+
+[ext_resource type="Script" path="res://games/assets/godot_party_default_ui/source/settings/settings_page.gd" id="1"]
+[ext_resource type="Theme" path="res://core/ui/source/ui/theme/party_theme.tres" id="theme"]
+
+[ext_resource type="Texture2D" path="res://core/ui/components/assets/godot_icon.svg" id="3"]
+
+[node name="Settings" type="Control"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
+theme = ExtResource("theme")
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
+
+script = ExtResource("color_binding")
+color_role = "page_background"
+
+[node name="Tabs" type="TabContainer" parent="."]
+theme_type_variation = "PartyTabContainerAction"
+offset_left = 96.0
+offset_top = 72.0
+offset_right = 1824.0
+offset_bottom = 882.0
+theme_override_constants/side_margin = 20
+current_tab = 0
+
+[node name="Back" type="Button" parent="."]
+theme_type_variation = "PartyButtonAction"
+offset_left = 96.0
+offset_top = 924.0
+offset_right = 456.0
+offset_bottom = 996.0
+text = "返回主菜单"

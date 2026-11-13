@@ -1,0 +1,137 @@
+[gd_scene format=3 uid="uid://bqxue7tsqyq0j"]
+
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
+[ext_resource type="Script" path="res://games/assets/godot_party_default_ui/profile_panel.gd" id="r1"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r2"]
+[ext_resource type="PackedScene" path="res://games/assets/godot_party_default_ui/player_color_row.tscn" id="r3"]
+
+[sub_resource type="World2D" id="World2D"]
+resource_local_to_scene = true
+[sub_resource type="Environment" id="Env"]
+ambient_light_source = 2
+ambient_light_color = Color(1,1,1,1)
+ambient_light_energy = 0.6
+
+[node name="ProfilePanel" type="VBoxContainer"]
+theme = ExtResource("ambient")
+script = ExtResource("r1")
+custom_minimum_size = Vector2(780, 400)
+theme_override_constants/separation = 12
+
+[node name="Caption" parent="." type="Label"]
+unique_name_in_owner = true
+text = "原版玩家资料 · 2D 头像 / 玩家颜色 / 3D 形象"
+autowrap_mode = 3
+
+[node name="Colors" parent="." type="HBoxContainer"]
+
+
+[node name="ColorLabel" parent="Colors" type="Label"]
+unique_name_in_owner = true
+text = "偏好颜色 · 房间内不重复，冲突时随机分配剩余颜色"
+autowrap_mode = 3
+size_flags_horizontal = 3
+
+[node name="ColorChoice" parent="Colors" instance=ExtResource("r2")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 48)
+
+[node name="Previews" parent="." type="HBoxContainer"]
+theme_override_constants/separation = 16
+
+[node name="Avatar" parent="Previews" type="VBoxContainer"]
+size_flags_horizontal = 3
+
+[node name="AvatarTitle" parent="Previews/Avatar" type="Label"]
+unique_name_in_owner = true
+text = "2D 头像"
+autowrap_mode = 3
+
+[node name="AvatarChoice" parent="Previews/Avatar" instance=ExtResource("r2")]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+text_overrun_behavior = 3
+
+[node name="Preview" parent="Previews/Avatar" type="SubViewportContainer"]
+custom_minimum_size = Vector2(360,240)
+stretch = true
+
+[node name="AvatarView" parent="Previews/Avatar/Preview" type="SubViewport"]
+unique_name_in_owner = true
+size = Vector2i(360,240)
+transparent_bg = true
+render_target_update_mode = 0
+world_2d = SubResource("World2D")
+
+[node name="Character" parent="Previews" type="VBoxContainer"]
+size_flags_horizontal = 3
+
+[node name="CharacterTitle" parent="Previews/Character" type="Label"]
+unique_name_in_owner = true
+text = "3D 形象"
+autowrap_mode = 3
+
+[node name="CharacterChoice" parent="Previews/Character" instance=ExtResource("r2")]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+text_overrun_behavior = 3
+
+[node name="Preview" parent="Previews/Character" type="SubViewportContainer"]
+custom_minimum_size = Vector2(360,240)
+stretch = true
+
+[node name="CharacterView" parent="Previews/Character/Preview" type="SubViewport"]
+unique_name_in_owner = true
+size = Vector2i(360,240)
+transparent_bg = true
+render_target_update_mode = 0
+own_world_3d = true
+
+[node name="Camera" parent="Previews/Character/Preview/CharacterView" type="Camera3D"]
+position = Vector3(2,1.8,3)
+rotation = Vector3(-0.346,0.588,0)
+current = true
+
+[node name="Light" parent="Previews/Character/Preview/CharacterView" type="DirectionalLight3D"]
+rotation = Vector3(-0.69813,-0.5236,0)
+
+[node name="Environment" parent="Previews/Character/Preview/CharacterView" type="WorldEnvironment"]
+environment = SubResource("Env")
+
+[node name="Error" parent="." type="Label"]
+unique_name_in_owner = true
+text = ""
+autowrap_mode = 3
+
+[node name="HostAssignments" parent="." type="VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+
+[node name="AssignTitle" parent="HostAssignments" type="Label"]
+unique_name_in_owner = true
+text = "房主分配颜色（只影响本房间；占用时交换颜色）"
+autowrap_mode = 3
+
+[node name="Player1" parent="HostAssignments" instance=ExtResource("r3")]
+visible = false
+
+[node name="Player2" parent="HostAssignments" instance=ExtResource("r3")]
+visible = false
+
+[node name="Player3" parent="HostAssignments" instance=ExtResource("r3")]
+visible = false
+
+[node name="Player4" parent="HostAssignments" instance=ExtResource("r3")]
+visible = false
+
+[node name="Player5" parent="HostAssignments" instance=ExtResource("r3")]
+visible = false
+
+[node name="Player6" parent="HostAssignments" instance=ExtResource("r3")]
+visible = false
+
+[node name="Player7" parent="HostAssignments" instance=ExtResource("r3")]
+visible = false
+
+[node name="Player8" parent="HostAssignments" instance=ExtResource("r3")]
+visible = false

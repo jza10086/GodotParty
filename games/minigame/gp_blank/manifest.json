@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "core_api_major": 5,
-  "package_version": "1.0.12",
+  "package_version": "1.0.14",
   "player_counts": [
     1,
     2,
@@ -14,12 +14,15 @@
   ],
   "entry": "game.tscn",
   "dependencies": {
-    "godot_party_default_protocol": "1.0.11"
+    "godot_party_default_protocol": "1.0.13",
+    "godot_party_default_ui": "1.0.2"
   },
   "id": "gp_blank",
   "name": "空白小游戏",
   "kind": "minigame",
-  "supported_systems": ["windows"],
+  "supported_systems": [
+    "windows"
+  ],
   "introduction": "所有参赛者准备后倒计时三秒开局。每人点击一次「结束游戏」，按房主收到点击的先后排名。所有在线参赛者按完后显示本轮结算，退出者不排名。 大厅“本机设置”提供控件、协议继承/覆盖与保存测试；样例值不改变玩法。",
   "config_schema": "settings.gd",
   "adapters": [

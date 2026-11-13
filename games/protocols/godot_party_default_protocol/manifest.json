@@ -1,11 +1,15 @@
 {
   "manifest_version": 2,
   "core_api_major": 5,
-  "package_version": "1.0.11",
+  "package_version": "1.0.13",
   "id": "godot_party_default_protocol",
   "name": "GodotPartyDefaultProtocol",
   "kind": "protocols",
-  "supported_systems": ["windows", "android", "ios"],
+  "supported_systems": [
+    "windows",
+    "android",
+    "ios"
+  ],
   "player_counts": [
     1,
     2,
@@ -24,27 +28,19 @@
   "player_config_panel": "profile_panel.tscn",
   "dependencies": {
     "godot_party_default_avatars": "1.0.2",
-    "godot_party_default_avatars_2d": "1.0.2"
+    "godot_party_default_avatars_2d": "1.0.2",
+    "godot_party_default_ui": "1.0.2"
   },
   "resources": {
     "contract": "protocol.gd",
-    "font_sans": "fonts/NotoSansSC-UI.otf",
-    "font_serif": "fonts/SourceHanSerifSC-Regular.otf",
-    "player_cursor": "appearance/player_cursor.tscn",
-    "player_cursors": "player_cursors.tscn",
     "ranked_round": "ranked_round.gd",
     "ranked_round_scene": "ranked_round.tscn",
     "round_pages": "round_pages.gd",
     "solo_round": "solo_round.gd",
     "solo_controls": "solo_controls.gd",
     "briefing_page": "briefing/briefing_page.tscn",
-    "briefing_player_row": "briefing/player_row.tscn",
-    "briefing_control_hint": "briefing/control_hint.tscn",
     "briefing_gate": "briefing/briefing_gate.gd",
-    "briefing_view": "briefing/briefing_view.tscn",
-    "settlement_view": "settlement/settlement_view.tscn",
     "settlement_page": "settlement/settlement_page.tscn",
-    "settlement_row": "settlement/result_row.tscn",
     "orbit_camera": "camera/orbit_camera.gd",
     "least_played_pool": "random/least_played_pool.gd",
     "settlement_gate": "settlement/settlement_gate.gd",

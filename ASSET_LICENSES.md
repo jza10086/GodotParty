@@ -50,3 +50,5 @@
 - [godot_party_default_avatars_2d](games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars_2d/ASSET_LICENSES.md)
 
 - [大富翁保留原型（无 manifest）](games/maingame/godot_party_default_main_game_millionaire/ASSET_LICENSES.md)
+
+- [原版 UI 资产包](games/assets/godot_party_default_ui/ASSET_LICENSES.md)

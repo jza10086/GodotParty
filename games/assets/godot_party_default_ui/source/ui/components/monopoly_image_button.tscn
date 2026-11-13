@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Texture2D" path="res://games/assets/godot_party_default_ui/source/assets/ui/monopoly/dice.svg" id="icon"]
+[ext_resource type="Texture2D" path="res://games/assets/godot_party_default_ui/source/assets/ui/monopoly/focus.svg" id="focus"]
+[node name="ImageButton" type="TextureButton"]
+custom_minimum_size = Vector2(104, 104)
+texture_normal = ExtResource("icon")
+texture_focused = ExtResource("focus")
+ignore_texture_size = true
+stretch_mode = 5
+focus_mode = 2
+mouse_default_cursor_shape = 2
