@@ -5,6 +5,7 @@ enum Mode { FIXED_DURATION, SMOOTH_FOLLOW }
 @export var mode: Mode = Mode.FIXED_DURATION
 @export_range(0.1, 30.0) var follow_speed: float = 5.0
 @export var number_font: Font
+@export var fit_to_width: bool = true
 @export var font_size: int = 88
 @export var number_color: Color = Color(0.96, 0.97, 0.99, 1.0)
 @export_range(0.1, 10.0) var duration_seconds: float = 1.8
@@ -77,6 +78,7 @@ func formatted_value() -> String:
 func _draw() -> void:
 	var text: String = formatted_value()
 	var width: float = number_font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
-	var draw_size: int = maxi(1, mini(font_size, int(minf(size.y / 1.35, font_size * size.x / maxf(1.0, width)))))
+	var draw_size: int = font_size if not fit_to_width else maxi(1, mini(font_size, int(minf(size.y / 1.35, font_size * size.x / maxf(1.0, width)))))
 	var baseline: float = (size.y - number_font.get_height(draw_size)) * 0.5 + number_font.get_ascent(draw_size)
 	draw_string(number_font, Vector2(horizontal_padding, baseline), text, alignment, maxf(1.0, size.x - horizontal_padding * 2.0), draw_size, number_color)
+

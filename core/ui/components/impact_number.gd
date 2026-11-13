@@ -1,6 +1,7 @@
 class_name PartyImpactNumber
 extends Control
 ## Reusable presentation-only integer display; each change triggers the same per-glyph impact wave.
+@export var fit_to_width: bool = true
 @export var font_size: int = 80
 @export_range(0.5, 1.0) var glyph_width_ratio: float = 0.74
 @export var number_font: Font
@@ -9,6 +10,7 @@ extends Control
 @export var increase_color: Color = Color("#79e5ad")
 @export var decrease_color: Color = Color("#ff787c")
 @export var shadow_color: Color = Color("#0a101b")
+@export_range(0, 8) var outline_size: int = 2
 ## Signed amounts keep profit/loss colors; ordinary totals return to the neutral color.
 @export var signed_value: bool = false
 ## A parent animation may own the clock; otherwise playback advances automatically.
@@ -43,12 +45,12 @@ func _impact(age: float) -> float:
 
 
 ## Change the displayed value and restart the impact from its peak.
-func set_value(next: int) -> void:
+func set_value(next: int, impact_scale: float = 1.0) -> void:
 	if next == value:
 		return
 	_change = next - value
 	set_process(not manual_clock)
-	_strength = clampf(0.9 + log(1.0 + absi(next - value)) * 0.025, 0.95, 1.2)
+	_strength = clampf(0.9 + log(1.0 + absi(next - value)) * 0.025, 0.95, 1.2) * impact_scale
 	value = next
 	_age = 0.0
 	queue_redraw()
@@ -91,7 +93,7 @@ func _draw() -> void:
 	var tint: Color = get_value_color()
 	var font: Font = number_font
 	var text_width: float = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x * glyph_width_ratio
-	var draw_size: int = maxi(12, mini(font_size, int(font_size * (size.x - 64.0) / maxf(1.0, text_width))))
+	var draw_size: int = font_size if not fit_to_width else maxi(12, mini(font_size, int(font_size * (size.x - 64.0) / maxf(1.0, text_width))))
 	var width: float = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, draw_size).x * glyph_width_ratio
 	var x: float = 24.0 if alignment == 0 else ((size.x - width) * 0.5 if alignment == 1 else size.x - width - 24.0)
 	var center_y: float = size.y * 0.5
@@ -109,7 +111,9 @@ func _draw() -> void:
 		draw_set_transform(position, rotation, scale_factor)
 		var origin: Vector2 = Vector2(-glyph_width * 0.5, baseline)
 		draw_string(font, origin + Vector2(draw_size * 0.045, draw_size * 0.06), glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, draw_size, shadow_color)
-		draw_string_outline(font, origin, glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, draw_size, 2, tint)
+		if outline_size > 0:
+			draw_string_outline(font, origin, glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, draw_size, outline_size, tint)
 		draw_string(font, origin, glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, draw_size, tint)
 		x += glyph_width * glyph_width_ratio
 	draw_set_transform(Vector2.ZERO)
+
