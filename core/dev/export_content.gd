@@ -1,6 +1,7 @@
 ## Build-time content export. Optional --request selects packages from the visual exporter.
 extends SceneTree
 const Catalog = preload("res://core/content/party_catalog.gd")
+const ExportFiles = preload("res://core/content/party_export_files.gd")
 const Packages = preload("res://core/content/party_packages.gd")
 const Paths = preload("res://core/config/party_paths.gd")
 const Selection = preload("res://core/content/party_content_selection.gd")
@@ -42,7 +43,11 @@ func run() -> void:
 		return
 	if not stage_source.is_empty():
 		for id: String in selection.ids:
-			for path: String in Catalog.files(catalog.packages[id]._root):
+			var collected: Dictionary = ExportFiles.collect(catalog.packages[id]._root)
+			if not collected.ok:
+				_fail(collected.error)
+				return
+			for path: String in collected.files:
 				var relative: String = path.trim_prefix(catalog.packages[id]._root + "/")
 				if Packages.External.contains(relative.trim_suffix(".import").trim_suffix(".uid")):
 					continue

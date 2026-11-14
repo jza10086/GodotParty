@@ -7,6 +7,7 @@ const Versions = preload("res://core/content/party_versions.gd")
 const Selection = preload("res://core/content/party_content_selection.gd")
 const Data = preload("res://core/runtime/party_data.gd")
 const Catalog = preload("res://core/content/party_catalog.gd")
+const ExportFiles = preload("res://core/content/party_export_files.gd")
 var last_error: String = ""
 var mounted: Dictionary = {}
 var installed: Dictionary = {}
@@ -27,6 +28,9 @@ func export_source(catalog: RefCounted, id: String, output: String) -> Error:
 	var payload: Dictionary = External.inventory(root)
 	if not payload.ok:
 		return _error(payload.error)
+	var collected: Dictionary = ExportFiles.collect(root)
+	if not collected.ok:
+		return _error(collected.error)
 	var writer: ZIPPacker = ZIPPacker.new()
 	var error: Error = writer.open(output)
 	if error != OK:
@@ -38,7 +42,7 @@ func export_source(catalog: RefCounted, id: String, output: String) -> Error:
 		if error != OK:
 			writer.close()
 			return error
-	for path: String in Catalog.files(root):
+	for path: String in collected.files:
 		error = writer.start_file(path.trim_prefix(root + "/"))
 		if error == OK:
 			error = writer.write_file(FileAccess.get_file_as_bytes(path))

@@ -2,6 +2,7 @@
 ## Export jobs poll subprocess completion; editor playtests never invoke this builder.
 extends RefCounted
 const Catalog = preload("res://core/content/party_catalog.gd")
+const ExportFiles = preload("res://core/content/party_export_files.gd")
 const Selection = preload("res://core/content/party_content_selection.gd")
 const External = preload("res://core/content/party_external_files.gd")
 const Data = preload("res://core/runtime/party_data.gd")
@@ -38,10 +39,16 @@ func build(catalog: RefCounted, outputs: Dictionary, workspace: String) -> Error
 	return error
 
 func _build_in_stage(catalog: RefCounted, selected_ids: Array, outputs: Dictionary, stage: String) -> Error:
-	var files: Array[String] = Catalog.files("res://core")
+	var core_files: Dictionary = ExportFiles.collect("res://core")
+	if not core_files.ok:
+		return _error(core_files.error)
+	var files: Array[String] = core_files.files
 	for selected: String in selected_ids:
 		var manifest: Dictionary = catalog.packages[selected]
-		for path: String in Catalog.files(manifest._root):
+		var collected: Dictionary = ExportFiles.collect(manifest._root)
+		if not collected.ok:
+			return _error(collected.error)
+		for path: String in collected.files:
 			var relative: String = path.trim_prefix(manifest._root + "/")
 			if not External.contains(relative.trim_suffix(".import").trim_suffix(".uid")):
 				files.append(path)
@@ -143,7 +150,10 @@ func export_imported_pack(catalog: RefCounted, id: String, output: String) -> Er
 	var paths: Dictionary = {}
 	var uid_index: Dictionary = {}
 	var imported_sources: Array[String] = []
-	for path: String in Catalog.files(root):
+	var collected: Dictionary = ExportFiles.collect(root)
+	if not collected.ok:
+		return _error(collected.error)
+	for path: String in collected.files:
 		var relative: String = path.trim_prefix(root + "/")
 		if External.contains(relative.trim_suffix(".import").trim_suffix(".uid")):
 			continue

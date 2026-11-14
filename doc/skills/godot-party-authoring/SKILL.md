@@ -23,6 +23,7 @@ Paths are relative to the project root.
 - Protocols and optional adapters: doc/api/protocols_and_briefing.md.
 - Protocol-defined player configuration and assets: doc/api/avatars.md.
 - Source/PCK delivery: doc/api/source_packages.md and doc/testing.md.
+- Author export exclusions and loose resources (rhythm song examples and pending distribution choices): doc/api/external_resources.md.
 
 ## Decisions that matter
 
@@ -77,6 +78,6 @@ For GodotPartyDefault content, read games/protocols/godot_party_default_protocol
 
 iOS export uses core/dev/export_ios_cloud.ps1 and GitHub macOS/Xcode builds. It builds the pushed HEAD and selected package IDs, not uncommitted local sources. The IPA requires SideStore re-signing; player data lives in the app sandbox. See doc/api/source_packages.md.
 
-- Original content keeps non-shipping creative sources, candidate audio/images and offline generators in package-local `authoring/`. Do not place `.gdignore` there: keep development scenes visible and runnable in the Godot editor. Publication collectors exclude directories named `authoring` directly, for both source ZIPs and PCK staging. Keep one canonical runtime input per logical asset; preserve its `.import` settings and UID. Shared assets belong to declared dependencies. Keep formal loose runtime data in `external/`, licenses with shipped assets, and tests under `tmp/test/`. Read the resource development section in doc/api/authoring.md before adding or reorganizing media. Runtime `core/ui/source/` is not an authoring directory.
+- Original content keeps non-shipping creative sources, candidate audio/images and offline generators in package-local `authoring/`. Do not place `.gdignore` there: keep development scenes visible and runnable in the Godot editor. Package-root `export_ignore.txt` fully replaces the defaults in `core/content/default_export_ignore.txt`; an empty file disables default exclusions. Defaults exclude `authoring/` at all depths, but authors own their publication list. Source ZIPs, PCK staging and loose payloads share the rules. `.gdignore` only controls engine import, not publication. Keep one canonical runtime input per logical asset; preserve its `.import` settings and UID. Shared assets belong to declared dependencies. Keep formal loose runtime data in `external/`, licenses with shipped assets, and tests under `tmp/test/`. Read doc/api/external_resources.md and the resource development section in doc/api/authoring.md before adding or reorganizing media. Runtime `core/ui/source/` is not an authoring directory.
 
 - Asset packages: games/assets/<id>/ uses a six-field manifest (name, kind, package_version, remark, framework_version, supported_languages); directory identity, exact framework version, no platform or package dependencies. Assets may contain code/media/docs and reference only themselves or public core content. Games/protocols declare dependency ranges and reference paths directly. Original UI lives in godot_party_default_ui 0.0.1; protocol coordination stays in the protocol.

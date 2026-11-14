@@ -510,23 +510,6 @@ func validate_settings(id: String, value: Dictionary, run_custom: bool = false) 
 			return checked
 	return report
 
-## Publication excludes authoring without hiding it in Godot; other ignored subtrees stay excluded.
-static func files(root: String) -> Array[String]:
-	var result: Array[String] = []
-	if root.trim_suffix("/").get_file().to_lower() == "authoring" or FileAccess.file_exists(root.path_join(".gdignore")):
-		return result
-	for file: String in DirAccess.get_files_at(root):
-		if file.begins_with(".") or file.contains("~") or file.get_extension().to_lower() in ["tmp", "bak", "pending"]:
-			continue
-		result.append(root.path_join(file))
-	var package_root: bool = "manifest.json" in DirAccess.get_files_at(root)
-	var protocol_root: bool = package_root and Data.read_json(root.path_join("manifest.json")).get("kind") == "protocols"
-	for directory: String in DirAccess.get_directories_at(root):
-		if not directory.begins_with(".") and not (directory == "config" and package_root) and not (protocol_root and directory == "avatars"):
-			result.append_array(files(root.path_join(directory)))
-	result.sort()
-	return result
-
 func _validate_config_directories() -> void:
 	for kind: String in ["maingame", "minigame"]:
 		var used: Dictionary = {}

@@ -20,7 +20,7 @@
 | get_minigame_settings(id: String) -> Dictionary | 大游戏 | 已选择小游戏的配置 |
 | get_seed() -> int | 活跃作用域 | 本局公开种子 |
 | load_asset(ref: Dictionary) -> Resource | 活跃作用域 | 已激活包公开资源；失败为 null |
-| get_external_path(relative: String) -> String | 活跃作用域 | 本包声明的外置文件/目录绝对路径；未声明路径报错，返回空字符串 |
+| get_external_path(relative: String) -> String | 活跃作用域 | 本包 external/ 下的绝对路径，按源码或安装目录解析；不创建文件，不要求已列入正式载荷；非法路径报错并返回空字符串 |
 | get_preparation_status() -> Dictionary | 当前实例 | 技术准备快照：session_id、scope_id、phase、required_peers、ready_peers；关闭后为空；不代表玩家手动准备 |
 | mark_ready() -> Error | 大小游戏准备阶段 | 本端初始化完成；准备期间重复为 OK |
 | finish(result: Dictionary) -> Error | 小游戏房主运行阶段 | 同步转换与校验，接受候选结果 |

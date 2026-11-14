@@ -1,6 +1,7 @@
 ## Formal loose package files live exclusively under external/.
 extends RefCounted
 const Data = preload("res://core/runtime/party_data.gd")
+const ExportFiles = preload("res://core/content/party_export_files.gd")
 
 static func safe_path(path: String) -> bool:
 	if not Data.relative_path(path) or path != path.simplify_path() or path.ends_with("/"):
@@ -15,42 +16,22 @@ static func contains(path: String) -> bool:
 
 ## Formal loose payload has one reserved root. Personal files belong in config/.
 static func inventory(root: String) -> Dictionary:
+	var collected: Dictionary = ExportFiles.collect(root, "external")
+	if not collected.ok:
+		return collected
 	var files: Array[String] = []
-	var directories: Array[String] = []
-	if DirAccess.dir_exists_absolute(root.path_join("external")):
-		var issue: String = _walk(root, "external", files, directories)
-		if not issue.is_empty():
-			return {"ok": false, "error": issue}
-	files.sort()
-	directories.sort()
-	return {"ok": true, "files": files, "directories": directories}
-
-static func _walk(root: String, relative: String, files: Array[String], directories: Array[String]) -> String:
-	var path: String = root.path_join(relative)
-	var parent: DirAccess = DirAccess.open(path.get_base_dir())
-	if parent != null and parent.is_link(path.get_file()):
-		return "External directory is a link: " + path
-	var folder: DirAccess = DirAccess.open(path)
-	if folder == null:
-		return "Cannot open external directory: " + path
-	directories.append(relative)
-	for file: String in folder.get_files():
-		if file.begins_with(".") or file.ends_with(".import") or file.ends_with(".uid") or file.ends_with("~") or file.get_extension().to_lower() in ["tmp", "bak", "pending"]:
+	for path: String in collected.files:
+		var relative: String = path.trim_prefix(root + "/")
+		# These are Godot import companions, never raw runtime payload.
+		if relative.ends_with(".import") or relative.ends_with(".uid") or relative.get_file() == ".gdignore":
 			continue
-		var child: String = relative.path_join(file)
-		if not safe_path(child) or folder.is_link(file):
-			return "Invalid external file: " + child
-		files.append(child)
-	for directory: String in folder.get_directories():
-		if directory.begins_with("."):
-			continue
-		var child: String = relative.path_join(directory)
-		if not safe_path(child):
-			return "Invalid external directory: " + child
-		var issue: String = _walk(root, child, files, directories)
-		if not issue.is_empty():
-			return issue
-	return ""
+		if not safe_path(relative):
+			return {"ok": false, "error": "Invalid external file: " + relative}
+		files.append(relative)
+	for directory: String in collected.directories:
+		if not safe_path(directory):
+			return {"ok": false, "error": "Invalid external directory: " + directory}
+	return {"ok": true, "files": files, "directories": collected.directories}
 
 static func copy_payload(source: String, destination: String, files: Array, directories: Array, preserve_existing: bool = false) -> Error:
 	for directory: String in directories:

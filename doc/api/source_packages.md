@@ -74,7 +74,7 @@ APK 构建成功仅证明导出流程完成。真机验收需检查首次启动�
 
 ## 外置文件与目录
 
-正式原样数据固定放在包内 `external/`，不在作者 manifest 中逐项声明。目录不存在表示没有外部数据。工具自动生成 `external_files` / `external_directories` 索引，保留空目录；隐藏文件、链接、导入映射、UID 与备份不作为正式外部文件收录。个人可编辑资料、偏好和存档必须放在此目录外。
+正式原样数据固定放在包内 `external/`，不在作者 manifest 中逐项声明。目录不存在表示没有外部数据。工具按包的 `export_ignore.txt` 规则生成 `external_files` / `external_directories` 索引，保留未排除的空目录；导入映射、UID 和 `.gdignore` 不作为正式外部文件。路径必须满足可移植规则，链接不允许发布。个人可编辑资料、偏好和存档必须放在此目录外。以霓虹节拍为例的读取方式与曲目分发方案见 [外部资源指南](external_resources.md)。
 
 游戏使用 `api.get_external_path("external/maps/default.json")` 获取源码包或发布版安装产物的物理路径。FileAccess/DirAccess 可以直接使用；PNG、音频等采用运行时文件加载 API。普通预加载资源留在 PCK 中。发布更新会替换并移除旧描述中的退役文件；config/ 不受影响。
 
@@ -95,11 +95,13 @@ iOS 配置和内置内容安装到应用私有存储，保留已有玩家配置�
 
 ## 统一资源收集边界
 
-三平台共用 `core/dev/export_source_files.ps1` 的收集边界；`export_build.ps1` 统一 Godot 子进程日志和移动构建副本设置，Android 与 iOS 共用 `export_mobile_content.ps1` 生成内容 ZIP；核心资源、署名收集均按目录名跳过 `authoring/`，同时继续跳过其他含 `.gdignore` 的子树。普通内容收集使用同样的目录约定，协议不包含其独立 avatars 子包。隐藏文件/目录、临时备份、包内玩家配置不发布；正式 `.import` 与 `.uid` 保留。
+内容作者在包根目录使用 `export_ignore.txt` 决定发布排除项；有文件时完整替代默认规则，空文件表示不使用默认排除项。没有文件时使用 `core/content/default_export_ignore.txt`，默认排除各层 `authoring/`、`prototype/`、`tmp/`、隐藏项及常见临时备份。规则支持注释、相对路径、目录、`*` 和 `?`，不支持 Git ignore 的反选语法。精确语义与示例见 [作者导出规则](external_resources.md#export_ignoretxt)。
+
+`core/content/party_export_files.gd` 统一源码 ZIP、PCK 暂存和外置数据过滤；PowerShell 的 `core/dev/export_source_files.ps1` 遵守相同规则。三平台共用该内容流程，Android 与 iOS 共用 `export_mobile_content.ps1` 生成内容 ZIP。收集器只保留必要技术边界：Git/引擎缓存、包内个人 `config/` 不发布，协议不包含独立 avatars 子包，链接路径明确失败。普通资源的 `.import/.uid` 保留；排除其原文件时伴随文件也排除。
 
 内容暂存完整复制作者的导入设置，再由所选 Godot 在干净工程中生成目标资源。声明的外置文件只由外置流程复制一次；构建专用 `.gdignore` 或 Keep File 导入标记阻止它们被再次转换，标记不随外置文件发布。可玩 PCK 的普通导入资源只保留重映射与运行产物；原样文件按其使用方式保留，不按音频/图片扩展名盲目删源文件。
 
-不发布的开发资源统一放入包内 `authoring/`，不使用 `.gdignore` 隐藏开发目录。PowerShell 暂存与 Godot 内容收集均直接排除该目录名（包含嵌套目录），源码 ZIP、PCK 与 Windows / Android / iOS 发布使用相同边界；具体分类和音效/图片单一正式路径规则见 [原版资源开发规范](authoring.md#原版资源开发与发布目录)。
+不发布的开发资源建议放入包内 `authoring/`，由默认规则或作者规则排除；不使用 `.gdignore` 隐藏开发目录。`.gdignore` 只控制 Godot 导入，不是发布排除配置；`.gitignore` 也不决定打包范围。作者自定义规则时应显式保留需要的排除项，正式资源不得引用被排除文件。具体分类和音效/图片单一正式路径规则见 [原版资源开发规范](authoring.md#原版资源开发与发布目录)。
 
 ## 资产包
 
