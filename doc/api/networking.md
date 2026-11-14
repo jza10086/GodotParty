@@ -1,6 +1,6 @@
 # 内容网络通信指南
 
-适用：框架 0.0.1，唯一版本来源为 core/framework_version.gd。接口签名见 [PartyNet](reference.md)，生命周期见 [准备与关闭](api.md)。
+适用：框架 0.0.1，唯一版本来源为 core/framework_version.gd。接口签名见 [PartyNet](party_api_reference.md)，生命周期见 [准备与关闭](activity_lifecycle.md)。
 
 ## 首要原则
 

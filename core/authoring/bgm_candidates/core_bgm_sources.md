@@ -1,6 +1,6 @@
 # 小游戏 BGM 候选素材库
 
-完整选曲与游戏对应关系见 [BGM 清单](../../../doc/bgm_candidates.md)。
+完整选曲与游戏对应关系见 [BGM 清单](../../../doc/assets/project_bgm_candidates.md)。
 
 - `audio/`：29 个已下载音频文件／版本。
 - `sources/`：逐曲作者、许可、来源与原始下载地址。

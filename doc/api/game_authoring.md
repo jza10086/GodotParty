@@ -51,7 +51,7 @@ func party_stop(_reason: StringName) -> void:
 setup 在入树前同步执行，不访问 @onready。异步初始化在入树后开始，完成后显式 mark_ready。
 finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，房主玩法自行决定如何采用。
 
-采用原版 `solo_round` 的单参赛者游戏须实现 `solo_setup(input, text_source)`、`solo_start()`、可重复的 `solo_stop()` 与画质/音频目标方法，并发出 `completed(metrics)`。入口在准备阶段创建本机玩法、注入依赖并转发协议挂点，观战端不运行模拟；正式开始等待公共准备页完成。F6 输入只读包内默认绑定，正式使用 PartyInput。完整边界见协议文档的[单参赛者接入](../../games/protocols/godot_party_default_protocol/doc/README.md#单参赛者接入)。
+采用原版 `solo_round` 的单参赛者游戏须实现 `solo_setup(input, text_source)`、`solo_start()`、可重复的 `solo_stop()` 与画质/音频目标方法，并发出 `completed(metrics)`。入口在准备阶段创建本机玩法、注入依赖并转发协议挂点，观战端不运行模拟；正式开始等待公共准备页完成。F6 输入只读包内默认绑定，正式使用 PartyInput。完整边界见协议文档的[单参赛者接入](../../games/protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md#单参赛者接入)。
 
 ## 内容声明与入口
 
@@ -77,13 +77,13 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 
 配置固定为 `settings.gd`，自定义面板为 `config_panel.tscn`，协议资料页为 `profile_panel.tscn`，设置效果脚本为 `settings_runtime.gd`，可选配置校验器为 `config_validator.gd`，主游戏大厅为 `room.tscn`。封面按 `cover.png`、`cover.svg`、`cover.webp`、`cover.jpg` 的顺序发现。玩法介绍写入 README 或所属玩法界面。语言按 `i18n/<locale>.po` 发现，见 [本地化](localization.md)。
 
-框架版本只由 `core/framework_version.gd` 声明，与用户维护的 Godot 项目版本独立。依赖支持精确版本、`~`、`^`，规则及构建标识 见 [内容打包](source_packages.md)。构建和代码修改均不自动递增版本。
+框架版本只由 `core/framework_version.gd` 声明，与用户维护的 Godot 项目版本独立。依赖支持精确版本、`~`、`^`，规则及构建标识 见 [内容打包](content_packages.md)。版本维护与用户提醒统一遵循该章节。
 
 ## 标准模板的职责与目录
 
 空白模板同时提供正式接入骨架和可移植演示。`game.gd` 持有 PartyAPI、阶段、网络消息、准备与结算；`ui/briefing.tscn` 和 `ui/settlement.tscn` 继承协议页面，`ui/round_pages.tscn` 在 CanvasLayer 中静态组合它们；`examples/demo_hub.tscn` 组合演示；`examples/graphics/`、`examples/navigation_2d/`、`examples/audio/` 分别保存各功能的场景、脚本和专用资源。`adapters/<协议ID>.gd` 只检查/转换协议请求与结果，`settings.gd` 声明配置，`i18n/` 保存语言模板。可选的大型美术资源留在包内 `assets/`。
 
-随机题库、地图、图片可参考空白模板的 [随机统计组件用法](../../games/minigame/gp_blank/README.md#通用随机统计模板)：主机从本机最少次数项中选取，各端对主机本局序列去重并更新自己的统计；正式入口注入存储路径，F6 只用内存。实现由协议的 `random/least_played_pool.gd` 提供，直接引用已声明的协议依赖，不复制模板代码，也不依赖空白模板包。
+随机题库、地图、图片可参考空白模板的 [随机统计组件用法](../../games/minigame/gp_blank/doc/gp_blank_guide.md#通用随机统计模板)：主机从本机最少次数项中选取，各端对主机本局序列去重并更新自己的统计；正式入口注入存储路径，F6 只用内存。实现由协议的 `random/least_played_pool.gd` 提供，直接引用已声明的协议依赖，不复制模板代码，也不依赖空白模板包。
 
 新游戏按实际功能命名目录，不强制照搬 `examples/`，也不机械建立 `scenes/`、`scripts/`、`managers/`。一个场景脚本能清楚表达的流程不再拆转发层。跨场景可替换依赖用带类型的 `@export`；同一场景拥有的固定节点用 `%UniqueNode`。只有共享组件、资源和核心数据类型注册 `class_name`。GDScript 使用显式类型，不使用 `:=`。
 
@@ -95,7 +95,7 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 
 3D 世界和活动相机直接使用主视口，HUD 放入 CanvasLayer；二维玩法使用原生 Node2D/Control。SubViewport 仅用于确实需要独立纹理的内容，不作为普通游戏主画面的默认容器。静态参数只保留一个来源：相机姿态/FOV、灯光方向/能量、环境和材质由原生节点编辑，启动脚本不能再用一组镜像字段覆盖。
 
-原版协议的画质入口是 `godot_party_graphics_targets()`，返回 `world` 与 `sun`（纯二维或本端不创建玩法时可返回空字典），仅需要协议处理模型采样时才返回 `materials_root`。正式对局不自行覆盖同一视口的抗锯齿或渲染比例。空白展台保留的实验性画质字段只用于 F6，离开预览恢复视口；正式画质由协议 settings runtime 的 enter/attach/apply/leave 管理。效果开关可能改变，游戏自己的构图与美术参数保留。详见原版协议 [画质与接入](../../games/protocols/godot_party_default_protocol/doc/README.md)。
+原版协议的画质入口是 `godot_party_graphics_targets()`，返回 `world` 与 `sun`（纯二维或本端不创建玩法时可返回空字典），仅需要协议处理模型采样时才返回 `materials_root`。正式对局不自行覆盖同一视口的抗锯齿或渲染比例。空白展台保留的实验性画质字段只用于 F6，离开预览恢复视口；正式画质由协议 settings runtime 的 enter/attach/apply/leave 管理。效果开关可能改变，游戏自己的构图与美术参数保留。详见原版协议 [画质与接入](../../games/protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md)。
 
 ## 可编辑 HUD 与本地化
 
@@ -128,23 +128,23 @@ F6 默认语言直接读取包内 `i18n/zh_Hans.po`，使用与正式 `api.i18n.
 | 混合模拟 | 响应敏感、需要共同状态的玩法 | 明确各字段权威方与校正时机 |
 | 独立 F6 预览 | 场景、美术、交互演示 | 不伪造 PartyAPI，不写正式偏好或提交成绩 |
 
-观战者可以查看公开内容和操作本机相机，不能提交参赛动作；房主即使是观战者，也继续运行权威逻辑。`get_players()` 的参赛者身份与本机/连接状态共同决定操作权，不能把“房主”等同于“本机参赛者”。私有身份、手牌等不进入广播。可复用的加载页、结算页、音频、光标、相机与随机池均来自协议，不引用空白模板。加载/结算在小游戏里保存继承场景，通过导出节点引用连接入口；运行时只配置/显示，不重新创建。固定布局与行模板可直接编辑，编辑器示例不进入真实状态。具体步骤见[协议场景接入](../../games/protocols/godot_party_default_protocol/doc/README.md#加载与结算场景)。共享协议场景按适用性组合：`ranked_round`、`round_pages` 和准备/结算 gate 各有用途，不作为所有游戏必须采用的继承层。
+观战者可以查看公开内容和操作本机相机，不能提交参赛动作；房主即使是观战者，也继续运行权威逻辑。`get_players()` 的参赛者身份与本机/连接状态共同决定操作权，不能把“房主”等同于“本机参赛者”。私有身份、手牌等不进入广播。可复用的加载页、结算页、音频、光标、相机与随机池均来自协议，不引用空白模板。加载/结算在小游戏里保存继承场景，通过导出节点引用连接入口；运行时只配置/显示，不重新创建。固定布局与行模板可直接编辑，编辑器示例不进入真实状态。具体步骤见[协议场景接入](../../games/protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md#加载与结算场景)。共享协议场景按适用性组合：`ranked_round`、`round_pages` 和准备/结算 gate 各有用途，不作为所有游戏必须采用的继承层。
 
 ## 偏好与音频
 
 配置默认值与 UI 声明集中在 `settings.gd`。未修改的字段保留继承，只有明确 Apply 才持久化草稿，明确恢复继承才 clear。`effective_changed` 仅刷新受影响且没有未保存草稿的控件；不要因一次配置通知覆盖用户正在编辑的其它字段。逐字段保存时考虑通知会同步触发：保留尚未写入的草稿，失败后停止后续依赖步骤并向入口报告。
 
-原版音频组件保存在游戏场景中，入口公开 `godot_party_audio_target()`。`party_setup` 调用其 `prepare_scope()`，由协议绑定作用域总线；F6 使用预览总线。Cue 通过 `@export` 注入，音乐、音效、环境音、预录配音与 UI 分类播放；音量、句柄、中断、循环、淡切和队列调用见 [音频组件](../../games/protocols/godot_party_default_protocol/doc/audio.md)。菜单输入遮挡不自动暂停音乐，配音也不是玩家语音聊天。需要精确节拍时仍由玩法的音频时钟驱动判定，通用音效池不能代替谱面时钟。
+原版音频组件保存在游戏场景中，入口公开 `godot_party_audio_target()`。`party_setup` 调用其 `prepare_scope()`，由协议绑定作用域总线；F6 使用预览总线。Cue 通过 `@export` 注入，音乐、音效、环境音、预录配音与 UI 分类播放；音量、句柄、中断、循环、淡切和队列调用见 [音频组件](../../games/protocols/godot_party_default_protocol/doc/godot_party_default_protocol_audio.md)。菜单输入遮挡不自动暂停音乐，配音也不是玩家语音聊天。需要精确节拍时仍由玩法的音频时钟驱动判定，通用音效池不能代替谱面时钟。
 
 ## 复制、验证与交付
 
-复制空白包时先阅读其 [README](../../games/minigame/gp_blank/README.md)。改 manifest 的 ID、名称、版本与真实协议声明，再替换 DemoHub；内部代码与场景引用使用相对路径。协议资源属于声明的外部依赖，不能把其 UID 或路径重写成新包自身。
+复制空白包时先阅读其 [README](../../games/minigame/gp_blank/doc/gp_blank_guide.md)。改 manifest 的 ID、名称、版本与真实协议声明，再替换 DemoHub；内部代码与场景引用使用相对路径。协议资源属于声明的外部依赖，不能把其 UID 或路径重写成新包自身。
 
 复制不是移动：新包不能沿用原包脚本 `.uid`、场景/资源自身 UID、内部 `ext_resource` UID 或导入资源 UID。让 Godot 为复制内容生成独立标识，同时保留所需导入参数；不要修改原包或协议资源的 UID。检查引用解析到新包或显式依赖，搜索原包 ID 和绝对路径，检查 manifest、翻译、导入资源和代码加载入口。移动原包内文件时则保留 UID 并更新路径。
 
 仅根据变化选择验证：文档做文本检查；逻辑做相关行为检查；场景从 F6 和正式入口验证编辑值保留；UI 只使用 1920×1080 的 Godot 直接渲染检查。生命周期、跨轮、权限或消息发生改变时才选相应主客机测试。所有测试源码、场景、日志与截图放根目录 `tmp/test/`，不能成为正式运行依赖。分别记录自动化、视觉、人工体验及外网验证的实际范围。
 
-发布时只提交当前包与直接相关文档。属于登记子模块时先提交推送子模块，再更新主仓库引用；保留其它小游戏工作区。复制接入或发布的新包另按 [源码/PCK 交付](source_packages.md) 验证无作者缓存环境，不能把当前开发环境通过视为已验证导出交付。
+发布时只提交当前包与直接相关文档。属于登记子模块时先提交推送子模块，再更新主仓库引用；保留其它小游戏工作区。复制接入或发布的新包另按 [源码/PCK 交付](content_packages.md) 验证无作者缓存环境，不能把当前开发环境通过视为已验证导出交付。
 
 
 ## 原版资源开发与发布目录
@@ -160,4 +160,4 @@ F6 默认语言直接读取包内 `i18n/zh_Hans.po`，使用与正式 `api.i18n.
 
 发布检查区分三个问题：开发素材是否进入构建目录、同一资源是否被重复收集、PCK 是否同时保留了已转换的原文件和导入产物。以路径清单、导入日志、导入参数和实际资源加载验证，不做文件哈希校验。共享包中的桌面/移动纹理变体是不同运行需求，不作为重复资源删除。核心与内容的独立干净工程仍各自需要导入，本规则不宣称跨工程零导入。
 
-公共 UI 和代码可进入 `games/assets/<id>/` 资产包，使用方声明精确依赖后直接引用资源路径；资产包只引用自身和框架，不引用其他内容包。基础字段、可选曲库标识/资源列表及安装规则见 [资产包](source_packages.md#资产包)。原版 UI 已从原版协议提取至 `godot_party_default_ui`。
+公共 UI 和代码可进入 `games/assets/<id>/` 资产包，使用方声明精确依赖后直接引用资源路径；资产包只引用自身和框架，不引用其他内容包。基础字段、可选曲库标识/资源列表及安装规则见 [资产包](content_packages.md#资产包)。原版 UI 已从原版协议提取至 `godot_party_default_ui`。

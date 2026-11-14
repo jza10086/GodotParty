@@ -175,7 +175,7 @@ leave 必须幂等并清理自身回调、播放器、总线和视口修改；�
 
 协议在自己的包目录提供 settings.gd 和可选 settings_runtime.gd。旧测试协议源码已清理；原版协议 1.0 已提供形象与资源契约，公共输入/音频偏好待具体玩法需求确定。
 
-原版协议的四档画质、独立效果开关和三维视图登记见 [原版协议画质](../../games/protocols/godot_party_default_protocol/doc/README.md#共享画质本地偏好)。后续原版内容复用该设置 runtime，不再复制画质实现；场景美术参数保持游戏所有。
+原版协议的四档画质、独立效果开关和三维视图登记见 [原版协议画质](../../games/protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md#共享画质本地偏好)。后续原版内容复用该设置 runtime，不再复制画质实现；场景美术参数保持游戏所有。
 
 ## 框架显示设置
 

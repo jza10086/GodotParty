@@ -21,7 +21,7 @@ players 是 core 提供的实际参与者快照；结果中的成员集合由协
 协议仅用包的 package_version 和依赖范围表达兼容性，没有另一套协议 API 主次版本。
 协议包附带 doc/、合法非法例子和针对性测试；大小游戏接入验收随实际玩法补充。
 
-当前原版：[GodotPartyDefaultProtocol 1.0](../../games/protocols/godot_party_default_protocol/doc/README.md)，提供玩家颜色、2D/3D 形象以及金币、钻石、道具和抵押结算契约。
+当前原版：[GodotPartyDefaultProtocol 1.0](../../games/protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md)，提供玩家颜色、2D/3D 形象以及金币、钻石、道具和抵押结算契约。
 
 ## 加载页
 

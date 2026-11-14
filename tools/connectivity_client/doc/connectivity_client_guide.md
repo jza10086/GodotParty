@@ -20,7 +20,7 @@
 
 参考：[Godot Android 导出文档](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html)、[PacketPeerUDP 的 INTERNET 权限要求](https://docs.godotengine.org/en/stable/classes/class_packetpeerudp.html)。将来提高 Android target SDK 时，也需检查该版本的本地网络权限要求。
 
-协议见主项目的 `doc/connectivity_test.md`。`project/probe_protocol.gd` 是该协议的独立副本；修改协议时同步两份实现和网络回归检查。客户端不依赖父项目目录，可以整份复制 `project/` 后独立打开。
+协议见主项目的 `doc/development/connectivity_diagnostics.md`。`project/probe_protocol.gd` 是该协议的独立副本；修改协议时同步两份实现和网络回归检查。客户端不依赖父项目目录，可以整份复制 `project/` 后独立打开。
 
 PC 主界面的「连接测试」提供相同的主动探测功能。`project/probe_client.gd` 与主项目 `core/network/connectivity/probe_client.gd` 保持同一实现，仅协议脚本的资源路径不同。
 

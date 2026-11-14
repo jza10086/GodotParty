@@ -24,7 +24,7 @@ party_stop → LIFO 清理 → 释放场景。
 
 内容检查分为加入与开始两个阶段：加入时核对框架名称/版本、当前房间的协议、主游戏及必需依赖/形象包；开始时核对所选小游戏池及完整依赖。按包 ID 定位、精确匹配版本，名称使用 manifest 原始值。无关的额外安装包不要求同步。缺包或版本差异显示具体条目；下载完成后重启安装，再手动加入。房间规则或成员形象更新后重新确认；内容确认、玩家准备与场景 mark_ready 分别表达不同状态，不互相代替。
 
-内容通信无需 manifest 流声明。直接使用 Godot `@rpc`，或发送时指定 `PartyNet` 的可靠性与逻辑通道。参见[内容网络通信指南](networking.md)及[签名参考](reference.md)。
+内容通信无需 manifest 流声明。直接使用 Godot `@rpc`，或发送时指定 `PartyNet` 的可靠性与逻辑通道。参见[内容网络通信指南](networking.md)及[签名参考](party_api_reference.md)。
 
 基础值、数组、字典及已支持的 Godot 值可发送；Node、Resource、Callable、Signal 和 RID 不能发送。自定义编码使用 PackedByteArray。框架不提供自动预测、回滚或插值。
 

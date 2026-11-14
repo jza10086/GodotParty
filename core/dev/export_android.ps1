@@ -39,7 +39,7 @@ if ($request.core) {
         # Enable only after resource import; the SDK override belongs to the APK export process.
     }
     Copy-Item -LiteralPath $bundlePath -Destination (Join-Path $hostProject 'core/bundled_content.zip')
-    Copy-Item -LiteralPath (Join-Path $projectRoot 'doc/credits.md') -Destination (Join-Path $hostProject 'core/project-credits.md')
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'doc/assets/project_credits.md') -Destination (Join-Path $hostProject 'core/project-credits.md')
     Set-PartyExportStage $job 'core_import' '检查并导入核心资源'
     Invoke-PartyGodot $GodotPath -LogPath (Join-Path $job 'android-host-import.log') -EngineArguments @('--headless','--path',$hostProject,'--log-file',(Join-Path $job 'android-host-import-engine.log'),'--import')
     Enable-PartyTheme $projectRoot $hostProject $hostText

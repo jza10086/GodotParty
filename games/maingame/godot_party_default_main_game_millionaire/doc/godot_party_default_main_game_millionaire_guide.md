@@ -100,11 +100,11 @@ Godot 4.7.2 下 `tmp/test/city_routes/route_test.gd` 验证全部节点可达、
 
 ## 画质与素材
 
-画质设置见 [原版协议](../../protocols/godot_party_default_protocol/doc/README.md#共享画质本地偏好)。F6 读取当前资料槽的协议偏好，复用同一个设置 runtime。地图登记 World、Sun、Cells；未来正式接入后由框架作用域接管，移除 F6 桥接。
+画质设置见 [原版协议](../../../protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md#共享画质本地偏好)。F6 读取当前资料槽的协议偏好，复用同一个设置 runtime。地图登记 World、Sun、Cells；未来正式接入后由框架作用域接管，移除 F6 桥接。
 
 日光、环境、FOV、阴影距离等美术参数保持在场景中。默认观察距离 61m，缩放上限 82m，方向光阴影距离 85m。LOD 暂不启用。模型材质采用协议的局部采样副本，不污染共享资源。
 
-Kenney City Kit 的道路、房屋、树木使用现有已安装资产；原始素材不修改，许可证保留在 assets/ 各目录，来源记录在 doc/credits.md。湖水为基础材质占位，箭头为简单网格，无新增下载素材。
+Kenney City Kit 的道路、房屋、树木使用现有已安装资产；原始素材不修改，许可证保留在 assets/ 各目录，来源记录在 doc/assets/project_credits.md。湖水为基础材质占位，箭头为简单网格，无新增下载素材。
 
 ## 检查
 
@@ -129,4 +129,10 @@ tests/millionaire_runtime_editor_test.gd 在独立进程检查空位置单格预
 ## 批量调整
 Shift+左键加选同类地格，Ctrl+左键减选；点击双地格任一侧均作用于整个对象。首次选择读取参数，修改面板后点击批量调整。全选按钮选择面板当前类型，暂不支持装饰。批量替换保留 ID、位置与朝向，可整批撤销。有选择时右键地图仅清空选择；无选择时仍为删除笔刷。金色高亮为批量选择，数量按对象计算。
 ## 独立棋盘逻辑测试
-打开 playtest/board_playtest.tscn 按 F6。包含 Cube、白色六面骰、GodotPartyUI 大富翁 HUD 和小型分支地图；详见 [测试说明](playtest/README.md)。主地图保持独立。
+打开 playtest/board_playtest.tscn 按 F6。包含 Cube、白色六面骰、GodotPartyUI 大富翁 HUD 和小型分支地图；详见 [测试说明](godot_party_default_main_game_millionaire_playtest_guide.md)。主地图保持独立。
+
+## 包内开发文档
+
+未带 `res://` 的源码路径以本包根目录为基准。
+
+- [独立棋盘流程测试](godot_party_default_main_game_millionaire_playtest_guide.md)

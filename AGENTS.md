@@ -44,10 +44,10 @@
 
 - Keep non-shipping development tools, editable prototypes and creative sources in package-local `authoring/`. Do not hide it with `.gdignore`; Godot must display and run its development scenes normally. Package-root `export_ignore.txt` uses case-sensitive Git ignore syntax (single root file) and fully replaces `core/content/default_export_ignore.txt` for source ZIPs, staging, PCKs and loose payloads; defaults exclude all `authoring/` directories. Authors own their exclusion list, and runtime files must not depend on excluded files. `.gdignore` controls Godot import only, not publication. See `doc/api/external_resources.md`.
 
-- Keep confirmed non-redistributable external assets in project-root `third_party_assets/<license_type>/files/`, including downloads, extracted sources, converted copies and discovered duplicates. Keep each `files/` ignored by Git and the entire `third_party_assets/` ignored by Godot (`.gdignore`); track only registration documents and ignore rules. Each license category has an `assets.md` four-column table sorted alphabetically by asset name. Unresolved private references remain under ignored `private_assets/`; public packages must work without both directories.
+- Keep confirmed non-redistributable external assets in project-root `third_party_assets/<license_type>/files/`, including downloads, extracted sources, converted copies and discovered duplicates. Keep each `files/` ignored by Git and the entire `third_party_assets/` ignored by Godot (`.gdignore`); track only registration documents and ignore rules. Each license category has a `<license_type>_assets.md` four-column table sorted alphabetically by asset name. Unresolved private references remain under ignored `private_assets/`; public packages must work without both directories.
 - License project-owner/GPT original code under MIT and original media under CC0-1.0 as scoped in `ASSET_LICENSES.md`; preserve all third-party licenses, notices and unresolved provenance records. New independently exported content packages must include their license texts and scope.
 
-- Record every externally downloaded art, font, music, sound, or other asset in `res://doc/credits.md`.
+- Record every externally downloaded art, font, music, sound, or other asset in `res://doc/assets/project_credits.md`.
 - Follow the existing concise credits format: `类别：资产名称 来源 URL`.
 - Keep required license files alongside the corresponding asset when redistribution terms require it.
 
@@ -91,7 +91,7 @@
 ## Input and local configuration
 
 - Load input mappings when the game starts.
-- Store core settings and persistent player_id in `core/config/settings.json`. User settings, profiles and room presets use JSON without CFG compatibility readers. Business settings.gd scripts declare schema 3 fields and recursive UI layout; user files persist values only. Resolve the portable root beside the project or executable through PartyInput.installation_directory(), never cwd or user://. Protocols, maingames and minigames install in separate root folders; local settings and named preset files live under each package config/. Protocol config/ is fixed; protocols declare config_directories for game override/preset subfolders. Player names and appearances belong to protocol config/profile.json. Core owns only identity, not avatar assets. See doc/api/configuration.md.
+- Follow `doc/api/configuration.md` for portable paths, JSON settings schema 3, protocol-owned profiles and per-package presets. Core owns persistent player_id; protocol profiles own display names and appearances. Never resolve portable paths from cwd or user://.
 - Keep settings local to each client. Do not synchronize physical input mappings over the network.
 - Each game has one independent preference file. Reads never materialize inherited defaults; explicit Apply persists changes.
 - Protocols define common local preferences and input actions. Main and mini games independently override the selected protocol ID; no parent-to-child inheritance. Room rules come only from host snapshots.
@@ -100,7 +100,7 @@
 
 ## UI and resolution
 
-- Use Memory Jigsaw as the standard in-game composition: full-viewport gameplay with a minimal edge-mounted overlay HUD. Do not shrink the playfield into a dashboard with permanent wide sidebars or title panels. Keep essential actions visible; reveal detailed rules, rankings, catalogs and settings on demand. Preserve each game's visual theme. The blank minigame game.tscn is the reference scene; see doc/api/authoring.md for the public menu and input contract.
+- Use Memory Jigsaw as the standard in-game composition: full-viewport gameplay with a minimal edge-mounted overlay HUD. Do not shrink the playfield into a dashboard with permanent wide sidebars or title panels. Keep essential actions visible; reveal detailed rules, rankings, catalogs and settings on demand. Preserve each game's visual theme. The blank minigame game.tscn is the reference scene; see doc/api/game_authoring.md for the public menu and input contract.
 - Design UI at 1920x1080. All visual testing, previews used for acceptance, screenshots, and manual or automated layout checks use only 1920x1080. Do not add other resolutions, ultrawide checks, or a resolution test matrix.
 - Use `canvas_items` stretch mode, `expand` aspect, and fractional scaling for non-pixel-art UI.
 - Use full-rect `Control` roots, anchors, and container nodes. Avoid absolute positioning for primary layouts.
@@ -144,12 +144,16 @@
 
 ## Framework content boundary
 
-- Framework 0.0.1 is declared in core/framework_version.gd, independently of the user-owned Godot project version. Manifests use name, kind, package_version, framework_version, remark (empty allowed), supported_languages (currently ["zh-CN"]), and optional dependencies. Whole-package Hash is removed; exported build_id identifies a build without verifying file bytes. Startup reads metadata only; runtime packages and dependencies load on first actual use. Installed folders are recognized by content.pck.json and may contain multiple freely named PCKs. Do not hash files for development copying or download verification. manifest.json is the only author-maintained content catalog entry. Asset libraries may declare special_type and songs; rhythm_library resources use public PartyMusicSong/PartyMusicChart data types. music/ and charts/<song>/ are author conventions, not hard validation rules.
+- When changing a content package or framework version, briefly notify the user of the affected object, old → new version, reason and any compatibility/re-export impact. Follow `doc/api/content_packages.md`; do not automatically bump versions for builds or ordinary edits, or change the user-owned Godot project version.
+
+- Framework identity is declared in core/framework_version.gd, independently of the Godot project version. Follow `doc/api/content_packages.md` for manifest fields, dependencies, build_id, lazy loading and asset-library contracts. Never hash files for copying or verification. manifest.json is the only author-maintained catalog entry; music/chart folder layouts are author conventions, not validation rules.
 - Games use public core/api and documented UI contracts. Minigames (including medium tags) live under games/minigame/<id>/; main games and playlists live under games/maingame/<id>/. Avatar packs belong to their protocol under games/protocols/<protocol_id>/avatars/<id>/; exported installs may keep that layout or use independent recognized package folders. Host code must not interpret game economy or maintain another activity runner.
 - One top-level activity may start one foreground child with a participant subset; everyone else spectates, including the host when unselected. Only the host parent applies rewards.
 - Same-process content has ordinary Godot script capabilities. Do not introduce source-publication requirements, code audits, sandboxes, system-function blacklists or permission wrappers in this iteration. Retain protocol/version/dependency/file-conflict correctness checks.
 
 ## Game author documentation
+
+- Use `doc/project_index.md` as the document index. Keep package-specific documentation in its own `doc/` with `<package_id>_<purpose>.md` names. Maintain each rule in one owning topic and link to it; preserve unfinished work and necessary latest evidence. Keep conventional AGENTS.md, SKILL.md and license filenames.
 
 - For game content authoring or API integration, read `doc/skills/godot-party-authoring/SKILL.md` and only its task-relevant references. Keep public interface documentation in sync with API changes.
 

@@ -59,7 +59,7 @@ def prepare_host(content_project, host, bundle, root, build_number):
     notices.mkdir(exist_ok=True)
     for name in ("LICENSE", "LICENSE-CC0.txt", "ASSET_LICENSES.md"):
         shutil.copyfile(root / name, notices / name)
-    shutil.copyfile(root / "doc/credits.md", notices / "credits.md")
+    shutil.copyfile(root / "doc/assets/project_credits.md", notices / "credits.md")
     preset = (root / "core/dev/ios_export_presets.cfg").read_text(encoding="utf-8")
     project_text = (host / "project.godot").read_text(encoding="utf-8")
     application = re.search(r"(?ms)^\[application\]\n.*?(?=^\[|\Z)", project_text)

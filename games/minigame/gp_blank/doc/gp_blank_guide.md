@@ -1,6 +1,6 @@
 # GodotPartyDefault · 空白小游戏模板
 
-API 5 / manifest 2 / 配置 Schema 3；1–8 人；只实现原版协议 standard 普通局。
+/ 配置 Schema 3；1–8 人；只实现原版协议 standard 普通局。
 本包是「全幅画面＋简要叠加 HUD」和小游戏接入的参考。每位在线参赛者按一次「结束游戏」，房主按首次收到有效点击的先后排名；全部在线参赛者按完才展示成绩，退出者不排名。第一名得在线完成人数对应的分数，之后逐名减一。结束点击与排名仍遵循原版协议约定；随机池只决定本局初始展示。
 
 ## 目录与职责
@@ -22,9 +22,9 @@ assets/kenney_city/         三个 Kenney City Kit 模型包及许可
 
 入口持有 DemoHub 和固定的协议页面场景。`ui/briefing.tscn` / `ui/settlement.tscn` 继承协议场景，编辑 `View` 子节点即可调整布局；`ui/round_pages.tscn` 以 CanvasLayer 32 组合它们，初始隐藏，由入口显式激活。DemoHub 用 `finish_requested` 报告意图，用 `failed(error)` 报告配置写入失败；入口负责网络发送及 `api.fail()`。演示组件只接收所需的翻译、偏好、音频节点与输入 Callable，不直接依赖 PartyAPI。未提供 API 的 F6 预览隐藏结束按钮，不产生比赛或持久化设置。
 
-完整标准见 [小游戏接入规范](../../../doc/api/authoring.md)，包括场景化、计算模型、权限、配置草稿、复制、验证与发布。本包的文件划分用于说明实际职责，不要求所有小游戏拥有同样的目录数量或相同的协议控制器。
+完整标准见 [小游戏接入规范](../../../../doc/api/game_authoring.md)，包括场景化、计算模型、权限、配置草稿、复制、验证与发布。本包的文件划分用于说明实际职责，不要求所有小游戏拥有同样的目录数量或相同的协议控制器。
 
-公共组件和页面生命周期见[协议场景接入](../../protocols/godot_party_default_protocol/doc/README.md#加载与结算场景)。其他游戏依赖协议，不依赖本模板；演示内容与示例音频仍留在本包。Esc 菜单由框架拥有，游戏不复制或重新绑定 Esc。
+公共组件和页面生命周期见[协议场景接入](../../../protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md#加载与结算场景)。其他游戏依赖协议，不依赖本模板；演示内容与示例音频仍留在本包。Esc 菜单由框架拥有，游戏不复制或重新绑定 Esc。
 
 ## 开发与预览入口
 
@@ -74,7 +74,7 @@ DemoHub 内预置协议 `audio/game_audio.tscn` 和 `examples/audio/audio_panel.
 
 F6 调整音量立即生效，仅当前预览有效。正式模式维护草稿，点“应用本游戏音量”只保存修改过的分类，未修改分类仍继承协议。无关配置通知不覆盖草稿；外部修改只刷新未编辑分类。“恢复继承”明确清除六个分类的游戏覆盖。面板收起后不持续刷新播放状态文字。
 
-移植只需要 GameAudio 与实际 Cue，不必复制测试面板。准备作用域、播放、停止、循环、切换、配音队列与句柄示例见 [音频组件](../../protocols/godot_party_default_protocol/doc/audio.md)。
+移植只需要 GameAudio 与实际 Cue，不必复制测试面板。准备作用域、播放、停止、循环、切换、配音队列与句柄示例见 [音频组件](../../../protocols/godot_party_default_protocol/doc/godot_party_default_protocol_audio.md)。
 
 ## 通用随机统计模板
 
@@ -122,3 +122,9 @@ func choose_next() -> Error:
 5. 检查 manifest、脚本、场景、翻译和导入引用；在 F6 与真实大厅验证场景编辑值、准备、输入遮挡、结算和停止。测试文件/输出只放根目录 tmp/test/。按改动选择联机检查，再提交、推送受影响包及主仓库引用。
 
 所有参赛者准备后倒计时三秒开局。每人点击一次「结束游戏」，按房主收到点击的先后排名。所有在线参赛者按完后显示本轮结算，退出者不排名。 大厅“本机设置”提供控件、协议继承/覆盖与保存测试；样例值不改变玩法。
+
+## 包内开发文档
+
+未带 `res://` 的源码路径以本包根目录为基准。
+
+- [空白小游戏开发记录](gp_blank_development.md)

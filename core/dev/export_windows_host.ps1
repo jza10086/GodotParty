@@ -56,7 +56,7 @@ foreach ($step in @('import','export')) {
 if (!(Test-Path -LiteralPath (Join-Path $OutputDirectory 'GodotParty.exe') -PathType Leaf)) { throw 'Windows export did not produce an EXE' }
 $notices = Join-Path $OutputDirectory 'core/notices'
 New-Item -ItemType Directory $notices -Force | Out-Null
-Copy-Item -LiteralPath (Join-Path $projectRoot 'doc/credits.md') -Destination (Join-Path $notices 'project-credits.md')
+Copy-Item -LiteralPath (Join-Path $projectRoot 'doc/assets/project_credits.md') -Destination (Join-Path $notices 'project-credits.md')
 foreach ($file in $coreFiles) {
     if ($file.Extension -notin '.md','.txt' -or $file.Name -notmatch '(?i)license|copyright|copying|ofl|source|attribution') { continue }
     $target = Join-Path $notices $file.FullName.Substring($projectRoot.Length + 1)

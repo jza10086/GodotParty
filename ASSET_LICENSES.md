@@ -11,7 +11,7 @@
 
 **例外以具体资产的原许可为准**：Godot 图标 CC BY 4.0，JC Sounds CC BY 4.0，各字体 OFL／DejaVu，FluidR3 MIT，Kenney／Quaternius／Poly Haven 等保留各自 CC0 和作者，addons/godot_mcp_toolkit/ 源码保留上游 MIT 与品牌排除条款。Bad Apple!! 音源、Gpop 原谱、未知 MIDI、Huihui 配音、Blackjack 字体和头像参考图等未决事项仍保留；CC0 仅覆盖其中可授权的原创贡献。
 
-详见 [完整资产登记](doc/asset_register.md) 和 [受限资产分类登记](third_party_assets/README.md)。受限目录中的素材不适用本项目 MIT／CC0。
+详见 [完整资产登记](doc/assets/project_asset_register.md) 和 [受限资产分类登记](third_party_assets/restricted_assets_index.md)。受限目录中的素材不适用本项目 MIT／CC0。
 
 ## 独立包许可入口
 

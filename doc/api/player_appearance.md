@@ -3,7 +3,7 @@
 core 仅拥有 player_id 和连接身份；昵称和形象属于协议。形象没有固定四槽或统一颜色结构。
 get_appearance 返回当前协议生成的数据，游戏按协议读取，不能猜测字段。
 
-GodotPartyDefaultProtocol 1.0 定义 color、avatar_2d、character_3d。具体约定见 [原版协议](../../games/protocols/godot_party_default_protocol/doc/README.md)。这些字段属于原版协议，不是 core 对所有协议的共同要求。
+GodotPartyDefaultProtocol 1.0 定义 color、avatar_2d、character_3d。具体约定见 [原版协议](../../games/protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md)。这些字段属于原版协议，不是 core 对所有协议的共同要求。
 
 形象包 kind 为 avatars，appearance.gd 的 static choices() 返回以包内场景相对路径为键的选项元数据。
 资料中的资源引用为 {package_id, resource_path}。包可以只提供 2D、3D、头像，
