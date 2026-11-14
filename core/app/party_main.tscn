@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://cnixft6n5gdxb" path="res://core/ui/session_menu/session_menu.tscn" id="13_i8x7f"]
 [ext_resource type="Script" uid="uid://bmqhhda608ejf" path="res://core/ui/ambient_reveal/audio/menu_audio.gd" id="audio"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="background"]
-[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="button"]
 [ext_resource type="Script" uid="uid://2c4ebcbcer4s" path="res://core/network/party_connection.gd" id="connection"]
 [ext_resource type="Script" uid="uid://cp6flvqhplbcc" path="res://core/runtime/party_coordinator.gd" id="coordinator"]
 [ext_resource type="PackedScene" path="res://core/ui/frontend/party_frontend.tscn" id="frontend"]
@@ -16,6 +15,8 @@
 [ext_resource type="PackedScene" uid="uid://f1amq76p08uv" path="res://core/ui/notification_bar.tscn" id="notifications"]
 [ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 [ext_resource type="PackedScene" path="res://core/ui/party_touch_escape.tscn" id="touch_escape"]
+
+[ext_resource type="PackedScene" path="res://core/ui/loading_page.tscn" id="loading"]
 
 [node name="party_main" type="Control" unique_id=1685594889]
 layout_mode = 3
@@ -97,60 +98,6 @@ theme_override_constants/margin_bottom = 12
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="GameScreen" type="VBoxContainer" parent="FrameworkUI" unique_id=1693062044]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 48.0
-offset_top = 32.0
-offset_right = -48.0
-offset_bottom = -32.0
-mouse_filter = 2
-theme_override_constants/separation = 14
-
-[node name="GameStatus" type="Label" parent="FrameworkUI/GameScreen" unique_id=1423782966]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-autowrap_mode = 3
-
-[node name="Actions" type="HBoxContainer" parent="FrameworkUI/GameScreen" unique_id=354015134]
-layout_mode = 2
-
-[node name="Settings" parent="FrameworkUI/GameScreen/Actions" unique_id=1183855517 instance=ExtResource("button")]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-size_flags_horizontal = 3
-text = "本地设置"
-
-[node name="Rules" parent="FrameworkUI/GameScreen/Actions" unique_id=1256411011 instance=ExtResource("button")]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-size_flags_horizontal = 3
-text = "下一轮规则"
-
-[node name="Standings" parent="FrameworkUI/GameScreen/Actions" unique_id=2045529967 instance=ExtResource("button")]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-size_flags_horizontal = 3
-text = "排名总览 [Tab]"
-
-[node name="RetrySave" parent="FrameworkUI/GameScreen/Actions" unique_id=634218160 instance=ExtResource("button")]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-size_flags_horizontal = 3
-text = "重试保存"
-
-[node name="LeaveSession" parent="FrameworkUI/GameScreen/Actions" unique_id=1756369170 instance=ExtResource("button")]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-size_flags_horizontal = 3
-text = "返回大厅"
-
 [node name="DialogHost" type="Control" parent="FrameworkUI" unique_id=1954808417 groups=["framework_dialog_host"]]
 unique_name_in_owner = true
 z_index = 10
@@ -194,34 +141,13 @@ z_index = 5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ResourceLoading" type="MarginContainer" parent="FrameworkUI" unique_id=465205438]
+[node name="ResourceLoading" parent="FrameworkUI" instance=ExtResource("loading")]
 unique_name_in_owner = true
 visible = false
-z_index = 6
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-theme_override_constants/margin_left = 48
-theme_override_constants/margin_right = 48
-theme_override_constants/margin_bottom = 40
-
-[node name="ResourceProgress" type="ProgressBar" parent="FrameworkUI/ResourceLoading" unique_id=910988379]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 24)
-layout_mode = 2
-size_flags_vertical = 8
-mouse_filter = 2
-max_value = 1.0
-step = 0.001
+z_index = 1000
 
 [node name="NotificationBar" parent="." unique_id=238063149 instance=ExtResource("notifications")]
 unique_name_in_owner = true
 
 [node name="TouchEscape" parent="." unique_id=1954567089 instance=ExtResource("touch_escape")]
 
-[connection signal="pressed" from="FrameworkUI/GameScreen/Actions/Settings" to="." method="_settings_dialog"]
-[connection signal="pressed" from="FrameworkUI/GameScreen/Actions/Rules" to="." method="_room_rules_dialog"]
-[connection signal="pressed" from="FrameworkUI/GameScreen/Actions/Standings" to="." method="_open_standings"]
-[connection signal="pressed" from="FrameworkUI/GameScreen/Actions/RetrySave" to="." method="_retry_save"]
-[connection signal="pressed" from="FrameworkUI/GameScreen/Actions/LeaveSession" to="." method="_leave_session"]

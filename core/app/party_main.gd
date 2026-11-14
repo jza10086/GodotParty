@@ -28,18 +28,15 @@ var _preferences_focus: Control
 var _content_sync_panel: RefCounted
 var packages: RefCounted
 var _content_error: String = ""
-var _notice_text: String = ""
 var catalog: RefCounted
 @onready var connection: Node = %Connection
 @onready var runner: Node = %Session
 var settings: PartyInput
 var presets: RefCounted
-@onready var _screen: VBoxContainer = %GameScreen
 @onready var _session_menu: Control = %SessionMenu
 var _session_focus: Control
 var _session_mouse_mode: Input.MouseMode = Input.MOUSE_MODE_VISIBLE
 var _page: String = ""
-var _minimal_hud: bool = false
 var _session_controls_open: bool = false
 var _dialog: GPPartyDialog
 var _profile_apply: Button
@@ -165,9 +162,6 @@ func _refresh() -> void:
 		_page = next_page
 		_show_page()
 	_frontend.refresh()
-	if _page == "game":
-		%GameStatus.text = connection.status if not connection.status.is_empty() else _notice_text
-		%RetrySave.disabled = not connection.host or runner._pending.is_empty()
 
 ## Connection cleanup has completed before this notification; never retain a stale room view.
 func _host_exited() -> void:
@@ -181,11 +175,9 @@ func _host_exited() -> void:
 func _show_page() -> void:
 	var playing: bool = _page == "game"
 	_background.visible = not playing
-	_screen.visible = playing
 	_frontend.visible = not playing and not is_instance_valid(_settings_page) and not is_instance_valid(_preferences_page)
 	if playing:
 		_frontend.close_modal()
-		%LeaveSession.text = "返回大厅" if connection.host else "退出会话"
 
 ## UI adapters enter the same connection and catalog pipeline as development arguments.
 func host_from_ui(main_id: String, title: String, port: int, bind_address: String) -> Error:
@@ -563,7 +555,6 @@ func _protocol_dialog() -> void:
 	_settings_page.protocol_selected.connect(func(id: String) -> void:
 		_frontend.selected_protocol = id)
 	_frontend.hide()
-	_screen.hide()
 	_session_menu.hide()
 	%UINavigation.focus_settings_on_open(_settings_page.page)
 
@@ -593,7 +584,6 @@ func _network_lab_dialog() -> void:
 	_settings_page.configure(settings, catalog.i18n)
 	_settings_page.back_requested.connect(_close_settings)
 	_frontend.hide()
-	_screen.hide()
 	_session_menu.hide()
 	%UINavigation.focus_settings_on_open(_settings_page.page)
 
@@ -608,7 +598,6 @@ func _content_browser_dialog() -> void:
 	_settings_page.back_requested.connect(_close_settings)
 	_settings_page.preferences_requested.connect(_preferences_dialog)
 	_frontend.hide()
-	_screen.hide()
 	_session_menu.hide()
 	%UINavigation.focus_settings_on_open(_settings_page.page)
 
@@ -632,7 +621,6 @@ func _settings_dialog() -> void:
 		_restore_dialog())
 	_settings_page.refresh_display_controls()
 	_frontend.hide()
-	_screen.hide()
 	_session_menu.hide()
 	%UINavigation.focus_settings_on_open(_settings_page.page)
 
@@ -644,8 +632,7 @@ func _close_settings() -> void:
 	_settings_page.queue_free()
 	_settings_page = null
 	_frontend.visible = _page != "game"
-	_screen.visible = _page == "game" and not _minimal_hud
-	_session_menu.visible = _page == "game" and _minimal_hud and _session_controls_open
+	_session_menu.visible = _page == "game" and _session_controls_open
 	if is_instance_valid(_settings_focus) and _settings_focus.is_visible_in_tree():
 		_settings_focus.grab_focus()
 
@@ -653,7 +640,7 @@ func _close_settings() -> void:
 func _open_settings_surface(scene: PackedScene) -> Control:
 	_preferences_focus = get_viewport().gui_get_focus_owner()
 	_preferences_return.clear()
-	for surface: Variant in [_settings_page, _frontend, _screen, _session_menu, _dialog]:
+	for surface: Variant in [_settings_page, _frontend, _session_menu, _dialog]:
 		if is_instance_valid(surface) and surface.visible:
 			_preferences_return.append(surface)
 			surface.hide()
@@ -802,8 +789,6 @@ func show_notice(message: String) -> void:
 	%NotificationBar.show_notice(message)
 
 func _notice(message: String) -> void:
-	_notice_text = message
-	%GameStatus.text = message
 	_session_menu.set_status(message)
 	# Save recovery remains reachable without adding a fifth session-menu action.
 	if connection.host and not runner._pending.is_empty():
@@ -821,6 +806,8 @@ func _check(error: Error) -> void:
 
 ## Input always belongs to the foreground framework surface. Activities own their gameplay input.
 func navigation_scope() -> Control:
+	if runner.loading.has("progress"):
+		return %ResourceLoading
 	var modals: Array[Node] = get_tree().get_nodes_in_group(&"framework_modal")
 	modals.reverse()
 	for modal: Control in modals:
@@ -837,6 +824,8 @@ func navigation_scope() -> Control:
 	return null
 
 func navigation_back() -> void:
+	if runner.loading.has("progress"):
+		return
 	var focus: Control = get_viewport().gui_get_focus_owner()
 	if focus is BindingButton and focus.capturing:
 		focus.cancel()
@@ -850,41 +839,37 @@ func navigation_back() -> void:
 		_close_settings()
 	elif _frontend.is_visible_in_tree():
 		_frontend.navigation_back()
-	elif _page == "game" and _minimal_hud:
+	elif _page == "game":
 		_toggle_session_menu()
 
 func _process(_delta: float) -> void:
-	%ResourceLoading.visible = runner.loading.has("progress")
-	if %ResourceLoading.visible:
-		%ResourceProgress.value = runner.loading.progress
-	# Every foreground minigame uses the shared menu. Main games may also opt in.
-	var minimal: bool = runner._scopes.has(runner._child_id)
-	for scope: Dictionary in runner._scopes.values():
-		if scope.phase != "suspended" and scope.root.is_in_group(&"party_minimal_hud"):
-			minimal = true
-	if minimal != _minimal_hud:
-		_minimal_hud = minimal
+	var resource_loading: bool = runner.loading.has("progress")
+	%ResourceLoading.visible = resource_loading
+	if resource_loading:
+		%ResourceLoading.set_progress(runner.loading.progress)
 		_session_controls_open = false
 	var settings_open: bool = is_instance_valid(_settings_page) or is_instance_valid(_preferences_page)
-	_screen.visible = _page == "game" and not settings_open and not _minimal_hud
 	_session_menu.set_game_available(runner._scopes.has(runner._child_id))
-	_session_menu.visible = _page == "game" and not settings_open and _minimal_hud and _session_controls_open
+	_session_menu.visible = _page == "game" and not settings_open and _session_controls_open
 	_background.visible = _page != "game"
 	var focus: Control = get_viewport().gui_get_focus_owner()
 	var framework_modal: bool = get_tree().get_nodes_in_group("framework_modal").any(func(node: Node) -> bool: return node is Control and node.is_visible_in_tree())
 	var modal: bool = framework_modal or not _frontend.modal_kind.is_empty() or is_instance_valid(_settings_page) or is_instance_valid(_preferences_page) or focus is LineEdit or focus is TextEdit or (is_instance_valid(_dialog) and _dialog.visible) or (is_instance_valid(_overview) and _overview.visible)
-	_modal_input_active = modal or (_minimal_hud and _session_controls_open)
+	_modal_input_active = resource_loading or modal or _session_controls_open
 	if runner._lobby_api != null:
 		runner._lobby_api.input.input_blocked = modal
 	for scope: Dictionary in runner._scopes.values():
-		scope["api"].input.input_blocked = modal or (_minimal_hud and _session_controls_open) or scope["phase"] != "playing"
+		scope["api"].input.input_blocked = resource_loading or modal or _session_controls_open or scope["phase"] != "playing"
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		navigation_back()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if _page == "game" and _minimal_hud and event.is_action_pressed("ui_cancel") and not event.is_echo():
+	if runner.loading.has("progress"):
+		get_viewport().set_input_as_handled()
+		return
+	if _page == "game" and event.is_action_pressed("ui_cancel") and not event.is_echo():
 		navigation_back()
 		get_viewport().set_input_as_handled()
 		return
@@ -1028,4 +1013,4 @@ func _tab_standings() -> Dictionary:
 
 ## The passive Tab overlay never pauses play, captures the mouse, or takes keyboard focus.
 func _can_show_network_panel() -> bool:
-	return connection.online and _page in ["lobby", "game"] and not _modal_input_active and get_window().has_focus()
+	return connection.online and _page in ["lobby", "game"] and not runner.loading.has("progress") and not _modal_input_active and get_window().has_focus()
