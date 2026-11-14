@@ -144,7 +144,7 @@
 
 ## Framework content boundary
 
-- When changing a content package or framework version, briefly notify the user of the affected object, old → new version, reason and any compatibility/re-export impact. Follow `doc/api/content_packages.md`; do not automatically bump versions for builds or ordinary edits, or change the user-owned Godot project version.
+- When changing a content package or framework version, use only `xxx 旧版本 → 新版本；简要影响` for the notification; briefly state any required updates, re-exports or dependency adjustments. Follow `doc/api/content_packages.md`; do not automatically bump versions for builds or ordinary edits, or change the user-owned Godot project version.
 
 - Framework identity is declared in core/framework_version.gd, independently of the Godot project version. Follow `doc/api/content_packages.md` for manifest fields, dependencies, build_id, lazy loading and asset-library contracts. Never hash files for copying or verification. manifest.json is the only author-maintained catalog entry; music/chart folder layouts are author conventions, not validation rules.
 - Games use public core/api and documented UI contracts. Minigames (including medium tags) live under games/minigame/<id>/; main games and playlists live under games/maingame/<id>/. Avatar packs belong to their protocol under games/protocols/<protocol_id>/avatars/<id>/; exported installs may keep that layout or use independent recognized package folders. Host code must not interpret game economy or maintain another activity runner.

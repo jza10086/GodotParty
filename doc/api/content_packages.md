@@ -2,7 +2,7 @@
 
 ## 声明、版本与包身份
 
-更新内容包 `package_version` 或框架版本号时，应向用户简要说明更新对象、旧版本 → 新版本及更新原因；涉及兼容性或重新导出要求时一并提醒。构建和普通代码修改不自动递增版本，不修改用户维护的 Godot 项目版本。包清单中的 `framework_version` 是所需框架版本，更新兼容声明时也应说明影响。
+更新内容包 `package_version` 或框架版本号时，只简要提醒：`xxx 旧版本 → 新版本；简要影响`（例如是否需要更新其他内容、重新导出或调整原有依赖）。构建和普通代码修改不自动递增版本，不修改用户维护的 Godot 项目版本。包清单中的 `framework_version` 是所需框架版本，更新兼容声明时也应说明影响。
 
 作者清单基础字段为 `name`、`kind`、`package_version`、`framework_version`、`remark`、`supported_languages`，以及需要时的 `dependencies`。曲库资产包额外声明 `special_type` 和 `songs`。备注允许为空。`supported_languages` 是作者声明的支持语言数组，当前统一为 `["zh-CN"]`，不根据已有翻译文件推断完整语言支持。身份来自目录，形象包归属来自协议父目录。包版本以各自清单为准；当前框架版本在 `core/framework_version.gd`，不使用或修改 Godot 项目版本。
 

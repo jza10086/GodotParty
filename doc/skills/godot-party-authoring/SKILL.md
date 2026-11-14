@@ -32,6 +32,6 @@ Use the complete project and its formal menu/lobby. Read root `AGENTS.md` for ex
 - Keep catalog definitions independent of gameplay/media. Use globally unique shared class names and declared dependencies. Runtime content must not reference excluded `authoring/` files.
 - Local preferences, room drafts, frozen rules and adapter requests are separate. Main and mini games independently override protocol defaults. Voice routing and appearance semantics belong to their declared owners.
 - Use public APIs and documented UI/resources. Do not restore old activity wrappers, private frontend dependencies, compatibility aliases or a standalone SDK.
-- Follow the version notification rule in [content packages](../../api/content_packages.md): report the object, old/new version and reason when changing content/framework versions; builds do not automatically bump versions or change the user-owned Godot project version.
+- Follow the concise version notification format in [content packages](../../api/content_packages.md). Builds do not automatically bump versions or change the user-owned Godot project version.
 
 For original-protocol content, read [GodotPartyDefault](../../../games/protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md) and its relevant examples. Use package IDs prefixed `gp_` for minigames. The protocol owns graphics/audio integration, color and appearances; games own movement, collision and networking. Preserve unverified behavior as pending rather than treating historical checks as current acceptance.
