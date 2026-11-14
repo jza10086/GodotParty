@@ -4,7 +4,7 @@
 
 界面组件与箭头图标：GodotPartyUI https://github.com/jza10086/GodotPartyUI
 中文字体：Noto Sans CJK SC（许可证：core/ui/components/assets/FONT-LICENSE.txt） https://github.com/notofonts/noto-cjk
-音游界面字体：NotoSansSC-UI.otf（复用原版 UI 资产包 font_sans，许可证：games/minigame/gp_rhythm_game/assets/fonts/NOTO-SANS-LICENSE.txt） https://github.com/notofonts/noto-cjk
+音游界面字体：NotoSansSC-UI.otf（复用原版 UI 资产包字体，许可证：games/minigame/gp_rhythm_game/assets/fonts/NOTO-SANS-LICENSE.txt） https://github.com/notofonts/noto-cjk
 连通性测试客户端内置字体：Noto Sans CJK SC（复用项目字体；许可证：tools/connectivity_client/project/fonts/FONT-LICENSE.txt） https://github.com/notofonts/noto-cjk
 图标：Godot 官方标志（CC BY 4.0，沿用 GodotPartyUI 原始图标） https://godotengine.org/press/
 
@@ -54,10 +54,10 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 
 2D 头像：Bot 头像套装 V2 正面摆正版（用户提供；源说明记载为内置图像生成工具生成） games/protocols/godot_party_default_protocol/avatars/godot_party_default_avatars_2d/doc/default_2d_avatar_sources.md
 
-字体：Source Han Serif SC Regular 2.003（Adobe 思源宋体简体中文，SIL OFL 1.1，许可随协议保留） https://github.com/adobe-fonts/source-han-serif
+字体：Source Han Serif SC Regular 2.003（Adobe 思源宋体简体中文，SIL OFL 1.1，许可随原版 UI 资产包保留） https://github.com/adobe-fonts/source-han-serif
 
 原型：AuctionMaster 仓库竞拍及物品插图 https://github.com/jza10086/AuctionMaster
-物资插图：竞拍大师 100 张写实透明 PNG（内置 imagegen 原创生成，Pillow 处理透明边缘；未使用其他游戏资产；逐图提示词见来源文件） games/minigame/gp_auction_master/assets/items/realistic/generation_prompts.json
+物资插图：竞拍大师 100 张写实透明 PNG（内置 imagegen 原创生成，Pillow 处理透明边缘；未使用其他游戏资产；逐图提示词见来源文件） games/minigame/gp_auction_master/authoring/references/generation_prompts.json
 旧版物资插图：竞拍大师 40 张原创 SVG（本项目程序绘制，已停用但保留源文件） games/minigame/gp_auction_master/assets/items/
 玩法参考：BidKing：竞拍之王（暗标竞拍与藏品估值方向；未使用其资产） https://store.steampowered.com/app/4128580/?l=schinese
 原型：SnakeGame 贪吃蛇规则和程序化棋盘 https://github.com/jza10086/SnakeGame
@@ -148,3 +148,5 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 背景音乐：竞拍大师 Hammer and Heirloom、Mahogany and Velvet、The Gilded Handshake、The Winning Bid，用户提供，原始说明为 Google AI Lyria 生成；来源 F:/GodotProjects/Assets/ai_generated/bgm/竞拍大师BGM，原始说明随小游戏 assets/music/credit.txt 保留。
 
 音效：竞拍大师结算 Interface Sounds，Kenney（CC0 1.0；原样采样，运行时调音高与音量；映射及许可随素材保留） https://kenney.nl/assets/interface-sounds
+
+背景音乐：炮火争锋 Apex Pursuit、Heavy Ordnance、Impact Horizon，用户提供，原始说明为 Google AI Lyria 生成；来源 F:/GodotProjects/Assets/ai_generated/bgm/炮火争锋BGM，原始说明随小游戏 assets/music/credit.txt 保留。
