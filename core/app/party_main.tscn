@@ -150,4 +150,3 @@ z_index = 1000
 unique_name_in_owner = true
 
 [node name="TouchEscape" parent="." unique_id=1954567089 instance=ExtResource("touch_escape")]
-
