@@ -3,12 +3,12 @@ class_name PartyInput
 extends RefCounted
 const JsonConfig = preload("res://core/config/party_json_config.gd")
 const Schema = preload("res://core/config/party_schema.gd")
-const DISPLAY_DEFAULTS: Dictionary = {"mode": "borderless", "resolution": [1920, 1080], "vsync": true, "fps": 0}
+const DISPLAY_DEFAULTS: Dictionary = {"mode": "borderless", "resolution": [1920, 1080], "vsync": true, "fps": 160}
 const DISPLAY_MODES: Dictionary = {"windowed": "窗口化", "borderless": "无边框全屏", "fullscreen": "独占全屏"}
 const RESOLUTIONS: Array[Vector2i] = [Vector2i(1280, 720), Vector2i(1366, 768), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(3840, 2160)]
 const MICROPHONE_MODES: Dictionary = {"open": "自由麦", "push_to_talk": "长按开麦（V）"}
 const DEFAULT_MICROPHONE_MODE: String = "open"
-const FPS_LIMITS: Array[int] = [0, 60, 120, 144]
+const MAX_FPS_LIMIT: int = 1000
 const Paths = preload("res://core/config/party_paths.gd")
 var settings_path: String = Paths.application_root().path_join("core/config/settings.json")
 var config: JsonConfig = JsonConfig.new()
@@ -64,7 +64,7 @@ func validate_system_settings() -> Error:
 		invalid = "display/mode"
 	elif not config.get_value("display", "resolution", DISPLAY_DEFAULTS.resolution) is Array or values.resolution not in RESOLUTIONS:
 		invalid = "display/resolution"
-	elif not values.fps is int or values.fps not in FPS_LIMITS:
+	elif not values.fps is int or values.fps < 0 or values.fps > MAX_FPS_LIMIT:
 		invalid = "display/fps"
 	elif not values.vsync is bool:
 		invalid = "display/vsync"
@@ -315,7 +315,7 @@ func settings_schema(draft: Dictionary = {}) -> Dictionary:
 		"display.mode": {"type": "string", "control": "select", "title": "显示模式", "description": "选择窗口化、无边框全屏或独占全屏。窗口化时可展开调整分辨率；全屏使用显示器的尺寸。", "default": DISPLAY_DEFAULTS.mode, "values": DISPLAY_MODES.keys(), "labels": DISPLAY_MODES.values()},
 		"display.resolution": {"type": "array", "control": "select", "title": "窗口分辨率", "description": "调整窗口画面的输出尺寸。较高的分辨率提供更清晰的画面，也会增加渲染开销。全屏模式沿用显示器尺寸。", "default": DISPLAY_DEFAULTS.resolution, "items": {"type": "int"}, "min_items": 2, "max_items": 2, "values": resolutions, "labels": resolution_labels},
 		"display.vsync": {"type": "bool", "control": "toggle", "title": "垂直同步", "default": DISPLAY_DEFAULTS.vsync},
-		"display.fps": {"type": "int", "control": "select", "title": "帧率上限", "default": DISPLAY_DEFAULTS.fps, "values": FPS_LIMITS, "labels": ["不限", "60 FPS", "120 FPS", "144 FPS"]},
+		"display.fps": {"type": "int", "control": "number", "title": "帧率上限", "default": DISPLAY_DEFAULTS.fps, "min": 0, "max": MAX_FPS_LIMIT, "step": 1, "suffix": " FPS"},
 		"ui.volume": {"type": "float", "control": "number", "title": "框架提示音量", "default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01, "display_scale": 100.0, "suffix": "%"},
 		"system.microphone_mode": {"type": "string", "control": "select", "title": "麦克风开关模式", "description": "启用房间麦克风后，自由麦持续发送语音；长按开麦仅在按住 V 时发送，松开即停止。", "default": DEFAULT_MICROPHONE_MODE, "values": MICROPHONE_MODES.keys(), "labels": MICROPHONE_MODES.values()},
 		"system.microphone_allowed": {"type": "bool", "control": "toggle", "title": "允许使用麦克风", "default": false},
