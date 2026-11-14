@@ -1,130 +1,127 @@
-# 内容包外部资源与作者导出规则
+# 曲库资产包、按需加载与导出排除
 
-本文以霓虹节拍 `gp_rhythm_game` 为例。外置文件打包和路径解析已经可用；**自动扫描外部曲目、把它们加入正式选曲池、同步曲目版本及传输曲目尚未实现**，联机方案留待选择。本次只改导出过滤，不改变现有玩法的选曲行为。
+霓虹节拍统一从独立资产包发现曲目。个人制作和正式分发使用同一种格式：编辑器读取源码，发布版读取 PCK。原生制谱工具保留在小游戏的 authoring/；曲库只保存音乐、曲目资源、谱面和相关许可。
 
-## 已有的三种存放方式
+## 目录规范
 
-| 存放方式 | 适用内容 | 加载方式 |
-| --- | --- | --- |
-| 普通包内资源 → PCK | 场景、脚本、Godot 导入的纹理与音频 | `load` / `ResourceLoader`，保留稳定的 `res://games/...` 路径 |
-| 包内 `external/` → 安装目录中的原样文件 | JSON、运行时解码的音频、可直接读取的数据 | `api.get_external_path` + `FileAccess` / 运行时媒体加载器 |
-| 本地个人资料 | 偏好、存档，以及未来支持的个人曲库 | 包的 `config/` 等个人存储；不进入正式载荷与联机内容同步 |
-
-PCK 与外置文件可以在同一个内容包内共存。`export_ignore.txt` 只决定是否发布文件，不把被忽略资源自动变成外置文件，也不修复对它的引用。`external/` 是当前原样数据接口的约定；包安装目录名称和 PCK 名称仍可自由安排。
-
-## 外置曲目目录和读取示例
-
-作者源码可以这样组织（目录是示例，目前不会自动进入霓虹节拍曲目池）：
+推荐按以下结构制作；这是作者约定，不是导出器或运行时的硬性目录检查：
 
 ```text
-games/minigame/gp_rhythm_game/
+games/assets/my_rhythm_library/
   manifest.json
-  export_ignore.txt                # 可选，作者维护
-  external/songs/my_song/
-    chart.json
-    music.ogg
-```
-
-正常导出后，`external/songs/my_song/` 保持原样，位于含 `content.pck.json` 的包安装文件夹下，与 PCK 并列。发布工具自动生成外置文件索引，作者无需逐项登记到 `manifest.json`。
-
-在霓虹节拍自身脚本中，可使用已有读取器读取这个路径：
-
-```gdscript
-const Chart = preload("res://games/minigame/gp_rhythm_game/rhythm_chart.gd")
-
-func read_external_chart(api: PartyAPI) -> Dictionary:
-	var path: String = api.get_external_path("external/songs/my_song/chart.json")
-	if path.is_empty():
-		return {"ok": false, "error": "无法解析曲目目录"}
-	return Chart.read_chart(path)
-```
-
-调用方必须处理返回的 `ok/error`；成功时 `audio` 是音频流，`notes/lanes/ends/subs` 是已解析的谱面。此示例只展示现有读取能力，不会注册歌曲、发起回合或替代联机准备流程。`get_external_path` 只解析当前活跃作用域所属包，不创建文件，也不能用来访问另一个资产包。
-
-现有读取器支持 **OGG / WAV**；MP3 尚不属于霓虹节拍的谱面音源格式。外置音源与谱面在同一目录，`audio_file` 只填写文件名。最小谱面示例：
-
-```json
-{
-  "format_version": 3,
-  "key_count": 2,
-  "note_type": "tap_hold",
-  "title": "我的曲目",
-  "artist": "作者",
-  "difficulty": "Normal",
-  "audio_file": "music.ogg",
-  "notes_ms": [1000, 2000, 3000],
-  "lanes": [0, 1, 0],
-  "durations_ms": [0, 0, 1000],
-  "subs_ms": [[], [], [3500]]
-}
-```
-
-音源必须覆盖最后一个音符结束后至少 0.15 秒的判定窗口；同轨音符不能重叠。可参考现有原创样例 `games/minigame/gp_rhythm_game/charts/hold_test/`。正式玩法当前从场景的 `song` 和 `additional_songs` 读取 `RhythmSong` 资源，资源必须保存为包内 `.tres/.res`。仅复制上述目录，当前游戏不会出现新的可选歌曲。
-
-正式 `external/` 文件会随发布更新；旧描述中退役的文件会被删除。玩家手工添加且未列入载荷的文件不会自动进入同步，但同名路径仍可能与以后发布的文件冲突。长期个人曲库宜独立于正式载荷；具体入口和位置随选定方案实现。移动端还需要文件选择与复制入口，不能假定玩家可直接操作应用私有目录。
-
-## `export_ignore.txt`
-
-在协议、主游戏、小游戏、形象包或资产包的根目录放置此文件。**有文件时完整使用作者规则；没有文件时使用 `core/content/default_export_ignore.txt`；空文件表示不使用默认排除项。** 子目录内的同名文件不作为嵌套规则解析，独立子包使用自己的根规则。
-
-- 每行一个相对包根目录的模式；空行与以 `#` 开头的行忽略。
-- 使用 `/`，大小写不敏感。`*` 匹配任意字符（包括 `/`），`?` 匹配一个字符；不是完整的 Git ignore 语法。
-- `authoring/` 排除根目录下的 `authoring`；`*/authoring/` 排除嵌套同名目录。末尾 `/` 表示目录及其内容，匹配目录后不再向下收集。
-- `*.blend` 匹配任意深度的 Blend 文件；被排除原文件的 `.import` 和 `.uid` 伴随文件也排除。
-- 不支持 `!` 反选、绝对路径、`..` 和反斜杠；无效规则中止导出并报告规则文件与行号。
-- 根 `export_ignore.txt` 总会保留，使暂存后的二次收集使用相同规则。排除必需的根 `manifest.json` 会直接失败。
-
-默认文件排除各层 `authoring/`、`prototype/`、`tmp/`，隐藏项，以及名称含 `~`、以 `.tmp/.bak/.pending` 结尾的文件。作者若想保留其中某类，在自己的文件中只列需要排除的其他项。例如：
-
-```text
-# 完整替代默认规则；按本包实际内容维护
-authoring/
-*/authoring/
-prototype/
-*/prototype/
-tmp/
-*/tmp/
-.*
-*/.*
-*~*
-*.tmp
-*.bak
-*.pending
-external/songs/private/
-```
-
-源码 ZIP、PCK 内容暂存、正式外置文件和各平台内容导出遵循同一规则。打包器保留必要归属边界：Git/引擎缓存、包根 `config/` 不发布，独立子包由自己导出，不接受链接路径。原样外置文件还必须满足可移植路径规则（不含隐藏路径段等）；其 `.import/.uid/.gdignore` 不作为运行数据发布。
-
-`.gitignore` 管版本控制，`.gdignore` 管 Godot 导入，都不代替发布规则。允许某个含 `.gdignore` 的目录发布，不会使 Godot 自动导入其中资源。普通 PCK 资源保留导入参数并在隔离工程中导入；外置媒体通过文件 API 读取，不应再被场景作为普通导入资源引用。
-
-如果要排除某首已被 `music_game.tscn` 的 `song` 引用的曲目，须先把引用改为要发布的曲目，否则会留下缺失资源。当前霓虹节拍默认场景指向本地 `charts/bad_apple/song.tres`；本轮未改此绑定，也未导出它。正式发布前应先处理该引用及素材发布范围，例如改用原创 `hold_test`。许可证与署名必须保留在发布范围内。
-
-## 外部曲目联机方案（待选择）
-
-| 方案 | 玩家与作者体验 | 所需改动与代价 |
-| --- | --- | --- |
-| 各端手动安装曲目文件夹 | 作者直接改 JSON/音频，不必重导出 PCK；玩家须提前安装同一曲目 | 扫描曲目元数据，定义稳定曲目 ID/版本/难度；房主同步选择，缺失或版本不符明确提示。修改文件不改版本无法被发现 |
-| 房主临时传输原样曲目 | 客机无需提前安装；适合临时组局 | 新增按需文件传输、大小/路径检查、进度、取消、会话缓存、清理及准备屏障；首次等待受上传带宽和音频体积影响。不同于现有需重启的正式包安装 |
-| 独立曲库资产包 | 一次安装多首，独立更新、分享和维护版本；适合正式曲库 | 复用资产包声明、PCK/外置数据导出和正式内容同步；当前安装更新需重启。需要约定曲库索引及霓虹节拍读取接口 |
-| 正式资产包 + 个人曲目文件夹 | 正式联机内容方便分发，同时保留个人制作流程 | 需统一曲目身份、来源、重复 ID 拒绝规则和选曲列表；个人曲目仍要手动安装或另加临时传输 |
-
-这些方案都可以只在进入霓虹节拍、打开选曲或实际选中歌曲时加载；菜单启动不需要扫描或解码所有曲目。曲库先读轻量索引，所选难度的谱面与音频再按需读取；不得为了显示歌名预载全部音频。现有随机池按完整候选 ID 集保存统计，外部曲目增删后也需要调整统计契约，不能仅追加一次目录扫描。
-
-### 资产包可以怎样组织
-
-```text
-games/assets/rhythm_library_original/
-  manifest.json                   # kind: assets，独立版本/名称/语言
   export_ignore.txt
-  external/library.json           # 待定义的曲库索引，不是当前框架字段
-  external/songs/hold_test/
-    chart.json
-    hold_test.wav
+  music/
+    my_song.ogg
+  charts/
+    my_song/
+      song.tres
+      easy.tres
+      easy.json
+      hard.tres
+      hard.json
+  authoring/
   LICENSES/
 ```
 
-建议按曲库或发行批次建包，不强制每首一个包。PCK 保存包内资源，音频既可原样放在 `external/`，也可改用 Godot 原生音频资源放入 PCK；前者便于编辑，后者走原生导入加载。曲库资产包**不能依赖小游戏或其他资产包**，所以不能直接装入引用小游戏 `RhythmSong` 脚本的 `.tres`；可使用纯 JSON + 音频，由小游戏解释。
+music/ 放音乐资源；charts/ 内按曲目建立子文件夹。song.tres 绑定一个音源和各难度谱面资源；谱面 .tres 再引用音符 JSON。扫描时以声明中的类型和曲目列表为准，不通过文件夹名称猜测曲目，也不递归加载全部 .tres。
 
-固定曲库可由小游戏声明依赖，复用已有依赖选择和版本同步；追加或移除曲库时需修改游戏依赖。若希望玩家安装任意曲库后自动可选，需要另行实现曲库发现、房间所选曲库的依赖集合，以及访问所选资产包外置目录的公开接口。当前 `get_external_path` 仅访问本包，不能把这些能力视为已有。
+## 声明
 
-若以正式多人分发为主，优先考虑独立曲库资产包；若以个人制作、快速试谱为主，文件夹最省事。两者可组合，房主临时传输可后续独立增加；本轮不替用户决定或实现其中任何方案。
+```json
+{
+  "name": "我的曲库",
+  "kind": "assets",
+  "package_version": "0.0.1",
+  "framework_version": "0.0.1",
+  "remark": "",
+  "supported_languages": ["zh-CN"],
+  "special_type": "rhythm_library",
+  "songs": [
+    "charts/my_song/song.tres"
+  ]
+}
+```
+
+special_type 是特殊类型标识；霓虹节拍识别 rhythm_library。songs 是非空、无重复的包内相对资源路径列表，支持 .tres/.res。ID 来自包目录，曲目 ID 为“包 ID/曲目资源路径”，曲目名称使用 Resource.resource_name。修改资源路径会改变曲目身份，因此建议改显示名称时保持路径稳定。
+
+普通资产包无需添加这两项。曲库仍不能依赖小游戏或其他资产包，公共数据类型位于框架公开 API：
+
+| 类型 | 文件 | 内容 |
+| --- | --- | --- |
+| PartyMusicSong | core/api/music/party_music_song.gd | music: AudioStream；charts: Array[PartyMusicChart] |
+| PartyMusicChart | core/api/music/party_music_chart.gd | difficulty；chart_path；base_score（默认 1,000,000） |
+
+这些类型仅保存数据，谱面校验、判定和计分由霓虹节拍解释。曲库不引用小游戏脚本。
+
+## 编辑器制作流程
+
+1. 创建资产包目录与 manifest.json，填写上述类型标识。
+2. 把音乐放入 music/，等待 Godot 正常导入。当前谱面工具支持 OGG / WAV。
+3. 在 charts/ 下建立曲目子目录。制作或复制谱面 JSON，用霓虹节拍 authoring/chart_editor.tscn 编辑；工具会扫描标记为 rhythm_library 的资产包的 music/ 与 charts/。
+4. 为每个难度创建 PartyMusicChart，保存为 .tres；设置 difficulty、chart_path（通过 Inspector 选择 res:// JSON 路径）和 base_score。
+5. 创建 PartyMusicSong，填写 resource_name，绑定 music，并把各难度 .tres 拖入 charts。只有绑定的谱面会参与正式玩法。
+6. 将曲目资源路径加入声明 songs。原生工具保存/另存谱面 JSON 后，新增难度和新曲目的 .tres 绑定及声明仍由作者在 Inspector 中维护，不自动改写。
+7. 编辑器重新运行即可发现新曲库，不需要构建 PCK。正式分发时，在导出工具中同时选择小游戏与要发布的曲库；曲库可独立导出、更新。导出小游戏不会隐式发布电脑上的全部个人曲库。
+
+已有谱面保存时保留文件路径，修改工程显示名不会破坏 .tres 绑定；另存为生成新的 JSON。原生工具导入音频时放入当前打开谱面所属包的 music/，新谱面保存到该包 charts/<音源文件名>/。这只是工具默认放置方式，作者可自行组织并维护引用。
+
+JSON 音符格式仍为 format_version 3，保留 notes_ms、lanes、durations_ms、subs_ms 等字段。audio_file 可填写 res:// 音源路径，使制作工具能访问 music/ 中的文件，也支持谱面同目录的音源文件名。正式玩法以 PartyMusicSong.music 为准，不会按 JSON 字段改换音源；difficulty 与 base_score 以绑定的 PartyMusicChart 为准。
+
+示例：games/assets/gp_rhythm_original/charts/hold_test/song.tres。本地 Bad Apple 短版和完整版位于 games/assets/gp_rhythm_bad_apple/，整包被主仓库 .gitignore 排除，仍可在 Godot 中发现；本轮未发布。旧本地原始曲目和编辑恢复记录保留，小游戏的 export_ignore.txt 排除原 charts/，避免重复打入小游戏 PCK。
+
+## 发现、加载和联机
+
+主菜单只读取声明/发布描述，不读取曲目资源和音频。霓虹节拍的轻量 definition.gd 声明 asset_types: ["rhythm_library"]；房主把该小游戏加入房间池时，框架发现匹配类型的可用资产包，将它们作为本局随机曲目池的候选依赖。
+
+- 加入房间阶段仍只要求协议、主游戏和形象依赖。
+- 开始前将房主的候选曲库纳入现有版本/build_id 检查与内容同步。随机池可能选中任何候选曲库，所以此阶段要求整个候选集合；这不是只传输当轮单首曲目的机制。
+- 客机只使用房主房间依赖集合中的曲库；额外安装的本地曲库不增加候选歌曲。
+- 创建霓虹节拍回合后，读取候选 songs 路径列表，房主按最少游玩次数抽取稳定曲目 ID 并广播。
+- 各端仅对选中曲目调用 await api.load_asset_async(ref)，首次使用时挂载所属 PCK，并后台加载该曲目的音源和绑定谱面资源。随后读取选中歌曲各难度的谱面，建立难度选项和计分上限，完成技术准备。
+- 安装/更新正式包仍需重启；编辑器内部联机不自动构建或传输，需自行同步源码。没有整包 Hash 校验。
+- 曲库增删会保留已有曲目统计，新曲目从零开始；退役曲目的统计保留但不参与抽取。损坏的统计文件明确报错。
+
+公共接口：
+
+```gdscript
+# 仅返回当前房间候选集合的元数据，不加载资源。
+var libraries: Array[Dictionary] = api.get_asset_libraries("rhythm_library")
+# ref 来自选中曲库的声明：package_id + resource_path。
+var resource: Resource = await api.load_asset_async(ref)
+```
+
+API 关闭后异步结果不会交还旧回合。单包 PCK 挂载不等于一次性把包内所有音频解码到内存；仅所选曲目及其原生资源依赖被加载。
+
+## export_ignore.txt：Git ignore 语法
+
+每个包根目录可放一个文件。存在时完整替代 core/content/default_export_ignore.txt；空文件表示没有作者排除规则；不存在时采用默认文件。不读取嵌套 export_ignore.txt、仓库 .gitignore 或用户全局 Git 配置。
+
+- 空行、# 注释；支持反斜杠转义、转义后的尾空格。普通尾空格忽略。
+- * 和 ? 不跨目录；** 支持跨多层目录；支持 [abc]、[!abc]、范围及常见 POSIX 字符组。
+- 无路径分隔符的名称匹配任意层；开头 / 锚定包根；末尾 / 只匹配目录。
+- ! 重新包含，最后一条匹配规则优先。已排除父目录后，子文件反选不能恢复它，须先恢复父目录。
+- 匹配固定区分大小写，各平台一致。非法正则字符范围等无效模式明确报告文件与行号。
+
+```gitignore
+authoring/
+tmp/
+/drafts/
+*.blend
+!/examples/editable.blend
+.*
+*.tmp
+*.bak
+*.pending
+```
+
+默认排除 authoring/、prototype/、tmp/、隐藏项、名称含 ~ 以及 .tmp/.bak/.pending。源码 ZIP、PCK 暂存和外置数据遵循同一规则。引擎/Git 缓存、包根 config/ 和独立子包仍有各自技术归属；链接路径不可发布。根 export_ignore.txt 保留以确保多阶段规则相同，不能排除必需 manifest.json。原文件被排除时其 .import/.uid 也排除，重新包含原文件后伴随文件按自身规则处理。
+
+.gitignore 只控制 Git；export_ignore.txt 控制打包；.gdignore 只控制 Godot 导入。排除文件不会修复引用，不能把仍被场景或曲目资源引用的音频/谱面排除。发布所需许可证和署名应保留。
+
+Git 模式参考：[官方说明](https://git-scm.com/docs/gitignore/)。本实现采用包根单文件与固定大小写规则，不提供 Git 的多来源配置和索引语义。
+
+## 其他原样外置资源
+
+普通 Godot 音乐资源可直接进入曲库 PCK，无需另建个人文件夹机制。其他内容如确需原样数据，仍可使用包内 external/；api.get_external_path("external/maps/map.json") 返回当前作用域所属包的源码/安装绝对路径，配合 FileAccess 或运行时媒体加载器读取。
+
+外置文件按导出规则自动登记，正式更新会替换及删除退役载荷；个人 config/ 不参与。get_external_path 不能代替跨资产包资源接口，也不会自动创建文件。PCK 名称与安装文件夹布局仍可自由安排，安装识别依赖 content.pck.json。

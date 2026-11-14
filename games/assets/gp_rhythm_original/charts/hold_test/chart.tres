@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="PartyMusicChart" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://core/api/music/party_music_chart.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+difficulty = "Normal"
+chart_path = "res://games/assets/gp_rhythm_original/charts/hold_test/chart.json"

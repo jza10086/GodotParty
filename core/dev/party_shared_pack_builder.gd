@@ -214,7 +214,7 @@ func export_imported_pack(catalog: RefCounted, id: String, output: String) -> Er
 	description.declaration.erase("id")
 	description.declaration.erase("owner_protocol")
 	description.content = manifest.duplicate(true)
-	for key: String in ["id", "owner_protocol", "_root", "_declaration", "build_id", "name", "kind", "package_version", "framework_version", "remark", "supported_languages", "dependencies"]:
+	for key: String in ["id", "owner_protocol", "_root", "_declaration", "build_id", "name", "kind", "package_version", "framework_version", "remark", "supported_languages", "dependencies", "special_type", "songs"]:
 		description.content.erase(key)
 	description.name = manifest.name
 	description.dependencies = manifest.get("dependencies", {}).duplicate(true)

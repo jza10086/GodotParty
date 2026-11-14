@@ -34,7 +34,8 @@ func choose(rng: RandomNumberGenerator) -> String:
 
 ## Call once before play with an absolute file path from the injected storage root.
 ## Missing files start at zero; corrupt data fails instead of resetting history.
-func open_file(path: String) -> Error:
+## Optional evolving pools retain retired IDs and initialize newly installed entries at zero.
+func open_file(path: String, allow_pool_changes: bool = false) -> Error:
 	assert(_path.is_empty() and _history.is_empty(), "Open storage before accepting any draws.")
 	assert(path.is_absolute_path(), "The entry must resolve the portable storage root.")
 	if not FileAccess.file_exists(path):
@@ -55,16 +56,25 @@ func open_file(path: String) -> Error:
 	var data: Variant = json.data
 	if not data is Dictionary or data.get("version") != 1 or not data.get("plays") is Dictionary:
 		return ERR_INVALID_DATA
-	if data.plays.size() != _ids.size():
+	if not allow_pool_changes and data.plays.size() != _ids.size():
 		return ERR_INVALID_DATA
 	var loaded: Dictionary[String, int] = {}
-	for id: String in _ids:
-		var value: Variant = data.plays.get(id)
+	for id: Variant in data.plays:
+		if not id is String or id.is_empty():
+			return ERR_INVALID_DATA
+		var value: Variant = data.plays[id]
 		if (not value is int and not value is float) or not is_finite(float(value)):
 			return ERR_INVALID_DATA
 		if value < 0 or value > MAX_COUNT or float(value) != floorf(float(value)):
 			return ERR_INVALID_DATA
 		loaded[id] = int(value)
+	if not allow_pool_changes:
+		for id: String in _ids:
+			if not loaded.has(id):
+				return ERR_INVALID_DATA
+	for id: String in _ids:
+		if not loaded.has(id):
+			loaded[id] = 0
 	_counts = loaded
 	_path = path
 	return OK
@@ -75,7 +85,7 @@ func open_file(path: String) -> Error:
 func accept_history(sequence: Array) -> Error:
 	for index: int in sequence.size():
 		var id: Variant = sequence[index]
-		if not id is String or not _counts.has(id):
+		if not id is String or id not in _ids:
 			return ERR_INVALID_DATA
 		if index < _history.size() and id != _history[index]:
 			return ERR_INVALID_DATA

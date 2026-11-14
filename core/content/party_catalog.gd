@@ -180,8 +180,19 @@ func validate_manifest(manifest: Dictionary) -> String:
 		if not manifest.get(key) is String or (key != "remark" and manifest[key].is_empty()):
 			return "Invalid declaration field: " + key
 	for key: String in manifest:
-		if key not in ["name", "kind", "package_version", "framework_version", "remark", "supported_languages", "dependencies", "id", "owner_protocol"]:
+		if key not in ["name", "kind", "package_version", "framework_version", "remark", "supported_languages", "dependencies", "special_type", "songs", "id", "owner_protocol"]:
 			return "Unsupported declaration field: " + key
+	if manifest.has("special_type"):
+		if manifest.kind != "assets" or not manifest.special_type is String or not Data.identifier(manifest.special_type):
+			return "special_type must identify an asset package type"
+	if manifest.has("songs"):
+		if manifest.get("special_type") != "rhythm_library" or not manifest.songs is Array or manifest.songs.is_empty():
+			return "songs requires a nonempty rhythm_library resource list"
+		for song: Variant in manifest.songs:
+			if not song is String or not Data.relative_path(song) or song != song.simplify_path() or song.get_extension() not in ["tres", "res"] or manifest.songs.count(song) != 1:
+				return "Invalid or duplicate song resource path"
+	elif manifest.get("special_type") == "rhythm_library":
+		return "Rhythm library requires songs"
 	var languages: Variant = manifest.get("supported_languages")
 	if not languages is Array or languages.is_empty():
 		return "supported_languages must be a nonempty array"
@@ -199,6 +210,29 @@ func validate_manifest(manifest: Dictionary) -> String:
 	for dependency: Variant in manifest.get("dependencies", {}):
 		if not dependency is String or not Data.identifier(dependency) or not Versions.valid_range(manifest.dependencies[dependency]):
 			return "Invalid dependency/version range"
+	return ""
+
+## Discover metadata only. The room closure freezes the host's candidate libraries.
+func asset_libraries(special_type: String, active: Dictionary = {}) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for id: String in ids("assets"):
+		if (not active.is_empty() and not active.has(id)) or unavailable.has(id):
+			continue
+		var manifest: Dictionary = packages[id]
+		if manifest.get("special_type", "") == special_type:
+			result.append({"id": id, "name": manifest.name, "version": manifest.package_version, "songs": manifest.get("songs", []).duplicate()})
+	return result
+
+## Only metadata is added to the room; activation still waits for resource use.
+func library_dependencies(id: String, selected: Dictionary, library_scope: Dictionary = {}) -> String:
+	for type_name: String in packages[id].get("asset_types", []):
+		var libraries: Array[Dictionary] = asset_libraries(type_name, library_scope)
+		if libraries.is_empty():
+			return "缺少资产包类型：" + type_name + "（" + packages[id].name + "）"
+		for library: Dictionary in libraries:
+			var issue: String = _visit(library.id, selected, {})
+			if not issue.is_empty():
+				return issue
 	return ""
 
 func _protocol_reference(value: Variant) -> bool:
@@ -346,7 +380,7 @@ func requirements_issue(required: Variant) -> String:
 			issues.append("%s 内容不同（版本：%s）" % [id, entry.version])
 	return "\n".join(issues)
 
-func resolve(main_id: String, pools: Dictionary, appearances: Array = []) -> Dictionary:
+func resolve(main_id: String, pools: Dictionary, appearances: Array = [], library_scope: Dictionary = {}) -> Dictionary:
 	var main: Dictionary = packages.get(main_id, {})
 	if main.get("kind") != "maingame" or not _protocol_reference(main.get("protocol")) or not protocol_matches(main.protocol):
 		return Data.failure("PROTOCOL_NOT_SUPPORTED", "Main game protocol is unavailable")
@@ -368,6 +402,8 @@ func resolve(main_id: String, pools: Dictionary, appearances: Array = []) -> Dic
 			if chosen.is_empty():
 				return Data.failure("INVALID_POOL", "小游戏 %s 不适配本房间协议 %s，或不在大游戏允许列表中" % [id, main.protocol.id])
 			error = _visit(id, selected, visiting)
+			if error.is_empty():
+				error = library_dependencies(id, selected, library_scope)
 			if error.is_empty():
 				error = _dependencies(chosen.get("dependencies", {}), selected, visiting)
 			if not error.is_empty():
@@ -522,3 +558,25 @@ func _validate_config_directories() -> void:
 			if used.has(directory):
 				errors.append("Protocol config directory collision: " + id + " / " + used[directory])
 			used[directory] = id
+
+
+## Background resource loading keeps audio decoding off the menu/game thread.
+func asset_async(ref: Dictionary, active: Dictionary) -> Resource:
+	var id: String = ref.get("package_id", "")
+	var relative: String = ref.get("resource_path", "")
+	if not active.has(id) or not Data.relative_path(relative):
+		return null
+	if activate(id) != OK:
+		push_error(last_error)
+		return null
+	var target: String = path(id, relative)
+	var error: Error = ResourceLoader.load_threaded_request(target)
+	if error != OK:
+		push_error("Cannot request asset: " + target + " · " + error_string(error))
+		return null
+	while ResourceLoader.load_threaded_get_status(target) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+		await Engine.get_main_loop().process_frame
+	if ResourceLoader.load_threaded_get_status(target) != ResourceLoader.THREAD_LOAD_LOADED:
+		push_error("Cannot load asset: " + target)
+		return null
+	return ResourceLoader.load_threaded_get(target)

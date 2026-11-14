@@ -234,6 +234,8 @@ func party_stop(_reason: StringName) -> void:
 
 公开脚本 `least_played_pool` 位于 `random/least_played_pool.gd`，用 `new(content_ids)` 创建一局的池。`choose(rng)` 仅抽取，`accept_history(sequence)` 成功后才记账；`history()` 和 `counts()` 返回副本。需要持久化时显式 `open_file(absolute_path)` 并检查 Error，F6 不调用。房主选择，所有端接受已验证的主机序列，网络消息不含各端私有累计次数。相同前缀不重复计数，未知 ID、冲突历史或损坏文件会失败。完整调用示例见[空白模板](../../../minigame/gp_blank/README.md#通用随机统计模板)。
 
+候选列表会随安装内容增删时，可用 `open_file(absolute_path, true)`：验证并保留全部历史计数，为新 ID 初始化零次，退役 ID 不参与抽取，也不能作为新回合历史提交。省略第二参数仍严格要求文件中的 ID 集与当前候选一致。霓虹节拍曲库使用此可变集合模式。
+
 音频、光标和字体继续由协议公开；Esc 菜单、框架设置和返回大厅属于 core。小游戏的演示、规则、资源、奖励与专用设置留在各自包内，公共组件不引用任何小游戏。
 
 ## 单参赛者接入

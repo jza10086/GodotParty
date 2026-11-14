@@ -2,7 +2,7 @@
 
 ## 声明、版本与包身份
 
-作者清单只有 `name`、`kind`、`package_version`、`framework_version`、`remark`、`supported_languages`，以及需要时的 `dependencies`。备注允许为空。`supported_languages` 是作者声明的支持语言数组，当前统一为 `["zh-CN"]`，不根据已有翻译文件推断完整语言支持。身份来自目录，形象包归属来自协议父目录。所有现有包从 `0.0.1` 开始；当前框架版本在 `core/framework_version.gd`，不使用或修改 Godot 项目版本。
+作者清单基础字段为 `name`、`kind`、`package_version`、`framework_version`、`remark`、`supported_languages`，以及需要时的 `dependencies`。曲库资产包额外声明 `special_type` 和 `songs`。备注允许为空。`supported_languages` 是作者声明的支持语言数组，当前统一为 `["zh-CN"]`，不根据已有翻译文件推断完整语言支持。身份来自目录，形象包归属来自协议父目录。所有现有包从 `0.0.1` 开始；当前框架版本在 `core/framework_version.gd`，不使用或修改 Godot 项目版本。
 
 版本必须是没有前导零的三段非负整数；每段不超过 GDScript int64 上限。依赖值仅支持精确三段版本、`~` 和 `^`，不支持预发布、构建后缀、通配符和范围组合。`~0.0.1` 接受 `0.0.2`、`0.0.10`，不接受 `0.1.0`；`^0.0.1` 只接受 `0.0.1`；`^0.1.2` 接受同一 `0.1` 下不小于 `0.1.2` 的版本；`^1.2.3` 接受小于 `2.0.0` 且不小于下限的版本。框架版本始终精确匹配。没有独立 API、联机协议或引擎版本兼容门槛；构建不自动升版本。
 
@@ -95,7 +95,7 @@ iOS 配置和内置内容安装到应用私有存储，保留已有玩家配置�
 
 ## 统一资源收集边界
 
-内容作者在包根目录使用 `export_ignore.txt` 决定发布排除项；有文件时完整替代默认规则，空文件表示不使用默认排除项。没有文件时使用 `core/content/default_export_ignore.txt`，默认排除各层 `authoring/`、`prototype/`、`tmp/`、隐藏项及常见临时备份。规则支持注释、相对路径、目录、`*` 和 `?`，不支持 Git ignore 的反选语法。精确语义与示例见 [作者导出规则](external_resources.md#export_ignoretxt)。
+内容作者在包根目录使用 `export_ignore.txt` 决定发布排除项；有文件时完整替代默认规则，空文件表示不使用默认排除项。没有文件时使用 `core/content/default_export_ignore.txt`，默认排除各层 `authoring/`、`prototype/`、`tmp/`、隐藏项及常见临时备份。规则采用 Git ignore 模式，支持 `!`、`**`、字符组、转义及后匹配优先；固定区分大小写，只读取包根一个规则文件。精确语义与示例见 [作者导出规则](external_resources.md#export_ignoretxtgit-ignore-语法)。
 
 `core/content/party_export_files.gd` 统一源码 ZIP、PCK 暂存和外置数据过滤；PowerShell 的 `core/dev/export_source_files.ps1` 遵守相同规则。三平台共用该内容流程，Android 与 iOS 共用 `export_mobile_content.ps1` 生成内容 ZIP。收集器只保留必要技术边界：Git/引擎缓存、包内个人 `config/` 不发布，协议不包含独立 avatars 子包，链接路径明确失败。普通资源的 `.import/.uid` 保留；排除其原文件时伴随文件也排除。
 
@@ -105,9 +105,11 @@ iOS 配置和内置内容安装到应用私有存储，保留已有玩家配置�
 
 ## 资产包
 
-资产包位于 `games/assets/<id>/`，默认导出到 `assets/<id>/`，通过 `content.pck.json` 识别。目录名是 ID；作者 manifest 仅含 `name`、`kind: "assets"`、`package_version`、`remark`、`framework_version`、`supported_languages` 六个字段，框架版本精确匹配。资产包可包含代码、场景、素材、文档等公共内容，不声明平台、入口、设置或其他内容依赖；包内互相引用，包外仅引用框架公开内容。资产包之间不得相互引用。
+资产包位于 `games/assets/<id>/`，默认导出到 `assets/<id>/`，通过 `content.pck.json` 识别。目录名是 ID；作者 manifest 必须含 `name`、`kind: "assets"`、`package_version`、`remark`、`framework_version`、`supported_languages` 六个字段，框架版本精确匹配。可选 `special_type` 标记资产包类型；霓虹节拍曲库声明 `special_type: "rhythm_library"` 和 `songs` 曲目资源相对路径数组。结构与制作方式见 [曲库资产包](external_resources.md)。资产包可包含代码、场景、素材、文档等公共内容，不声明平台、入口、设置或其他内容依赖；包内互相引用，包外仅引用框架公开内容。资产包之间不得相互引用。
 
 协议和游戏用原有 dependencies 声明资产包的版本范围，在编辑器直接引用资产包路径。导出自动补齐依赖，PCK 仅收集所属包的文件与导入产物；发布版下载、排队安装和重启规则保持一致。资产包源码 ZIP 文件名必须是 `<id>.zip`，导入时据此恢复目录身份。PCK 描述仍由工具生成，不增加作者维护字段，使用相同构建标识与按需加载流程。
+
+小游戏轻量定义可声明 `asset_types`，由房主在房间依赖中纳入匹配类型的候选资产包，客机仅使用房主集合。此过程不挂载 PCK；首次加载所选资源才激活。导出时由作者显式选择要分发的可选曲库，不自动打包所有本地曲库。
 
 发布版联机比较框架版本及所需包的实际版本和构建标识；新增包后需要重新导出并重启。编辑器新增源码包后重新运行即可，内部联机不构建分发包。
 

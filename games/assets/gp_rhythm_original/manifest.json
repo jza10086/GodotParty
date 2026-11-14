@@ -1,0 +1,14 @@
+{
+  "name": "霓虹节拍原创曲库",
+  "kind": "assets",
+  "package_version": "0.0.1",
+  "framework_version": "0.0.1",
+  "remark": "原创合成曲目与长按谱面示例",
+  "supported_languages": [
+    "zh-CN"
+  ],
+  "special_type": "rhythm_library",
+  "songs": [
+    "charts/hold_test/song.tres"
+  ]
+}

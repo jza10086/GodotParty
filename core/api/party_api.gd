@@ -87,11 +87,24 @@ func get_minigame_settings(id: String) -> Dictionary:
 func get_seed() -> int:
 	return _context.get("seed", 0)
 
-## Loads only public keys in the active dependency closure. No automatic download or activation.
+## Load an asset in the room dependency closure, activating its package on first use.
 func load_asset(ref: Dictionary) -> Resource:
 	if not is_open():
 		return null
 	return _query.call(scope_id, "asset", ref)
+
+## Metadata from the host's frozen dependency set, without loading resources.
+func get_asset_libraries(special_type: String) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	result.assign(_query.call(scope_id, "asset_libraries", {"type": special_type}) if is_open() else [])
+	return result
+
+## Await the selected asset; a closed activity never receives the late result.
+func load_asset_async(ref: Dictionary) -> Resource:
+	if not is_open():
+		return null
+	var value: Resource = await _query.call(scope_id, "asset_async", ref)
+	return value if is_open() else null
 
 ## Absolute path under external/ in the artifact frozen for this process.
 ## Use FileAccess/DirAccess or runtime media loaders; this does not create or modify files.

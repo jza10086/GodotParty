@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PartyMusicSong" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://core/api/music/party_music_song.gd" id="song"]
+[ext_resource type="AudioStream" path="res://games/assets/gp_rhythm_original/music/hold_test.wav" id="music"]
+[ext_resource type="Resource" path="res://games/assets/gp_rhythm_original/charts/hold_test/chart.tres" id="chart0"]
+
+[resource]
+resource_name = "长按专项测试"
+script = ExtResource("song")
+music = ExtResource("music")
+charts = [ExtResource("chart0")]

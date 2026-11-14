@@ -676,7 +676,7 @@ func prepare_restore(record: Dictionary) -> Error:
 	var own: Dictionary = Data.player(record.get("players", []), profiles.identity()["player_id"])
 	if own.is_empty() or own.get("peer_id") != 1:
 		return ERR_UNAUTHORIZED
-	var resolved: Dictionary = catalog.resolve(record["room"]["main"], record["room"]["pools"], record["appearances"].values())
+	var resolved: Dictionary = catalog.resolve(record["room"]["main"], record["room"]["pools"], record["appearances"].values(), record["room"]["closure"])
 	if not resolved.get("ok"):
 		status = "恢复所需内容不可用：" + resolved.message
 		return ERR_INVALID_DATA
@@ -1038,7 +1038,7 @@ func _room_content_issue(payload: Dictionary, full: bool = false) -> String:
 	var appearances: Array = []
 	for player: Dictionary in payload.players:
 		appearances.append(player.appearance)
-	var resolved: Dictionary = catalog.resolve(snapshot.main, snapshot.pools if full else {}, appearances)
+	var resolved: Dictionary = catalog.resolve(snapshot.main, snapshot.pools if full else {}, appearances, snapshot.closure)
 	if not resolved.ok:
 		return resolved.message
 	return Rules.room_issue(snapshot, catalog, full)

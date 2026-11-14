@@ -216,6 +216,10 @@ func _query(scope_id: String, key: String, argument: Dictionary) -> Variant:
 			"ready_peers": scope.get("prepared_peers", []).duplicate()}
 	if key == "round_presentation":
 		return record.get("round_presentation", {}).duplicate(true)
+	if key == "asset_libraries":
+		return catalog.asset_libraries(argument.type, record["room"]["closure"])
+	if key == "asset_async":
+		return await catalog.asset_async(argument, record["room"]["closure"])
 	if key == "asset":
 		return catalog.asset(argument, record["room"]["closure"])
 	if key == "external_path":

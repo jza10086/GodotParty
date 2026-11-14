@@ -31,3 +31,7 @@
 /core/config/party_sources.json.bak
 /core/config/party_sources.json.pending
 /core/saves/
+
+# Local rhythm libraries; available in Godot, never included in Git publication.
+/games/assets/gp_rhythm_bad_apple/
+/games/assets/**/authoring/.editor_recovery/

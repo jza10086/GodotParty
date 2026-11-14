@@ -19,7 +19,9 @@
 | i18n.effective_locale() -> String | 已注入作用域 | 本包独立解析后的语言 |
 | get_minigame_settings(id: String) -> Dictionary | 大游戏 | 已选择小游戏的配置 |
 | get_seed() -> int | 活跃作用域 | 本局公开种子 |
-| load_asset(ref: Dictionary) -> Resource | 活跃作用域 | 已激活包公开资源；失败为 null |
+| load_asset(ref: Dictionary) -> Resource | 活跃作用域 | 加载房间依赖集合中的资源，首次使用时激活包；失败为 null |
+| get_asset_libraries(special_type: String) -> Array[Dictionary] | 活跃作用域 | 房主房间依赖集合中匹配类型的资产包元数据：id、name、version、songs；不加载资源 |
+| load_asset_async(ref: Dictionary) -> Resource | 活跃作用域，需 await | 后台加载房间依赖集合中的资源；失败或 API 关闭后返回 null；不自动下载 |
 | get_external_path(relative: String) -> String | 活跃作用域 | 本包 external/ 下的绝对路径，按源码或安装目录解析；不创建文件，不要求已列入正式载荷；非法路径报错并返回空字符串 |
 | get_preparation_status() -> Dictionary | 当前实例 | 技术准备快照：session_id、scope_id、phase、required_peers、ready_peers；关闭后为空；不代表玩家手动准备 |
 | mark_ready() -> Error | 大小游戏准备阶段 | 本端初始化完成；准备期间重复为 OK |

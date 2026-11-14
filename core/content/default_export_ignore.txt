@@ -1,13 +1,9 @@
 # Used only when a package has no export_ignore.txt. A package file replaces this entire list.
-# Matching is case-insensitive. * crosses directories; ? matches one character.
+# Git ignore syntax, case-sensitive, relative to the package root.
 authoring/
-*/authoring/
 prototype/
-*/prototype/
 tmp/
-*/tmp/
 .*
-*/.*
 *~*
 *.tmp
 *.bak
