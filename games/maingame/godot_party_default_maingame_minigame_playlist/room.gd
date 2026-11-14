@@ -69,20 +69,23 @@ func room_refresh() -> void:
 			unready = true
 	_refresh_latencies()
 	%PlayerCount.text = "%d / 8 人" % connection.players.size()
-	%PlayerCount.tooltip_text = "允许开始：" + connection.allowed_counts
+	%AllowedPlayerCounts.text = _allowed_count_text(connection.allowed_counts) + "]"
+	var invalid_player_count: bool = connection.players.size() not in connection.allowed_counts
 	var count: int = 0
 	for pool: Array in connection.room.get("pools", {}).values():
 		count += pool.size()
 	var no_selection: bool = count == 0
 	var reason: String = connection.start_reason
-	%ReadySummary.text = reason if connection.host and not unready and not no_selection else ""
-	%Ready.disabled = connection.host and (no_selection or unready or not reason.is_empty())
+	%ReadySummary.text = reason if connection.host and not unready and not no_selection and not invalid_player_count else ""
+	%Ready.disabled = connection.host and (no_selection or invalid_player_count or unready or not reason.is_empty())
 	if connection.host:
 		if no_selection:
 			%Ready.text = "未选择小游戏"
+		elif invalid_player_count:
+			%Ready.text = "非法玩家数"
 		else:
 			%Ready.text = "玩家未准备" if unready else "开始游戏"
-		%Ready.theme_type_variation = &"CancelRed" if no_selection or unready else &"StartOrange"
+		%Ready.theme_type_variation = &"CancelRed" if no_selection or invalid_player_count or unready else &"StartOrange"
 	else:
 		%Ready.text = "取消准备" if connection.local_ready else "准备"
 		%Ready.theme_type_variation = &"CancelRed" if connection.local_ready else &"ReadyGreen"
@@ -96,6 +99,19 @@ func room_refresh() -> void:
 	%Rotation.tooltip_text = "轮换模式" if connection.host else "轮换模式由房主设置"
 	%Advanced.tooltip_text = "轮换局数、避免游戏重复与局间间隔"
 
+
+## Format the actual allowed set, using a range only when every intermediate count is allowed.
+func _allowed_count_text(values: Array) -> String:
+	if values.is_empty():
+		return "无"
+	var counts: Array = values.duplicate()
+	counts.sort()
+	if counts.size() > 1 and counts.back() - counts.front() + 1 == counts.size():
+		return "%d-%d 人" % [counts.front(), counts.back()]
+	var parts: PackedStringArray = []
+	for count: int in counts:
+		parts.append(str(count))
+	return "/".join(parts) + " 人"
 
 ## Read cached statistics once a second; never rebuild slots or request a probe here.
 func _refresh_latencies() -> void:

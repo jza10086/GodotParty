@@ -24,4 +24,6 @@ static func party_definition() -> Dictionary:
 
 框架内部共享计算位于 `core/config/party_player_counts.gd`。`party_connection.allowed_player_counts()` 返回当前大厅集合；`start_reason()` 在房主开始前强制检查；协调器在子局请求时再次检查实际参赛人数。客户端根据房主发布的房间快照计算展示，不单独同步另一份可修改的人数限制。
 
+`PartyRoomAPI.get_state().allowed_counts` 返回允许人数数组，由房间视图格式化。小游戏轮换在成员标题下用静态标题和动态人数两个 Label 显示允许人数；连续集合显示 `1-8 人`，非连续集合显示 `2/4/6/8 人`。已选择小游戏但当前人数不符（含空交集）时，房主开始按钮显示红色“非法玩家数”并禁用；未选择小游戏优先显示“未选择小游戏”。
+
 原人数回归脚本已退役归档。后续人数规则变更按需要在 `tmp/test/` 定向验证集合交集、开始门槛和参赛子集；联机行为仍需独立的编辑器多人验收。

@@ -985,7 +985,7 @@ func room_query(key: String, argument: Dictionary) -> Variant:
 		"local_peer": connection.local_peer(), "local_ready": own.get("ready", false),
 		"connection_port": connection.connection_port, "connection_address": connection.connection_address,
 		"recovering": not connection.recovery.is_empty(),
-		"allowed_counts": Connection.PlayerCounts.describe(connection.allowed_player_counts()),
+		"allowed_counts": connection.allowed_player_counts(),
 		"start_reason": connection.start_reason() if connection.host else connection.player_count_reason(),
 		"microphone_allowed": settings.config.get_value("system", "microphone_allowed", false)}
 
