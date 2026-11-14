@@ -48,4 +48,4 @@ layout_mode = 2
 mouse_filter = 2
 max_value = 1.0
 step = 0.001
-show_percentage = false
+show_percentage = true
