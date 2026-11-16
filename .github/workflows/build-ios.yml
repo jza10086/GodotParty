@@ -24,7 +24,7 @@ on:
       packages:
         description: JSON array of requested package IDs (dependencies are automatic)
         required: true
-        default: '["godot_party_default_maingame_minigame_playlist","gp_auction_master"]'
+        default: '["GP_minigame_playlist","GP_auction_master"]'
         type: string
 permissions:
   contents: read

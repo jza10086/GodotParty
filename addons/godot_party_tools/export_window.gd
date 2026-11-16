@@ -88,14 +88,14 @@ func open() -> void:
 	_progress.hide()
 	_progress_label.hide()
 	_catalog = Catalog.new()
-	_catalog.scan()
+	_catalog.scan(false)
 	_tree.clear()
 	_items.clear()
 	_requested.clear()
 	var root: TreeItem = _tree.create_item()
 	_core = _tree.create_item(root)
 	_core.set_cell_mode(0, TreeItem.CELL_MODE_CHECK)
-	_core.set_text(0, {"Windows": "核心框架 · Windows x64", "Android": "核心框架 · Android APK", "iOS": "核心框架 · iOS IPA（SideStore）"}[platform])
+	_core.set_text(0, {"Windows": "核心框架 · Windows x64", "Android": "核心框架 · Android APK", "iOS": "核心框架 · iOS IPA（SideStore）"}[platform] + " " + preload("res://core/framework_version.gd").VERSION)
 	_core.set_metadata(0, "@core")
 	_core.set_editable(0, true)
 	_core.set_checked(0, true)
@@ -127,23 +127,7 @@ func _add_package(parent: TreeItem, id: String) -> TreeItem:
 	return item
 
 func _package_label(manifest: Dictionary) -> String:
-	var label: String = manifest.name
-	if manifest.kind == "avatars":
-		var slots: Array = []
-		for info: Dictionary in manifest.get("appearance_resources", {}).values():
-			if not slots.has(info.slot):
-				slots.append(info.slot)
-		var types: Array[String] = []
-		for slot: String in slots:
-			types.append({"avatar_2d": "2D 头像", "character_3d": "3D 形象"}.get(slot, slot))
-		label += " · " + ", ".join(types)
-		for info: Dictionary in manifest.get("appearance_resources", {}).values():
-			if "占位" in info.get("name", ""):
-				label += "（占位）"
-				break
-	if not manifest.get("playable", true):
-		label += "（未开放）"
-	return label
+	return "%s %s" % [manifest.id, manifest.package_version]
 
 func _item_edited() -> void:
 	var item: TreeItem = _tree.get_edited()
@@ -175,7 +159,7 @@ func _refresh_selection() -> void:
 		var required: bool = ids.has(id) and not _requested.has(id)
 		item.set_checked(0, ids.has(id) or _requested.has(id))
 		item.set_editable(0, not required and _catalog.packages[id].get("playable", true))
-		item.set_text(0, _package_label(_catalog.packages[id]) + ("（依赖）" if required else ""))
+		item.set_text(0, _package_label(_catalog.packages[id]))
 	for group: TreeItem in _tree.get_root().get_children():
 		if group == _core:
 			continue

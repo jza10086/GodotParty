@@ -1,0 +1,379 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+msgid "%"
+msgstr "%"
+
+msgid "120 FPS"
+msgstr "120 FPS"
+
+msgid "1280 × 720"
+msgstr "1280 × 720"
+
+msgid "1920 × 1080"
+msgstr "1920 × 1080"
+
+msgid "2560 × 1440"
+msgstr "2560 × 1440"
+
+msgid "30 FPS"
+msgstr "30 FPS"
+
+msgid "60 FPS"
+msgstr "60 FPS"
+
+msgid "X"
+msgstr "X"
+
+msgid "Y"
+msgstr "Y"
+
+msgid "Z"
+msgstr "Z"
+
+msgid "game.locale"
+msgstr "This minigame's language: {locale}"
+
+
+msgid "三个数值分别代表 X、Y、Z，复用同一种数字输入组件。"
+msgstr "Three values represent X, Y and Z using the same numeric input component."
+
+msgid "三分量：多个数值"
+msgstr "Three numeric components"
+
+msgid "三级折叠中的数值"
+msgstr "Third-level value"
+
+msgid "上限"
+msgstr "Upper"
+
+msgid "下限"
+msgstr "Lower"
+
+msgid "不限"
+msgstr "Unlimited"
+
+msgid "主键与备用键都支持 Ctrl、Alt、Shift、Meta 组合。点击录入按钮后按下组合键，Esc 取消录入。"
+msgstr "Both bindings support Ctrl, Alt, Shift and Meta. Click Record, then press a combination. Esc cancels recording."
+
+msgid "分别输入区间的下限与上限，下限不能高于上限。"
+msgstr "Enter the lower and upper bounds. The lower bound must not exceed the upper bound."
+
+msgid "区间：两个数值"
+msgstr "Range: two values"
+
+msgid "单一按键＋备用键"
+msgstr "Primary and alternate keys"
+
+msgid "单行文本"
+msgstr "Single-line text"
+
+msgid "启用高级设置"
+msgstr "Enable advanced settings"
+
+msgid "困难"
+msgstr "Hard"
+
+msgid "固定导航键，仅展示；不会保存到用户配置。"
+msgstr "Fixed navigation key. Display only; not saved to user preferences."
+
+msgid "固定按键"
+msgstr "Fixed keys"
+
+msgid "固定按键：Esc"
+msgstr "Fixed key: Esc"
+
+msgid "基础设置"
+msgstr "Basics"
+
+msgid "多分量数值"
+msgstr "Components"
+
+msgid "多行文本"
+msgstr "Multiline text"
+
+msgid "多选开关"
+msgstr "Multiple choices"
+
+msgid "多选：开关组"
+msgstr "Multiple choices"
+
+msgid "小数：无界输入"
+msgstr "Decimal: unbounded input"
+
+msgid "小数：百分比显示"
+msgstr "Decimal: percentage"
+
+msgid "开关示例"
+msgstr "Toggle example"
+
+msgid "开启高级设置后可编辑。"
+msgstr "Enable advanced settings to edit."
+
+msgid "按键绑定"
+msgstr "Key bindings"
+
+msgid "效果强度"
+msgstr "Effect strength"
+
+msgid "整数：数量"
+msgstr "Integer: count"
+
+msgid "文件选择"
+msgstr "File picker"
+
+msgid "文字设置"
+msgstr "Text"
+
+msgid "无边框全屏时沿用屏幕尺寸，保留窗口分辨率草稿。"
+msgstr "Borderless mode uses the screen size and retains your window resolution draft."
+
+msgid "普通"
+msgstr "Normal"
+
+msgid "枚举：字符串"
+msgstr "Choice: text values"
+
+msgid "枚举：整数"
+msgstr "Choice: integer values"
+
+msgid "模拟无边框全屏"
+msgstr "Simulate borderless fullscreen"
+
+msgid "此开关用于测试父项控制子项的布局。开启时分辨率子项隐藏，关闭后可重新展开。"
+msgstr "Test dependent settings: enabling this hides the resolution row. Disable it to expand the row again."
+
+msgid "特殊按键：鼠标枚举"
+msgstr "Mouse button bindings"
+
+msgid "界面动画"
+msgstr "UI animation"
+
+msgid "目录选择"
+msgstr "Folder picker"
+
+msgid "秒"
+msgstr "s"
+
+msgid "空绑定：清空与重新录入"
+msgstr "Empty binding: clear and record"
+
+msgid "窗口分辨率"
+msgstr "Window resolution"
+
+msgid "简单"
+msgstr "Easy"
+
+msgid "粒子特效"
+msgstr "Particle effects"
+
+msgid "组合按键"
+msgstr "Key combinations"
+
+msgid "细节（三级）"
+msgstr "Details (level 3)"
+
+msgid "联动与层级"
+msgstr "Dependencies"
+
+msgid "背景音乐"
+msgstr "Background music"
+
+
+msgid "调整窗口画面的输出分辨率。开启上方的无边框全屏示例后，父项的展开箭头会禁用；恢复窗口模式后保留之前的选择。"
+msgstr "Choose the window resolution. The borderless example disables expansion; your selection is retained when returning to windowed mode."
+
+msgid "输入标题"
+msgstr "Enter a title"
+
+
+msgid "选项设置"
+msgstr "Choices"
+
+msgid "颜色样式"
+msgstr "Colors"
+
+msgid "颜色：RGBA"
+msgstr "Color: RGBA"
+
+msgid "颜色：固定不透明"
+msgstr "Color: opaque"
+
+msgid "高级效果（二级）"
+msgstr "Advanced effects (level 2)"
+
+msgid "鼠标按键"
+msgstr "Mouse buttons"
+
+msgid "空白小游戏"
+msgstr "Blank Minigame"
+
+msgid "所有参赛者准备后倒计时三秒开局。每人点击一次「结束游戏」，按房主收到点击的先后排名。所有在线参赛者按完后显示本轮结算，退出者不排名。 大厅“本机设置”提供控件、协议继承/覆盖与保存测试；样例值不改变玩法。"
+msgstr "Confirm readiness, then press Finish Game once. The host ranks players by the order their presses arrive. Results appear after all connected participants finish; withdrawn players are unranked. Use Local Settings in the lobby to test controls, protocol inheritance, overrides and saving. Sample values do not change gameplay."
+
+msgid "game.finish"
+msgstr "Finish Game"
+
+msgid "game.waiting"
+msgstr "Finished — waiting for other players"
+
+msgid "game.mouse"
+msgstr "Left mouse button"
+
+msgid "game.controls"
+msgstr "Each player presses Finish Game once; earlier presses rank higher."
+
+msgid "game.results"
+msgstr "Round Results"
+
+msgid "game.settings_hint"
+msgstr "Test controls, inheritance and saving in Lobby → Minigame Pool → Blank Minigame → Local Settings. Sample settings do not change gameplay."
+
+msgid "game.hud_ready"
+msgstr "Waiting to start"
+
+msgid "game.hud_playing"
+msgstr "Finish when you are ready"
+
+msgid "game.hud_controls"
+msgstr "Wheel: zoom · Middle drag: orbit · Shift + middle drag: pan\nClick Finish to complete the round\nEsc: menu"
+
+msgid "game.show_2d"
+msgstr "Open 2D channel"
+
+msgid "game.show_3d"
+msgstr "Open 3D gallery"
+
+msgid "game.channel"
+msgstr "2D Channel"
+
+msgid "game.beacon_status"
+msgstr "Beacon  {current} / {total}"
+
+msgid "game.next_beacon"
+msgstr "Next beacon"
+
+msgid "audio.hint_preview"
+msgstr "F6 preview volumes apply immediately and are temporary. Dialogue is prerecorded, separate from player voice chat."
+
+msgid "audio.hint_formal"
+msgstr "Adjust volumes, then Apply to save this game’s preferences; Restore uses protocol settings. Dialogue is separate from voice chat."
+
+msgid "audio.status"
+msgstr "Music {music} · SFX {sfx} · Voice {dialogue} · Queue {queued} · Ambient {ambience} · UI {ui} · Duck {duck} dB"
+
+msgid "audio.ended"
+msgstr "Playback #{id} ended: {reason}"
+
+msgid "audio.voice_a"
+msgstr "Welcome to the audio test. Background music becomes quieter during dialogue."
+
+msgid "audio.voice_b"
+msgstr "Attention: this is an announcement. You can interrupt, queue or skip this voice line."
+
+msgid "game.preview"
+msgstr "Scene preview"
+
+msgid "game.preview_controls"
+msgstr "Wheel: zoom · Middle drag: orbit\nShift + middle drag: pan"
+
+msgid "audio.title"
+msgstr "Audio Lab"
+
+msgid "audio.close"
+msgstr "Close"
+
+msgid "audio.toggle"
+msgstr "Audio test"
+
+msgid "audio.music_a"
+msgstr "Music A · Loop"
+
+msgid "audio.music_b"
+msgstr "Music B · Crossfade"
+
+msgid "audio.music_pause"
+msgstr "Pause music"
+
+msgid "audio.music_resume"
+msgstr "Resume music"
+
+msgid "audio.music_stop"
+msgstr "Fade out"
+
+msgid "audio.click"
+msgstr "Click SFX"
+
+msgid "audio.impact"
+msgstr "Impact SFX"
+
+msgid "audio.burst"
+msgstr "Burst ×20"
+
+msgid "audio.ambience_start"
+msgstr "Ambient loop"
+
+msgid "audio.ambience_stop"
+msgstr "Stop ambience"
+
+msgid "audio.voice_replace"
+msgstr "Voice · Replace"
+
+msgid "audio.voice_queue"
+msgstr "Voice · Queue"
+
+msgid "audio.voice_ignore"
+msgstr "Ignore if busy"
+
+msgid "audio.voice_skip"
+msgstr "Skip voice"
+
+msgid "audio.voice_clear"
+msgstr "Clear voices"
+
+msgid "audio.pause_all"
+msgstr "Pause gameplay"
+
+msgid "audio.resume_all"
+msgstr "Resume gameplay"
+
+msgid "audio.stop_all"
+msgstr "Stop all"
+
+msgid "audio.ui_click"
+msgstr "UI click (while paused)"
+
+msgid "audio.volume_heading"
+msgstr "Channel volumes"
+
+msgid "audio.master"
+msgstr "Game master"
+
+msgid "audio.music"
+msgstr "Background music"
+
+msgid "audio.sfx"
+msgstr "SFX"
+
+msgid "audio.dialogue"
+msgstr "Dialogue"
+
+msgid "audio.ambience"
+msgstr "Ambience"
+
+msgid "audio.ui"
+msgstr "Game UI"
+
+msgid "audio.apply"
+msgstr "Apply game volumes"
+
+msgid "audio.reset"
+msgstr "Restore inherited / preview default"
+
+msgid "audio.event_hint"
+msgstr "Playback events appear here."
+
+msgid "package.name"
+msgstr "Blank Minigame"

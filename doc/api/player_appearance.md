@@ -3,7 +3,7 @@
 core 仅拥有 player_id 和连接身份；昵称和形象属于协议。形象没有固定四槽或统一颜色结构。
 get_appearance 返回当前协议生成的数据，游戏按协议读取，不能猜测字段。
 
-GodotPartyDefaultProtocol 1.0 定义 color、avatar_2d、character_3d。具体约定见 [原版协议](../../games/protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md)。这些字段属于原版协议，不是 core 对所有协议的共同要求。
+GodotPartyDefaultProtocol 1.0 定义 color、avatar_2d、character_3d。具体约定见 [原版协议](../../games/protocols/GP_default_protocol/doc/GP_default_protocol_guide.md)。这些字段属于原版协议，不是 core 对所有协议的共同要求。
 
 形象包 kind 为 avatars，appearance.gd 的 static choices() 返回以包内场景相对路径为键的选项元数据。
 资料中的资源引用为 {package_id, resource_path}。包可以只提供 2D、3D、头像，
@@ -39,4 +39,4 @@ load_asset 只解析当前依赖集合，失败返回 null；游戏或协议负�
 
 协议面板 context 在普通大厅房主端提供 `room_players()` 快照和 `assign_room_profile(player_id, assignment)` 回调。协议实现 `assign_player_config(player_id, assignment, players)`，返回 `{ok, profiles}`；profiles 按玩家 ID 索引完整资料。框架整批验证、应用并广播，不写入被分配玩家的本机偏好。活动/恢复期间、客户端均不可调用。面板不应长期缓存玩家列表；提交时以房主当前名单为准。
 
-原版协议 1.0.1 的 2D 头像公开资源属于 godot_party_default_avatars_2d；3D Cube 仍属于 godot_party_default_avatars。两个包都通过协议依赖激活。本轮已有 profile.json 已先备份再转换 resource_path；运行时不保留旧资源 key 兼容读取器。
+原版协议 1.0.1 的 2D 头像公开资源属于 GP_default_avatars_2d；3D Cube 仍属于 GP_default_avatars。两个包都通过协议依赖激活。本轮已有 profile.json 已先备份再转换 resource_path；运行时不保留旧资源 key 兼容读取器。

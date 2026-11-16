@@ -14,7 +14,7 @@ static func folder(value: Variant) -> bool:
 static func package_relative(manifest: Dictionary) -> String:
 	var id: Variant = manifest.get("id", "")
 	var kind: Variant = manifest.get("kind", "")
-	if not folder(id) or kind not in ["protocols", "maingame", "minigame", "avatars", "assets"]:
+	if not folder(id) or RegEx.create_from_string("^GP_[a-z0-9]+(?:_[a-z0-9]+)*$").search(id) == null or kind not in ["protocols", "maingame", "minigame", "avatars", "assets"]:
 		return ""
 	if kind == "avatars":
 		var protocol: Variant = manifest.get("owner_protocol", "")

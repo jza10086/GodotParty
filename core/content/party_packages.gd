@@ -86,14 +86,21 @@ func validate_descriptor(description: Dictionary) -> String:
 	if not description.get("declaration") is Dictionary or not description.get("content") is Dictionary:
 		return "Missing package declaration/content definition"
 	var declaration: Dictionary = description.declaration.duplicate(true)
-	declaration.id = description.get("id")
 	if description.get("kind") == "avatars":
 		declaration.owner_protocol = description.get("owner_protocol")
 	var issue: String = Catalog.new().validate_manifest(declaration)
 	if not issue.is_empty():
 		return issue
-	if description.get("name") != declaration.name or description.get("kind") != declaration.kind or description.get("version") != declaration.package_version or description.get("framework_version") != declaration.framework_version or description.get("dependencies") != declaration.get("dependencies", {}):
+	if description.get("id") != declaration.id or description.get("kind") != declaration.kind or description.get("version") != declaration.package_version or description.get("framework_version") != declaration.framework_version or description.get("dependencies") != declaration.get("dependencies", {}):
 		return "Descriptor identity differs from declaration"
+	var names: Variant = description.content.get("localized_names")
+	if not names is Dictionary or not names.get("zh_Hans") is String or names.zh_Hans.is_empty():
+		return "Missing package name translations; re-export this package"
+	for language: Variant in names:
+		if not language is String or not names[language] is String or names[language].is_empty():
+			return "Invalid package name translation"
+	if description.get("name") != names.zh_Hans:
+		return "Descriptor name differs from package translations"
 	if not valid_build_id(description.get("build_id")) or not description.get("packs") is Array or description.packs.is_empty():
 		return "Missing build identity/PCK list; re-export this package"
 	if not description.get("payload_files") is Array or not description.get("external_files") is Array or not description.get("external_directories") is Array:
@@ -168,7 +175,6 @@ func prepare(directory: String, replacements: Dictionary = {}, required: Array =
 		installed[id] = description
 		roots[id] = candidate.root
 		var declaration: Dictionary = description.declaration.duplicate(true)
-		declaration.id = id
 		if description.kind == "avatars":
 			declaration.owner_protocol = description.owner_protocol
 		declarations[id] = declaration
@@ -276,7 +282,6 @@ func import_source(archive: String, destination: String = "res://games", replace
 		return error
 	var raw: Variant = JSON.parse_string(reader.read_file("manifest.json").get_string_from_utf8())
 	var manifest: Dictionary = Data._json_numbers(raw) if raw is Dictionary else {}
-	manifest["id"] = archive.get_file().get_basename()
 	if manifest.get("kind") == "avatars":
 		if not destination.trim_suffix("/").ends_with("/avatars"):
 			reader.close()

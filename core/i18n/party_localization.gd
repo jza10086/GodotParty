@@ -92,7 +92,9 @@ func register_package(package_id: String, declaration: Dictionary, root: String)
 ## Catalog metadata/schema keys are known before activation, so reject missing defaults there.
 func validate_messages(package_id: String, manifest: Dictionary, schema: Dictionary) -> Error:
 	var keys: Array[String] = []
-	for key: String in ["name", "introduction"]:
+	if package_id != "core":
+		keys.append("package.name")
+	for key: String in ["introduction"]:
 		if manifest.has(key) and not manifest[key].is_empty():
 			keys.append(manifest[key])
 	for field: Dictionary in schema.fields.values():

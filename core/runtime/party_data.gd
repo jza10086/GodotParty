@@ -59,7 +59,7 @@ static func identifier(value: String) -> bool:
 	if value.is_empty() or value.length() > 96 or value.begins_with(".") or value.ends_with(".") or ".." in value:
 		return false
 	for character: String in value:
-		if not character in "abcdefghijklmnopqrstuvwxyz0123456789_.":
+		if not character in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.":
 			return false
 	return true
 

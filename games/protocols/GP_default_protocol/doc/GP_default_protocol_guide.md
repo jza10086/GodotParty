@@ -1,0 +1,263 @@
+# GodotPartyDefaultProtocol 1.0
+
+包 ID `GP_default_protocol`，业务契约 1.0。包版本、框架要求及依赖范围以 [manifest.json](../manifest.json) 为准。显示名称以 GodotPartyDefault 为前缀，文件和包 ID 使用蛇形命名。
+
+协议只校验语义、生成展示和纯结算建议，不保存钱包、执行道具效果或决定奖励。金币、钻石、道具实例和已处理请求都由大游戏持久状态管理。所有身份使用框架提供的参与者 player_id，不使用 peer_id；观战者不能提交参赛结果。
+
+## 形象与玩家颜色
+
+`default_player_config()` 返回 `color`（不透明 #RRGGBB）、`avatar_2d`、`character_3d`。两个选择都是 `{package_id, resource_path}`，互不覆盖。`validate_player_config(value)` 校验数据结构；`get_appearance(value)` 返回独立快照。目录负责资源依赖，消费方负责实际类型检查，不把缺失资源静默视为正确安装。
+
+2D 公开资源为六个 Bot 正面头像 Node2D 场景：银紫短发、蜂蜜金双马尾、鼠尾草绿长发、灰粉短发、浅蓝侧编发、栗棕低马尾，默认银紫短发。保留原图背景与颜色，底部标记显示玩家颜色，原点 (0,0) 位于表现底部。六张原始 PNG 和来源说明存放在 `avatars/GP_default_avatars_2d/avatar_sources/bot_avatars_upright/`；公开资源键为 `avatar_silver_lavender` 等，位于独立包 GP_default_avatars_2d。旧 Godot 图标占位已移除；旧资料如仍引用它，需重新选择头像，不自动映射。默认 3D 为原版形象包公开的 Cube `GP_default_avatars/character_3d`，一米高、脚底原点、Y 向上、面向 -Z。2D 和 3D 均提供 `apply_color(Color)`；Cube 使用实例独立的材质。没有碰撞、输入、根节点移动、authority 或逐帧网络同步。本机颜色是入房偏好；房主在冲突时分配剩余颜色，也可在大厅强制交换颜色，不改写本机偏好。
+
+通过 `api.get_appearance(player_id)` 取得快照，`api.load_asset(appearance.avatar_2d)` 或 `character_3d` 得到 PackedScene。实例化后检查 Node2D/Node3D，调用 `apply_color(Color(appearance.color))`，再交给游戏自己的表现节点管理。外部资产包可在 manifest 的 `appearance_resources` 中声明公开 key 的 `{protocol: "GP_default_protocol", slot: "avatar_2d" 或 "character_3d", name: "显示名称"}`；对应 key 必须也在 `resources` 中。此元数据属于本协议，不是 core 的通用形象槽。
+
+个人资料面板仅维护草稿；框架负责应用、取消、保存和房主确认。2D/3D 分别预览，页面隐藏后停止 SubViewport 更新。3D 选择列表提供“Cube · 3D 占位”。已有资料若引用已移除的人物资源，需要重新选择并应用；不自动迁移旧资源引用。
+
+### 共享 Cube 表现
+
+大游戏和小游戏通过玩家资料中的公开资源引用加载 Cube，位置、朝向、碰撞和网络状态由游戏管理。Cube 只提供颜色表现，不提供动作或步态接口，也不依赖原生扩展。
+
+```gdscript
+var appearance: Dictionary = api.get_appearance(player_id)
+var scene: PackedScene = api.load_asset(appearance.character_3d) as PackedScene
+var visual: Node3D = scene.instantiate() as Node3D
+visual.apply_color(Color(appearance.color))
+add_child(visual)
+```
+
+## 请求
+
+`validate_request(request: Dictionary, players: Array[Dictionary]) -> Dictionary` 同步无副作用。成功 `{ok:true}`，失败 `{ok:false, code, message}`。
+
+必填 `request_id`（本会话唯一、非空）、`mode`（standard/resource）。可选 `game_data` 字典。
+
+- standard：普通局；不能出现 resource_grant 或 item_offers。
+- resource：必须提供按完整参与者 ID 索引的 resource_grant；可选 item_offers。
+
+每位参与者 grant：
+
+```json
+{"coins":10,"diamonds":2,"coin_limit":80,"diamond_limit":2,
+ "collateral":[{"instance_id":"item-1","definition_id":"main.token","coin_value":30}]}
+```
+
+coins / diamonds 是本局授权使用的现金数量，不是总钱包。coins 不包含抵押价值；小游戏初始金币下注单位为 coins + collateral 估值之和。coin_limit / diamond_limit 是最终可返还额度上限，必须覆盖初始额度；大游戏确定自己能兑现的上限。金额为 0 到 10^12 的整数，JSON 中整数值的 float 也接受；拒绝负数、小数、非有限数和溢出。抵押估值必须大于零。抵押实例全体参与者间不可重复，顺序就是承担损失的顺序。
+
+大游戏在启动前确认玩家选择、余额、所有权、道具估值及兑现能力，将锁定请求保存在自身状态中。协议无法从传入数据证明所有权或玩家同意。不得把玩家整个背包自动纳入额度，不默认钻石能兑换金币。
+
+## 道具
+
+定义为 `{definition_id, name, description, data, icon?}`；实例为 `{instance_id, definition_id, data}`。icon 是公开资源引用。`validate_item_definition` / `validate_item_instance` 检查结构；`validate_resources({coins, diamonds, items})` 检查一份大游戏资源快照及实例唯一性。大游戏可在此快照外维护任意其他状态。
+
+item_offers 按玩家索引数组，每项：
+
+```text
+{item: 道具实例, effect_id: 双方约定的效果标识,
+ parameters: 效果参数字典, consumable: 是否允许本轮消耗}
+```
+
+同一道具不能重复授权，也不能同时使用和抵押。effects 不由协议自动执行；小游戏适配器的 check_request 必须拒绝不支持的 effect_id，大游戏只能提供双方真正实现的效果。纯抵押道具不需要小游戏理解其效果。
+
+## 结果与成绩
+
+`validate_result(result, request, players)` 先检查原请求，随后检查结果。必填：
+
+```text
+request_id: 必须等于原请求
+reason: completed / cancelled
+rankings: [{player_id, rank, status, metrics?}]
+```
+
+rank 为非负整数；0 表示未排名。status 为 completed / withdrawn / disqualified / unranked；unranked 必须 rank=0。允许空结果、缺少部分排名、并列和跳号，不重算作者名次。metrics 仅数字和文本；可选 columns 数组为 `{key,title,format}`，format 支持 integer/decimal/text/time（毫秒）。可选 game_data 字典保存业务结果。
+
+resource 正常结果必须含全体参与者 resource_result，每人 `{coins, diamonds}` 是最终额度，包括断线者和零余额者。item_result 可选，按玩家索引已消耗的实例 ID 数组，只能引用本轮 consumable 授权；不允许重复。抵押道具由父游戏清算，不能混入消耗列表。cancelled 和普通局都不得携带资源或道具结算。
+
+`present_result(result, request)` 在通过校验后调用，转换成 core 的标题/列/玩家行；保留排名和行顺序。未声明 columns 时不猜测金币、钻石或奖励。
+
+扩展 game_data、道具 data 和 parameters 支持 JSON 风格值及 PackedByteArray；字典键接受 String / StringName。禁止 Node、Resource、Callable。固定契约字段严格校验，扩展内容放入上述字典，不添加兼容别名。
+
+## 纯清算与父游戏接入
+
+`calculate_settlement(result, request, players)` 返回 `{ok, request_id, players}`；每位玩家的建议包含 coins_delta、diamonds_delta、forfeited_items、consumed_items。普通局或取消返回空 players；输入无效返回错误报告。函数不更新任何状态，多次调用结果相同，不代表调用方可以重复应用。
+
+金币损失先由授权现金承担，再依顺序扣整件抵押道具，超出损失的估值找零；未动用的道具保留。盈利不扣抵押物。10 现金 + 30 估值道具，最终下注单位 22 表示亏损 18：coins_delta=12，扣道具一件；原现金 10 变为 22。最终 48 表示盈利 8：coins_delta=8，道具保留。钻石直接按最终额度减初始额度，不换算金币。
+
+父游戏 reducer 使用 state 中已锁定的 request 和玩家名单计算建议，复核资源和实例，更新自身副本并记录已处理 request_id；排名奖励另算，只在 reason=completed 时按自身规则决定。不要在 reducer 中写文件或发消息。core 的成功持久化与轮次去重负责正式提交，finish 返回 OK 不等于保存已完成。
+
+不在启动小游戏前永久扣款。小游戏期间父状态冻结，资产不能另用；加载失败/取消恢复此前已提交状态，无额外补款。保存失败重试同一候选，不重新发奖。初版没有中途追加抵押、长期借贷、利息、赎回、交易、通用钱包或商城。
+
+## 样例与检查
+
+../examples/ 包含普通局、资源局请求/结果及超额非法结果。旧协议与资料测试已归档到 tmp/test/archive/，不再作为运行入口或当前验收依据。当前轮换与大厅定向检查在 tmp/test/playlist_room/；资源系统本轮未修改。
+
+当前正式轮换使用 standard 普通局；资源契约和纯清算实现保留，尚未接入正式主游戏经济循环。
+
+## 共享画质（本地偏好）
+
+公共偏好页使用框架通用 Schema 表单和 `core/ui/settings/` 场景预制体；渲染比例采用滑条与数值框。本协议 `settings.gd` 按 [配置契约](../../../../doc/api/configuration.md) 声明 type、default、control、限制和 layout 层级，实际效果仍由 settings_runtime 或游戏消费方实现。配置值保存在 preferences.json 及游戏独立 overrides.json 中；继承开关开启后折叠并半透明禁用对应覆盖，应用时删除覆盖键恢复继承。
+
+在轮换大厅“协议与本地设置”中编辑公共偏好。所有采用本协议的大小游戏平行继承；游戏可使用正式游戏设置页单独覆盖，恢复继承后重新使用协议值。设置不会进入房间规则或网络数据。
+
+| 档位 | 阴影图 | 阴影过滤 | MSAA | AO 质量/分辨率 |
+| --- | --- | --- | --- | --- |
+| 低 | 2048 | 最低 | 关闭 | 低 / 半分辨率 |
+| 中 | 4096 | 低 | 2x | 中 / 半分辨率 |
+| 高 | 4096 | 高 | 4x | 高 / 全分辨率 |
+| 极高（默认） | 8192 | 极高 | 8x | 极高 / 全分辨率 |
+
+`graphics.quality` 使用枚举值 `低/中/高/极高`。独立开关为 `graphics.shadows`（默认开）、`graphics.pcss`（默认关）、`graphics.ao`（默认关）、`graphics.taa`（默认开）、`graphics.bloom`（默认关）；`graphics.render_scale` 默认 1，范围 0.5–2。切换档位不重置开关。所有字段可覆盖、立即应用于活跃三维视图；保存成功与效果报告仍按框架约定分开。PCSS 关闭使用 PCF；开启可能出现采样噪点，不保证更好观感。非 Forward+ 下 AO/TAA 报告不支持，不更改用户期望值。
+
+正式游戏不要自行创建画质 runtime，也不要重复写 RenderingServer。清单选择本协议后，由 core 的 settings scope 自动创建 `settings_runtime.gd`，复用 `graphics_settings.gd` 的画质实现。三维视图根提供以下协议专属登记方法（大游戏放在 create_view 返回的节点，小游戏放在入口根）：
+
+```gdscript
+@export var graphics_world: WorldEnvironment
+@export var graphics_sun: DirectionalLight3D
+@export var graphics_models: Node3D
+
+func godot_party_graphics_targets() -> Dictionary:
+    return {"world": graphics_world, "sun": graphics_sun, "materials_root": graphics_models}
+```
+
+world 必须有 Environment。sun 的 `light_angular_distance` 定义开启 PCSS 时的角尺寸；0 表示不使用可变半影。灯光方向、能量、曝光、AO 半径/强度、辉光强度、阴影偏移/距离、FOV 属于游戏美术，在场景中配置，不被档位覆盖。帧率、垂直同步、窗口仍由 core 系统设置控制。暂不启用 LOD。
+
+`materials_root` 可省略；登记后其模型的普通表面材质使用局部副本和线性各向异性采样，避开色板最近邻条带，不修改共享资源。不覆盖 ShaderMaterial 或整体 material_override。不要给像素风或需要特殊采样的模型登记此节点。
+
+未提供登记方法的二维游戏、大厅不接管三维画质，效果报告为不适用。退出或重建视图恢复原 Environment、材质覆盖与视口，全局质量恢复项目基准；下一设置作用域随后取得应用权。游戏不要与该 runtime 并行写同一属性。
+
+Millionaire 当前仍是独立 F6 视觉原型：读取同一资料槽的协议偏好，调用相同画质实现，不保存第二套配置。更改公共偏好后重新 F6。正式接入时移除其 `_start_graphics()` 预览桥接，仅保留登记方法，由框架接管。
+
+## 原版小游戏的语音授权
+
+原版协议委托小游戏轮换的 room.gd 独占该大厅的语音端点。大厅默认只收听，主动开启麦克风仍需系统授权；房主设置 global 路由。规则修改重建、开局、离房和断线时关闭端点并清理总线。阿瓦隆和轮换局间不启用此端点。协议画质 runtime 不创建语音端点。
+
+原版协议允许 `GP_psych_party` 在自身活跃作用域内登记玩家实体、创建一个语音端点并切换配对 group 策略。仅同一开放配对的玩家互通，未参赛者无端点；配对关闭或作用域销毁后停止音频。房主编排路由，客户端必须主动启用麦克风，并继续遵守 core 系统麦克风授权。游戏不改变其他游戏或协议的端点，也不开放全房间广播。
+
+## 玩家颜色与房主分配
+
+资料包含 `avatar_2d`（2D 头像场景）、`color`、`character_3d`（3D 形象场景）。不读取旧 `character_2d` 资料格式；原文件保留，需重新应用当前资料。
+
+固定八色：红 `#e53935`、绿 `#43b047`、蓝 `#2962ff`、亮青 `#00d9e8`、紫 `#9c42d4`、黄 `#ffda24`、黑 `#252832`、白 `#f5f5f5`。资料面板显示色块与名称，不支持任意 RGB 输入。
+
+玩家本机选择是入房偏好。房主使用 `resolve_player_config(value, player_id, players)` 检查房间占用；冲突时随机选择剩余颜色，已占用颜色的玩家不变。入房与大厅提交均检查，本房间调整不覆盖本机保存的偏好。
+
+房主在大厅打开玩家资料，可以使用“强制分配”。`assign_player_config(player_id, assignment, players)` 接受 `{color}`，返回 `{ok: true, profiles: {player_id: 完整资料}}`。占用时交换目标玩家与占用者的颜色；头像、名字和身份不变。框架校验整批资料及资源依赖后一次性广播。客户端、活动期间及恢复大厅不能分配；恢复使用存档原快照。
+
+## 公共字体
+
+共用 UI 场景、交互脚本、光标与字体归属 `GP_default_ui` 1.0.1。直接引用 `res://games/assets/GP_default_ui/`，不再通过协议的字体或展示资源键加载。协议保留准备/结算协调、轮次控制及资料面板的数据适配。资料与 ranked 场景组合资产包视图，不在资产包中引用协议。
+
+## 共享玩家鼠标
+
+公开资源 `player_cursor` 为 `appearance/player_cursor.tscn`（Node2D）：透明中心、彩色边缘的空心箭头，场景原点 `(0, 0)` 为热点。提供 `LighTech`（默认，直边尖角）与 `Concept 3`（圆润轮廓）两种自行绘制的主题。`apply_color(Color)` 为单个实例的边缘染色，使用上面的协议八色；彩色边缘仅保留深色细描边，没有额外白色描边。Inspector 的 `cursor_theme` / `color` 可预览外观。
+
+公共设置「界面 → 光标主题」（`ui.cursor_theme`）在应用后立即生效，属于本地偏好，可按游戏覆盖，不同步给其他玩家。它同时控制本机显示的多人指针与协议内的默认箭头。`settings_runtime.gd` 在大厅和活动的设置作用域内安装本机玩家颜色的原生光标，离开协议时恢复系统箭头；仍保留控件的文本、拖动等专用鼠标形状及游戏的鼠标捕获行为。原生光标和多人场景复用同一透明图像，主题不影响网络坐标或点击规则。画质仍由 `graphics_settings.gd` 实现，独立地图预览的画质调用不安装光标。
+
+公开资源 `player_cursors` 为 `player_cursors.tscn`（Control 多人指针场景）。实例化后先 `setup(api)`，再作为实际交互区域（例如棋盘）的子节点加入；场景铺满父节点并忽略鼠标事件。同一活动只挂载一份，同一坐标面上的玩家应使用相同内容布局。连连看与空白小游戏已接入；空白小游戏以全屏为坐标面，仅在正式游戏阶段显示，个人结束等待期间保留，准备和结算时隐藏。
+
+```gdscript
+var scene: PackedScene = api.load_asset({"package_id": "GP_default_ui", "resource_path": "player_cursors.tscn"}) as PackedScene
+var cursors: Control = scene.instantiate()
+cursors.setup(api)
+board_area.add_child(cursors)
+```
+
+不声明 streams。组件通过 PartyNet 的不可靠有序消息 `pointer` 发给主机，再用同模式广播 `cursors`；只接纳当前在线参赛者的消息，观战者可查看。仅相对区域的 0–1 坐标过网，不发送屏幕像素；主机验证类型、有限数、范围、序号和发送间隔。最多 20 Hz，位置变化小于 0.001 时抑制重复发送，静止每 0.5 秒保活；远端平滑追随，显示数据 1.5 秒过期，断线/失焦/离开区域后隐藏。颜色直接取 `api.get_appearance(id).color` 的房间分配值，另显示远端玩家名字。本机彩色指针即时跟随鼠标，在交互区域内替代系统指针；离开、禁用、关闭作用域或释放场景时恢复系统指针，不接管已捕获/隐藏的鼠标。发送失败明确报错并停止同步。鼠标数据只作表现，不能据此判断点击或奖励。
+
+协议公共偏好 `ui.player_cursors`（默认开，可被小游戏覆盖，立即生效）控制本机是否显示其他玩家鼠标；不影响本机彩色指针及发送自己位置。组件 `enabled` 则由游戏在离开交互阶段时关闭显示并发布隐藏状态。组件的生命周期限于本次活动，释放时断开消息连接并恢复系统指针。
+
+「界面 → 他人鼠标透明度」（`ui.player_cursor_transparency`）默认 50%，范围 0–100%，0% 完全不透明、100% 完全透明。应用后立即调整其他玩家的指针、姓名及姓名描边；本机指针保持不透明。该偏好仅影响本机显示，可按小游戏覆盖，不改变位置同步或其他玩家的显示设置。
+
+公开资源 `ranked_round` 是原版街机小游戏复用的 Control 基类，提供 standard 生命周期、经发送者身份与单调序号校验的逻辑行动、一次性结果提交和基础布局；不定义玩法和奖励。游戏入口继承 ranked_round.tscn，通过 build_game/start_game/tick_game/handle_action/render_game 实现玩法。基类只在开始时调用一次 publish；默认 make_snapshot/state 路径用于初始布局，不再定时广播完整状态。子类自行选择离散可靠事件和最少的不可靠运动采样；无需在清单声明流。星潮已经移除压缩全场快照。接口与组合见 [内容网络通信指南](../../../../doc/api/networking.md)。
+
+## 游戏音频
+
+公开资源 `game_audio`、`audio_cue`、`audio_handle` 提供场景化音频、可配置音效与独立播放句柄。协议设置 runtime 为每个作用域管理六条音频总线和本地音量偏好；场景通过 `godot_party_audio_target()` 显式接入。完整生命周期、循环/中断/切歌/配音队列和调用示例见 [游戏音频组件](GP_default_protocol_audio.md)，空白模板提供音频测试面板及示例素材。
+
+## 加载与结算场景
+
+协议公开完整的 `briefing_page` / `settlement_page` 场景；它们组合 gate 脚本与固定的 View 子场景。`briefing_gate` / `settlement_gate` 是这些场景的脚本类型，不能再用 `.new()` 构建页面。纯表现用的 `briefing_view` / `settlement_view` 仍可独立使用。
+
+小游戏在 Godot 编辑器中从两个 page 场景分别“新建继承场景”，保存为包内 `ui/briefing.tscn` 与 `ui/settlement.tscn`。展开可编辑的 `View` 子节点，改字体、颜色、布局、预览标题；需要扩展行为时派生对应 gate/view 脚本并调用 `super`，不复制网络协调代码。示例见空白模板的两个继承场景。
+
+在游戏入口预置 CanvasLayer（参考层级 32，低于框架菜单 64），实例化这两个本地场景，初始 `visible = false`。用 `@export` 节点引用连接入口；不要在启动时 `new()`、`instantiate()` 或重新 add_child 页面。每局创建新的游戏入口，页面只激活一次，停止后不复用到下一局。独立 F6 页面显示虚构样例，不连接网络、不写配置、不提交分数；模板 `game.tscn` 的 F6 仍直接显示原有演示。
+
+固定字号、间距、边框和容器保存在场景中，脚本不会按窗口尺寸重写。玩家行外观由 资产包的 `briefing/player_row.tscn` / `settlement/result_row.tscn` 场景定义；控件提示由 资产包的 `briefing/control_hint.tscn` 定义。可继承这些子场景并设置 View 的导出场景资源。成员增减才增删准备行，状态变化更新原行；结算只实例化实际成绩行及动态指标列。编辑器样例在首次填入真实数据时移除，不进入网络或成绩数据。
+
+- 加载：对预置页面调用 `configure(api, content)`（可在入树前或已入树后），content含title/introduction/cover/controls；`read_content(manifest_path, api)`可读取自己的简介和实际绑定。初始化后游戏正常`mark_ready()`，`party_start()`中调用`transport_started()`；等`play_requested`才启动玩法。人工确认使用Enter/空格或点击现有按键提示；绿色“准备”切换为红色“取消准备”，再次操作可取消。`briefing_gate.set_ready(bool) -> Error` 提交明确的准备状态。倒计时内仍可取消，房主立即撤回倒计时；重新全员准备后重新计时。观战无需确认；技术准备与人工准备独立，全员满足后默认3秒开始。
+- 可选玩家单选项：加载 content 提供固定的 `choice_label`、`choice_options: Array[String]` 和 `choice_default`（必须属于选项）。`round_pages.prepare(game, api, request, start_play, content_overrides = {})` 的最后一个字典覆盖本轮加载页内容；游戏可用它传入由资源生成的选项。未配置选项的游戏不显示下拉框。
+- `briefing_gate.select_choice(value) -> Error` 提交本地选择；`get_choice(player_id) -> String` 读取房主确认的选择，观战者返回空字符串。准备消息同时携带选择，房主校验真实发送者、参与身份和选项后锁定；已准备或开始倒计时后不接受选项修改，取消准备后可重新选择。状态快照包含参与者的 `choices` 字典，沿用 session/scope/revision 校验。游戏在 `play_requested` 后读取所选值并启动实际玩法。
+- 纯加载 view 额外提供 `choice_selected(value)`、`set_choice(value)`；`set_state` 的玩家行必须包含唯一的 `player_id`、`name` 和 `connected`，可含 `loaded`、`ready`、`participant` 与 `choice`。这些字段由 gate 从已验证的房间状态提供；直接使用 view 时调用方遵守相同约定。面板仅显示选项文本，不追加说明标签。未准备且操作可用时允许更改选项；下拉框打开时 Enter 不会同时触发准备。
+- 结算：对预置页面调用 `configure(api, presentation, result_token)`，presentation为`{title, rows:[{player_id, rank, metrics:{score}}]}`。score是本轮小游戏分数，不是父游戏奖励；作者给定rank，视图稳定处理并列，不按分数重排。所有在线端装好页面后自动回执，默认3秒发出`continued`，没有人工准备/退出按钮。就绪回执每 0.5 秒重发仅用于覆盖另一端页面尚未挂载的窗口；重复回执不重复发布状态，等待最多 30 秒，超时报错结束该轮。传输失败停止推进，不假装完成。
+- helper不调用`finish()`或发奖。拥有者自行选择提交前展示，或在父游戏持有已提交结果后展示；必须保证节点在展示期间仍存活。同一轮使用唯一token，消息校验session/scope/token/revision和真实发送者，退出时调用`stop()`。
+- 纯view可单独使用：加载view提供`configure`/`set_state`与`ready_requested`；结算view提供`configure(presentation, players)`与`set_countdown`，不拥有网络或计时。
+
+空白模板是接入示例：自己持有加载和结算页面；在线参赛者各按一次结束按钮，房主按收到有效点击的顺序生成并广播排名，所有端自动看完结算后才`finish()`一次。页面使用已有主菜单背景/主题/面板，不引入外部资产。正式游戏可以在固定 CanvasLayer 上挂公开脚本 `round_pages`，通过 Inspector 给 `briefing` / `settlement` 指定两个本地继承场景节点。初始化完成后调用 `prepare(game, api, request, start_play)`，在 party_start 调用 transport_started()。房主将游戏原结果交给 present(result)，公共页面按 columns 展示 rankings 中的指标，完整结果仅由房主提交。采用 `ranked_round` 的入口必须将 `pages` 指向这个 CanvasLayer。单人包使用 `solo_round`，将 `briefing` / `settlement` 直接指向本地继承场景，为 gameplay 指定发出 completed(metrics) 的场景，为 columns 声明成绩列，并在清单中声明单人。
+
+### 自己管理阶段的最小调用
+
+```gdscript
+@export var briefing: Control
+@export var settlement: Control
+var api: PartyAPI
+var request: Dictionary
+
+func party_setup(context: PartyAPI, config: Dictionary) -> void:
+    api = context
+    request = config.duplicate(true)
+
+func _ready() -> void:
+    briefing.play_requested.connect(_begin_play)
+    briefing.configure(api, briefing.read_content(scene_file_path.get_base_dir().path_join("manifest.json"), api))
+    var error: Error = api.mark_ready()
+    if error != OK:
+        api.fail("load_failed", error_string(error))
+
+func party_start() -> void:
+    briefing.transport_started()
+
+func show_result(result: Dictionary) -> void:
+    settlement.continued.connect(_submit_result, CONNECT_ONE_SHOT)
+    settlement.configure(api, {"title": "本轮结算", "rows": result.rankings,
+        "columns": result.columns}, request.request_id)
+
+func party_stop(_reason: StringName) -> void:
+    briefing.stop()
+    settlement.stop()
+```
+
+`_begin_play`、网络结果接收和 `_submit_result` 由小游戏实现；只有房主调用 `api.finish()`，所有发送与提交错误都必须处理。配置页面只显示数据，不替游戏判断公开/私有信息。场景节点和场景资源的依赖会由导出器收集；清单必须声明当前协议版本，无需把空白模板放入导出包。
+
+## 相机与随机内容池
+
+公开脚本 `orbit_camera` 位于 `camera/orbit_camera.gd`，挂到场景里的 Camera3D。初始相机位置与 `initial_focus` 在 Inspector 设置；滚轮缩放、中键俯仰/方位、中心表面拾取由 `handle_input(event) -> bool` 处理，游戏在 `_unhandled_input` 转发并消费事件。用 `input_allowed` 传入阶段与 `api.input.input_blocked` 门控，`focus_on(unit, local_anchor)` 跟随单位，`set_orbit(center, distance, yaw, pitch)` 显式切换构图。游戏负责目标与输入边界。
+
+公开脚本 `least_played_pool` 位于 `random/least_played_pool.gd`，用 `new(content_ids)` 创建一局的池。`choose(rng)` 仅抽取，`accept_history(sequence)` 成功后才记账；`history()` 和 `counts()` 返回副本。需要持久化时显式 `open_file(absolute_path)` 并检查 Error，F6 不调用。房主选择，所有端接受已验证的主机序列，网络消息不含各端私有累计次数。相同前缀不重复计数，未知 ID、冲突历史或损坏文件会失败。完整调用示例见[空白模板](../../../minigame/GP_blank/doc/GP_blank_guide.md#通用随机统计模板)。
+
+候选列表会随安装内容增删时，可用 `open_file(absolute_path, true)`：验证并保留全部历史计数，为新 ID 初始化零次，退役 ID 不参与抽取，也不能作为新回合历史提交。省略第二参数仍严格要求文件中的 ID 集与当前候选一致。霓虹节拍曲库使用此可变集合模式。
+
+音频、光标和字体继续由协议公开；Esc 菜单、框架设置和返回大厅属于 core。小游戏的演示、规则、资源、奖励与专用设置留在各自包内，公共组件不引用任何小游戏。
+
+## 单参赛者接入
+
+`solo_round` 只支持一位参赛者本机模拟、房主验证成绩。五个调用方为方向密码、山脊竞速、海岸飞行、极速追逐和圆角俄罗斯方块。`party_setup` 在入树前仅为本机在线参赛者实例化 gameplay，注入依赖；观战端不创建模拟，但仍处理准备、成绩与结算消息。
+
+玩法场景约定：
+
+- `solo_setup(input: PartyInput, text_source: RefCounted)`：入树前保存输入与翻译；有音频时调用固定 GameAudio 的 `prepare_scope()`。初始化阶段不启动计时、输入、模拟或声音。
+- `solo_start()`：公共准备页确认完成后开始玩法。技术 `mark_ready()` / `party_start()` 不代表玩家已确认开始。
+- `solo_stop()`：可重复调用，显式停止输入、模拟与声音，隐藏自身 HUD；覆盖准备中取消、结算和退出。不禁用包含网络协调的整棵场景树。
+- `solo_graphics_targets() -> Dictionary`：返回实际 `world` / `sun`，纯二维场景返回 `{}`。
+- `solo_audio_target() -> PartyGameAudio`：返回场景内组件；无音频返回 `null`，无需空组件。独立 PCK 由框架在加载脚本前注册包内类型，可以直接使用协议声明的 `class_name`；导出前完成资源导入。
+- `completed(metrics: Dictionary)`：只完成一次本局。入口保留 columns、record_metric 和现有消息/成绩结构，验证成功后保存本机纪录并上报；正式结算后的重玩由轮换发起新作用域。
+
+入口转发画质与音频挂点，协议在视图入树后 attach；此时本机玩法已经存在。返回空字典或 null 是明确的无目标状态，非空但不满足类型/资源契约的目标仍报错。输入偏好由 PartyInput 绑定的 PartyConfig 提供，画质和音量由协议 settings runtime 应用，无需向玩法复制第二份偏好。
+
+`solo_controls` 统一正式 PartyInput 与 F6 默认绑定：正式绑定在包内 schema 3 声明，可由用户设置覆盖；F6 只读同一 schema 的默认键鼠绑定，不增删全局 InputMap，也不读写正式设置或纪录。正式 Esc 只交给框架菜单，输入屏蔽期间模拟和计时继续；独立预览可保留自身 Esc 暂停。玩法允许的地图暂停或 P 暂停仍由玩法控制。
+
+## 包内开发文档
+
+未带 `res://` 的源码路径以本包根目录为基准。
+
+- [游戏音频组件](GP_default_protocol_audio.md)
+- [原版协议开发待办](GP_default_protocol_development.md)

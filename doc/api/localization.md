@@ -24,7 +24,7 @@ var language: String = api.i18n.effective_locale()
 
 ## 清单与设置
 
-清单 name 和玩法界面文案及 Schema 的 title、description、placeholder、suffix、disabled_reason、labels 直接作为 PO 消息键。可以用中文源文作为键，也可以填写稳定键并在中文 PO 提供译文。首次显示时加载所用语言并缓存；实际读取时报告缺失翻译。
+包名称统一使用固定消息键 `package.name`，manifest 不再声明 name；中文条目必须非空，其他语言缺失时回退中文。编辑器扫描读取这些小型名称资源，导出保存各语言名称快照，发布版显示名称不挂载 PCK。玩法界面文案及 Schema 的 title、description、placeholder、suffix、disabled_reason、labels 直接作为 PO 消息键。可以用中文源文作为键，也可以填写稳定键并在中文 PO 提供译文。首次显示时加载所用语言并缓存；实际读取时报告缺失翻译。
 
 翻译不修改 default、values、enabled_when、字段 ID、动作名或保存值。选择控件用 labels 提供可译标签，多选开关用 items.labels，与 items.values 一一对应。继承的协议设置仍使用协议语言。昵称、聊天、预设名称及用户输入的文本偏好原样显示。
 
@@ -32,7 +32,7 @@ var language: String = api.i18n.effective_locale()
 
 ## 初版范围与发布
 
-英语覆盖主菜单首页、加入页面、创建/直连/资料/退出弹窗、键鼠提示，以及 空白小游戏（gp_blank）的名称、简介、设置样例及结束按钮提示。系统设置、连接诊断详情、协议、大游戏、其他小游戏及框架设置控件通用操作提示仍使用中文。用户填写的中文内容不自动翻译。
+英语覆盖主菜单首页、加入页面、创建/直连/资料/退出弹窗、键鼠提示，以及 空白小游戏（GP_blank）的名称、简介、设置样例及结束按钮提示。系统设置、连接诊断详情、协议、大游戏、其他小游戏及框架设置控件通用操作提示仍使用中文。用户填写的中文内容不自动翻译。
 
 PO 与所属包一起发布。现有源码 ZIP/PCK 导出递归收集包内资源，无中央翻译索引；新增语言时提供对应 PO 并接入显示位置。
 

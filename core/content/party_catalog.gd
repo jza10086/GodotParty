@@ -27,7 +27,8 @@ var adapter_issues: Dictionary = {}
 func _init() -> void:
 	i18n.content_catalog = weakref(self)
 
-func scan() -> Error:
+## Export selection needs IDs and dependencies only; gameplay/build catalogs also load display names.
+func scan(load_names: bool = true) -> Error:
 	source_mode = true
 	artifacts.clear()
 	unavailable.clear()
@@ -43,27 +44,26 @@ func scan() -> Error:
 		for directory: String in DirAccess.get_directories_at(root):
 			var path: String = root.path_join(directory).path_join("manifest.json")
 			if "manifest.json" in DirAccess.get_files_at(path.get_base_dir()):
-				register_manifest(path)
+				register_manifest(path, load_names)
 				if kind == "protocols":
 					var avatars: String = path.get_base_dir().path_join("avatars")
 					if not DirAccess.dir_exists_absolute(avatars):
 						continue
 					for avatar: String in DirAccess.get_directories_at(avatars):
-						register_manifest(avatars.path_join(avatar).path_join("manifest.json"))
+						register_manifest(avatars.path_join(avatar).path_join("manifest.json"), load_names)
 	_validate_config_directories()
 	unavailable = Selection.unavailable_packages(packages)
 	_cache_adapter_issues()
 	return OK if errors.is_empty() else ERR_INVALID_DATA
 
-## Asset identity comes from its directory, never a second author-maintained ID.
+## Package identity is declared in manifest.json; avatar ownership follows its protocol directory.
 static func read_manifest(path: String) -> Dictionary:
 	var manifest: Dictionary = Data.read_json(path)
-	manifest["id"] = path.get_base_dir().get_file()
 	if manifest.get("kind") == "avatars":
 		manifest["owner_protocol"] = path.get_base_dir().get_base_dir().get_base_dir().get_file()
 	return manifest
 
-func register_manifest(path: String) -> Error:
+func register_manifest(path: String, load_names: bool = true) -> Error:
 	var manifest: Dictionary = read_manifest(path)
 	var issue: String = validate_manifest(manifest)
 	if not issue.is_empty():
@@ -81,6 +81,25 @@ func register_manifest(path: String) -> Error:
 	manifest["_root"] = path.get_base_dir()
 	var metadata: Dictionary = source_metadata(manifest)
 	manifest.merge(metadata)
+	if load_names:
+		issue = Localization.validate_declaration(manifest.localization)
+		if not issue.is_empty():
+			errors.append(path + ": " + issue)
+			return ERR_INVALID_DATA
+		manifest.localized_names = {}
+		for language: String in manifest.localization.supported_locales:
+			var translation_path: String = manifest._root.path_join(manifest.localization.translations[language])
+			var translation: Translation = load(translation_path)
+			if translation == null or translation.locale != language:
+				errors.append("Invalid package name translation: " + translation_path)
+				return ERR_INVALID_DATA
+			var display_name: String = translation.get_message("package.name")
+			if not display_name.is_empty():
+				manifest.localized_names[language] = display_name
+		if not manifest.localized_names.has(Localization.DEFAULT_LOCALE):
+			errors.append(path + ": missing zh_Hans package.name")
+			return ERR_INVALID_DATA
+		manifest.name = manifest.localized_names[Localization.DEFAULT_LOCALE]
 	packages[id] = manifest
 	i18n.declare_package(id, manifest.localization, manifest._root)
 	return OK
@@ -138,13 +157,13 @@ func use_installed(store: RefCounted) -> Error:
 			continue
 		var description: Dictionary = store.installed[id]
 		var manifest: Dictionary = description.declaration.duplicate(true)
-		manifest.id = id
 		if description.kind == "avatars":
 			manifest.owner_protocol = description.owner_protocol
 		manifest["_declaration"] = manifest.duplicate(true)
 		manifest["_root"] = "res://games/" + Paths.package_relative(description)
 		manifest.build_id = description.build_id
 		manifest.merge(description.content.duplicate(true))
+		manifest.name = manifest.localized_names[Localization.DEFAULT_LOCALE]
 		packages[id] = manifest
 		artifacts[id] = {"root": store.roots[id], "description": description}
 		i18n.declare_package(id, manifest.localization, manifest._root)
@@ -176,11 +195,11 @@ func _cache_adapter_issues() -> void:
 				adapter_issues[id + "/" + item.protocol.id] = issue
 
 func validate_manifest(manifest: Dictionary) -> String:
-	for key: String in ["name", "kind", "package_version", "framework_version", "remark"]:
+	for key: String in ["id", "kind", "package_version", "framework_version", "remark"]:
 		if not manifest.get(key) is String or (key != "remark" and manifest[key].is_empty()):
 			return "Invalid declaration field: " + key
 	for key: String in manifest:
-		if key not in ["name", "kind", "package_version", "framework_version", "remark", "supported_languages", "dependencies", "special_type", "songs", "id", "owner_protocol"]:
+		if key not in ["kind", "package_version", "framework_version", "remark", "supported_languages", "dependencies", "special_type", "songs", "id", "owner_protocol"]:
 			return "Unsupported declaration field: " + key
 	if manifest.has("special_type"):
 		if manifest.kind != "assets" or not manifest.special_type is String or not Data.identifier(manifest.special_type):
@@ -240,7 +259,10 @@ func _protocol_reference(value: Variant) -> bool:
 
 ## Display names are catalog data, never a reason to activate translations or gameplay.
 func get_package(id: String) -> Dictionary:
-	return packages.get(id, {}).duplicate(true)
+	var result: Dictionary = packages.get(id, {}).duplicate(true)
+	if not result.is_empty():
+		result.name = result.localized_names.get(i18n.locale, result.localized_names[Localization.DEFAULT_LOCALE])
+	return result
 
 func ids(kind: String = "") -> Array[String]:
 	var result: Array[String] = []
@@ -346,7 +368,7 @@ func _pool_adapter(main: Dictionary, id: String) -> Dictionary:
 	return adapter(id, main.protocol.id)
 
 ## Advertise the resolved dependency set for the current join or start phase.
-## Raw manifest names are stable across UI languages; IDs identify packages.
+## Only stable IDs and versions participate; translated names are local presentation.
 func connection_requirements(selected: Dictionary) -> Dictionary:
 	var required: Dictionary = {}
 	for id: String in selected:

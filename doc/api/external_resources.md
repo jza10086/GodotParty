@@ -29,7 +29,7 @@ music/ 放音乐资源；charts/ 内按曲目建立子文件夹。song.tres 绑�
 
 ```json
 {
-  "name": "我的曲库",
+  "id": "GP_my_rhythm_library",
   "kind": "assets",
   "package_version": "0.0.1",
   "framework_version": "0.0.1",
@@ -42,7 +42,7 @@ music/ 放音乐资源；charts/ 内按曲目建立子文件夹。song.tres 绑�
 }
 ```
 
-special_type 是特殊类型标识；霓虹节拍识别 rhythm_library。songs 是非空、无重复的包内相对资源路径列表，支持 .tres/.res。ID 来自包目录，曲目 ID 为“包 ID/曲目资源路径”，曲目名称使用 Resource.resource_name。修改资源路径会改变曲目身份，因此建议改显示名称时保持路径稳定。
+special_type 是特殊类型标识；霓虹节拍识别 rhythm_library。songs 是非空、无重复的包内相对资源路径列表，支持 .tres/.res。ID 读取 manifest 的 `id`（源码目录须与其一致），曲目 ID 为“包 ID/曲目资源路径”，曲目名称使用 Resource.resource_name。修改资源路径会改变曲目身份，因此建议改显示名称时保持路径稳定。
 
 普通资产包无需添加这两项。曲库仍不能依赖小游戏或其他资产包，公共数据类型位于框架公开 API：
 
@@ -67,7 +67,7 @@ special_type 是特殊类型标识；霓虹节拍识别 rhythm_library。songs �
 
 JSON 音符格式仍为 format_version 3，保留 notes_ms、lanes、durations_ms、subs_ms 等字段。audio_file 可填写 res:// 音源路径，使制作工具能访问 music/ 中的文件，也支持谱面同目录的音源文件名。正式玩法以 PartyMusicSong.music 为准，不会按 JSON 字段改换音源；difficulty 与 base_score 以绑定的 PartyMusicChart 为准。
 
-示例：games/assets/gp_rhythm_original/charts/hold_test/song.tres。本地 Bad Apple 短版和完整版位于 games/assets/gp_rhythm_bad_apple/，整包被主仓库 .gitignore 排除，仍可在 Godot 中发现；本轮未发布。旧本地原始曲目和编辑恢复记录保留，小游戏的 export_ignore.txt 排除原 charts/，避免重复打入小游戏 PCK。
+示例：games/assets/GP_rhythm_original/charts/hold_test/song.tres。本地 Bad Apple 短版和完整版位于 games/assets/GP_rhythm_bad_apple/，整包被主仓库 .gitignore 排除，仍可在 Godot 中发现；本轮未发布。旧本地原始曲目和编辑恢复记录保留，小游戏的 export_ignore.txt 排除原 charts/，避免重复打入小游戏 PCK。
 
 ## 发现、加载和联机
 

@@ -1,0 +1,379 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh_Hans\n"
+
+msgid "%"
+msgstr "%"
+
+msgid "120 FPS"
+msgstr "120 FPS"
+
+msgid "1280 × 720"
+msgstr "1280 × 720"
+
+msgid "1920 × 1080"
+msgstr "1920 × 1080"
+
+msgid "2560 × 1440"
+msgstr "2560 × 1440"
+
+msgid "30 FPS"
+msgstr "30 FPS"
+
+msgid "60 FPS"
+msgstr "60 FPS"
+
+msgid "X"
+msgstr "X"
+
+msgid "Y"
+msgstr "Y"
+
+msgid "Z"
+msgstr "Z"
+
+msgid "game.locale"
+msgstr "本小游戏当前语言：{locale}"
+
+
+msgid "三个数值分别代表 X、Y、Z，复用同一种数字输入组件。"
+msgstr "三个数值分别代表 X、Y、Z，复用同一种数字输入组件。"
+
+msgid "三分量：多个数值"
+msgstr "三分量：多个数值"
+
+msgid "三级折叠中的数值"
+msgstr "三级折叠中的数值"
+
+msgid "上限"
+msgstr "上限"
+
+msgid "下限"
+msgstr "下限"
+
+msgid "不限"
+msgstr "不限"
+
+msgid "主键与备用键都支持 Ctrl、Alt、Shift、Meta 组合。点击录入按钮后按下组合键，Esc 取消录入。"
+msgstr "主键与备用键都支持 Ctrl、Alt、Shift、Meta 组合。点击录入按钮后按下组合键，Esc 取消录入。"
+
+msgid "分别输入区间的下限与上限，下限不能高于上限。"
+msgstr "分别输入区间的下限与上限，下限不能高于上限。"
+
+msgid "区间：两个数值"
+msgstr "区间：两个数值"
+
+msgid "单一按键＋备用键"
+msgstr "单一按键＋备用键"
+
+msgid "单行文本"
+msgstr "单行文本"
+
+msgid "启用高级设置"
+msgstr "启用高级设置"
+
+msgid "困难"
+msgstr "困难"
+
+msgid "固定导航键，仅展示；不会保存到用户配置。"
+msgstr "固定导航键，仅展示；不会保存到用户配置。"
+
+msgid "固定按键"
+msgstr "固定按键"
+
+msgid "固定按键：Esc"
+msgstr "固定按键：Esc"
+
+msgid "基础设置"
+msgstr "基础设置"
+
+msgid "多分量数值"
+msgstr "多分量数值"
+
+msgid "多行文本"
+msgstr "多行文本"
+
+msgid "多选开关"
+msgstr "多选开关"
+
+msgid "多选：开关组"
+msgstr "多选：开关组"
+
+msgid "小数：无界输入"
+msgstr "小数：无界输入"
+
+msgid "小数：百分比显示"
+msgstr "小数：百分比显示"
+
+msgid "开关示例"
+msgstr "开关示例"
+
+msgid "开启高级设置后可编辑。"
+msgstr "开启高级设置后可编辑。"
+
+msgid "按键绑定"
+msgstr "按键绑定"
+
+msgid "效果强度"
+msgstr "效果强度"
+
+msgid "整数：数量"
+msgstr "整数：数量"
+
+msgid "文件选择"
+msgstr "文件选择"
+
+msgid "文字设置"
+msgstr "文字设置"
+
+msgid "无边框全屏时沿用屏幕尺寸，保留窗口分辨率草稿。"
+msgstr "无边框全屏时沿用屏幕尺寸，保留窗口分辨率草稿。"
+
+msgid "普通"
+msgstr "普通"
+
+msgid "枚举：字符串"
+msgstr "枚举：字符串"
+
+msgid "枚举：整数"
+msgstr "枚举：整数"
+
+msgid "模拟无边框全屏"
+msgstr "模拟无边框全屏"
+
+msgid "此开关用于测试父项控制子项的布局。开启时分辨率子项隐藏，关闭后可重新展开。"
+msgstr "此开关用于测试父项控制子项的布局。开启时分辨率子项隐藏，关闭后可重新展开。"
+
+msgid "特殊按键：鼠标枚举"
+msgstr "特殊按键：鼠标枚举"
+
+msgid "界面动画"
+msgstr "界面动画"
+
+msgid "目录选择"
+msgstr "目录选择"
+
+msgid "秒"
+msgstr "秒"
+
+msgid "空绑定：清空与重新录入"
+msgstr "空绑定：清空与重新录入"
+
+msgid "窗口分辨率"
+msgstr "窗口分辨率"
+
+msgid "简单"
+msgstr "简单"
+
+msgid "粒子特效"
+msgstr "粒子特效"
+
+msgid "组合按键"
+msgstr "组合按键"
+
+msgid "细节（三级）"
+msgstr "细节（三级）"
+
+msgid "联动与层级"
+msgstr "联动与层级"
+
+msgid "背景音乐"
+msgstr "背景音乐"
+
+
+msgid "调整窗口画面的输出分辨率。开启上方的无边框全屏示例后，父项的展开箭头会禁用；恢复窗口模式后保留之前的选择。"
+msgstr "调整窗口画面的输出分辨率。开启上方的无边框全屏示例后，父项的展开箭头会禁用；恢复窗口模式后保留之前的选择。"
+
+msgid "输入标题"
+msgstr "输入标题"
+
+
+msgid "选项设置"
+msgstr "选项设置"
+
+msgid "颜色样式"
+msgstr "颜色样式"
+
+msgid "颜色：RGBA"
+msgstr "颜色：RGBA"
+
+msgid "颜色：固定不透明"
+msgstr "颜色：固定不透明"
+
+msgid "高级效果（二级）"
+msgstr "高级效果（二级）"
+
+msgid "鼠标按键"
+msgstr "鼠标按键"
+
+msgid "空白小游戏"
+msgstr "空白小游戏"
+
+msgid "所有参赛者准备后倒计时三秒开局。每人点击一次「结束游戏」，按房主收到点击的先后排名。所有在线参赛者按完后显示本轮结算，退出者不排名。 大厅“本机设置”提供控件、协议继承/覆盖与保存测试；样例值不改变玩法。"
+msgstr "所有参赛者准备后倒计时三秒开局。每人点击一次「结束游戏」，按房主收到点击的先后排名。所有在线参赛者按完后显示本轮结算，退出者不排名。 大厅“本机设置”提供控件、协议继承/覆盖与保存测试；样例值不改变玩法。"
+
+msgid "game.finish"
+msgstr "结束游戏"
+
+msgid "game.waiting"
+msgstr "已结束，等待其他玩家"
+
+msgid "game.mouse"
+msgstr "鼠标左键"
+
+msgid "game.controls"
+msgstr "每人点击一次「结束游戏」，越早按下排名越高"
+
+msgid "game.results"
+msgstr "本轮结算"
+
+msgid "game.settings_hint"
+msgstr "在大厅 → 小游戏池 → 空白小游戏 → 本机设置中测试控件、继承与保存；样例设置不改变玩法。"
+
+msgid "game.hud_ready"
+msgstr "等待开局"
+
+msgid "game.hud_playing"
+msgstr "完成后点击结束"
+
+msgid "game.hud_controls"
+msgstr "滚轮缩放 · 中键拖动旋转 · Shift＋中键平移\n点击「结束游戏」完成本轮\nEsc：菜单"
+
+msgid "game.show_2d"
+msgstr "查看 2D 航道"
+
+msgid "game.show_3d"
+msgstr "查看 3D 展台"
+
+msgid "game.channel"
+msgstr "2D 航道"
+
+msgid "game.beacon_status"
+msgstr "航标  {current} / {total}"
+
+msgid "game.next_beacon"
+msgstr "前往下一航标"
+
+msgid "audio.hint_preview"
+msgstr "F6 预览音量立即生效，仅本次有效。配音是预录示例，不是玩家语音。"
+
+msgid "audio.hint_formal"
+msgstr "音量先调整，点应用保存为本游戏偏好；恢复继承使用协议设置。配音不是玩家语音。"
+
+msgid "audio.status"
+msgstr "音乐 {music} · 音效 {sfx} · 配音 {dialogue} · 排队 {queued} · 环境 {ambience} · UI {ui} · 压低 {duck} dB"
+
+msgid "audio.ended"
+msgstr "播放 #{id} 结束：{reason}"
+
+msgid "audio.voice_a"
+msgstr "欢迎来到音频测试。播放配音时，背景音乐会自动降低音量。"
+
+msgid "audio.voice_b"
+msgstr "注意，这是插播提示。你可以中断、排队或跳过这段配音。"
+
+msgid "game.preview"
+msgstr "画面预览"
+
+msgid "game.preview_controls"
+msgstr "滚轮缩放 · 中键拖动旋转\nShift＋中键平移"
+
+msgid "audio.title"
+msgstr "音频实验室"
+
+msgid "audio.close"
+msgstr "收起"
+
+msgid "audio.toggle"
+msgstr "音频测试"
+
+msgid "audio.music_a"
+msgstr "音乐 A · 循环"
+
+msgid "audio.music_b"
+msgstr "音乐 B · 淡切"
+
+msgid "audio.music_pause"
+msgstr "暂停音乐"
+
+msgid "audio.music_resume"
+msgstr "继续音乐"
+
+msgid "audio.music_stop"
+msgstr "淡出音乐"
+
+msgid "audio.click"
+msgstr "短音效"
+
+msgid "audio.impact"
+msgstr "撞击音效"
+
+msgid "audio.burst"
+msgstr "连发 20 次"
+
+msgid "audio.ambience_start"
+msgstr "环境循环"
+
+msgid "audio.ambience_stop"
+msgstr "停止环境"
+
+msgid "audio.voice_replace"
+msgstr "配音 · 中断插播"
+
+msgid "audio.voice_queue"
+msgstr "配音 · 加入队列"
+
+msgid "audio.voice_ignore"
+msgstr "忙碌时忽略"
+
+msgid "audio.voice_skip"
+msgstr "跳过当前配音"
+
+msgid "audio.voice_clear"
+msgstr "清空并停止配音"
+
+msgid "audio.pause_all"
+msgstr "暂停游戏音频"
+
+msgid "audio.resume_all"
+msgstr "继续游戏音频"
+
+msgid "audio.stop_all"
+msgstr "停止全部"
+
+msgid "audio.ui_click"
+msgstr "UI 音效（暂停可播）"
+
+msgid "audio.volume_heading"
+msgstr "分类音量"
+
+msgid "audio.master"
+msgstr "游戏总音量"
+
+msgid "audio.music"
+msgstr "背景音乐"
+
+msgid "audio.sfx"
+msgstr "游戏音效"
+
+msgid "audio.dialogue"
+msgstr "预录配音"
+
+msgid "audio.ambience"
+msgstr "环境声音"
+
+msgid "audio.ui"
+msgstr "游戏界面音效"
+
+msgid "audio.apply"
+msgstr "应用本游戏音量"
+
+msgid "audio.reset"
+msgstr "恢复继承 / 预览默认"
+
+msgid "audio.event_hint"
+msgstr "播放事件将在这里显示。"
+
+msgid "package.name"
+msgstr "空白小游戏"

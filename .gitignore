@@ -15,7 +15,7 @@
 # Portable installation/configuration; development sources remain under games/.
 # New minigames can be independent checkouts. The blank template belongs to this repo.
 /games/minigame/*/
-!/games/minigame/gp_blank/
+!/games/minigame/GP_blank/
 /protocols/*
 !/protocols/.gdignore
 /maingame/*
@@ -33,5 +33,5 @@
 /core/saves/
 
 # Local rhythm libraries; available in Godot, never included in Git publication.
-/games/assets/gp_rhythm_bad_apple/
+/games/assets/GP_rhythm_bad_apple/
 /games/assets/**/authoring/.editor_recovery/

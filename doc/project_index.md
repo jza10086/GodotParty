@@ -21,13 +21,13 @@
 
 - [小游戏状态](content/minigame_status.md)：保留人工完成度和备注，人数声明不等于验收结果。
 - [开发待办索引](content/content_development.md)：共享任务和各包最近记录。
-- [原版协议](../games/protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md)
-- [小游戏轮换](../games/maingame/godot_party_default_maingame_minigame_playlist/doc/godot_party_default_maingame_minigame_playlist_guide.md)
+- [原版协议](../games/protocols/GP_default_protocol/doc/GP_default_protocol_guide.md)
+- [小游戏轮换](../games/maingame/GP_minigame_playlist/doc/GP_minigame_playlist_guide.md)
 - [大富翁原型](../games/maingame/godot_party_default_main_game_millionaire/doc/godot_party_default_main_game_millionaire_guide.md)
 
 ## 资源与维护
 
-[资产登记与待核实来源](assets/project_asset_register.md) · [统一署名](assets/project_credits.md) · [BGM 候选](assets/project_bgm_candidates.md) · [许可范围](../ASSET_LICENSES.md) · [受限资产](../third_party_assets/restricted_assets_index.md) · [连通性诊断](development/connectivity_diagnostics.md) · [阿瓦隆历史恢复点](../games/minigame/gp_avalon/doc/gp_avalon_recovery.md)
+[资产登记与待核实来源](assets/project_asset_register.md) · [统一署名](assets/project_credits.md) · [BGM 候选](assets/project_bgm_candidates.md) · [许可范围](../ASSET_LICENSES.md) · [受限资产](../third_party_assets/restricted_assets_index.md) · [连通性诊断](development/connectivity_diagnostics.md) · [阿瓦隆历史恢复点](../games/minigame/GP_avalon/doc/GP_avalon_recovery.md)
 
 ## 文档组织约定
 

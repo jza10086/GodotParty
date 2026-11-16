@@ -100,7 +100,7 @@ Godot 4.7.2 下 `tmp/test/city_routes/route_test.gd` 验证全部节点可达、
 
 ## 画质与素材
 
-画质设置见 [原版协议](../../../protocols/godot_party_default_protocol/doc/godot_party_default_protocol_guide.md#共享画质本地偏好)。F6 读取当前资料槽的协议偏好，复用同一个设置 runtime。地图登记 World、Sun、Cells；未来正式接入后由框架作用域接管，移除 F6 桥接。
+画质设置见 [原版协议](../../../protocols/GP_default_protocol/doc/GP_default_protocol_guide.md#共享画质本地偏好)。F6 读取当前资料槽的协议偏好，复用同一个设置 runtime。地图登记 World、Sun、Cells；未来正式接入后由框架作用域接管，移除 F6 桥接。
 
 日光、环境、FOV、阴影距离等美术参数保持在场景中。默认观察距离 61m，缩放上限 82m，方向光阴影距离 85m。LOD 暂不启用。模型材质采用协议的局部采样副本，不污染共享资源。
 

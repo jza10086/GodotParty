@@ -21,7 +21,7 @@ var board: Resource
 @export_range(-180.0, 180.0) var overview_yaw: float = 35.0
 @export_range(20.0, 85.0) var overview_pitch: float = 48.0
 @export_group("")
-const Graphics = preload("res://games/protocols/godot_party_default_protocol/graphics_settings.gd")
+const Graphics = preload("res://games/protocols/GP_default_protocol/graphics_settings.gd")
 var _graphics: RefCounted
 var _preferences: PartyConfig
 var _target: Vector3 = Vector3.ZERO
@@ -108,7 +108,7 @@ func _start_graphics() -> bool:
 	var system: PartyInput = PartyInput.new()
 	var store: RefCounted = preload("res://core/config/party_config_store.gd").new(system.settings_path.get_base_dir(), catalog)
 	_preferences = PartyConfig.new()
-	if _preferences.initialize(store, "", "godot_party_default_protocol", {}) != OK:
+	if _preferences.initialize(store, "", "GP_default_protocol", {}) != OK:
 		push_error(_preferences.last_error)
 		return false
 	_graphics = Graphics.new()

@@ -1,5 +1,0 @@
-[gd_scene format=3]
-[ext_resource type="PackedScene" path="res://games/assets/godot_party_default_ui/profile_panel.tscn" id="view"]
-[ext_resource type="Script" path="res://games/protocols/godot_party_default_protocol/profile_panel.gd" id="controller"]
-[node name="ProfilePanel" instance=ExtResource("view")]
-script = ExtResource("controller")

@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_default_ui/source/ui/lobby_page.tscn" id="base"]
+[ext_resource type="Script" path="res://games/maingame/GP_minigame_playlist/room.gd" id="script"]
+
+[ext_resource type="Texture2D" path="res://games/maingame/GP_minigame_playlist/preview.svg" id="preview"]
+
+[node name="PlaylistRoom" instance=ExtResource("base")]
+script = ExtResource("script")
+
+[node name="MainPreview" parent="Insets/Layout/Cards/RoomColumn/PreviewFrame" index="0"]
+texture = ExtResource("preview")
