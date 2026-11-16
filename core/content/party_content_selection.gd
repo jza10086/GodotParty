@@ -38,6 +38,51 @@ static func resolve(catalog: RefCounted, requested: Array) -> Dictionary:
 	return {"ok": true, "ids": ids}
 
 
+## List direct and transitive requirements for export review, without changing the delivery selection.
+## Ownership and adapter protocol references have no version unless dependencies declares one.
+static func requirements(catalog: RefCounted, requested: Array[String]) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	var queue: Array[String] = requested.duplicate()
+	var visited: Dictionary[String, bool] = {}
+	while not queue.is_empty():
+		var id: String = queue.pop_front()
+		if visited.has(id) or not catalog.packages.has(id):
+			continue
+		visited[id] = true
+		var manifest: Dictionary = catalog.packages[id]
+		var dependencies: Dictionary = manifest.get("dependencies", {})
+		var edges: Array[Dictionary] = []
+		for dependency: String in dependencies:
+			edges.append({"id": dependency, "version": dependencies[dependency]})
+		var protocols: Array[String] = []
+		if manifest.kind == "maingame":
+			protocols.append(manifest.protocol.id)
+		elif manifest.kind == "avatars":
+			protocols.append(manifest.owner_protocol)
+		elif manifest.kind == "minigame":
+			for adapter: Dictionary in manifest.adapters:
+				protocols.append(adapter.protocol.id)
+				for dependency: String in adapter.get("dependencies", {}):
+					var edge: Dictionary = {"id": dependency, "version": adapter.dependencies[dependency]}
+					if not edges.has(edge):
+						edges.append(edge)
+		for protocol: String in protocols:
+			if not dependencies.has(protocol):
+				var edge: Dictionary = {"id": protocol, "version": ""}
+				if not edges.has(edge):
+					edges.append(edge)
+		for edge: Dictionary in edges:
+			result.append({"id": edge.id, "version": edge.version, "required_by": id})
+			queue.append(edge.id)
+	result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		if a.id != b.id:
+			return a.id < b.id
+		if a.required_by != b.required_by:
+			return a.required_by < b.required_by
+		return a.version < b.version)
+	return result
+
+
 ## Compute startup availability without loading content scripts or adapter-specific dependencies.
 static func unavailable_packages(packages: Dictionary) -> Dictionary:
 	var unavailable: Dictionary = {}

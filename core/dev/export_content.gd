@@ -74,7 +74,8 @@ func run() -> void:
 	if not workspace.is_empty():
 		builder.work_directory = workspace
 	var outputs: Dictionary = {}
-	for id: String in selection.ids:
+	# Dependencies are available in the build stage, but only explicit selections are delivered.
+	for id: String in requested:
 		var destination: String = output.path_join(Paths.package_relative(catalog.packages[id]))
 		var error: Error = DirAccess.make_dir_recursive_absolute(destination)
 		if error != OK:

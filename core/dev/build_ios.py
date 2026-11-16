@@ -142,7 +142,7 @@ def main():
         parser.error("Request requires core boolean and packages array")
     if not request["core"] and not request["packages"]:
         parser.error("Select core or at least one package")
-    if any(not isinstance(package, str) or not re.fullmatch(r"[a-z0-9_]+", package) for package in request["packages"]):
+    if any(not isinstance(package, str) or not re.fullmatch(r"GP_[a-z0-9]+(?:_[a-z0-9]+)*", package) for package in request["packages"]):
         parser.error("Invalid package ID")
     root = Path(__file__).resolve().parents[2]
     output = args.output.resolve()

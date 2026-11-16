@@ -6,6 +6,7 @@ const Selection = preload("res://core/content/party_content_selection.gd")
 var platform: String = "Windows"
 var _catalog: RefCounted
 var _tree: Tree
+var _dependencies: Tree
 var _directory: LineEdit
 var _browse: Button
 var _picker: FileDialog
@@ -22,7 +23,7 @@ var _poll: float = 0.0
 
 func _ready() -> void:
 	title = "GodotParty · 导出 " + platform + " 可玩包"
-	size = Vector2i(820, 720)
+	size = Vector2i(1120, 720)
 	min_size = Vector2i(660, 520)
 	exclusive = true
 	dialog_hide_on_ok = false
@@ -32,15 +33,26 @@ func _ready() -> void:
 	body.custom_minimum_size.x = 620
 	body.add_theme_constant_override("separation", 12)
 	add_child(body)
-	var heading: Label = Label.new()
-	heading.text = "导出内容"
-	body.add_child(heading)
+	var tabs: TabContainer = TabContainer.new()
+	tabs.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	tabs.custom_minimum_size.y = 400
+	body.add_child(tabs)
 	_tree = Tree.new()
+	_tree.name = "导出内容"
 	_tree.hide_root = true
-	_tree.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_tree.custom_minimum_size.y = 400
-	body.add_child(_tree)
+	tabs.add_child(_tree)
 	_tree.item_edited.connect(_item_edited)
+	_dependencies = Tree.new()
+	_dependencies.name = "必要依赖"
+	_dependencies.hide_root = true
+	_dependencies.columns = 4
+	_dependencies.column_titles_visible = true
+	for column: int in range(4):
+		_dependencies.set_column_title(column, ["依赖 ID", "要求版本", "依赖来源", "导出状态"][column])
+		_dependencies.set_column_expand(column, column == 0 or column == 2)
+	_dependencies.set_column_custom_minimum_width(1, 90)
+	_dependencies.set_column_custom_minimum_width(3, 170)
+	tabs.add_child(_dependencies)
 	var row: HBoxContainer = HBoxContainer.new()
 	body.add_child(row)
 	var label: Label = Label.new()
@@ -90,6 +102,7 @@ func open() -> void:
 	_catalog = Catalog.new()
 	_catalog.scan(false)
 	_tree.clear()
+	_dependencies.clear()
 	_items.clear()
 	_requested.clear()
 	var root: TreeItem = _tree.create_item()
@@ -153,12 +166,10 @@ func _set_requested(id: String, selected: bool) -> void:
 
 func _refresh_selection() -> void:
 	_selection = Selection.resolve(_catalog, _requested)
-	var ids: Array = _selection.get("ids", [])
 	for id: String in _items:
 		var item: TreeItem = _items[id]
-		var required: bool = ids.has(id) and not _requested.has(id)
-		item.set_checked(0, ids.has(id) or _requested.has(id))
-		item.set_editable(0, not required and _catalog.packages[id].get("playable", true))
+		item.set_checked(0, _requested.has(id))
+		item.set_editable(0, _catalog.packages[id].get("playable", true))
 		item.set_text(0, _package_label(_catalog.packages[id]))
 	for group: TreeItem in _tree.get_root().get_children():
 		if group == _core:
@@ -170,13 +181,29 @@ func _refresh_selection() -> void:
 			selected += int(child.is_checked(0))
 		group.set_checked(0, total > 0 and selected == total)
 		group.set_indeterminate(0, selected > 0 and selected < total)
-	var description: String = "已选择 %d 个内容包（含依赖）。" % ids.size()
+	_refresh_dependencies()
+	var description: String = "已选择 %d 个内容包。" % _requested.size()
 	if platform == "iOS":
 		description += "GitHub 云构建：仅使用已推送的当前提交，不包含未提交修改。勾选核心生成需 SideStore 重签的 IPA；输出目录接收下载产物。需先运行 gh auth login。"
 	else:
 		description += "勾选核心生成测试签名 APK；内容 ZIP 可在游戏中导入，重启后生效。" if platform == "Android" else "保留个人配置；正式外置文件随包更新。请先退出目标目录中的游戏。"
 	_status.text = description if _selection.ok else _selection.error
 	_update_button()
+
+func _refresh_dependencies() -> void:
+	_dependencies.clear()
+	var root: TreeItem = _dependencies.create_item()
+	for dependency: Dictionary in Selection.requirements(_catalog, _requested):
+		var item: TreeItem = _dependencies.create_item(root)
+		var included: bool = _requested.has(dependency.id)
+		item.set_text(0, dependency.id)
+		item.set_text(1, dependency.version if not dependency.version.is_empty() else "未限定")
+		item.set_text(2, dependency.required_by)
+		item.set_text(3, "已勾选" if included else "未随本次导出")
+		for column: int in range(4):
+			item.set_tooltip_text(column, item.get_text(column))
+			if not included:
+				item.set_custom_color(column, Color("#ffd166"))
 
 func _update_button() -> void:
 	get_ok_button().disabled = _busy() or not _selection.ok or (_requested.is_empty() and not _core.is_checked(0)) or not _directory.text.is_absolute_path()

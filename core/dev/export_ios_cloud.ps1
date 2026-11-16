@@ -26,7 +26,7 @@ function Check-Target([string]$path) {
     }
 }
 if ($request.platform -ne 'iOS' -or $request.core -isnot [bool] -or $request.packages -isnot [Array] -or (!$request.core -and !$request.packages.Count)) { throw 'Invalid iOS export request' }
-foreach ($id in $request.packages) { if ($id -isnot [string] -or $id -cnotmatch '^[a-z0-9_]+$') { throw 'Invalid package ID' } }
+foreach ($id in $request.packages) { if ($id -isnot [string] -or $id -cnotmatch '^GP_[a-z0-9]+(?:_[a-z0-9]+)*$') { throw 'Invalid package ID' } }
 if (![IO.Path]::IsPathRooted($request.output)) { throw 'Export directory must be absolute' }
 $output = [IO.Path]::GetFullPath($request.output).TrimEnd('\','/')
 if ($output -eq $job -or $output.StartsWith($job + '\',[StringComparison]::OrdinalIgnoreCase) -or $job.StartsWith($output + '\',[StringComparison]::OrdinalIgnoreCase)) { throw 'Output and build job directories must not overlap' }

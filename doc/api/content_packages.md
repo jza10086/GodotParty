@@ -46,9 +46,9 @@ ENet 保留有界分块、取消、路径和长度校验；内容同步提议读
 
 编辑器打开“项目 → 工具 → GodotParty：导出 Windows 可玩包”。界面分别列出核心、协议、形象包、资产包、主游戏和小游戏；各类包均可独立勾选，再选择输出目录。点击开始导出后显示阶段进度条、当前阶段、错误和构建日志目录。进度按实际完成的阶段计数，不表示剩余时间；iOS 云端排队、构建及下载使用不定进度显示，全部产物发布成功后才完成。导出由独立 PowerShell 进程运行，关闭窗口、卸载插件或退出编辑器均不等待构建；任务继续完成，结果保存在任务目录的 `job-result.json`，完整记录在 `export.log`。同一编辑器内重开窗口可继续查看正在运行的任务。空闲时每次打开窗口都会扫描 `games/{protocols,maingame,minigame,assets}/<id>/manifest.json`，形象包扫描 `games/protocols/<协议ID>/avatars/<id>/manifest.json`。所有类别按“ID 版本号”显示（如 GP_auction_master 0.0.1），导出窗口不读取本地化名称；核心行显示框架版本。包 ID 读取清单的 `id`，用于依赖引用和导出安装路径；缺失、无效或与源码目录不符时明确报错。
 
-勾选内容会自动补齐满足范围的依赖、所属协议以及小游戏适配器的协议和依赖；自动勾选项锁定，行名保持“名称 版本号”格式。导出会包含所选小游戏的全部已声明适配器依赖。主游戏的小游戏池由房主在运行时选择，导出主游戏不会自动打包所有候选小游戏。取消核心后，协议、形象、资产、主游戏和小游戏均可独立导出为安装目录（含各包 PCK、描述及正式外置数据），只自动补齐必需依赖，不附带其他类别的全部内容。勾选核心时同时构建 Windows x64 EXE，也可只导出核心。
+Windows、Android、iOS 只交付手动勾选的内容，不自动补选或锁定依赖。“必要依赖”标签页实时列出所选内容的直接与间接依赖，包括声明的协议、资产包、形象包、所属协议和小游戏全部适配器依赖，显示依赖 ID、要求版本、依赖来源及导出状态；未一起勾选的必要依赖以黄色显示，仅提示，不因此阻止导出。未声明版本的所属协议或适配器引用显示“未限定”。构建暂存仍包含完整依赖以供导入和编译，本地缺包、版本不符或声明错误仍明确失败。更新单个包时可依赖目标安装目录已有的包；新安装需自行勾选完整依赖。主游戏的小游戏池由房主在运行时选择，导出主游戏不会自动打包所有候选小游戏。取消核心后，协议、形象、资产、主游戏和小游戏均可独立导出为安装目录（含各包 PCK、描述及正式外置数据），不自动附带未勾选的依赖或其他内容。勾选核心时同时构建 Windows x64 EXE，也可只导出核心。
 
-原版协议包含两个独立形象包。GP_default_avatars_2d 提供六个 2D 头像，GP_default_avatars 提供 Cube 3D 占位。包均位于 protocols/<协议ID>/avatars/<包ID>/，默认依赖会一起勾选。旧玩家资料中的协议内头像引用需在个人资料界面重新选择并应用。
+原版协议包含两个独立形象包。GP_default_avatars_2d 提供六个 2D 头像，GP_default_avatars 提供 Cube 3D 占位。包均位于 protocols/<协议ID>/avatars/<包ID>/，协议将它们声明为必要依赖，在依赖页提示是否一起导出。旧玩家资料中的协议内头像引用需在个人资料界面重新选择并应用。
 
 选择项目外目录，或本项目 tmp/releases/ 下的目录（验收产物可放 tmp/test/）。后台使用 PATH 上的 godot 和匹配的 Windows 模板，在 tmp/exports/ 下构建核心副本、日志和中间产物。核心副本排除内容、开发插件、个人 JSON 配置和存档，并关闭场景文本到二进制转换以保留嵌套 UI。不会启动项目升级。
 
@@ -56,7 +56,7 @@ ENet 保留有界分块、取消、路径和长度校验；内容同步提议读
 
 完整安装目录可直接通过 Windows 文件资源管理器合并。也可在内容管理中选择含描述的包文件夹；单独一个 PCK 不提供识别所需的目录信息。首次分发时不要附带测试启动生成的 core/config/settings.json，避免复制 player_id。应用偏好后生成的 JSON 位于各包 config/ 下，退出游戏后可以手动编辑。
 
-`core/dev/export_job.ps1` 是窗口的后台入口，接收 `RequestPath` 指向的 JSON，按平台调用本地 `export_release.ps1` 或 iOS 云导出后端。命令行也建议调用该入口，以保留任务锁和完成结果。请求包含 core 布尔值、output 绝对目录和 packages 包 ID 数组。export_windows_host.ps1 可单独构建核心；export_windows_minimal.ps1 是原版轮换与阿瓦隆的预设，复用同一后端和依赖计算。运行后仍需检查正式菜单、设置和实际开局；导出成功不等于多人或外网验收。
+`core/dev/export_job.ps1` 是窗口的后台入口，接收 `RequestPath` 指向的 JSON，按平台调用本地 `export_release.ps1` 或 iOS 云导出后端。命令行也建议调用该入口，以保留任务锁和完成结果。请求包含 core 布尔值、output 绝对目录和 packages 包 ID 数组。export_windows_host.ps1 可单独构建核心；export_windows_minimal.ps1 是原版轮换与阿瓦隆的预设，显式选中所需协议、UI 和两种形象包，复用同一后端。运行后仍需检查正式菜单、设置和实际开局；导出成功不等于多人或外网验收。
 
 ## 可视化 Android 导出
 
@@ -88,7 +88,7 @@ APK 构建成功仅证明导出流程完成。真机验收需检查首次启动�
 
 Windows 本机需要 Git、GitHub CLI 和 PATH 上的 Godot；先运行 `gh auth login -h github.com`，账户需要该仓库 Actions 的运行权限。后端 `core/dev/export_ios_cloud.ps1` 使用 origin 指向的 GitHub 仓库，只构建已推送的当前 HEAD；未提交修改不会进入云端，尚未推送的提交明确失败。窗口显示提交、工作流链接及构建阶段；详细记录在本次 `tmp/exports/` 目录。修改源码或内容后，应先提交并推送相关小游戏子模块，再推送主仓库引用。
 
-`.github/workflows/build-ios.yml` 在 macOS/Xcode 上检出指定提交及其子模块，安装与本机 Godot 相同版本的编辑器和 iOS 模板。`core/dev/build_ios.py` 与 Android 后端直接共用 `core/dev/export_mobile_content.ps1` 内容导出入口（不调用 Android APK 导出器），自动补齐依赖、重新导入资源，再构建独立的 iOS 框架工程。框架声明 `ios`，使用 Compatibility 渲染、横屏、触摸模拟左键；左上角 Esc 第一次触碰只显现，再点击才发送 Esc。移动端玩法仍须实际适配触摸与设备能力，包版本检查不代替真机验证。
+`.github/workflows/build-ios.yml` 在 macOS/Xcode 上检出指定提交及其子模块，安装与本机 Godot 相同版本的编辑器和 iOS 模板。`core/dev/build_ios.py` 与 Android 后端直接共用 `core/dev/export_mobile_content.ps1` 内容导出入口（不调用 Android APK 导出器），暂存完整构建依赖、重新导入资源，只交付勾选的内容，再构建独立的 iOS 框架工程。框架声明 `ios`，使用 Compatibility 渲染、横屏、触摸模拟左键；左上角 Esc 第一次触碰只显现，再点击才发送 Esc。移动端玩法仍须实际适配触摸与设备能力，包版本检查不代替真机验证。
 
 IPA 面向 ARM64 iPad/iPhone，仅带 ad-hoc 签名，必须导入 SideStore 重签安装，不能直接安装，也不是 TestFlight/App Store 包。本流程不接收 Apple 证书。GitHub 保留可玩产物 14 天、构建日志 7 天；构建失败时查看运行链接中的诊断产物。
 
@@ -109,7 +109,7 @@ iOS 配置和内置内容安装到应用私有存储，保留已有玩家配置�
 
 资产包位于 `games/assets/<id>/`，默认导出到 `assets/<id>/`，通过 `content.pck.json` 识别。ID 来自清单且源码目录名须与其一致；作者 manifest 必须含 `id`、`kind: "assets"`、`package_version`、`remark`、`framework_version`、`supported_languages` 六个字段，框架版本精确匹配。可选 `special_type` 标记资产包类型；霓虹节拍曲库声明 `special_type: "rhythm_library"` 和 `songs` 曲目资源相对路径数组。结构与制作方式见 [曲库资产包](external_resources.md)。资产包可包含代码、场景、素材、文档等公共内容，不声明平台、入口、设置或其他内容依赖；包内互相引用，包外仅引用框架公开内容。资产包之间不得相互引用。
 
-协议和游戏用原有 dependencies 声明资产包的版本范围，在编辑器直接引用资产包路径。导出自动补齐依赖，PCK 仅收集所属包的文件与导入产物；发布版下载、排队安装和重启规则保持一致。资产包源码 ZIP 默认命名为 `<id>.zip`，导入始终读取其中 manifest 的 `id`，重命名 ZIP 不改变包身份。PCK 描述仍由工具生成，不增加作者维护字段，使用相同构建标识与按需加载流程。
+协议和游戏用原有 dependencies 声明资产包的版本范围，在编辑器直接引用资产包路径。导出依赖页提示所需资产包，是否随包交付由作者勾选；PCK 仅收集所属包的文件与导入产物；发布版下载、排队安装和重启规则保持一致。资产包源码 ZIP 默认命名为 `<id>.zip`，导入始终读取其中 manifest 的 `id`，重命名 ZIP 不改变包身份。PCK 描述仍由工具生成，不增加作者维护字段，使用相同构建标识与按需加载流程。
 
 小游戏轻量定义可声明 `asset_types`，由房主在房间依赖中纳入匹配类型的候选资产包，客机仅使用房主集合。此过程不挂载 PCK；首次加载所选资源才激活。导出时由作者显式选择要分发的可选曲库，不自动打包所有本地曲库。
 
