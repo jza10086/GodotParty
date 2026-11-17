@@ -15,15 +15,14 @@ games/assets/my_rhythm_library/
   charts/
     my_song/
       song.tres
-      easy.tres
       easy.json
-      hard.tres
+      normal.json
       hard.json
   authoring/
   LICENSES/
 ```
 
-music/ 放音乐资源；charts/ 内按曲目建立子文件夹。song.tres 绑定一个音源和各难度谱面资源；谱面 .tres 再引用音符 JSON。扫描时以声明中的类型和曲目列表为准，不通过文件夹名称猜测曲目，也不递归加载全部 .tres。
+music/ 放音乐资源；charts/ 内按曲目建立子文件夹。song.tres 绑定一个音源，charts 数组直接内嵌各难度 PartyMusicChart 子资源；子资源引用同目录音符 JSON，不再为每个难度单独保存 .tres。扫描时以声明中的类型和曲目列表为准，不通过文件夹名称猜测曲目，也不递归加载全部 .tres。
 
 ## 声明
 
@@ -58,8 +57,8 @@ special_type 是特殊类型标识；霓虹节拍识别 rhythm_library。songs �
 1. 创建资产包目录与 manifest.json，填写上述类型标识。
 2. 把音乐放入 music/，等待 Godot 正常导入。当前谱面工具支持 OGG / WAV。
 3. 在 charts/ 下建立曲目子目录。制作或复制谱面 JSON，用霓虹节拍 authoring/chart_editor.tscn 编辑；工具会扫描标记为 rhythm_library 的资产包的 music/ 与 charts/。
-4. 为每个难度创建 PartyMusicChart，保存为 .tres；设置 difficulty、chart_path（通过 Inspector 选择 res:// JSON 路径）和 base_score。
-5. 创建 PartyMusicSong，填写 resource_name，绑定 music，并把各难度 .tres 拖入 charts。只有绑定的谱面会参与正式玩法。
+4. 创建 PartyMusicSong 并保存为曲目 .tres，填写 resource_name，绑定 music。
+5. 在曲目的 charts 数组中直接新建 PartyMusicChart 子资源，设置 difficulty、chart_path（通过 Inspector 选择 res:// JSON 路径）和 base_score；随曲目一起保存，不单独落盘。只有绑定的谱面会参与正式玩法。
 6. 将曲目资源路径加入声明 songs。原生工具保存/另存谱面 JSON 后，新增难度和新曲目的 .tres 绑定及声明仍由作者在 Inspector 中维护，不自动改写。
 7. 编辑器重新运行即可发现新曲库，不需要构建 PCK。正式分发时，在导出工具中同时选择小游戏与要发布的曲库；曲库可独立导出、更新。导出小游戏不会隐式发布电脑上的全部个人曲库。
 
@@ -67,7 +66,7 @@ special_type 是特殊类型标识；霓虹节拍识别 rhythm_library。songs �
 
 JSON 音符格式仍为 format_version 3，保留 notes_ms、lanes、durations_ms、subs_ms 等字段。audio_file 可填写 res:// 音源路径，使制作工具能访问 music/ 中的文件，也支持谱面同目录的音源文件名。正式玩法以 PartyMusicSong.music 为准，不会按 JSON 字段改换音源；difficulty 与 base_score 以绑定的 PartyMusicChart 为准。
 
-当前本地 Bad Apple 短版和完整版位于 games/assets/GP_rhythm_bad_apple/，整包被主仓库 .gitignore 排除，仍可在 Godot 中发现；本轮未发布。旧本地原始曲目和编辑恢复记录保留，小游戏的 export_ignore.txt 排除原 charts/，避免重复打入小游戏 PCK。
+当前本地 Bad Apple 短版位于 games/assets/GP_rhythm_bad_apple/，唯一曲目资源为 charts/bad_apple_short/badapple_short.tres，内嵌 Easy / Normal / Hard 并引用 easy.json / normal.json / hard.json；完整版及旧工程归档于 authoring/，不进入选曲或发布。整包被主仓库 .gitignore 排除，仍可在 Godot 中发现；本轮未发布。旧本地原始曲目和编辑恢复记录保留，小游戏的 export_ignore.txt 排除原 charts/，避免重复打入小游戏 PCK。
 
 ## 发现、加载和联机
 
