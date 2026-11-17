@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="panel"]
 
 [node name="PlayerRow" instance=ExtResource("panel")]
-custom_minimum_size = Vector2(0, 68)
+custom_minimum_size = Vector2(0, 52)
 size_flags_horizontal = 3
 
 [node name="Line" type="HBoxContainer" parent="."]

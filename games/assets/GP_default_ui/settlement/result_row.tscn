@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [node name="ResultRow" type="HBoxContainer"]
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 theme_override_constants/separation = 28
 

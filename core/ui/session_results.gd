@@ -36,13 +36,13 @@ func configure(presentation: Dictionary, players: Array[Dictionary], format_metr
 		style.bg_color = Color("#203c49") if rank_value == 1 else Color(0.12, 0.15, 0.19, 0.85)
 		style.content_margin_left = 24
 		style.content_margin_right = 24
-		style.content_margin_top = 12
-		style.content_margin_bottom = 12
+		style.content_margin_top = 6
+		style.content_margin_bottom = 6
 		style.set_corner_radius_all(8)
 		panel.add_theme_stylebox_override("panel", style)
 		%Rows.add_child(panel)
 		var line: HBoxContainer = HBoxContainer.new()
-		line.custom_minimum_size.y = 42
+		line.custom_minimum_size.y = 34
 		panel.add_child(line)
 		_add_line(line, str(rank_value) if rank_value > 0 else "—", row.get("name", " / ".join(member_names)), row.get("status", ""), metrics, rank_value == 1)
 	%Return.grab_focus()

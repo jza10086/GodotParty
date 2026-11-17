@@ -66,7 +66,7 @@ size_flags_stretch_ratio = 0.8
 
 
 [node name="Content" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard" type="VBoxContainer"]
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="Heading" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" type="HBoxContainer"]
 theme_override_constants/separation = 16
@@ -81,7 +81,7 @@ size_flags_horizontal = 3
 
 [node name="PlayerCount" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/Heading" type="Label"]
 unique_name_in_owner = true
-text = "0 / 10 人"
+text = "0 / 12 人"
 theme_override_font_sizes/font_size = 23
 vertical_alignment = 1
 mouse_filter = 2
@@ -98,40 +98,58 @@ mouse_filter = 2
 
 [node name="AllowedPlayerCounts" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content/AllowedPlayers" type="Label"]
 unique_name_in_owner = true
-text = "1-10 人]"
+text = "1-12 人]"
 theme_override_font_sizes/font_size = 21
 vertical_alignment = 1
 mouse_filter = 2
 
 [node name="Slot0" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
 
 [node name="Slot1" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
 
 [node name="Slot2" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
 
 [node name="Slot3" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
 
 [node name="Slot4" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
 
 [node name="Slot5" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
 
 [node name="Slot6" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
 
 [node name="Slot7" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
 
 [node name="Slot8" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
 
 [node name="Slot9" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+
+[node name="Slot10" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+
+[node name="Slot11" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard/Content" instance=ExtResource("player_card")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
 
 [node name="RoomColumn" parent="Insets/Layout/Cards" type="VBoxContainer"]
 theme_override_constants/separation = 10

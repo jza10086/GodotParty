@@ -75,7 +75,7 @@ func _render() -> void:
 		if first == 0 or second == 0:
 			return second == 0
 		return first < second)
-	for entry: Dictionary in ordered.slice(0, 8):
+	for entry: Dictionary in ordered:
 		_add_row(entry.row)
 
 func _add_row(row: Dictionary) -> void:

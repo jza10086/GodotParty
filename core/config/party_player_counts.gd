@@ -3,8 +3,8 @@
 extends RefCounted
 
 const Schema = preload("res://core/config/party_schema.gd")
-const MAX_PLAYERS: int = 10
-const ALL: Array[int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+const MAX_PLAYERS: int = 12
+const ALL: Array[int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 static func valid_counts(value: Variant) -> bool:
 	if not value is Array or value.is_empty():
@@ -23,7 +23,7 @@ static func validate(manifest: Dictionary) -> String:
 	if manifest.has("min_players") or manifest.has("max_players"):
 		return "Use player_counts instead of min_players/max_players"
 	if manifest.get("kind") not in ["avatars", "assets"] and not valid_counts(manifest.get("player_counts")):
-		return "player_counts must be a nonempty set of integers between 1 and 10"
+		return "player_counts must be a nonempty set of integers between 1 and %d" % MAX_PLAYERS
 	var rules: Variant = manifest.get("player_count_rules", [])
 	if not rules is Array:
 		return "player_count_rules must be an array"

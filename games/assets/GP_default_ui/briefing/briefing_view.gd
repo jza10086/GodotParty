@@ -230,7 +230,7 @@ func _render_roster() -> void:
 		_live_roster = true
 	var active_ids: Array[String] = []
 	for player: Dictionary in _rows:
-		if not player.connected or active_ids.size() == 8:
+		if not player.connected:
 			continue
 		var id: String = player.player_id
 		active_ids.append(id)
