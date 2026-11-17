@@ -13,6 +13,8 @@ var _prefixes: Dictionary = {}
 var _extras: Array[Dictionary] = []
 var _tabs: Array[Dictionary] = []
 var _selected: int = 0
+var _dragging_tab_track: bool = false
+var _tab_drag_offset: float = 0.0
 
 func _ready() -> void:
 	add_to_group(&"settings_workspace")
@@ -29,6 +31,7 @@ func _ready() -> void:
 	%TabScroll.get_h_scroll_bar().value_changed.connect(func(_value: float) -> void: _update_scroll_indicator())
 	%TabScroll.get_h_scroll_bar().changed.connect(_update_scroll_indicator)
 	%TabTrack.resized.connect(_update_scroll_indicator)
+	%TabTrack.gui_input.connect(_on_tab_track_input)
 
 func set_title(value: String) -> void:
 	%Heading.text = value
@@ -230,6 +233,29 @@ func _input(event: InputEvent) -> void:
 	if direction != 0:
 		%TabScroll.scroll_horizontal += roundi(direction * 120.0 * event.factor)
 		get_viewport().set_input_as_handled()
+
+## Clicking the track centers the thumb; dragging the thumb preserves the grab point.
+func _on_tab_track_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		_dragging_tab_track = event.pressed
+		if event.pressed:
+			var thumb: Control = %TabThumb
+			_tab_drag_offset = event.position.x - thumb.position.x if thumb.get_rect().has_point(event.position) else thumb.size.x * 0.5
+			_move_tab_track(event.position.x)
+		%TabTrack.accept_event()
+	elif event is InputEventMouseMotion and _dragging_tab_track:
+		_dragging_tab_track = (event.button_mask & MOUSE_BUTTON_MASK_LEFT) != 0
+		if _dragging_tab_track:
+			_move_tab_track(event.position.x)
+			%TabTrack.accept_event()
+
+func _move_tab_track(pointer_x: float) -> void:
+	var travel: float = %TabTrack.size.x - 4.0 - %TabThumb.size.x
+	if travel <= 0.0:
+		return
+	var bar: HScrollBar = %TabScroll.get_h_scroll_bar()
+	var fraction: float = clampf((pointer_x - 2.0 - _tab_drag_offset) / travel, 0.0, 1.0)
+	bar.value = fraction * (bar.max_value - bar.page)
 
 func _update_scroll_indicator() -> void:
 	var bar: HScrollBar = %TabScroll.get_h_scroll_bar()
