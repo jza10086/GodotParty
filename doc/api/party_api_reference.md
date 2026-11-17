@@ -1,6 +1,6 @@
 # PartyAPI / PartyNet 参考
 
-版本：框架 0.0.1，唯一版本来源为 core/framework_version.gd。实例由 core 注入，不要自行创建“当前游戏”全局单例。
+版本：框架 0.0.2，唯一版本来源为 core/framework_version.gd。实例由 core 注入，不要自行创建“当前游戏”全局单例。
 
 ## PartyAPI
 
