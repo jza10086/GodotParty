@@ -62,7 +62,7 @@ func _translation(package: Dictionary, language: String) -> Translation:
 		package.translations[language] = resource
 	return package.translations[language]
 
-## Full translation checks are used by the core and package publishing tools.
+## Validate translation resources; incomplete text and placeholder differences only warn.
 func register_package(package_id: String, declaration: Dictionary, root: String) -> Error:
 	last_error = validate_declaration(declaration)
 	if not last_error.is_empty():
@@ -83,13 +83,13 @@ func register_package(package_id: String, declaration: Dictionary, root: String)
 			var source: String = fallback.get_message(key)
 			var target: String = translation.get_message(key)
 			if source.is_empty():
-				return _fail(package_id + ": missing fallback message " + key)
+				push_warning(package_id + ": missing fallback message " + key)
 			if not target.is_empty() and _placeholders(source) != _placeholders(target):
-				return _fail(package_id + ": placeholder mismatch " + language + "/" + key)
+				push_warning(package_id + ": placeholder mismatch " + language + "/" + key)
 	_packages[package_id] = {"declaration": declaration.duplicate(true), "translations": translations}
 	return OK
 
-## Catalog metadata/schema keys are known before activation, so reject missing defaults there.
+## Report incomplete metadata/schema translations without blocking publication.
 func validate_messages(package_id: String, manifest: Dictionary, schema: Dictionary) -> Error:
 	var keys: Array[String] = []
 	if package_id != "core":
@@ -103,7 +103,7 @@ func validate_messages(package_id: String, manifest: Dictionary, schema: Diction
 		_spec_keys(group, keys)
 	for key: String in keys:
 		if not has_message(package_id, key):
-			return _fail(package_id + ": missing fallback message " + key)
+			push_warning(package_id + ": missing fallback message " + key)
 	return OK
 
 func _spec_keys(spec: Dictionary, keys: Array[String]) -> void:
@@ -150,7 +150,7 @@ func has_message(package_id: String, key: StringName) -> bool:
 	var fallback: Translation = _translation(package, package.declaration.fallback_locale)
 	return fallback != null and not fallback.get_message(key).is_empty()
 
-## Missing target messages use this package's declared fallback. Missing fallback is an author error.
+## Use the package fallback language, then the source key when a message is untranslated.
 func text(package_id: String, key: StringName, parameters: Dictionary = {}) -> String:
 	var package: Dictionary = _packages[package_id]
 	var translation: Translation = _translation(package, effective_locale(package_id))
@@ -162,8 +162,8 @@ func text(package_id: String, key: StringName, parameters: Dictionary = {}) -> S
 		if fallback != null:
 			message = fallback.get_message(key)
 	if message.is_empty():
-		push_error("Missing localization message: " + package_id + "/" + str(key))
-		return "[MISSING " + package_id + "/" + str(key) + "]"
+		push_warning("Missing localization message: " + package_id + "/" + str(key))
+		message = str(key)
 	return message.format(parameters)
 
 ## Translate a copy's presentation only. Defaults, values, conditions and action IDs are untouched.

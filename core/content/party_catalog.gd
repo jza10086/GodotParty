@@ -97,8 +97,8 @@ func register_manifest(path: String, load_names: bool = true) -> Error:
 			if not display_name.is_empty():
 				manifest.localized_names[language] = display_name
 		if not manifest.localized_names.has(Localization.DEFAULT_LOCALE):
-			errors.append(path + ": missing zh_Hans package.name")
-			return ERR_INVALID_DATA
+			push_warning(path + ": missing zh_Hans package.name; using package ID")
+			manifest.localized_names[Localization.DEFAULT_LOCALE] = id
 		manifest.name = manifest.localized_names[Localization.DEFAULT_LOCALE]
 	packages[id] = manifest
 	i18n.declare_package(id, manifest.localization, manifest._root)

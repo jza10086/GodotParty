@@ -6,7 +6,7 @@
 
 manifest 的 `supported_languages` 声明作者确认支持的语言，目前所有内容仅声明 `["zh-CN"]`（简体中文）。此字段是发布信息，不改变本机语言偏好或翻译加载逻辑；现有 `en.po` 不代表完整英文支持。翻译资源路径仍从 `i18n/<locale>.po` 自动发现。声明使用 `zh-CN`，现有 Godot 翻译文件及内部语言代码继续使用 `zh_Hans`，无需重命名。当前界面提供 `zh_Hans` 和 `en`，回退语言为 `zh_Hans`；PO 的 Language 头必须与文件名一致。框架自身仍用 `core/i18n/localization.json`。资源按首次使用加载，不做启动全包翻译预审。
 
-每个包根据原始本机偏好独立选择，不继承框架、协议或主游戏已回退的语言。缺少英文条目时使用本包中文条目。缺失资源、无效声明、错误资源类型、语言不符、命名占位符不一致和缺少中文条目明确失败；缺少中文不是正常回退。
+每个包根据原始本机偏好独立选择，不继承框架、协议或主游戏已回退的语言。缺少英文条目时使用本包中文条目；中文条目也缺失时记录警告，直接显示消息键（使用中文源文作键时即显示原文），并继续参数格式化。缺词条、命名占位符不一致只提示，不阻止启动或导出；缺失资源、无效声明、错误资源类型和语言不符仍明确失败。
 
 ## 作者接口
 
@@ -18,13 +18,13 @@ var shared_text: String = api.i18n.text(&"briefing.ready", {}, api.protocol_id)
 var language: String = api.i18n.effective_locale()
 ```
 
-`text(key: StringName, parameters: Dictionary = {}, package_id: String = "") -> String` 默认查当前包，显式包 ID 可查协议或 core。键按包隔离；先翻译完整句子，再用 `{name}` 格式化。新增动态文案优先使用稳定键。未知键报告错误并显示 `[MISSING 包/键]`。
+`text(key: StringName, parameters: Dictionary = {}, package_id: String = "") -> String` 默认查当前包，显式包 ID 可查协议或 core。键按包隔离；先翻译完整句子，再用 `{name}` 格式化。新增动态文案可使用稳定键并提供中文译文，或直接使用中文源文作为键。未知键只警告并显示键本身。
 
 目前只在主菜单提供切换入口，游戏入场时读取当前语言，不实现游戏内语言设置页。重建主游戏或小游戏界面时使用最新偏好。网络应传递业务事件/消息码及参数，在客户端展示时翻译，不广播已翻译文案。
 
 ## 清单与设置
 
-包名称统一使用固定消息键 `package.name`，manifest 不再声明 name；中文条目必须非空，其他语言缺失时回退中文。编辑器扫描读取这些小型名称资源，导出保存各语言名称快照，发布版显示名称不挂载 PCK。玩法界面文案及 Schema 的 title、description、placeholder、suffix、disabled_reason、labels 直接作为 PO 消息键。可以用中文源文作为键，也可以填写稳定键并在中文 PO 提供译文。首次显示时加载所用语言并缓存；实际读取时报告缺失翻译。
+包名称统一使用固定消息键 `package.name`，manifest 不再声明 name；其他语言缺失时回退中文，中文名称缺失时警告并使用包 ID。编辑器扫描读取这些小型名称资源，导出保存各语言名称快照，发布版显示名称不挂载 PCK。玩法界面文案及 Schema 的 title、description、placeholder、suffix、disabled_reason、labels 直接作为 PO 消息键。可以用中文源文作为键，也可以填写稳定键并在中文 PO 提供译文。首次显示时加载所用语言并缓存；实际读取时警告缺失翻译。
 
 翻译不修改 default、values、enabled_when、字段 ID、动作名或保存值。选择控件用 labels 提供可译标签，多选开关用 items.labels，与 items.values 一一对应。继承的协议设置仍使用协议语言。昵称、聊天、预设名称及用户输入的文本偏好原样显示。
 
