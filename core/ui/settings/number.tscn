@@ -29,6 +29,7 @@ size_flags_horizontal = 3
 alignment = 2
 
 [node name="Value" parent="Controls" unique_id=527327686 instance=ExtResource("ar_h_slider")]
+theme = ExtResource("field_theme")
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2

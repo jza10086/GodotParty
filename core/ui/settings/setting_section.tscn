@@ -4,30 +4,35 @@
 
 
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/card.tscn" id="ar_card"]
+[ext_resource type="Theme" path="res://core/ui/settings/field_theme.tres" id="field_theme"]
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
 
 [node name="SettingSection" type="VBoxContainer"]
-theme_override_constants/separation = 14
+theme = ExtResource("ambient")
+theme_override_constants/separation = 8
 script = ExtResource("script")
 [node name="RowFrame" parent="." instance=ExtResource("ar_card")]
 unique_name_in_owner = true
+theme = ExtResource("field_theme")
+theme_type_variation = &"SettingsGroup"
 [node name="Column" type="VBoxContainer" parent="RowFrame"]
 theme_override_constants/separation = 0
 mouse_filter = 1
 [node name="HeaderHit" type="MarginContainer" parent="RowFrame/Column"]
 unique_name_in_owner = true
 mouse_filter = 0
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_bottom = 4
 [node name="Header" type="HBoxContainer" parent="RowFrame/Column/HeaderHit"]
 unique_name_in_owner = true
 mouse_filter = 1
-custom_minimum_size = Vector2(0, 62)
+custom_minimum_size = Vector2(0, 48)
 theme_override_constants/separation = 10
 [node name="Title" type="Label" parent="RowFrame/Column/HeaderHit/Header"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 52)
+custom_minimum_size = Vector2(260, 44)
 size_flags_vertical = 4
 text = "设置"
 autowrap_mode = 3
@@ -51,16 +56,16 @@ theme_override_font_sizes/font_size = 22
 text = "继承协议"
 [node name="BodyInset" type="MarginContainer" parent="RowFrame/Column"]
 mouse_filter = 1
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_right = 12
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_right = 4
 [node name="Clip" type="Control" parent="RowFrame/Column/BodyInset"]
 unique_name_in_owner = true
 clip_contents = true
 mouse_filter = 2
 [node name="Padding" type="PanelContainer" parent="RowFrame/Column/BodyInset"]
-theme_type_variation = &"FoldBody"
+theme_type_variation = &"SettingsBody"
 unique_name_in_owner = true
 mouse_filter = 1
 [node name="Body" type="VBoxContainer" parent="RowFrame/Column/BodyInset/Padding"]
 unique_name_in_owner = true
-theme_override_constants/separation = 14
+theme_override_constants/separation = 8

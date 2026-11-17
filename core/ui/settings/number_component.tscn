@@ -30,6 +30,7 @@ theme_override_font_sizes/font_size = 22
 vertical_alignment = 1
 
 [node name="Value" parent="Controls" unique_id=122439269 instance=ExtResource("ar_h_slider")]
+theme = ExtResource("field_theme")
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2

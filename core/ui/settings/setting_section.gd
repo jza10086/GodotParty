@@ -41,6 +41,7 @@ func configure(title: String, expanded: bool, show_inherit: bool = false, inheri
 
 func set_field(editor: Control, has_children: bool) -> void:
 	_field_mode = true
+	%RowFrame.theme_type_variation = &"SettingsRow"
 	_has_children = has_children
 	%Editor.add_child(editor)
 	_refresh()

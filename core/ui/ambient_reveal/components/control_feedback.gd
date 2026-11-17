@@ -13,6 +13,8 @@ var _enabled_focus_mode: Control.FocusMode
 
 
 func _ready() -> void:
+	# Follow the owner theme so settings can supply their own frame colors.
+	theme = control.theme
 	add_to_group(&"ambient_feedback")
 	_pointer = _last_pointer
 	_enabled = _accepts_input()
