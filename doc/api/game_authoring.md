@@ -79,7 +79,7 @@ finish 仅由房主调用；客户端的本地判定先通过 PartyNet 上报，
 
 配置固定为 `settings.gd`，自定义面板为 `config_panel.tscn`，协议资料页为 `profile_panel.tscn`，设置效果脚本为 `settings_runtime.gd`，可选配置校验器为 `config_validator.gd`，主游戏大厅为 `room.tscn`。封面按 `cover.png`、`cover.svg`、`cover.webp`、`cover.jpg` 的顺序发现。玩法介绍写入 README 或所属玩法界面。语言按 `i18n/<locale>.po` 发现，见 [本地化](localization.md)。
 
-框架版本只由 `core/framework_version.gd` 声明，与用户维护的 Godot 项目版本独立。依赖支持精确版本、`~`、`^`，规则及构建标识 见 [内容打包](content_packages.md)。版本维护与用户提醒统一遵循该章节。
+框架版本只由 `core/framework_version.gd` 声明，与用户维护的 Godot 项目版本独立。依赖支持精确版本、`~`、`^`，规则及构建标识 见 [内容打包](content_packages.md)。完成实际内容变更后，agent 必须按[版本维护与递增规则](content_packages.md#版本维护与递增)主动升版，同步受影响的依赖与框架兼容声明，并给出简短提醒。
 
 ## 标准模板的职责与目录
 
