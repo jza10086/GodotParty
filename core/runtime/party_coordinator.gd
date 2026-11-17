@@ -111,6 +111,9 @@ func _load_scene(scope_id: String, package_id: String) -> PackedScene:
 	phase = "loading"
 	loading = {"scope": scope_id, "package": package_id, "ready": [], "progress": 0.0}
 	changed.emit()
+	# A process_frame continuation runs before drawing; allow one complete frame
+	# so the loading page is presented before synchronous activation/instantiation.
+	await get_tree().process_frame
 	await get_tree().process_frame
 	if generation != _load_generation:
 		return null
@@ -627,7 +630,12 @@ func _apply_commit(candidate: Dictionary) -> void:
 		phase = "finished"
 		standings = presentation.duplicate(true)
 		finished.emit(presentation)
-		# cleanup closed the activity APIs; only the application receives this final change.
+		# Final standings remain a local page. Reopen the shared room with readiness
+		# reset so each player can dismiss their results independently.
+		standings.clear()
+		phase = "idle"
+		if connection.host:
+			connection.return_to_lobby()
 		changed.emit()
 		return
 	else:

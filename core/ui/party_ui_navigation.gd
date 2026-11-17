@@ -433,10 +433,11 @@ func is_pointer() -> bool:
 func _process(delta: float) -> void:
 	var scope: Control = app.navigation_scope()
 	var hover: Control = get_viewport().gui_get_hovered_control() if _source == InputSource.PAD_CURSOR else null
-	if scope != _hint_scope or hover != _hint_hover or %HintMargin.visible != (scope != null):
+	var show_hints: bool = scope != null and not app._is_loading() and app._page != "results"
+	if scope != _hint_scope or hover != _hint_hover or %HintMargin.visible != show_hints:
 		_hint_scope = scope
 		_hint_hover = hover
-		%HintMargin.visible = scope != null
+		%HintMargin.visible = show_hints
 		_refresh_hints()
 	if _source in [InputSource.GAMEPAD, InputSource.PAD_CURSOR]:
 		if _keyboard.visible and (not is_instance_valid(_masked_parent) or _masked_parent != scope):

@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://eediip4t1cdd"]
+
+[ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="1_xpvps"]
+[ext_resource type="Script" uid="uid://cxrtps7chqy86" path="res://core/ui/session_results.gd" id="2_oib23"]
+[ext_resource type="Shader" uid="uid://1hij6bd7qiip" path="res://core/ui/ambient_reveal/background.gdshader" id="3_yyhtm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1wi75"]
+shader = ExtResource("3_yyhtm")
+
+[node name="SessionResults" type="Control" unique_id=1791677586]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource("1_xpvps")
+script = ExtResource("2_oib23")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1882634113]
+material = SubResource("ShaderMaterial_1wi75")
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Insets" type="MarginContainer" parent="." unique_id=1880308991]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 160
+theme_override_constants/margin_top = 72
+theme_override_constants/margin_right = 160
+theme_override_constants/margin_bottom = 60
+
+[node name="Content" type="VBoxContainer" parent="Insets" unique_id=1984733790]
+layout_mode = 2
+theme_override_constants/separation = 28
+
+[node name="Title" type="Label" parent="Insets/Content" unique_id=542368477]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "最终排名"
+
+[node name="HeadingInset" type="MarginContainer" parent="Insets/Content" unique_id=947539440]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_right = 24
+
+[node name="Heading" type="HBoxContainer" parent="Insets/Content/HeadingInset" unique_id=506625431]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="Insets/Content" unique_id=1899849134]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Rows" type="VBoxContainer" parent="Insets/Content/Scroll" unique_id=328711302]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Actions" type="HBoxContainer" parent="Insets/Content" unique_id=848034700]
+layout_mode = 2
+alignment = 2
+
+[node name="Return" type="Button" parent="Insets/Content/Actions" unique_id=1166734527]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "返回大厅"

@@ -46,6 +46,7 @@ var _profile_error: Label
 var _arguments: Dictionary
 var _network_panel: NetworkPanel
 var _modal_input_active: bool = false
+var _final_results: Control
 var _overview: GPPartyDialog
 var _minigame_browser: Control
 
@@ -110,7 +111,7 @@ func _ready() -> void:
 	runner.changed.connect(_refresh)
 	runner.failed.connect(_notice)
 	runner.notice_requested.connect(show_notice)
-	runner.finished.connect(func(value: Dictionary) -> void: _show_results(value))
+	runner.finished.connect(_show_final_results)
 	runner.presentation_requested.connect(_show_results)
 	_refresh()
 	if not catalog.errors.is_empty():
@@ -156,6 +157,12 @@ func _refresh() -> void:
 	if not is_inside_tree():
 		return
 	var next_page: String = "menu" if not connection.online or connection.room.is_empty() else ("lobby" if runner.phase == "idle" and connection.room.get("phase", "lobby") == "lobby" else "game")
+	if connection.online and is_instance_valid(_final_results) and runner.phase in ["finished", "idle"]:
+		next_page = "results"
+	if next_page != "results" and is_instance_valid(_final_results):
+		_final_results.hide()
+		_final_results.queue_free()
+		_final_results = null
 	if next_page != _page:
 		_close_settings()
 		if is_instance_valid(_dialog):
@@ -163,6 +170,7 @@ func _refresh() -> void:
 		_page = next_page
 		_show_page()
 	_frontend.refresh()
+	_sync_loading_page()
 
 ## Connection cleanup has completed before this notification; never retain a stale room view.
 func _host_exited() -> void:
@@ -174,7 +182,7 @@ func _host_exited() -> void:
 	_dialog.popup_centered(Vector2i(800, 400))
 
 func _show_page() -> void:
-	var playing: bool = _page == "game"
+	var playing: bool = _page in ["game", "results"]
 	_background.visible = not playing
 	_frontend.visible = not playing and not is_instance_valid(_settings_page) and not is_instance_valid(_preferences_page)
 	if playing:
@@ -495,6 +503,28 @@ func _restore_dialog() -> void:
 		if error == OK:
 			_dialog.hide())
 
+## Final results remain local while the shared room reopens with readiness reset.
+func _show_final_results(value: Dictionary) -> void:
+	_close_settings()
+	_session_controls_open = false
+	_session_menu.hide()
+	if is_instance_valid(_overview):
+		_overview.hide()
+	if is_instance_valid(_dialog):
+		_dialog.hide()
+	_final_results = preload("res://core/ui/session_results.tscn").instantiate()
+	%FrameworkUI.add_child(_final_results)
+	_final_results.configure(value, connection.players, _metric)
+	_final_results.lobby_requested.connect(_return_from_results)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	_refresh()
+
+func _return_from_results() -> void:
+	_final_results.hide()
+	_final_results.queue_free()
+	_final_results = null
+	_refresh()
+
 func _show_results(value: Dictionary) -> void:
 	if is_instance_valid(_overview):
 		_overview.hide()
@@ -807,13 +837,15 @@ func _check(error: Error) -> void:
 
 ## Input always belongs to the foreground framework surface. Activities own their gameplay input.
 func navigation_scope() -> Control:
-	if runner.loading.has("progress"):
-		return %ResourceLoading
 	var modals: Array[Node] = get_tree().get_nodes_in_group(&"framework_modal")
 	modals.reverse()
 	for modal: Control in modals:
 		if modal.is_visible_in_tree():
 			return modal
+	if _is_loading():
+		return %ResourceLoading
+	if is_instance_valid(_final_results):
+		return _final_results
 	if is_instance_valid(_preferences_page):
 		return _preferences_page
 	if is_instance_valid(_settings_page):
@@ -825,7 +857,7 @@ func navigation_scope() -> Control:
 	return null
 
 func navigation_back() -> void:
-	if runner.loading.has("progress"):
+	if _is_loading() or _page == "results":
 		return
 	var focus: Control = get_viewport().gui_get_focus_owner()
 	if focus is BindingButton and focus.capturing:
@@ -843,20 +875,31 @@ func navigation_back() -> void:
 	elif _page == "game":
 		_toggle_session_menu()
 
-func _process(_delta: float) -> void:
-	var resource_loading: bool = runner.loading.has("progress")
-	%ResourceLoading.visible = resource_loading
-	if resource_loading:
-		%ResourceLoading.set_progress(runner.loading.progress)
+## The room can announce a transition before this peer receives its install packet.
+## Keep covering the surface through initialization and the technical readiness barrier.
+func _is_loading() -> bool:
+	if is_instance_valid(_final_results):
+		return false
+	return not runner.loading.is_empty() or runner.phase == "requesting" or (connection.online and not connection.room.is_empty() and runner.phase == "idle" and connection.room.get("phase", "lobby") != "lobby")
+
+func _sync_loading_page() -> void:
+	%ResourceLoading.visible = _is_loading()
+	if %ResourceLoading.visible:
+		%ResourceLoading.set_progress(float(runner.loading.get("progress", -1.0)))
 		_session_controls_open = false
+
+func _process(_delta: float) -> void:
+	_sync_loading_page()
+	var resource_loading: bool = _is_loading()
 	var settings_open: bool = is_instance_valid(_settings_page) or is_instance_valid(_preferences_page)
 	%SettingsBackground.visible = settings_open
 	_session_menu.set_game_available(runner._scopes.has(runner._child_id))
 	_session_menu.visible = _page == "game" and not settings_open and _session_controls_open
-	_background.visible = _page != "game"
+	_background.visible = _page not in ["game", "results"]
 	var focus: Control = get_viewport().gui_get_focus_owner()
 	var framework_modal: bool = get_tree().get_nodes_in_group("framework_modal").any(func(node: Node) -> bool: return node is Control and node.is_visible_in_tree())
 	var modal: bool = framework_modal or not _frontend.modal_kind.is_empty() or is_instance_valid(_settings_page) or is_instance_valid(_preferences_page) or focus is LineEdit or focus is TextEdit or (is_instance_valid(_dialog) and _dialog.visible) or (is_instance_valid(_overview) and _overview.visible)
+	%ResourceLoading.set_process_input(not modal)
 	_modal_input_active = resource_loading or modal or _session_controls_open
 	if runner._lobby_api != null:
 		runner._lobby_api.input.input_blocked = modal
@@ -868,7 +911,7 @@ func _notification(what: int) -> void:
 		navigation_back()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if runner.loading.has("progress"):
+	if _is_loading():
 		get_viewport().set_input_as_handled()
 		return
 	if _page == "game" and event.is_action_pressed("ui_cancel") and not event.is_echo():
@@ -1015,4 +1058,4 @@ func _tab_standings() -> Dictionary:
 
 ## The passive Tab overlay never pauses play, captures the mouse, or takes keyboard focus.
 func _can_show_network_panel() -> bool:
-	return connection.online and _page in ["lobby", "game"] and not runner.loading.has("progress") and not _modal_input_active and get_window().has_focus()
+	return connection.online and _page in ["lobby", "game"] and not _is_loading() and not _modal_input_active and get_window().has_focus()
