@@ -115,7 +115,7 @@ static func source_metadata(manifest: Dictionary) -> Dictionary:
 	elif manifest.kind == "avatars":
 		var entry: Script = load(root.path_join("appearance.gd"))
 		result.appearance_resources = entry.choices()
-	var conventions: Dictionary = {"config_schema": "settings.gd", "config_panel": "config_panel.tscn", "player_config_panel": "profile_panel.tscn", "config_validator": "config_validator.gd", "settings_runtime": "settings_runtime.gd", "room_scene": "room.tscn"}
+	var conventions: Dictionary = {"config_schema": "settings.gd", "config_panel": "config_panel.tscn", "preferences_panel": "preferences_panel.tscn", "player_config_panel": "profile_panel.tscn", "config_validator": "config_validator.gd", "settings_runtime": "settings_runtime.gd", "room_scene": "room.tscn"}
 	for key: String in conventions:
 		if FileAccess.file_exists(root.path_join(conventions[key])):
 			result[key] = conventions[key]

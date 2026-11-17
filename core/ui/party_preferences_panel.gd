@@ -12,6 +12,7 @@ var forms: Dictionary = {}
 var error_label: Label
 @onready var page: Control = %Workspace
 var _all_inherit: AmbientSwitch
+var _custom_panel: Control
 
 func configure(settings_store: RefCounted, target: String, protocol: String) -> void:
 	store = settings_store
@@ -31,6 +32,24 @@ func configure(settings_store: RefCounted, target: String, protocol: String) -> 
 			error_label.text = "已重置，请重新打开设置页。" if error == OK else error_string(error))
 		return
 	revision = data.revision
+	var definition: Dictionary = store.catalog.get_package(target)
+	if definition.has("preferences_panel"):
+		var layers: Dictionary = {"overrides": {}, "protocol": {}}
+		var common_schema: Dictionary = Schema.empty()
+		if not protocol.is_empty():
+			layers = store.local_layers(target, protocol)
+			if layers.is_empty():
+				error_label.text = store.last_error
+				return
+			common_schema = store.catalog.localized_schema(protocol)
+		var base: Dictionary = Schema.defaults(common_schema, "local")
+		base.merge(layers.protocol, true)
+		_custom_panel = store.catalog.resource(target, definition.preferences_panel).instantiate()
+		add_child(_custom_panel)
+		_custom_panel.configure({"own": data.own, "common": layers.overrides}, true, {
+			"workspace": page, "schema": store.catalog.localized_schema(target),
+			"common_schema": common_schema, "base": base, "protocol_id": protocol})
+		return
 	_section("own", store.catalog.localized_schema(target), data.own, {}, "", false)
 	if not protocol.is_empty() and target != protocol:
 		var layers: Dictionary = store.local_layers(target, protocol)
@@ -81,6 +100,21 @@ func _section(domain: String, schema: Dictionary, stored: Dictionary, base: Dict
 
 func apply() -> Error:
 	var edits: Array = []
+	if _custom_panel != null:
+		var draft: Dictionary = _custom_panel.get_value()
+		if not draft.ok:
+			error_label.text = draft.message
+			return ERR_INVALID_DATA
+		for domain: String in ["own", "common"]:
+			if domain == "common" and protocol_id.is_empty():
+				continue
+			var schema: Dictionary = store.catalog.localized_schema(package_id if domain == "own" else protocol_id)
+			var keys: Array = schema.fields.keys() if domain == "own" else draft.common_keys
+			for key: String in keys:
+				var field: Dictionary = schema.fields[key]
+				if field.audience != "local" or field.get("readonly", false) or (domain == "common" and not field.overridable):
+					continue
+				edits.append({"target": domain, "key": key, "op": "set" if draft[domain].has(key) else "unset", "value": draft[domain].get(key)})
 	for domain: String in forms:
 		var values: Dictionary = forms[domain].explicit_values()
 		var schema: Dictionary = store.catalog.localized_schema(protocol_id if domain == "common" else package_id)

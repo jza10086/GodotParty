@@ -298,7 +298,7 @@ func import_source(archive: String, destination: String = "res://games", replace
 		return ERR_ALREADY_EXISTS
 	var entries: PackedStringArray = reader.get_files()
 	var required: Array = manifest.get("resources", {}).values()
-	for key: String in ["entry", "room_scene", "cover", "config_panel", "player_config_panel", "config_validator"]:
+	for key: String in ["entry", "room_scene", "cover", "config_panel", "preferences_panel", "player_config_panel", "config_validator"]:
 		if manifest.has(key):
 			required.append(manifest[key])
 	for adapter: Dictionary in manifest.get("adapters", []):

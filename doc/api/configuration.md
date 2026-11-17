@@ -145,6 +145,7 @@ get_settings() 只返回当前游戏锁定的 own/room 规则；小游戏 setup 
 
 小游戏池右侧“本机设置”打开当前高亮小游戏的本地偏好与协议继承/覆盖。无需勾选入池或开始游戏，客户端也可编辑自己的偏好；“应用并保存”直接写入本机 preferences.json 和协议目录下 overrides.json，不进入房主规则草稿，关闭外层小游戏池不会撤销已保存的本机设置。
 固定 `config_panel.tscn` 仍优先于公共表单，用 configure(value, editable, context)/get_value()；必须遵守 editable。房间面板 context.pools 提供当前选池快照；载入预设时使用预设的选池，业务面板可据此显示自动局数等派生值。
+本地偏好可提供包根目录 `preferences_panel.tscn`，替换默认自身/协议分类内容，仍由框架负责应用、revision 和持久化。`configure(value, editable, context)` 接收 `value.own/common`（自身显式值/协议覆盖），以及 `context.workspace/schema/common_schema/base/protocol_id`。通过 workspace 的 `add_form` / `add_option` / `add_page` 组合公共控件；必须遵守 editable。`get_value()` 返回 `{ok:true, own:字典, common:字典, common_keys:数组}`；校验失败返回 `{ok:false, message:字符串}`。own 包含所有可编辑自身本地字段；common_keys 仅列出面板负责的协议字段，列出但未出现在 common 中表示恢复继承，未列出的协议覆盖保持原样。无协议时 common 和 common_keys 为空。试听只使用当前草稿，不提前保存设置。面板随设置页销毁并释放播放器。
 公共字段表单只编辑草稿，点击应用才提交。协议规则与覆盖使用同样的批次应用边界。
 
 每次 PREPARE 生成 RuleSnapshot，包含游戏/协议/设置版本、基值、覆盖、解析结果及摘要；所有端确认摘要再 READY。
