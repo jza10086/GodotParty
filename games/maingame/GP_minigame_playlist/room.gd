@@ -16,7 +16,7 @@ func _ready() -> void:
 	%Rotation.item_selected.connect(_rotation_selected)
 	_button("Advanced", room.open_settings.bind("main"))
 	_button("CopyAddress", _copy_room_address)
-	for index: int in range(8):
+	for index: int in range(10):
 		var slot: Button = get_node("%Slot" + str(index))
 		slot.pressed.connect(func() -> void: room.show_player(slot.get_meta("peer_id")))
 	room_refresh()
@@ -53,7 +53,7 @@ func room_refresh() -> void:
 	%CopyAddress.disabled = not connection.online or connection.connection_address in ["", "*", "0.0.0.0", "::"]
 	%CopyAddress.tooltip_text = room.format_endpoint(connection.connection_address, connection.connection_port)
 	var unready: bool = false
-	for index: int in range(8):
+	for index: int in range(10):
 		var player: Dictionary = connection.players[index] if index < connection.players.size() else {}
 		var slot: Button = get_node("%Slot" + str(index))
 		var name_label: Label = slot.get_node("%PlayerName")
@@ -68,7 +68,7 @@ func room_refresh() -> void:
 		if player.get("connected", false) and not player.get("ready", false):
 			unready = true
 	_refresh_latencies()
-	%PlayerCount.text = "%d / 8 人" % connection.players.size()
+	%PlayerCount.text = "%d / 10 人" % connection.players.size()
 	%AllowedPlayerCounts.text = _allowed_count_text(connection.allowed_counts) + "]"
 	var invalid_player_count: bool = connection.players.size() not in connection.allowed_counts
 	var count: int = 0
@@ -115,7 +115,7 @@ func _allowed_count_text(values: Array) -> String:
 
 ## Read cached statistics once a second; never rebuild slots or request a probe here.
 func _refresh_latencies() -> void:
-	for index: int in range(8):
+	for index: int in range(10):
 		var label: Label = get_node("%Slot" + str(index)).get_node("%PlayerStatus")
 		label.modulate = Color.WHITE
 		label.tooltip_text = ""

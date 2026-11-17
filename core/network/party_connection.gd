@@ -164,7 +164,7 @@ func open_host(port: int = 7777, bind_address: String = "*", room_name: String =
 	var lab: Dictionary = settings.network_lab_values("host")
 	# Disabled profiles keep the original ENet socket, including dual-stack binding.
 	peer.set_bind_ip("127.0.0.1" if lab.enabled else bind_ip)
-	var error: Error = peer.create_server(0 if lab.enabled else port, 7, PartyNet.CHANNEL_COUNT)
+	var error: Error = peer.create_server(0 if lab.enabled else port, PlayerCounts.MAX_PLAYERS - 1, PartyNet.CHANNEL_COUNT)
 	if error != OK:
 		status = "无法监听 UDP 端口 %d，请检查端口占用或监听地址" % port
 		return error
@@ -470,7 +470,7 @@ func _accept_hello(sender: int, identity: Dictionary) -> void:
 	var reason: String = ""
 	if room.get("phase") != "lobby":
 		reason = "不支持运行中加入"
-	elif players.size() >= 8 or not _player_peer(sender).is_empty():
+	elif players.size() >= PlayerCounts.MAX_PLAYERS or not _player_peer(sender).is_empty():
 		reason = "房间已满或连接重复"
 	elif not identity.get("player_id") is String or identity["player_id"].is_empty() or not identity.get("name") is String or not Profiles.validate_name(identity["name"]):
 		reason = "身份或昵称无效"
@@ -1058,11 +1058,11 @@ func _valid_room_snapshot(payload: Dictionary) -> bool:
 	if not snapshot.get("allowed_counts") is Array or not snapshot.get("start_requirements") is Dictionary:
 		return false
 	for count: Variant in snapshot.allowed_counts:
-		if not count is int or count < 1 or count > 8:
+		if not count is int or count < 1 or count > PlayerCounts.MAX_PLAYERS:
 			return false
 	var identities: Dictionary = {}
 	var peers: Dictionary = {}
-	if payload["players"].is_empty() or payload["players"].size() > 8:
+	if payload["players"].is_empty() or payload["players"].size() > PlayerCounts.MAX_PLAYERS:
 		return false
 	for player: Variant in payload["players"]:
 		if not player is Dictionary:
@@ -1109,7 +1109,9 @@ func get_peer_stats(peer_id: int = 1) -> Dictionary:
 
 func _send_link_packet(peer_id: int, kind: String, payload: Dictionary) -> void:
 	var packet: Dictionary = {"framework_version": Data.VERSION, "session": session_id, "kind": kind, "payload": payload}
-	var error: Error = _scene.send_bytes(var_to_bytes(packet), peer_id, MultiplayerPeer.TRANSFER_MODE_UNRELIABLE, PartyNet.CLOCK_CHANNEL)
+	var mode: MultiplayerPeer.TransferMode = MultiplayerPeer.TRANSFER_MODE_RELIABLE if kind == "link_stats" else MultiplayerPeer.TRANSFER_MODE_UNRELIABLE
+	# Ten-player stats exceed one datagram; ENet fragments reliable snapshots. Clock probes stay unreliable.
+	var error: Error = _scene.send_bytes(var_to_bytes(packet), peer_id, mode, PartyNet.CLOCK_CHANNEL)
 	if error != OK:
 		_send_failed(error, kind)
 
@@ -1160,7 +1162,7 @@ func _receive_link_packet(sender: int, kind: String, payload: Variant) -> void:
 		_clock_request_sent = -1
 		network_clock.observe(payload.sent, payload.received, payload.replied, now)
 	elif kind == "link_stats" and not host and sender == 1:
-		if not payload.get("peers") is Array or payload.peers.size() > 7:
+		if not payload.get("peers") is Array or payload.peers.size() > PlayerCounts.MAX_PLAYERS - 1:
 			return
 		var reports: Dictionary[int, Dictionary] = {}
 		for item: Variant in payload.peers:

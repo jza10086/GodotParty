@@ -223,7 +223,7 @@ func _valid_state(payload: Dictionary) -> bool:
 		return false
 	if payload.get("stage") not in ["waiting", "countdown", "play"] or not payload.get("ready") is Array:
 		return false
-	if payload.ready.size() > 8 or not payload.get("end_msec") is int or payload.end_msec < -1:
+	if payload.ready.size() > api.get_players().size() or not payload.get("end_msec") is int or payload.end_msec < -1:
 		return false
 	var participants: Dictionary = {}
 	for player: Dictionary in api.get_players():

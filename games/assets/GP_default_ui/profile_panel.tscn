@@ -135,3 +135,9 @@ visible = false
 
 [node name="Player8" parent="HostAssignments" instance=ExtResource("r3")]
 visible = false
+
+[node name="Player9" parent="HostAssignments" instance=ExtResource("r3")]
+visible = false
+
+[node name="Player10" parent="HostAssignments" instance=ExtResource("r3")]
+visible = false

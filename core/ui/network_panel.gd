@@ -1,5 +1,6 @@
 ## Passive Tab surface: the main game owns standings; core only adds existing link statistics.
 extends CanvasLayer
+const PlayerCounts: Script = preload("res://core/config/party_player_counts.gd")
 
 var _connection: Node
 var _i18n: RefCounted
@@ -23,7 +24,7 @@ func configure(connection: Node, i18n: RefCounted, can_open: Callable, standings
 
 func _ready() -> void:
 	assert(_connection != null and _i18n != null and _can_open.is_valid() and _standings.is_valid() and _format_metric.is_valid(), "Network panel requires the application context")
-	for index: int in range(8):
+	for index: int in range(PlayerCounts.MAX_PLAYERS):
 		var row: Array[Label] = []
 		for column: int in range(6):
 			var label: Label = Label.new()

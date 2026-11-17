@@ -2,4 +2,4 @@
 extends RefCounted
 
 static func party_definition() -> Dictionary:
-	return {"player_counts": [1, 2, 3, 4, 5, 6, 7, 8], "pools": ["minigames"], "protocol": {"id": "GP_default_protocol"}}
+	return {"player_counts": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "pools": ["minigames"], "protocol": {"id": "GP_default_protocol"}}

@@ -436,7 +436,8 @@ func _control(sender: int, kind: String, payload: Dictionary) -> void:
 			connection.leave("框架控制消息格式无效：" + kind)
 		return
 	if kind == "ready" and connection.host:
-		if not loading.is_empty() and payload.scope == loading.scope and sender in _expected and payload.rules == _scopes[loading.scope].api.config._rules.get("id"):
+		# A fast client can report while the host is still loading the scene. Existing readiness updates resend after the barrier exists.
+		if not loading.is_empty() and payload.scope == loading.scope and _scopes.has(loading.scope) and sender in _expected and payload.rules == _scopes[loading.scope].api.config._rules.get("id"):
 			_ready_peers[sender] = true
 			if connection.control("readiness", {"scope": loading["scope"], "peers": _ready_peers.keys()}) != OK:
 				return
@@ -626,6 +627,9 @@ func _apply_commit(candidate: Dictionary) -> void:
 		phase = "finished"
 		standings = presentation.duplicate(true)
 		finished.emit(presentation)
+		# cleanup closed the activity APIs; only the application receives this final change.
+		changed.emit()
+		return
 	else:
 		phase = "main"
 		if main["view"] == null and not _create_view(main):

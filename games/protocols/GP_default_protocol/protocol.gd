@@ -3,9 +3,9 @@
 extends RefCounted
 
 const ID: String = "GP_default_protocol"
-## Eight room identities: red, green, blue, bright cyan, purple, yellow, black and white.
-const COLORS: Array[String] = ["#e53935", "#43b047", "#2962ff", "#00d9e8", "#9c42d4", "#ffda24", "#252832", "#f5f5f5"]
-const COLOR_NAMES: Array[String] = ["红 R", "绿 G", "蓝 B", "亮青 C", "紫 M", "黄 Y", "黑 B", "白 W"]
+## Ten distinct room colors; existing profile colors retain their indices.
+const COLORS: Array[String] = ["#e53935", "#43b047", "#2962ff", "#00d9e8", "#9c42d4", "#ffda24", "#252832", "#f5f5f5", "#f58220", "#f47da8"]
+const COLOR_NAMES: Array[String] = ["红 R", "绿 G", "蓝 B", "亮青 C", "紫 M", "黄 Y", "黑 B", "白 W", "橙 O", "粉 P"]
 const MAX_AMOUNT: int = 1000000000000
 const STATUSES: Array[String] = ["completed", "withdrawn", "disqualified", "unranked"]
 
@@ -59,7 +59,7 @@ func validate_player_config(value: Dictionary) -> Dictionary:
 	if not _keys(value, ["color", "avatar_2d", "character_3d"]) or not value.color is String:
 		return _failure("PROFILE_INVALID", "需要玩家颜色、2D 头像及 3D 形象")
 	if value.color not in COLORS:
-		return _failure("COLOR_INVALID", "请从协议八种玩家颜色中选择")
+		return _failure("COLOR_INVALID", "请从协议十种玩家颜色中选择")
 	if not _reference(value.avatar_2d) or not _reference(value.character_3d):
 		return _failure("APPEARANCE_INVALID", "形象必须是公开资源引用")
 	return {"ok": true}

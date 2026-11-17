@@ -123,7 +123,7 @@ func _build_host_assignments() -> void:
 		return
 	var players: Array = roster.call()
 	_assignment_choices.clear()
-	for index: int in 8:
+	for index: int in %HostAssignments.get_child_count() - 1:
 		var row: HBoxContainer = %HostAssignments.get_child(index + 1)
 		row.visible = index < players.size()
 		if not row.visible:
