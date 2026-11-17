@@ -66,6 +66,10 @@ connection = NodePath("../Connection")
 unique_name_in_owner = true
 layer = 64
 
+[node name="SettingsBackground" parent="FrameworkUI" instance=ExtResource("background")]
+unique_name_in_owner = true
+visible = false
+
 [node name="Framework" type="VBoxContainer" parent="FrameworkUI" unique_id=1746661127]
 anchors_preset = 15
 anchor_right = 1.0

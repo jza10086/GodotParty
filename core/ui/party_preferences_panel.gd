@@ -1,5 +1,5 @@
 ## Local preferences share one category strip and contextual help across own/protocol settings.
-extends PanelContainer
+extends Control
 signal back_requested()
 const AmbientSwitch = preload("res://core/ui/ambient_reveal/animated_switch.gd")
 const Form = preload("res://core/ui/party_config_form.gd")
@@ -18,7 +18,8 @@ func configure(settings_store: RefCounted, target: String, protocol: String) -> 
 	package_id = target
 	protocol_id = protocol
 	page.set_embedded()
-	theme_type_variation = &"PreferencesEmbedded"
+	%Background.hide()
+	%Content.theme_type_variation = &"PreferencesEmbedded"
 	error_label = page.status
 	var data: Dictionary = store.read(target, protocol)
 	if data.is_empty():
@@ -60,7 +61,8 @@ func configure(settings_store: RefCounted, target: String, protocol: String) -> 
 ## The same preferences component can be embedded in author previews or fill the application.
 func present_fullscreen() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	theme_type_variation = &"PreferencesFullscreen"
+	%Background.show()
+	%Content.theme_type_variation = &"PreferencesFullscreen"
 	page.get_node("%Heading").show()
 	page.get_node("%Back").show()
 	page.set_title(store.catalog.get_package(package_id).name + " · 本机设置")

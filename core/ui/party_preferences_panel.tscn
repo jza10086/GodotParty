@@ -5,27 +5,38 @@
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r3"]
 
 [ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="background"]
 
-[node name="PartyPreferencesPanel" type="PanelContainer"]
+[node name="PartyPreferencesPanel" type="Control"]
 theme = ExtResource("theme")
-theme_type_variation = &"PreferencesFullscreen"
+anchor_right = 1.0
+anchor_bottom = 1.0
 script = ExtResource("r1")
 custom_minimum_size = Vector2(0,480)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Workspace" parent="." instance=ExtResource("r2")]
+[node name="Background" parent="." instance=ExtResource("background")]
+unique_name_in_owner = true
+
+[node name="Content" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_type_variation = &"PreferencesFullscreen"
+
+[node name="Workspace" parent="Content" instance=ExtResource("r2")]
 unique_name_in_owner = true
 
 
-[node name="Repair" parent="Workspace/Actions" instance=ExtResource("r3")]
+[node name="Repair" parent="Content/Workspace/Actions" instance=ExtResource("r3")]
 custom_minimum_size = Vector2(180, 56)
 theme_type_variation = &"SettingsAction"
 unique_name_in_owner = true
 text = "重置此设置文件（原文件保留为 .bak）"
 visible = false
 
-[node name="Save" parent="Workspace/Actions" instance=ExtResource("r3")]
+[node name="Save" parent="Content/Workspace/Actions" instance=ExtResource("r3")]
 custom_minimum_size = Vector2(180, 56)
 theme_type_variation = &"SettingsAction"
 unique_name_in_owner = true

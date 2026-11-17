@@ -98,6 +98,7 @@ func _ready() -> void:
 	_frontend.initialize()
 	_session_menu.resume_requested.connect(_resume_game)
 	_session_menu.framework_settings_requested.connect(_settings_dialog)
+	_session_menu.protocol_settings_requested.connect(_protocol_dialog)
 	_session_menu.minigame_settings_requested.connect(_minigame_settings_dialog)
 	_session_menu.lobby_requested.connect(_leave_session)
 	catalog.i18n.changed.connect(_localize_session_menu)
@@ -849,6 +850,7 @@ func _process(_delta: float) -> void:
 		%ResourceLoading.set_progress(runner.loading.progress)
 		_session_controls_open = false
 	var settings_open: bool = is_instance_valid(_settings_page) or is_instance_valid(_preferences_page)
+	%SettingsBackground.visible = settings_open
 	_session_menu.set_game_available(runner._scopes.has(runner._child_id))
 	_session_menu.visible = _page == "game" and not settings_open and _session_controls_open
 	_background.visible = _page != "game"

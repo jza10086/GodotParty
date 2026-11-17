@@ -3,6 +3,7 @@ extends Control
 
 signal resume_requested()
 signal framework_settings_requested()
+signal protocol_settings_requested()
 signal minigame_settings_requested()
 signal lobby_requested()
 
@@ -11,6 +12,7 @@ const TEXT: Dictionary[String, String] = {
 	"Hint": "Esc 返回游戏",
 	"Resume": "返回游戏",
 	"FrameworkSettings": "框架设置",
+	"ProtocolSettings": "协议设置",
 	"MinigameSettings": "小游戏设置",
 	"Lobby": "返回大厅",
 }
@@ -18,6 +20,7 @@ const TEXT: Dictionary[String, String] = {
 func _ready() -> void:
 	%Resume.pressed.connect(func() -> void: resume_requested.emit())
 	%FrameworkSettings.pressed.connect(func() -> void: framework_settings_requested.emit())
+	%ProtocolSettings.pressed.connect(func() -> void: protocol_settings_requested.emit())
 	%MinigameSettings.pressed.connect(func() -> void: minigame_settings_requested.emit())
 	%Lobby.pressed.connect(func() -> void: lobby_requested.emit())
 	visibility_changed.connect(_focus_on_open)

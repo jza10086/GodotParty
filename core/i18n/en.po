@@ -377,3 +377,6 @@ msgstr "Click Apply to save changes; room rules are configured in the lobby."
 
 msgid "资产包"
 msgstr "Assets"
+
+msgid "协议设置"
+msgstr "Protocol settings"

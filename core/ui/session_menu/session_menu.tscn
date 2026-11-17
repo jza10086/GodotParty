@@ -83,6 +83,13 @@ layout_mode = 2
 theme = ExtResource("1_mvge5")
 text = "框架设置"
 
+[node name="ProtocolSettings" parent="Center/Card/Content/Actions" instance=ExtResource("2_787yw")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(408, 60)
+layout_mode = 2
+theme = ExtResource("1_mvge5")
+text = "协议设置"
+
 [node name="MinigameSettings" type="Button" parent="Center/Card/Content/Actions" unique_id=1004351462 instance=ExtResource("2_787yw")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(408, 60)
