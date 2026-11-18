@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://0824lqwoowdf"
-path="res://.godot/imported/bot-avatar-upright-04-dusty-rose.png-1d6b284313956516cba7272300dd21ce.ctex"
+uid="uid://cqovd4mjax13a"
+path="res://.godot/imported/bot-avatar-upright-03-sage-green.png-9bc8395fa008dde93e9507d863de44c7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://games/protocols/GP_default_protocol/avatars/GP_default_avatars_2d/avatar_sources/bot_avatars_upright/bot-avatar-upright-04-dusty-rose.png"
-dest_files=["res://.godot/imported/bot-avatar-upright-04-dusty-rose.png-1d6b284313956516cba7272300dd21ce.ctex"]
+source_file="res://games/assets/GP_default_avatars_2d/avatar_sources/bot_avatars_upright/bot-avatar-upright-03-sage-green.png"
+dest_files=["res://.godot/imported/bot-avatar-upright-03-sage-green.png-9bc8395fa008dde93e9507d863de44c7.ctex"]
 
 [params]
 

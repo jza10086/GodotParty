@@ -199,7 +199,7 @@ func validate_manifest(manifest: Dictionary) -> String:
 		if not manifest.get(key) is String or (key != "remark" and manifest[key].is_empty()):
 			return "Invalid declaration field: " + key
 	for key: String in manifest:
-		if key not in ["kind", "package_version", "framework_version", "remark", "supported_languages", "dependencies", "special_type", "songs", "id", "owner_protocol"]:
+		if key not in ["kind", "package_version", "framework_version", "remark", "supported_languages", "dependencies", "special_type", "songs", "appearance_resources", "id", "owner_protocol"]:
 			return "Unsupported declaration field: " + key
 	if manifest.has("special_type"):
 		if manifest.kind != "assets" or not manifest.special_type is String or not Data.identifier(manifest.special_type):
@@ -212,6 +212,14 @@ func validate_manifest(manifest: Dictionary) -> String:
 				return "Invalid or duplicate song resource path"
 	elif manifest.get("special_type") == "rhythm_library":
 		return "Rhythm library requires songs"
+	var shape_library: bool = manifest.get("special_type") in ["GP_default_avatar_2d", "GP_default_character_3d"]
+	if shape_library or manifest.has("appearance_resources"):
+		if not shape_library or not manifest.get("appearance_resources") is Dictionary or manifest.appearance_resources.is_empty():
+			return "Appearance library requires scene paths and display names"
+		for scene: String in manifest.appearance_resources:
+			var label: Variant = manifest.appearance_resources[scene]
+			if not Data.relative_path(scene) or scene != scene.simplify_path() or scene.get_extension() != "tscn" or not label is String or label.strip_edges().is_empty():
+				return "Invalid appearance entry: " + scene
 	var languages: Variant = manifest.get("supported_languages")
 	if not languages is Array or languages.is_empty():
 		return "supported_languages must be a nonempty array"
@@ -239,7 +247,11 @@ func asset_libraries(special_type: String, active: Dictionary = {}) -> Array[Dic
 			continue
 		var manifest: Dictionary = packages[id]
 		if manifest.get("special_type", "") == special_type:
-			result.append({"id": id, "name": manifest.name, "version": manifest.package_version, "songs": manifest.get("songs", []).duplicate()})
+			var library: Dictionary = {"id": id, "name": manifest.name, "version": manifest.package_version}
+			for field: String in ["songs", "appearance_resources"]:
+				if manifest.has(field):
+					library[field] = manifest[field].duplicate(true)
+			result.append(library)
 	return result
 
 ## Only metadata is added to the room; activation still waits for resource use.
@@ -438,10 +450,9 @@ func resolve(main_id: String, pools: Dictionary, appearances: Array = [], librar
 			var present: bool = packages.has(ref.package_id) and Data.relative_path(ref.resource_path)
 			if present:
 				var target: String = path(ref.package_id, ref.resource_path)
-				if source_mode:
+				present = pack.get("appearance_resources", {}).has(ref.resource_path)
+				if present and source_mode:
 					present = ResourceLoader.exists(target)
-				else:
-					present = pack.get("appearance_resources", {}).has(ref.resource_path)
 			if not present:
 				return Data.failure("RESOURCE_MISSING", "玩家形象资源不存在：%s/%s（内容包版本：%s）。请在协议资料中重新选择头像或形象。" % [ref.package_id, ref.resource_path, pack.get("package_version", "未安装")])
 			error = _visit(ref["package_id"], selected, visiting)

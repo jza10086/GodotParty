@@ -7,7 +7,7 @@ var phase: Phase = Phase.READY
 var hud: Control
 var dice: Node3D
 ## 使用原版形象包的 Cube；正式会话可用 api.load_asset 解析同一公开资源。
-@export var pawn_scene: PackedScene = preload("res://games/protocols/GP_default_protocol/avatars/GP_default_avatars/character_3d.tscn")
+@export var pawn_scene: PackedScene = preload("res://games/assets/GP_default_avatars/character_3d.tscn")
 var pawn: Node3D
 var tile_id: String = "START"
 var remaining: int = 0

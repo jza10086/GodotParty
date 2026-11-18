@@ -8,7 +8,7 @@
 连通性测试客户端内置字体：Noto Sans CJK SC（复用项目字体；许可证：tools/connectivity_client/project/fonts/FONT-LICENSE.txt） https://github.com/notofonts/noto-cjk
 图标：Godot 官方标志（CC BY 4.0，沿用 GodotPartyUI 原始图标） https://godotengine.org/press/
 
-原版 2D 占位图标：Godot 官方标志（CC BY 4.0；署名见 games/protocols/GP_default_protocol/avatars/GP_default_avatars/ATTRIBUTION.md） https://godotengine.org/press/
+原版 2D 占位图标：Godot 官方标志（CC BY 4.0；署名见 games/assets/GP_default_avatars/ATTRIBUTION.md） https://godotengine.org/press/
 
 3D 城市道路：Kenney City Kit Roads（CC0，许可证随素材保留） https://kenney.nl/assets/city-kit-roads
 3D 商业建筑：Kenney City Kit Commercial（CC0） https://kenney.nl/assets/city-kit-commercial
@@ -52,7 +52,7 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 离线制谱扩散模型：HibikiDad osu-mania-beatmap-generator / DDPM_Beatmap_Cond_Model_01 https://github.com/HibikiDad/osu-mania-beatmap-generator
 离线制谱生成模型：Mapperatorinator v32 / gamemode=3（MIT） https://huggingface.co/OliBomby/Mapperatorinator-v32
 
-2D 头像：Bot 头像套装 V2 正面摆正版（用户提供；源说明记载为内置图像生成工具生成） games/protocols/GP_default_protocol/avatars/GP_default_avatars_2d/doc/default_2d_avatar_sources.md
+2D 头像：Bot 头像套装 V2 正面摆正版（用户提供；源说明记载为内置图像生成工具生成） games/assets/GP_default_avatars_2d/doc/default_2d_avatar_sources.md
 
 字体：Source Han Serif SC Regular 2.003（Adobe 思源宋体简体中文，SIL OFL 1.1，许可随协议保留） https://github.com/adobe-fonts/source-han-serif
 

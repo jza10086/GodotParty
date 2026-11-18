@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dv03nprgvrxfb"]
 
-[ext_resource type="Script" uid="uid://b0e3whuytsfc" path="res://games/protocols/GP_default_protocol/avatars/GP_default_avatars/character_3d.gd" id="1_8f01a"]
+[ext_resource type="Script" uid="uid://b0e3whuytsfc" path="res://games/assets/GP_default_avatars/character_3d.gd" id="1_8f01a"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_njwmu"]
 

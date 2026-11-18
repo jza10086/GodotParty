@@ -4,7 +4,7 @@
 
 版本维护、依赖同步与简短提醒按以下规则执行；Godot 项目版本由用户独立维护。
 
-作者清单基础字段为 `id`、`kind`、`package_version`、`framework_version`、`remark`、`supported_languages`，以及需要时的 `dependencies`。曲库资产包额外声明 `special_type` 和 `songs`。备注允许为空。`supported_languages` 是作者声明的支持语言数组，当前统一为 `["zh-CN"]`，不根据已有翻译文件推断完整语言支持。身份读取 `manifest.json` 中必需的 `id`，格式为 `GP_英文蛇形名`（如 `GP_auction_master`），不得从目录或 ZIP 文件名推断或覆盖；源码包目录仍须与声明 ID 一致，形象包归属来自协议父目录。包版本以各自清单为准；当前框架版本在 `core/framework_version.gd`，不使用或修改 Godot 项目版本。
+作者清单基础字段为 `id`、`kind`、`package_version`、`framework_version`、`remark`、`supported_languages`，以及需要时的 `dependencies`。原版形象资产包的 special_type 和 appearance_resources 见[玩家形象](player_appearance.md)。曲库资产包额外声明 `special_type` 和 `songs`。备注允许为空。`supported_languages` 是作者声明的支持语言数组，当前统一为 `["zh-CN"]`，不根据已有翻译文件推断完整语言支持。身份读取 `manifest.json` 中必需的 `id`，格式为 `GP_英文蛇形名`（如 `GP_auction_master`），不得从目录或 ZIP 文件名推断或覆盖；源码包目录仍须与声明 ID 一致，形象包归属来自协议父目录。包版本以各自清单为准；当前框架版本在 `core/framework_version.gd`，不使用或修改 Godot 项目版本。
 
 ### 版本维护与递增
 

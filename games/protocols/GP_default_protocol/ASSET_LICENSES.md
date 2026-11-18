@@ -25,5 +25,5 @@ CC0 仅适用于声明人有权处分的原创部分；第三方字体、采样�
 
 ## 独立子包
 
-- [GP_default_avatars](avatars/GP_default_avatars/ASSET_LICENSES.md)
-- [GP_default_avatars_2d](avatars/GP_default_avatars_2d/ASSET_LICENSES.md)
+- [GP_default_avatars](../../assets/GP_default_avatars/ASSET_LICENSES.md)
+- [GP_default_avatars_2d](../../assets/GP_default_avatars_2d/ASSET_LICENSES.md)

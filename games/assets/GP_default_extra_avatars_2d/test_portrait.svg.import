@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cqovd4mjax13a"
-path="res://.godot/imported/bot-avatar-upright-03-sage-green.png-0f23f6710e7c953b86bf95abc1d42eea.ctex"
+uid="uid://boukuldvx3acr"
+path="res://.godot/imported/test_portrait.svg-0c45968326683f668476cea4dc03d017.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://games/protocols/GP_default_protocol/avatars/GP_default_avatars_2d/avatar_sources/bot_avatars_upright/bot-avatar-upright-03-sage-green.png"
-dest_files=["res://.godot/imported/bot-avatar-upright-03-sage-green.png-0f23f6710e7c953b86bf95abc1d42eea.ctex"]
+source_file="res://games/assets/GP_default_extra_avatars_2d/test_portrait.svg"
+dest_files=["res://.godot/imported/test_portrait.svg-0c45968326683f668476cea4dc03d017.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

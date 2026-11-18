@@ -1,0 +1,14 @@
+{
+  "id": "GP_default_extra_avatars_3d",
+  "kind": "assets",
+  "package_version": "0.0.1",
+  "framework_version": "0.1.0",
+  "remark": "",
+  "supported_languages": [
+    "zh-CN"
+  ],
+  "special_type": "GP_default_character_3d",
+  "appearance_resources": {
+    "cylinder.tscn": "圆柱体"
+  }
+}

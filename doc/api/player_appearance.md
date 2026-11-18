@@ -5,7 +5,7 @@ get_appearance 返回当前协议生成的数据，游戏按协议读取，不�
 
 GodotPartyDefaultProtocol 1.0 定义 color、avatar_2d、character_3d。具体约定见 [原版协议](../../games/protocols/GP_default_protocol/doc/GP_default_protocol_guide.md)。这些字段属于原版协议，不是 core 对所有协议的共同要求。
 
-形象包 kind 为 avatars，appearance.gd 的 static choices() 返回以包内场景相对路径为键的选项元数据。
+原版形象使用 games/assets/ 下的独立 assets 包。special_type 为 GP_default_avatar_2d 或 GP_default_character_3d，appearance_resources 将包内 .tscn 相对路径映射到选项显示名。个人资料页读取已安装包的清单，预览与游戏使用时才加载场景。协议依赖 GP_default_avatars_2d 和 GP_default_avatars。GP_default_extra_avatars_2d 提供测试图片，GP_default_extra_avatars_3d 提供圆柱体；玩家实际选用的扩展包加入房间依赖。
 资料中的资源引用为 {package_id, resource_path}。包可以只提供 2D、3D、头像，
 或者协议需要的其他素材；颜色等纯数据也不要求加载人物模型。
 
@@ -14,7 +14,7 @@ load_asset 只解析当前依赖集合，失败返回 null；游戏或协议负�
 
 ## 配置页面
 
-协议提供固定 profile_panel.tscn 场景；形象选项由所属包的 appearance.gd 定义。
+协议提供固定 profile_panel.tscn 场景。
 面板契约与活动配置相同，context 提供已安装资源描述和 preview_asset 回调。
 框架负责草稿、应用/取消和回执；协议决定选择列表、模型视角及配色等界面内容。
 
@@ -31,7 +31,7 @@ load_asset 只解析当前依赖集合，失败返回 null；游戏或协议负�
 
 主菜单的“协议个人资料”可离线配置已安装协议；大厅编辑仍须房主确认。
 
-形象包所属协议从父目录推导；源码目录与安装目录均位于所属协议的 `avatars/<id>/`。核心不含内置形象。协议昵称、形象资料保存在 `protocols/<id>/config/profile.json`，不包含在配置预设中。
+核心不含内置形象。协议昵称、形象资料保存在 `protocols/<id>/config/profile.json`，不包含在配置预设中。
 
 ## 可选房间资料约束
 

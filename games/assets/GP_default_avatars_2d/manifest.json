@@ -1,0 +1,19 @@
+{
+  "id": "GP_default_avatars_2d",
+  "kind": "assets",
+  "package_version": "0.1.0",
+  "framework_version": "0.1.0",
+  "remark": "",
+  "supported_languages": [
+    "zh-CN"
+  ],
+  "special_type": "GP_default_avatar_2d",
+  "appearance_resources": {
+    "avatar_silver_lavender.tscn": "银紫短发",
+    "avatar_honey_blonde.tscn": "蜂蜜金双马尾",
+    "avatar_sage_green.tscn": "鼠尾草绿长发",
+    "avatar_dusty_rose.tscn": "灰粉短发",
+    "avatar_powder_blue.tscn": "浅蓝侧编发",
+    "avatar_chestnut.tscn": "栗棕低马尾"
+  }
+}

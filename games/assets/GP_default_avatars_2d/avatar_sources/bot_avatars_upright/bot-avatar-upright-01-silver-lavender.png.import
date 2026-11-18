@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://i6cbfm015ojr"
-path="res://.godot/imported/bot-avatar-upright-05-powder-blue.png-4ccdca0f982439561c16d0e1b4a63505.ctex"
+uid="uid://bc4fp0oa4pkhu"
+path="res://.godot/imported/bot-avatar-upright-01-silver-lavender.png-d1c4f04bdb2c13a4ec4c30e5387cbf76.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://games/protocols/GP_default_protocol/avatars/GP_default_avatars_2d/avatar_sources/bot_avatars_upright/bot-avatar-upright-05-powder-blue.png"
-dest_files=["res://.godot/imported/bot-avatar-upright-05-powder-blue.png-4ccdca0f982439561c16d0e1b4a63505.ctex"]
+source_file="res://games/assets/GP_default_avatars_2d/avatar_sources/bot_avatars_upright/bot-avatar-upright-01-silver-lavender.png"
+dest_files=["res://.godot/imported/bot-avatar-upright-01-silver-lavender.png-d1c4f04bdb2c13a4ec4c30e5387cbf76.ctex"]
 
 [params]
 

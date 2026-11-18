@@ -1,6 +1,6 @@
 ## Draft-only editor. Core owns Apply/Cancel, persistence and profile confirmation.
 extends VBoxContainer
-var protocol_id: String
+var appearance_types: Dictionary[String, String]
 var colors: Array
 var color_names: Array
 var _value: Dictionary = {}
@@ -34,12 +34,11 @@ func configure(value: Dictionary, editable: bool, context: Dictionary = {}) -> v
 		choice.disabled = not editable
 		for package_id: String in context.get("resources", {}):
 			var manifest: Dictionary = context.resources[package_id]
-			for key: String in manifest.get("appearance_resources", {}):
-				var info: Variant = manifest.appearance_resources[key]
-				if not info is Dictionary or manifest.owner_protocol != protocol_id or info.get("slot") != slot:
-					continue
+			if manifest.get("special_type") != appearance_types[slot]:
+				continue
+			for key: String in manifest.appearance_resources:
 				var ref: Dictionary = {"package_id": package_id, "resource_path": key}
-				choice.add_item(info.get("name", key))
+				choice.add_item(manifest.appearance_resources[key])
 				choice.set_item_metadata(choice.item_count - 1, ref)
 		var selected: int = -1
 		for index: int in choice.item_count:

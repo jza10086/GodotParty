@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://games/assets/GP_default_extra_avatars_3d/character_3d.gd" id="1_8f01a"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_njwmu"]
+
+height = 1.0
+top_radius = 0.35
+bottom_radius = 0.35
+
+[node name="Cylinder" type="Node3D" unique_id=1908989138]
+script = ExtResource("1_8f01a")
+
+[node name="Body" type="MeshInstance3D" parent="." unique_id=1664402649]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("CylinderMesh_njwmu")
