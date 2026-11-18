@@ -3,8 +3,28 @@
 extends ConfirmationDialog
 const Catalog = preload("res://core/content/party_catalog.gd")
 const Selection = preload("res://core/content/party_content_selection.gd")
+const Versions = preload("res://core/content/party_versions.gd")
+
+## Keep invalid dependency declarations visible for review even when the build catalog rejects their manifest.
+class ReviewCatalog extends Catalog:
+	var rejected_requirements: Array[Dictionary] = []
+	var rejected_roots: Dictionary[String, String] = {}
+
+	func register_manifest(path: String, load_names: bool = true) -> Error:
+		var error: Error = super.register_manifest(path, load_names)
+		if error == OK:
+			return OK
+		var manifest: Dictionary = read_manifest(path)
+		if manifest.get("id") is String and manifest.get("dependencies") is Dictionary:
+			for id: String in manifest.dependencies:
+				var version: Variant = manifest.dependencies[id]
+				if not Versions.valid_range(version) or not Data.identifier(id):
+					rejected_roots[manifest.id] = path.get_base_dir()
+					rejected_requirements.append({"id": id, "version": version, "required_by": manifest.id, "issue": "依赖声明无效"})
+		return error
+
 var platform: String = "Windows"
-var _catalog: RefCounted
+var _catalog: ReviewCatalog
 var _tree: Tree
 var _dependencies: Tree
 var _directory: LineEdit
@@ -13,6 +33,7 @@ var _picker: FileDialog
 var _status: Label
 var _progress: ProgressBar
 var _progress_label: Label
+var _names: Dictionary[String, String] = {}
 var _items: Dictionary[String, TreeItem] = {}
 var _requested: Array[String] = []
 var _core: TreeItem
@@ -23,7 +44,7 @@ var _poll: float = 0.0
 
 func _ready() -> void:
 	title = "GodotParty · 导出 " + platform + " 可玩包"
-	size = Vector2i(1120, 720)
+	size = Vector2i(1360, 720)
 	min_size = Vector2i(660, 520)
 	exclusive = true
 	dialog_hide_on_ok = false
@@ -52,13 +73,13 @@ func _ready() -> void:
 	_dependencies = Tree.new()
 	_dependencies.name = "必要依赖"
 	_dependencies.hide_root = true
-	_dependencies.columns = 4
+	_dependencies.columns = 6
 	_dependencies.column_titles_visible = true
-	for column: int in range(4):
-		_dependencies.set_column_title(column, ["依赖 ID", "要求版本", "依赖来源", "导出状态"][column])
-		_dependencies.set_column_expand(column, column == 0 or column == 2)
-	_dependencies.set_column_custom_minimum_width(1, 90)
-	_dependencies.set_column_custom_minimum_width(3, 170)
+	for column: int in _dependencies.columns:
+		_dependencies.set_column_title(column, ["依赖 ID", "依赖中文名", "要求版本", "来源 ID", "来源中文名", "状态"][column])
+		_dependencies.set_column_expand(column, column != 2 and column != 5)
+	_dependencies.set_column_custom_minimum_width(2, 95)
+	_dependencies.set_column_custom_minimum_width(5, 200)
 	tabs.add_child(_dependencies)
 	var row: HBoxContainer = HBoxContainer.new()
 	body.add_child(row)
@@ -106,11 +127,14 @@ func open() -> void:
 		return
 	_progress.hide()
 	_progress_label.hide()
-	_catalog = Catalog.new()
+	_catalog = ReviewCatalog.new()
 	_catalog.scan(false)
 	_tree.clear()
 	_dependencies.clear()
 	_items.clear()
+	_names.clear()
+	for id: String in _catalog.rejected_roots:
+		_names[id] = _chinese_name({"id": id, "_root": _catalog.rejected_roots[id]})
 	_requested.clear()
 	var root: TreeItem = _tree.create_item()
 	_core = _tree.create_item(root)
@@ -128,12 +152,7 @@ func open() -> void:
 		group.set_text(0, {"protocols": "协议", "assets": "资产包", "maingame": "主游戏", "minigame": "小游戏"}[kind])
 		for id: String in _catalog.ids(kind):
 			_add_package(group, id)
-	if not _catalog.errors.is_empty():
-		_status.text = "\n".join(_catalog.errors)
-		_selection = {"ok": false}
-	else:
-		_refresh_selection()
-	_update_button()
+	_refresh_selection()
 	popup_centered()
 
 func _add_package(parent: TreeItem, id: String) -> TreeItem:
@@ -143,7 +162,8 @@ func _add_package(parent: TreeItem, id: String) -> TreeItem:
 	item.set_metadata(0, id)
 	item.set_text(0, id)
 	item.set_text(1, manifest.package_version)
-	item.set_text(2, _chinese_name(manifest))
+	_names[id] = _chinese_name(manifest)
+	item.set_text(2, _names[id])
 	item.set_tooltip_text(2, item.get_text(2))
 	item.set_tooltip_text(0, id + "\n" + manifest._root)
 	item.set_editable(0, manifest.get("playable", true))
@@ -184,7 +204,7 @@ func _set_requested(id: String, selected: bool) -> void:
 		_requested.erase(id)
 
 func _refresh_selection() -> void:
-	_selection = Selection.resolve(_catalog, _requested)
+	_selection = Selection.resolve(_catalog, _requested) if _catalog.errors.is_empty() else {"ok": false, "error": "\n".join(_catalog.errors)}
 	for id: String in _items:
 		var item: TreeItem = _items[id]
 		item.set_checked(0, _requested.has(id))
@@ -211,17 +231,40 @@ func _refresh_selection() -> void:
 func _refresh_dependencies() -> void:
 	_dependencies.clear()
 	var root: TreeItem = _dependencies.create_item()
-	for dependency: Dictionary in Selection.requirements(_catalog, _requested):
+	var rows: Array[Dictionary] = Selection.requirements(_catalog, _requested)
+	rows.append_array(_catalog.rejected_requirements)
+	for dependency: Dictionary in rows:
 		var item: TreeItem = _dependencies.create_item(root)
 		var included: bool = _requested.has(dependency.id)
-		item.set_text(0, dependency.id)
-		item.set_text(1, dependency.version if not dependency.version.is_empty() else "未限定")
-		item.set_text(2, dependency.required_by)
-		item.set_text(3, "已勾选" if included else "未随本次导出")
-		for column: int in range(4):
+		var id: String = dependency.id
+		var source: String = dependency.required_by
+		var issue: String = _dependency_issue(dependency)
+		item.set_text(0, id)
+		item.set_text(1, _names.get(id, id))
+		item.set_text(2, str(dependency.get("version", "未限定")))
+		item.set_text(3, source)
+		item.set_text(4, _names.get(source, source))
+		item.set_text(5, issue if not issue.is_empty() else ("已勾选" if included else "未随本次导出"))
+		for column: int in _dependencies.columns:
 			item.set_tooltip_text(column, item.get_text(column))
-			if not included:
+			if not issue.is_empty():
+				item.set_custom_color(column, Color("#ff7676"))
+			elif not included:
 				item.set_custom_color(column, Color("#ffd166"))
+
+func _dependency_issue(row: Dictionary) -> String:
+	if row.has("issue"):
+		return row.issue
+	if row.has("version") and not Versions.valid_range(row.version):
+		return "版本声明无效"
+	if not _catalog.packages.has(row.id):
+		return "缺少内容包"
+	var target: Dictionary = _catalog.packages[row.id]
+	if row.has("version") and not Versions.matches(target.package_version, row.version):
+		return "版本不符（当前 %s）" % target.package_version
+	if row.get("protocol", false) and target.kind != "protocols":
+		return "依赖目标不是协议"
+	return _catalog.unavailable.get(row.id, "")
 
 func _update_button() -> void:
 	get_ok_button().disabled = _busy() or not _selection.ok or (_requested.is_empty() and not _core.is_checked(0)) or not _directory.text.is_absolute_path()

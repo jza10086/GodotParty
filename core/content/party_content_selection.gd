@@ -68,18 +68,21 @@ static func requirements(catalog: RefCounted, requested: Array[String]) -> Array
 						edges.append(edge)
 		for protocol: String in protocols:
 			if not dependencies.has(protocol):
-				var edge: Dictionary = {"id": protocol, "version": ""}
+				var edge: Dictionary = {"id": protocol}
 				if not edges.has(edge):
 					edges.append(edge)
 		for edge: Dictionary in edges:
-			result.append({"id": edge.id, "version": edge.version, "required_by": id})
+			edge.required_by = id
+			if protocols.has(edge.id):
+				edge.protocol = true
+			result.append(edge)
 			queue.append(edge.id)
 	result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		if a.id != b.id:
 			return a.id < b.id
 		if a.required_by != b.required_by:
 			return a.required_by < b.required_by
-		return a.version < b.version)
+		return str(a.get("version", "")) < str(b.get("version", "")))
 	return result
 
 
