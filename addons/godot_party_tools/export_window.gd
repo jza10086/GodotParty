@@ -112,12 +112,12 @@ func open() -> void:
 	_core.set_metadata(0, "@core")
 	_core.set_editable(0, true)
 	_core.set_checked(0, true)
-	for kind: String in ["protocols", "avatars", "assets", "maingame", "minigame"]:
+	for kind: String in ["protocols", "assets", "maingame", "minigame"]:
 		var group: TreeItem = _tree.create_item(root)
 		group.set_cell_mode(0, TreeItem.CELL_MODE_CHECK)
 		group.set_editable(0, true)
 		group.set_metadata(0, "@" + kind)
-		group.set_text(0, {"protocols": "协议", "avatars": "形象包", "assets": "资产包", "maingame": "主游戏", "minigame": "小游戏"}[kind])
+		group.set_text(0, {"protocols": "协议", "assets": "资产包", "maingame": "主游戏", "minigame": "小游戏"}[kind])
 		for id: String in _catalog.ids(kind):
 			_add_package(group, id)
 	if not _catalog.errors.is_empty():
