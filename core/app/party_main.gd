@@ -906,6 +906,22 @@ func _process(_delta: float) -> void:
 	for scope: Dictionary in runner._scopes.values():
 		scope["api"].input.input_blocked = resource_loading or modal or _session_controls_open or scope["phase"] != "playing"
 
+	if _is_loading() or _page == "results":
+		%WindowCrossfade.clear_transition()
+	else:
+		var surface: Control = null
+		var full_page: bool = false
+		if framework_modal:
+			surface = navigation_scope().get_node("%Panel")
+		elif not _frontend.modal_kind.is_empty() and _frontend.is_visible_in_tree():
+			surface = _frontend.navigation_scope()
+		elif settings_open:
+			surface = _preferences_page if is_instance_valid(_preferences_page) else _settings_page
+			full_page = true
+		elif _session_menu.visible:
+			surface = _session_menu.get_node("Center/Card")
+		%WindowCrossfade.present(surface, full_page)
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		navigation_back()

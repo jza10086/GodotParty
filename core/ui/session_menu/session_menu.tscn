@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://cnixft6n5gdxb"]
 
+[ext_resource type="Shader" path="res://core/ui/ambient_reveal/modal_blur.gdshader" id="blur"]
 [ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="1_mvge5"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="2_787yw"]
 [ext_resource type="Script" uid="uid://c0et4xsq4s2s0" path="res://core/ui/session_menu/session_menu.gd" id="2_xns5w"]
@@ -22,6 +23,9 @@ corner_radius_bottom_left = 24
 shadow_color = Color(0, 0, 0, 0.3)
 shadow_size = 28
 
+[sub_resource type="ShaderMaterial" id="BlurMaterial"]
+shader = ExtResource("blur")
+
 [node name="SessionMenu" type="Control" unique_id=1495354537]
 layout_mode = 3
 anchors_preset = 15
@@ -30,7 +34,11 @@ anchor_bottom = 1.0
 theme = ExtResource("1_mvge5")
 script = ExtResource("2_xns5w")
 
+[node name="BackdropCapture" type="BackBufferCopy" parent="."]
+copy_mode = 2
+
 [node name="Overlay" type="ColorRect" parent="." unique_id=1237543615]
+material = SubResource("BlurMaterial")
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0

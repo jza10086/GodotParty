@@ -1,14 +1,11 @@
 shader_type canvas_item;
 render_mode unshaded;
-
 void fragment() {
-	vec2 blue = (UV - vec2(0.08, 0.08)) * vec2(1.9, 2.2);
-	vec2 right_glow = (UV - vec2(0.98, 0.78)) * vec2(2.2, 2.0);
-	vec2 lower_glow = (UV - vec2(0.45, 1.15)) * vec2(2.0, 2.5);
-	vec3 color = vec3(0.035, 0.052, 0.080);
-	color += vec3(0.10, 0.17, 0.29) * exp(-dot(blue, blue)) * 0.55;
-	color += vec3(0.08, 0.19, 0.31) * exp(-dot(right_glow, right_glow)) * 0.40;
-	color += vec3(0.10, 0.14, 0.22) * exp(-dot(lower_glow, lower_glow)) * 0.25;
-	float dither = fract(52.9829189 * fract(dot(FRAGCOORD.xy, vec2(0.06711056, 0.00583715)))) - 0.5;
-	COLOR = vec4(color + dither / 255.0, 1.0);
+	float t = dot(UV, vec2(0.76, 0.24));
+	vec3 c = mix(vec3(0.024,0.035,0.067),vec3(0.043,0.067,0.125),1.0-abs(2.0*t-1.0));
+	c += vec3(0.020,0.085,0.095)*(1.0-smoothstep(0.0,0.48,distance(UV,vec2(0.75,0.32))));
+	c += vec3(0.065,0.038,0.008)*(1.0-smoothstep(0.0,0.43,distance(UV,vec2(0.2,0.8))));
+	c *= 1.0-0.55*smoothstep(0.35,0.72,length(UV-0.5));
+	c *= 0.97+0.03*cos(FRAGCOORD.y*1.57);
+	COLOR = vec4(c,1.0);
 }

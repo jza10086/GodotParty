@@ -1,0 +1,79 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://games/assets/GP_default_ui/menu_effects/background.tscn" id="bg"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_default_ui/menu_effects/window_transition.tscn" id="transition"]
+[ext_resource type="Script" path="res://games/assets/GP_default_ui/authoring/menu_effects_preview.gd" id="script"]
+[sub_resource type="StyleBoxFlat" id="panel"]
+bg_color = Color(0.055,0.085,0.135,0.96)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.22,0.45,0.53,1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+
+[node name="Preview" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("script")
+[node name="Background" parent="." instance=ExtResource("bg")]
+[node name="Menu" type="VBoxContainer" parent="."]
+anchor_left = 0.085
+anchor_top = 0.36
+theme_override_constants/separation = 20
+[node name="Title" type="Label" parent="Menu"]
+text = "GODOT PARTY"
+theme_override_font_sizes/font_size = 56
+[node name="ShowModal" type="Button" parent="Menu"]
+unique_name_in_owner = true
+text = "打开弹窗"
+[node name="ShowPage" type="Button" parent="Menu"]
+unique_name_in_owner = true
+text = "打开设置页"
+[node name="Modal" parent="." instance=ExtResource("transition")]
+unique_name_in_owner = true
+[node name="Page" parent="." instance=ExtResource("transition")]
+unique_name_in_owner = true
+fullscreen_page = true
+[node name="ModalCard" type="Panel" parent="."]
+unique_name_in_owner = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320
+offset_right = 320
+offset_top = -120
+offset_bottom = 120
+theme_override_styles/panel = SubResource("panel")
+[node name="Body" type="VBoxContainer" parent="ModalCard"]
+offset_left = 44
+offset_top = 40
+theme_override_constants/separation = 44
+[node name="Title" type="Label" parent="ModalCard/Body"]
+text = "游戏菜单"
+theme_override_font_sizes/font_size = 36
+[node name="Close" type="Button" parent="ModalCard/Body"]
+text = "返回"
+[node name="SettingsCard" type="Panel" parent="."]
+unique_name_in_owner = true
+anchor_left = 0
+anchor_top = 0
+anchor_right = 1
+anchor_bottom = 1
+offset_left = 0
+offset_right = 0
+offset_top = 0
+offset_bottom = 0
+theme_override_styles/panel = SubResource("panel")
+[node name="Body" type="VBoxContainer" parent="SettingsCard"]
+offset_left = 44
+offset_top = 40
+theme_override_constants/separation = 44
+[node name="Title" type="Label" parent="SettingsCard/Body"]
+text = "设置"
+theme_override_font_sizes/font_size = 36
+[node name="Close" type="Button" parent="SettingsCard/Body"]
+text = "返回"

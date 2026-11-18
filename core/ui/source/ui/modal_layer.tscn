@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 
+[ext_resource type="Shader" path="res://core/ui/ambient_reveal/modal_blur.gdshader" id="blur"]
 [ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 
 [ext_resource type="PackedScene" path="res://core/ui/source/ui/dialogs/quit_dialog.tscn" id="scene_modal_confirm"]
@@ -17,6 +18,9 @@
 
 [ext_resource type="PackedScene" path="res://core/ui/source/ui/dialogs/profile_dialog.tscn" id="scene_modal_profile"]
 
+[sub_resource type="ShaderMaterial" id="BlurMaterial"]
+shader = ExtResource("blur")
+
 [node name="Modal" type="Control"]
 theme = ExtResource("theme")
 anchors_preset = 15
@@ -26,7 +30,11 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
 
+[node name="BackdropCapture" type="BackBufferCopy" parent="."]
+copy_mode = 2
+
 [node name="Scrim" type="ColorRect" parent="."]
+material = SubResource("BlurMaterial")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

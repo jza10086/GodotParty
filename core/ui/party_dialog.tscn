@@ -1,9 +1,13 @@
 [gd_scene format=3]
 
+[ext_resource type="Shader" path="res://core/ui/ambient_reveal/modal_blur.gdshader" id="blur"]
 [ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="ambient"]
 [ext_resource type="Script" path="res://core/ui/party_dialog.gd" id="r1"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="r2"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r3"]
+
+[sub_resource type="ShaderMaterial" id="BlurMaterial"]
+shader = ExtResource("blur")
 
 [node name="PartyDialog" type="Control"]
 theme = ExtResource("ambient")
@@ -12,7 +16,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 z_index = 100
 
+[node name="BackdropCapture" type="BackBufferCopy" parent="."]
+copy_mode = 2
+
 [node name="Scrim" parent="." type="ColorRect"]
+material = SubResource("BlurMaterial")
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.015,0.025,0.045,0.76)
