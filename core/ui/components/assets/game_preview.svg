@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+<circle cx="320" cy="172.8" r="214.200" fill="none" stroke="#99a6cc" stroke-opacity="0.1" stroke-width="2"/>
+<circle cx="320" cy="172.8" r="151.776" fill="none" stroke="#99a6cc" stroke-opacity="0.13" stroke-width="2"/>
+<polygon points="330.475,47.040 461.785,31.793 477.032,163.103 345.723,178.350" fill="#ffd18f"/>
+<circle cx="385.247" cy="99.784" r="4.627" fill="#292b36"/>
+<circle cx="422.261" cy="99.784" r="4.627" fill="#292b36"/>
+<path d="M394.500 124.900h18.507" stroke="#292b36" stroke-width="2.644"/>
+<polygon points="332.360,181.243 463.039,201.185 443.097,331.865 312.418,311.922" fill="#9fc9e8"/>
+<circle cx="369.222" cy="251.266" r="4.627" fill="#292b36"/>
+<circle cx="406.235" cy="251.266" r="4.627" fill="#292b36"/>
+<path d="M378.475 276.383h18.507" stroke="#292b36" stroke-width="2.644"/>
+<polygon points="202.712,153.277 323.498,206.995 269.780,327.780 148.994,274.062" fill="#b8a7e5"/>
+<circle cx="217.739" cy="235.241" r="4.627" fill="#292b36"/>
+<circle cx="254.753" cy="235.241" r="4.627" fill="#292b36"/>
+<path d="M226.993 260.357h18.507" stroke="#292b36" stroke-width="2.644"/>
+<polygon points="242.950,-3.962 345.279,79.724 261.593,182.054 159.264,98.368" fill="#9fd5b4"/>
+<circle cx="233.765" cy="83.758" r="4.627" fill="#292b36"/>
+<circle cx="270.778" cy="83.758" r="4.627" fill="#292b36"/>
+<path d="M243.018 108.875h18.507" stroke="#292b36" stroke-width="2.644"/>
+<path d="M518.080 74.880h20 M528.080 64.880v20" stroke="#ffd18f" stroke-width="3"/>
+</svg>

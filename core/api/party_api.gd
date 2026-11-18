@@ -87,6 +87,10 @@ func get_minigame_settings(id: String) -> Dictionary:
 func get_seed() -> int:
 	return _context.get("seed", 0)
 
+## Full-resolution artwork for this activity, or null when it uses the shared preview.
+func get_preview() -> Texture2D:
+	return _query.call(scope_id, "preview", {}) if is_open() else null
+
 ## Load an asset in the room dependency closure, activating its package on first use.
 func load_asset(ref: Dictionary) -> Resource:
 	if not is_open():

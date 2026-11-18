@@ -265,8 +265,7 @@ func _refresh_inspector() -> void:
 	%PlayerCounts.text = "支持人数  ·  " + app.connection.PlayerCounts.describe(counts)
 	game_info.text = manifest.get("introduction", "")
 	preview.texture = _cover(focused)
-	preview_note.text = "尚无专属预览图"
-	preview_note.visible = not manifest.has("cover")
+	preview_note.hide()
 	preset_picker.clear()
 	preset_picker.add_item("默认预设")
 	for preset: String in app.presets.names(focused, app.catalog.get_package(draft.main).protocol.id):

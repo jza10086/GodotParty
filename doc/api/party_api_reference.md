@@ -15,6 +15,7 @@
 | get_settings() -> Dictionary | 全部 | 本活动锁定配置的副本 |
 | get_pool(name: String) -> Array | 大游戏 | 房主选择的小游戏 ID |
 | get_game_name(id: String) -> String | 活跃作用域 | 当前目录中的游戏显示名称 |
+| get_preview() -> Texture2D | 当前实例 | 当前玩法的原尺寸预览图；未声明或实例关闭时返回 null，由页面显示通用预览 |
 | i18n.text(key: StringName, parameters: Dictionary = {}, package_id: String = "") -> String | 已注入作用域 | 本包译文；可显式读取协议/core，翻译后填入命名参数 |
 | i18n.effective_locale() -> String | 已注入作用域 | 本包独立解析后的语言 |
 | get_minigame_settings(id: String) -> Dictionary | 大游戏 | 已选择小游戏的配置 |

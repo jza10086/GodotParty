@@ -217,6 +217,9 @@ func _query(scope_id: String, key: String, argument: Dictionary) -> Variant:
 		return {"session_id": connection.session_id, "scope_id": scope_id,
 			"phase": scope["phase"], "required_peers": scope.get("preparation_peers", []).duplicate(),
 			"ready_peers": scope.get("prepared_peers", []).duplicate()}
+	if key == "preview":
+		var package: Dictionary = catalog.get_package(scope.package)
+		return catalog.resource(scope.package, package.cover) if package.has("cover") else null
 	if key == "round_presentation":
 		return record.get("round_presentation", {}).duplicate(true)
 	if key == "asset_libraries":

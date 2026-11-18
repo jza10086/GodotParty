@@ -119,10 +119,13 @@ static func source_metadata(manifest: Dictionary) -> Dictionary:
 	for key: String in conventions:
 		if FileAccess.file_exists(root.path_join(conventions[key])):
 			result[key] = conventions[key]
-	for extension: String in ["png", "svg", "webp", "jpg"]:
-		if FileAccess.file_exists(root.path_join("cover." + extension)):
-			result.cover = "cover." + extension
+	for stem: String in ["cover", "assets/preview"]:
+		if result.has("cover"):
 			break
+		for extension: String in ["png", "svg", "webp", "jpg"]:
+			if FileAccess.file_exists(root.path_join(stem + "." + extension)):
+				result.cover = stem + "." + extension
+				break
 	result.localization = {"supported_locales": [], "fallback_locale": "zh_Hans", "translations": {}}
 	for file: String in (DirAccess.get_files_at(root.path_join("i18n")) if DirAccess.dir_exists_absolute(root.path_join("i18n")) else PackedStringArray()):
 		if file.ends_with(".po"):
@@ -339,7 +342,7 @@ func cover(id: String) -> Texture2D:
 	elif artifacts[id].description.has("preview"):
 		image_path = String(artifacts[id].root).path_join(artifacts[id].description.preview)
 	if image_path.is_empty():
-		return preload("res://core/ui/components/assets/godot_icon.svg")
+		return preload("res://core/ui/components/assets/game_preview.svg")
 	var image: Image = Image.load_from_file(image_path)
 	if image == null:
 		return null

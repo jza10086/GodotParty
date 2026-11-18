@@ -11,7 +11,7 @@
 
 [ext_resource type="PackedScene" path="res://games/assets/GP_default_ui/briefing/player_row.tscn" id="row"]
 [ext_resource type="PackedScene" path="res://games/assets/GP_default_ui/briefing/control_hint.tscn" id="hint"]
-[ext_resource type="Script" path="res://games/assets/GP_default_ui/briefing/preview_art.gd" id="art"]
+[ext_resource type="Texture2D" path="res://core/ui/components/assets/game_preview.svg" id="art"]
 
 [sub_resource type="StyleBoxFlat" id="PreviewMask"]
 bg_color = Color(0.08, 0.11, 0.16, 1)
@@ -151,7 +151,7 @@ mouse_filter = 2
 expand = true
 volume_db = -80.0
 
-[node name="Fallback" type="Control" parent="Layout/Center/Content/Columns/RightColumn/PreviewPanel/Preview"]
+[node name="Fallback" type="TextureRect" parent="Layout/Center/Content/Columns/RightColumn/PreviewPanel/Preview"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -160,7 +160,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("art")
+texture = ExtResource("art")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="InformationPanel" parent="Layout/Center/Content/Columns/RightColumn" instance=ExtResource("2_card")]
 unique_name_in_owner = true

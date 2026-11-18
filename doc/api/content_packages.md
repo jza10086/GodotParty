@@ -55,7 +55,7 @@ agent 完成一批实际内容变更后，必须在提交、发布或交付前�
 - `packs`：一个或多个 PCK 路径，可自由命名、拆分并放入子文件夹。默认工具仍生成单个 `content.pck`。
 - `resource_index`：资源路径、UID 和全局脚本类型清单，默认 `resources.json`；首次使用包时才读取。
 - `settings`：构建时生成的设置 schema 与各语言标签快照，默认 `settings.json`。大厅计算规则、默认值和人数无需运行小游戏代码。
-- 可选 `preview`：最大边长 256 像素的独立预览图。
+- 可选 `preview`：最大边长 256 像素的独立预览图。源码图源依次为 `definition.gd` 的 `cover`、包根目录 `cover.{png,svg,webp,jpg}`、`assets/preview.{png,svg,webp,jpg}`；导出缩略图与 `PartyAPI.get_preview()` 使用同一图源。未提供图片时，小游戏池和默认准备页共用框架的几何角色预览。
 - `payload_files`：所有正式分发文件，不包含描述自身；`external_files` / `external_directories` 保留正式外置数据及空目录。
 
 拆分 PCK 时同时更新 `packs` 和 `payload_files`，资源索引仍覆盖这些 PCK 的并集。PCK 内的逻辑 `res://games/...` 路径、UID、包归属和依赖契约保持不变。物理文件夹自由组织不表示可以任意改变脚本引用或覆盖框架资源。运行时保留版本、依赖、路径、UID 和类型名冲突检查；不设置脚本安全沙箱。

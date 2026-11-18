@@ -39,9 +39,6 @@ static func read_content(manifest_path: String, context: PartyAPI) -> Dictionary
 	var result: Dictionary = {"title": metadata.get("name", ""),
 		"introduction": metadata.get("introduction", ""), "controls": [],
 		"actions": metadata.get("controls", {}).duplicate(true)}
-	var relative: String = str(metadata.get("cover", ""))
-	if not relative.is_empty():
-		result["cover"] = load(manifest_path.get_base_dir().path_join(relative)) as Texture2D
 	for action: String in result.actions:
 		result.controls.append({"binding": context.input.binding_text(StringName(action)),
 			"description": result.actions[action]})
@@ -51,6 +48,8 @@ static func read_content(manifest_path: String, context: PartyAPI) -> Dictionary
 func configure(context: PartyAPI, content: Dictionary) -> void:
 	api = context
 	_content = content.duplicate(true)
+	if not _content.has("cover"):
+		_content["cover"] = api.get_preview()
 	_choice_options.assign(content.get("choice_options", []))
 	if not _choice_options.is_empty():
 		_local_choice = content.choice_default
@@ -77,6 +76,8 @@ func _activate() -> void:
 
 func update_content(content: Dictionary) -> void:
 	_content = content.duplicate(true)
+	if not _content.has("cover"):
+		_content["cover"] = api.get_preview()
 	if is_instance_valid(view):
 		view.configure(_content)
 
