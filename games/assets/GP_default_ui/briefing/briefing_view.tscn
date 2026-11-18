@@ -13,6 +13,14 @@
 [ext_resource type="PackedScene" path="res://games/assets/GP_default_ui/briefing/control_hint.tscn" id="hint"]
 [ext_resource type="Script" path="res://games/assets/GP_default_ui/briefing/preview_art.gd" id="art"]
 
+[sub_resource type="StyleBoxFlat" id="PreviewMask"]
+bg_color = Color(0.08, 0.11, 0.16, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_left = 18
+corner_radius_bottom_right = 18
+corner_detail = 16
+
 [node name="BriefingView" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -99,20 +107,18 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 theme_override_constants/separation = 20
 
-[node name="PreviewPanel" parent="Layout/Center/Content/Columns/RightColumn" instance=ExtResource("2_card")]
+[node name="PreviewPanel" type="AspectRatioContainer" parent="Layout/Center/Content/Columns/RightColumn"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 0
-custom_minimum_size = Vector2(0, 460)
+custom_minimum_size = Vector2(0, 468)
+ratio = 1.7777778
 
-[node name="Preview" type="Control" parent="Layout/Center/Content/Columns/RightColumn/PreviewPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-clip_contents = true
+[node name="Preview" type="Panel" parent="Layout/Center/Content/Columns/RightColumn/PreviewPanel"]
+layout_mode = 2
+mouse_filter = 2
+clip_children = 2
+theme_override_styles/panel = SubResource("PreviewMask")
 
 [node name="Cover" type="TextureRect" parent="Layout/Center/Content/Columns/RightColumn/PreviewPanel/Preview"]
 unique_name_in_owner = true
@@ -124,7 +130,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 6
 
 [node name="VideoFrame" type="AspectRatioContainer" parent="Layout/Center/Content/Columns/RightColumn/PreviewPanel/Preview"]
 layout_mode = 1
