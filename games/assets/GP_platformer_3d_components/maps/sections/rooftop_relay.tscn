@@ -1,0 +1,382 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="1_thq6j"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/effects/kill_zone.tscn" id="2_blkn7"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/effect_zone.gd" id="3_n7dgt"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/lethal.tres" id="4_0m5lc"]
+
+[sub_resource type="BoxShape3D" id="StartBuildingShape"]
+size = Vector3(9, 6, 12)
+
+[sub_resource type="StandardMaterial3D" id="StartBuildingMat"]
+albedo_color = Color(0.25, 0.29, 0.39, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="StartBuildingMesh"]
+material = SubResource("StartBuildingMat")
+size = Vector3(9, 6, 12)
+
+[sub_resource type="BoxShape3D" id="Roof0Shape"]
+size = Vector3(6, 6.8, 6)
+
+[sub_resource type="StandardMaterial3D" id="Roof0Mat"]
+albedo_color = Color(0.3, 0.36, 0.46, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="Roof0Mesh"]
+material = SubResource("Roof0Mat")
+size = Vector3(6, 6.8, 6)
+
+[sub_resource type="SystemFont" id="Font"]
+font_names = PackedStringArray("Microsoft YaHei", "Segoe UI")
+
+[sub_resource type="BoxShape3D" id="Roof1Shape"]
+size = Vector3(6, 7.6, 6)
+
+[sub_resource type="StandardMaterial3D" id="Roof1Mat"]
+albedo_color = Color(0.38, 0.44, 0.54, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="Roof1Mesh"]
+material = SubResource("Roof1Mat")
+size = Vector3(6, 7.6, 6)
+
+[sub_resource type="BoxShape3D" id="Roof2Shape"]
+size = Vector3(6, 8.4, 6)
+
+[sub_resource type="StandardMaterial3D" id="Roof2Mat"]
+albedo_color = Color(0.3, 0.36, 0.46, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="Roof2Mesh"]
+material = SubResource("Roof2Mat")
+size = Vector3(6, 8.4, 6)
+
+[sub_resource type="BoxShape3D" id="Roof3Shape"]
+size = Vector3(6, 9.2, 6)
+
+[sub_resource type="StandardMaterial3D" id="Roof3Mat"]
+albedo_color = Color(0.38, 0.44, 0.54, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="Roof3Mesh"]
+material = SubResource("Roof3Mat")
+size = Vector3(6, 9.2, 6)
+
+[sub_resource type="BoxShape3D" id="Roof4Shape"]
+size = Vector3(6, 10, 6)
+
+[sub_resource type="StandardMaterial3D" id="Roof4Mat"]
+albedo_color = Color(0.3, 0.36, 0.46, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="Roof4Mesh"]
+material = SubResource("Roof4Mat")
+size = Vector3(6, 10, 6)
+
+[sub_resource type="BoxShape3D" id="Roof5Shape"]
+size = Vector3(6, 10.8, 6)
+
+[sub_resource type="StandardMaterial3D" id="Roof5Mat"]
+albedo_color = Color(0.38, 0.44, 0.54, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="Roof5Mesh"]
+material = SubResource("Roof5Mat")
+size = Vector3(6, 10.8, 6)
+
+[sub_resource type="BoxShape3D" id="Roof6Shape"]
+size = Vector3(6, 11.6, 6)
+
+[sub_resource type="StandardMaterial3D" id="Roof6Mat"]
+albedo_color = Color(0.3, 0.36, 0.46, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="Roof6Mesh"]
+material = SubResource("Roof6Mat")
+size = Vector3(6, 11.6, 6)
+
+[sub_resource type="BoxShape3D" id="Roof7Shape"]
+size = Vector3(6, 12.4, 6)
+
+[sub_resource type="StandardMaterial3D" id="Roof7Mat"]
+albedo_color = Color(0.38, 0.44, 0.54, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="Roof7Mesh"]
+material = SubResource("Roof7Mat")
+size = Vector3(6, 12.4, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1ma4x"]
+size = Vector3(28, 3, 46)
+
+[sub_resource type="StandardMaterial3D" id="Skyline0Mat"]
+albedo_color = Color(0.15, 0.19, 0.29, 1)
+
+[sub_resource type="BoxMesh" id="Skyline0Mesh"]
+material = SubResource("Skyline0Mat")
+size = Vector3(4, 9, 4)
+
+[sub_resource type="StandardMaterial3D" id="Skyline1Mat"]
+albedo_color = Color(0.15, 0.19, 0.29, 1)
+
+[sub_resource type="BoxMesh" id="Skyline1Mesh"]
+material = SubResource("Skyline1Mat")
+size = Vector3(4, 13, 4)
+
+[sub_resource type="StandardMaterial3D" id="Skyline2Mat"]
+albedo_color = Color(0.15, 0.19, 0.29, 1)
+
+[sub_resource type="BoxMesh" id="Skyline2Mesh"]
+material = SubResource("Skyline2Mat")
+size = Vector3(4, 17, 4)
+
+[sub_resource type="StandardMaterial3D" id="Skyline3Mat"]
+albedo_color = Color(0.15, 0.19, 0.29, 1)
+
+[sub_resource type="BoxMesh" id="Skyline3Mesh"]
+material = SubResource("Skyline3Mat")
+size = Vector3(4, 9, 4)
+
+[sub_resource type="StandardMaterial3D" id="Skyline4Mat"]
+albedo_color = Color(0.15, 0.19, 0.29, 1)
+
+[sub_resource type="BoxMesh" id="Skyline4Mesh"]
+material = SubResource("Skyline4Mat")
+size = Vector3(4, 13, 4)
+
+[sub_resource type="StandardMaterial3D" id="Skyline5Mat"]
+albedo_color = Color(0.15, 0.19, 0.29, 1)
+
+[sub_resource type="BoxMesh" id="Skyline5Mesh"]
+material = SubResource("Skyline5Mat")
+size = Vector3(4, 17, 4)
+
+[sub_resource type="StandardMaterial3D" id="Skyline6Mat"]
+albedo_color = Color(0.15, 0.19, 0.29, 1)
+
+[sub_resource type="BoxMesh" id="Skyline6Mesh"]
+material = SubResource("Skyline6Mat")
+size = Vector3(4, 9, 4)
+
+[node name="SectionLayout" type="Node3D" unique_id=133193657]
+
+[node name="StartBuilding" parent="." instance=ExtResource("1_thq6j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, 0)
+
+[node name="Collision" parent="StartBuilding"]
+shape = SubResource("StartBuildingShape")
+
+[node name="Visual" parent="StartBuilding"]
+material_override = SubResource("StartBuildingMat")
+mesh = SubResource("StartBuildingMesh")
+
+[node name="Roof0" parent="." instance=ExtResource("1_thq6j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.6, -10)
+
+[node name="Collision" parent="Roof0"]
+shape = SubResource("Roof0Shape")
+
+[node name="Visual" parent="Roof0"]
+material_override = SubResource("Roof0Mat")
+mesh = SubResource("Roof0Mesh")
+
+[node name="RoofNumber0" type="Label3D" parent="." unique_id=703890342]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, -10)
+pixel_size = 0.006
+billboard = 1
+text = "1"
+font = SubResource("Font")
+font_size = 50
+
+[node name="Roof1" parent="." instance=ExtResource("1_thq6j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, -2.2, -10)
+
+[node name="Collision" parent="Roof1"]
+shape = SubResource("Roof1Shape")
+
+[node name="Visual" parent="Roof1"]
+material_override = SubResource("Roof1Mat")
+mesh = SubResource("Roof1Mesh")
+
+[node name="RoofNumber1" type="Label3D" parent="." unique_id=1710994979]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 3.9, -10)
+pixel_size = 0.006
+billboard = 1
+text = "2"
+font = SubResource("Font")
+font_size = 50
+
+[node name="Roof2" parent="." instance=ExtResource("1_thq6j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -1.8, -10)
+
+[node name="Collision" parent="Roof2"]
+shape = SubResource("Roof2Shape")
+
+[node name="Visual" parent="Roof2"]
+material_override = SubResource("Roof2Mat")
+mesh = SubResource("Roof2Mesh")
+
+[node name="RoofNumber2" type="Label3D" parent="." unique_id=1718646490]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4.7, -10)
+pixel_size = 0.006
+billboard = 1
+text = "3"
+font = SubResource("Font")
+font_size = 50
+
+[node name="Roof3" parent="." instance=ExtResource("1_thq6j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -1.4, -18)
+
+[node name="Collision" parent="Roof3"]
+shape = SubResource("Roof3Shape")
+
+[node name="Visual" parent="Roof3"]
+material_override = SubResource("Roof3Mat")
+mesh = SubResource("Roof3Mesh")
+
+[node name="RoofNumber3" type="Label3D" parent="." unique_id=1957532106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 5.5, -18)
+pixel_size = 0.006
+billboard = 1
+text = "4"
+font = SubResource("Font")
+font_size = 50
+
+[node name="Roof4" parent="." instance=ExtResource("1_thq6j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -1, -26)
+
+[node name="Collision" parent="Roof4"]
+shape = SubResource("Roof4Shape")
+
+[node name="Visual" parent="Roof4"]
+material_override = SubResource("Roof4Mat")
+mesh = SubResource("Roof4Mesh")
+
+[node name="RoofNumber4" type="Label3D" parent="." unique_id=2043651123]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 6.3, -26)
+pixel_size = 0.006
+billboard = 1
+text = "5"
+font = SubResource("Font")
+font_size = 50
+
+[node name="Roof5" parent="." instance=ExtResource("1_thq6j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.6, -26)
+
+[node name="Collision" parent="Roof5"]
+shape = SubResource("Roof5Shape")
+
+[node name="Visual" parent="Roof5"]
+material_override = SubResource("Roof5Mat")
+mesh = SubResource("Roof5Mesh")
+
+[node name="RoofNumber5" type="Label3D" parent="." unique_id=198011091]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 7.1, -26)
+pixel_size = 0.006
+billboard = 1
+text = "6"
+font = SubResource("Font")
+font_size = 50
+
+[node name="Roof6" parent="." instance=ExtResource("1_thq6j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.2, -26)
+
+[node name="Collision" parent="Roof6"]
+shape = SubResource("Roof6Shape")
+
+[node name="Visual" parent="Roof6"]
+material_override = SubResource("Roof6Mat")
+mesh = SubResource("Roof6Mesh")
+
+[node name="RoofNumber6" type="Label3D" parent="." unique_id=1515324190]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 7.9, -26)
+pixel_size = 0.006
+billboard = 1
+text = "7"
+font = SubResource("Font")
+font_size = 50
+
+[node name="Roof7" parent="." instance=ExtResource("1_thq6j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.2, -34)
+
+[node name="Collision" parent="Roof7"]
+shape = SubResource("Roof7Shape")
+
+[node name="Visual" parent="Roof7"]
+material_override = SubResource("Roof7Mat")
+mesh = SubResource("Roof7Mesh")
+
+[node name="RoofNumber7" type="Label3D" parent="." unique_id=1150950959]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 8.7, -34)
+pixel_size = 0.006
+billboard = 1
+text = "8"
+font = SubResource("Font")
+font_size = 50
+
+[node name="FinishSign" type="Label3D" parent="." unique_id=1352673572]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 10.6, -35)
+pixel_size = 0.006
+billboard = 1
+text = "本段出口"
+font = SubResource("Font")
+font_size = 50
+
+[node name="FallVolume" parent="." instance=ExtResource("2_blkn7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -6, -17)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("3_n7dgt")
+effect = ExtResource("4_0m5lc")
+
+[node name="Collision" parent="FallVolume"]
+shape = SubResource("BoxShape3D_1ma4x")
+
+[node name="StartSign" type="Label3D" parent="." unique_id=2089899686]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)
+pixel_size = 0.006
+billboard = 1
+text = "屋顶接力
+跟随编号 · 转弯后再起跳"
+font = SubResource("Font")
+font_size = 50
+
+[node name="Skyline0" type="MeshInstance3D" parent="." unique_id=1188953212]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 2, -3)
+mesh = SubResource("Skyline0Mesh")
+
+[node name="Skyline1" type="MeshInstance3D" parent="." unique_id=528153294]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 2, -9)
+mesh = SubResource("Skyline1Mesh")
+
+[node name="Skyline2" type="MeshInstance3D" parent="." unique_id=87913614]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 2, -15)
+mesh = SubResource("Skyline2Mesh")
+
+[node name="Skyline3" type="MeshInstance3D" parent="." unique_id=1339467223]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 2, -21)
+mesh = SubResource("Skyline3Mesh")
+
+[node name="Skyline4" type="MeshInstance3D" parent="." unique_id=534459041]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 2, -27)
+mesh = SubResource("Skyline4Mesh")
+
+[node name="Skyline5" type="MeshInstance3D" parent="." unique_id=489362630]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 2, -33)
+mesh = SubResource("Skyline5Mesh")
+
+[node name="Skyline6" type="MeshInstance3D" parent="." unique_id=387285126]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 2, -39)
+mesh = SubResource("Skyline6Mesh")
+
+[editable path="StartBuilding"]
+[editable path="Roof0"]
+[editable path="Roof1"]
+[editable path="Roof2"]
+[editable path="Roof3"]
+[editable path="Roof4"]
+[editable path="Roof5"]
+[editable path="Roof6"]
+[editable path="Roof7"]
+[editable path="FallVolume"]

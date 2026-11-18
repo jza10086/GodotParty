@@ -1,0 +1,15 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/launcher.tscn" id="base"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/top_down/trap_emitter.gd" id="script"]
+[sub_resource type="StandardMaterial3D" id="WarningMat"]
+albedo_color = Color(1,0.55,0.08,1)
+shading_mode = 0
+[sub_resource type="BoxMesh" id="WarningMesh"]
+size = Vector3(0.12,0.03,7)
+material = SubResource("WarningMat")
+[node name="TrapEmitter" instance=ExtResource("base")]
+script = ExtResource("script")
+[node name="Warning" type="MeshInstance3D" parent="."]
+position = Vector3(0,-0.84,-4.5)
+visible = false
+mesh = SubResource("WarningMesh")

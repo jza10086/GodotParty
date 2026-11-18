@@ -1,0 +1,6 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/projectile.tscn" id="base"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/shove.tres" id="ef"]
+
+[node name="knockback_projectile" instance=ExtResource("base")]
+effect = ExtResource("ef")

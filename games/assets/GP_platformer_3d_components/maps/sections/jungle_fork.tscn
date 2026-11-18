@@ -1,0 +1,571 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="1_lu7cq"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/moving_platform.tscn" id="2_dpaei"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/moving_platform.gd" id="3_hr8ih"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/swing_obstacle.tscn" id="4_ls0e3"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/swing_obstacle.gd" id="5_hwd8b"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/pusher.tscn" id="6_lcirb"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/pusher.gd" id="7_jh8bc"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/effects/kill_zone.tscn" id="8_ik4n0"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/effect_zone.gd" id="9_e6xwk"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/lethal.tres" id="10_a75re"]
+
+[sub_resource type="BoxShape3D" id="StartDeckShape"]
+size = Vector3(10, 0.5, 10)
+
+[sub_resource type="StandardMaterial3D" id="StartDeckMat"]
+albedo_color = Color(0.29, 0.46, 0.2, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="StartDeckMesh"]
+material = SubResource("StartDeckMat")
+size = Vector3(10, 0.5, 10)
+
+[sub_resource type="BoxShape3D" id="LeftEntryShape"]
+size = Vector3(6, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="LeftEntryMat"]
+albedo_color = Color(0.34, 0.53, 0.23, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="LeftEntryMesh"]
+material = SubResource("LeftEntryMat")
+size = Vector3(6, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="LeftMiddleShape"]
+size = Vector3(6, 0.5, 5)
+
+[sub_resource type="StandardMaterial3D" id="LeftMiddleMat"]
+albedo_color = Color(0.49, 0.56, 0.26, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="LeftMiddleMesh"]
+material = SubResource("LeftMiddleMat")
+size = Vector3(6, 0.5, 5)
+
+[sub_resource type="BoxShape3D" id="LeftExitShape"]
+size = Vector3(6, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="LeftExitMat"]
+albedo_color = Color(0.39, 0.51, 0.22, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="LeftExitMesh"]
+material = SubResource("LeftExitMat")
+size = Vector3(6, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="RightEntryShape"]
+size = Vector3(6, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="RightEntryMat"]
+albedo_color = Color(0.34, 0.53, 0.23, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RightEntryMesh"]
+material = SubResource("RightEntryMat")
+size = Vector3(6, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="RightMiddleShape"]
+size = Vector3(6, 0.5, 5)
+
+[sub_resource type="StandardMaterial3D" id="RightMiddleMat"]
+albedo_color = Color(0.49, 0.56, 0.26, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RightMiddleMesh"]
+material = SubResource("RightMiddleMat")
+size = Vector3(6, 0.5, 5)
+
+[sub_resource type="BoxShape3D" id="RightExitShape"]
+size = Vector3(6, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="RightExitMat"]
+albedo_color = Color(0.39, 0.51, 0.22, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RightExitMesh"]
+material = SubResource("RightExitMat")
+size = Vector3(6, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="RodMaterial"]
+albedo_color = Color(0.22, 0.28, 0.36, 1)
+metallic = 0.5
+
+[sub_resource type="CylinderMesh" id="RodMesh"]
+material = SubResource("RodMaterial")
+top_radius = 0.1
+bottom_radius = 0.1
+height = 3.5
+
+[sub_resource type="CylinderShape3D" id="RodShape"]
+height = 3.5
+radius = 0.1
+
+[sub_resource type="StandardMaterial3D" id="BallMaterial"]
+albedo_color = Color(0.96, 0.24, 0.38, 1)
+roughness = 0.4
+
+[sub_resource type="SphereMesh" id="BallMesh"]
+material = SubResource("BallMaterial")
+radius = 0.8
+height = 1.6
+
+[sub_resource type="SphereShape3D" id="BallShape"]
+radius = 0.8
+
+[sub_resource type="BoxShape3D" id="TempleCourtShape"]
+size = Vector3(10, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="TempleCourtMat"]
+albedo_color = Color(0.66, 0.61, 0.39, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="TempleCourtMesh"]
+material = SubResource("TempleCourtMat")
+size = Vector3(10, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="TempleHallShape"]
+size = Vector3(8, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="TempleHallMat"]
+albedo_color = Color(0.56, 0.53, 0.36, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="TempleHallMesh"]
+material = SubResource("TempleHallMat")
+size = Vector3(8, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jx5h2"]
+size = Vector3(2.2, 1.8, 1.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fn5um"]
+albedo_color = Color(0.95, 0.27, 0.29, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="BoxMesh_wai38"]
+material = SubResource("StandardMaterial3D_fn5um")
+size = Vector3(2.2, 1.8, 1.6)
+
+[sub_resource type="StandardMaterial3D" id="Lamp"]
+albedo_color = Color(1, 0.94, 0.1, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="Light"]
+material = SubResource("Lamp")
+size = Vector3(1.8, 0.15, 1.3)
+
+[sub_resource type="BoxShape3D" id="TempleStep1Shape"]
+size = Vector3(6, 0.5, 3)
+
+[sub_resource type="StandardMaterial3D" id="TempleStep1Mat"]
+albedo_color = Color(0.74, 0.65, 0.4, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="TempleStep1Mesh"]
+material = SubResource("TempleStep1Mat")
+size = Vector3(6, 0.5, 3)
+
+[sub_resource type="BoxShape3D" id="TempleStep2Shape"]
+size = Vector3(6, 0.5, 3)
+
+[sub_resource type="StandardMaterial3D" id="TempleStep2Mat"]
+albedo_color = Color(0.78, 0.69, 0.43, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="TempleStep2Mesh"]
+material = SubResource("TempleStep2Mat")
+size = Vector3(6, 0.5, 3)
+
+[sub_resource type="BoxShape3D" id="SanctuaryShape"]
+size = Vector3(10, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="SanctuaryMat"]
+albedo_color = Color(0.8, 0.74, 0.48, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="SanctuaryMesh"]
+material = SubResource("SanctuaryMat")
+size = Vector3(10, 0.5, 6)
+
+[sub_resource type="SystemFont" id="Font"]
+font_names = PackedStringArray("Microsoft YaHei", "Segoe UI")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_y6fwj"]
+size = Vector3(26, 3, 59)
+
+[sub_resource type="StandardMaterial3D" id="Trunk0Mat"]
+albedo_color = Color(0.32, 0.22, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="Trunk0Mesh"]
+material = SubResource("Trunk0Mat")
+size = Vector3(0.8, 7, 0.8)
+
+[sub_resource type="SphereMesh" id="CanopyMesh0"]
+material = SubResource("StartDeckMat")
+radius = 3.0
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="Trunk1Mat"]
+albedo_color = Color(0.32, 0.22, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="Trunk1Mesh"]
+material = SubResource("Trunk1Mat")
+size = Vector3(0.8, 7, 0.8)
+
+[sub_resource type="SphereMesh" id="CanopyMesh1"]
+material = SubResource("StartDeckMat")
+radius = 3.0
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="Trunk2Mat"]
+albedo_color = Color(0.32, 0.22, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="Trunk2Mesh"]
+material = SubResource("Trunk2Mat")
+size = Vector3(0.8, 7, 0.8)
+
+[sub_resource type="SphereMesh" id="CanopyMesh2"]
+material = SubResource("StartDeckMat")
+radius = 3.0
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="Trunk3Mat"]
+albedo_color = Color(0.32, 0.22, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="Trunk3Mesh"]
+material = SubResource("Trunk3Mat")
+size = Vector3(0.8, 7, 0.8)
+
+[sub_resource type="SphereMesh" id="CanopyMesh3"]
+material = SubResource("StartDeckMat")
+radius = 3.0
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="Trunk4Mat"]
+albedo_color = Color(0.32, 0.22, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="Trunk4Mesh"]
+material = SubResource("Trunk4Mat")
+size = Vector3(0.8, 7, 0.8)
+
+[sub_resource type="SphereMesh" id="CanopyMesh4"]
+material = SubResource("StartDeckMat")
+radius = 3.0
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="Trunk5Mat"]
+albedo_color = Color(0.32, 0.22, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="Trunk5Mesh"]
+material = SubResource("Trunk5Mat")
+size = Vector3(0.8, 7, 0.8)
+
+[sub_resource type="SphereMesh" id="CanopyMesh5"]
+material = SubResource("StartDeckMat")
+radius = 3.0
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="Trunk6Mat"]
+albedo_color = Color(0.32, 0.22, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="Trunk6Mesh"]
+material = SubResource("Trunk6Mat")
+size = Vector3(0.8, 7, 0.8)
+
+[sub_resource type="SphereMesh" id="CanopyMesh6"]
+material = SubResource("StartDeckMat")
+radius = 3.0
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="Trunk7Mat"]
+albedo_color = Color(0.32, 0.22, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="Trunk7Mesh"]
+material = SubResource("Trunk7Mat")
+size = Vector3(0.8, 7, 0.8)
+
+[sub_resource type="SphereMesh" id="CanopyMesh7"]
+material = SubResource("StartDeckMat")
+radius = 3.0
+height = 4.0
+
+[node name="SectionLayout" type="Node3D" unique_id=2053792503]
+
+[node name="StartDeck" parent="." instance=ExtResource("1_lu7cq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+
+[node name="Collision" parent="StartDeck"]
+shape = SubResource("StartDeckShape")
+
+[node name="Visual" parent="StartDeck"]
+material_override = SubResource("StartDeckMat")
+mesh = SubResource("StartDeckMesh")
+
+[node name="LeftEntry" parent="." instance=ExtResource("1_lu7cq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.25, -9)
+
+[node name="Collision" parent="LeftEntry"]
+shape = SubResource("LeftEntryShape")
+
+[node name="Visual" parent="LeftEntry"]
+material_override = SubResource("LeftEntryMat")
+mesh = SubResource("LeftEntryMesh")
+
+[node name="LeftMiddle" parent="." instance=ExtResource("2_dpaei")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.25, -15)
+script = ExtResource("3_hr8ih")
+travel = Vector3(1.5, 0, 0)
+speed = 0.9
+
+[node name="Collision" parent="LeftMiddle"]
+shape = SubResource("LeftMiddleShape")
+
+[node name="Visual" parent="LeftMiddle"]
+material_override = SubResource("LeftMiddleMat")
+mesh = SubResource("LeftMiddleMesh")
+
+[node name="LeftExit" parent="." instance=ExtResource("1_lu7cq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.35, -21)
+
+[node name="Collision" parent="LeftExit"]
+shape = SubResource("LeftExitShape")
+
+[node name="Visual" parent="LeftExit"]
+material_override = SubResource("LeftExitMat")
+mesh = SubResource("LeftExitMesh")
+
+[node name="RightEntry" parent="." instance=ExtResource("1_lu7cq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.25, -9)
+
+[node name="Collision" parent="RightEntry"]
+shape = SubResource("RightEntryShape")
+
+[node name="Visual" parent="RightEntry"]
+material_override = SubResource("RightEntryMat")
+mesh = SubResource("RightEntryMesh")
+
+[node name="RightMiddle" parent="." instance=ExtResource("1_lu7cq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, -0.25, -15)
+
+[node name="Collision" parent="RightMiddle"]
+shape = SubResource("RightMiddleShape")
+
+[node name="Visual" parent="RightMiddle"]
+material_override = SubResource("RightMiddleMat")
+mesh = SubResource("RightMiddleMesh")
+
+[node name="RightExit" parent="." instance=ExtResource("1_lu7cq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.35, -21)
+
+[node name="Collision" parent="RightExit"]
+shape = SubResource("RightExitShape")
+
+[node name="Visual" parent="RightExit"]
+material_override = SubResource("RightExitMat")
+mesh = SubResource("RightExitMesh")
+
+[node name="RightPendulum" parent="." instance=ExtResource("4_ls0e3")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 4.4, -15)
+script = ExtResource("5_hwd8b")
+swing_angle = 35.0
+period = 3.8
+
+[node name="Rod" parent="RightPendulum"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.75, 0)
+mesh = SubResource("RodMesh")
+
+[node name="RodCollision" parent="RightPendulum"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.75, 0)
+shape = SubResource("RodShape")
+
+[node name="Ball" parent="RightPendulum"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
+mesh = SubResource("BallMesh")
+
+[node name="BallCollision" parent="RightPendulum"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
+shape = SubResource("BallShape")
+
+[node name="TempleCourt" parent="." instance=ExtResource("1_lu7cq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -27)
+
+[node name="Collision" parent="TempleCourt"]
+shape = SubResource("TempleCourtShape")
+
+[node name="Visual" parent="TempleCourt"]
+material_override = SubResource("TempleCourtMat")
+mesh = SubResource("TempleCourtMesh")
+
+[node name="TempleHall" parent="." instance=ExtResource("1_lu7cq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -33)
+
+[node name="Collision" parent="TempleHall"]
+shape = SubResource("TempleHallShape")
+
+[node name="Visual" parent="TempleHall"]
+material_override = SubResource("TempleHallMat")
+mesh = SubResource("TempleHallMesh")
+
+[node name="TemplePress" parent="." instance=ExtResource("6_lcirb")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 1.5, -32)
+script = ExtResource("7_jh8bc")
+travel = Vector3(5.5, 0, 0)
+warning_seconds = 1.6
+
+[node name="Collision" parent="TemplePress"]
+shape = SubResource("BoxShape3D_jx5h2")
+
+[node name="Visual" parent="TemplePress"]
+mesh = SubResource("BoxMesh_wai38")
+
+[node name="Warning" parent="TemplePress"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("Light")
+
+[node name="TempleStep1" parent="." instance=ExtResource("1_lu7cq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, -38)
+
+[node name="Collision" parent="TempleStep1"]
+shape = SubResource("TempleStep1Shape")
+
+[node name="Visual" parent="TempleStep1"]
+material_override = SubResource("TempleStep1Mat")
+mesh = SubResource("TempleStep1Mesh")
+
+[node name="TempleStep2" parent="." instance=ExtResource("1_lu7cq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.95, -42)
+
+[node name="Collision" parent="TempleStep2"]
+shape = SubResource("TempleStep2Shape")
+
+[node name="Visual" parent="TempleStep2"]
+material_override = SubResource("TempleStep2Mat")
+mesh = SubResource("TempleStep2Mesh")
+
+[node name="Sanctuary" parent="." instance=ExtResource("1_lu7cq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, -47)
+
+[node name="Collision" parent="Sanctuary"]
+shape = SubResource("SanctuaryShape")
+
+[node name="Visual" parent="Sanctuary"]
+material_override = SubResource("SanctuaryMat")
+mesh = SubResource("SanctuaryMesh")
+
+[node name="FinishSign" type="Label3D" parent="." unique_id=739797162]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.2, -48)
+pixel_size = 0.006
+billboard = 1
+text = "本段出口"
+font = SubResource("Font")
+font_size = 50
+
+[node name="FallVolume" parent="." instance=ExtResource("8_ik4n0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, -23.5)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("9_e6xwk")
+effect = ExtResource("10_a75re")
+
+[node name="Collision" parent="FallVolume"]
+shape = SubResource("BoxShape3D_y6fwj")
+
+[node name="StartSign" type="Label3D" parent="." unique_id=811067239]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -3)
+pixel_size = 0.006
+billboard = 1
+text = "丛林双径
+左侧摆渡 · 右侧摆锤"
+font = SubResource("Font")
+font_size = 50
+
+[node name="TempleSign" type="Label3D" parent="." unique_id=459717364]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -26)
+pixel_size = 0.006
+billboard = 1
+text = "古庙入口
+汇合后攀上祭坛"
+font = SubResource("Font")
+font_size = 50
+
+[node name="Trunk0" type="MeshInstance3D" parent="." unique_id=1274269699]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, -4)
+mesh = SubResource("Trunk0Mesh")
+
+[node name="Canopy0" type="MeshInstance3D" parent="." unique_id=1813855647]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 5, -4)
+mesh = SubResource("CanopyMesh0")
+
+[node name="Trunk1" type="MeshInstance3D" parent="." unique_id=282376486]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, -10)
+mesh = SubResource("Trunk1Mesh")
+
+[node name="Canopy1" type="MeshInstance3D" parent="." unique_id=685839879]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 5, -10)
+mesh = SubResource("CanopyMesh1")
+
+[node name="Trunk2" type="MeshInstance3D" parent="." unique_id=1460836552]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, -16)
+mesh = SubResource("Trunk2Mesh")
+
+[node name="Canopy2" type="MeshInstance3D" parent="." unique_id=868109343]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 5, -16)
+mesh = SubResource("CanopyMesh2")
+
+[node name="Trunk3" type="MeshInstance3D" parent="." unique_id=1583515174]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, -22)
+mesh = SubResource("Trunk3Mesh")
+
+[node name="Canopy3" type="MeshInstance3D" parent="." unique_id=1103640344]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 5, -22)
+mesh = SubResource("CanopyMesh3")
+
+[node name="Trunk4" type="MeshInstance3D" parent="." unique_id=369891869]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, -28)
+mesh = SubResource("Trunk4Mesh")
+
+[node name="Canopy4" type="MeshInstance3D" parent="." unique_id=853514266]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 5, -28)
+mesh = SubResource("CanopyMesh4")
+
+[node name="Trunk5" type="MeshInstance3D" parent="." unique_id=1737275529]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, -34)
+mesh = SubResource("Trunk5Mesh")
+
+[node name="Canopy5" type="MeshInstance3D" parent="." unique_id=1025401897]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 5, -34)
+mesh = SubResource("CanopyMesh5")
+
+[node name="Trunk6" type="MeshInstance3D" parent="." unique_id=1391137295]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, -40)
+mesh = SubResource("Trunk6Mesh")
+
+[node name="Canopy6" type="MeshInstance3D" parent="." unique_id=1502688770]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 5, -40)
+mesh = SubResource("CanopyMesh6")
+
+[node name="Trunk7" type="MeshInstance3D" parent="." unique_id=1757416826]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, -46)
+mesh = SubResource("Trunk7Mesh")
+
+[node name="Canopy7" type="MeshInstance3D" parent="." unique_id=39400354]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 5, -46)
+mesh = SubResource("CanopyMesh7")
+
+[editable path="StartDeck"]
+[editable path="LeftEntry"]
+[editable path="LeftMiddle"]
+[editable path="LeftExit"]
+[editable path="RightEntry"]
+[editable path="RightMiddle"]
+[editable path="RightExit"]
+[editable path="TempleCourt"]
+[editable path="TempleHall"]
+[editable path="TempleStep1"]
+[editable path="TempleStep2"]
+[editable path="Sanctuary"]
+[editable path="FallVolume"]

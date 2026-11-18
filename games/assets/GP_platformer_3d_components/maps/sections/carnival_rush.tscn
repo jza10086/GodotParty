@@ -1,0 +1,718 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="1_ya82d"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/rotating_obstacle.tscn" id="2_6i0e1"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/rotating_obstacle.gd" id="3_1iv4n"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/moving_platform.tscn" id="4_djrcm"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/moving_platform.gd" id="5_vgjiv"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/conveyor_platform.tscn" id="6_5clxy"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/conveyor_platform.gd" id="7_osjcj"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/swing_obstacle.tscn" id="8_nojoq"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/swing_obstacle.gd" id="9_4jlyi"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/pusher.tscn" id="10_gcs7u"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/pusher.gd" id="11_snrbu"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/launcher.tscn" id="12_qoc25"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/launcher.gd" id="13_45i3n"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/knockback_projectile.tscn" id="14_2m2v5"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/seesaw_platform.tscn" id="15_ju438"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/seesaw_platform.gd" id="16_if5op"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/ice_platform.tscn" id="17_aathx"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/ice_platform.gd" id="18_3beim"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/bounce_pad.tscn" id="19_sd363"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/surface_effect.gd" id="20_dy0ov"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/contact_effect.gd" id="21_5fc0w"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/effects/kill_zone.tscn" id="22_o5jxd"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/effect_zone.gd" id="23_rr1y3"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/lethal.tres" id="24_212ql"]
+
+[sub_resource type="BoxShape3D" id="StartDeckShape"]
+size = Vector3(10, 0.5, 12)
+
+[sub_resource type="StandardMaterial3D" id="StartDeckMat"]
+albedo_color = Color(0.94, 0.36, 0.62, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="StartDeckMesh"]
+material = SubResource("StartDeckMat")
+size = Vector3(10, 0.5, 12)
+
+[sub_resource type="BoxShape3D" id="SpinnerArenaShape"]
+size = Vector3(10, 0.5, 18)
+
+[sub_resource type="StandardMaterial3D" id="SpinnerArenaMat"]
+albedo_color = Color(0.16, 0.67, 0.8, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="SpinnerArenaMesh"]
+material = SubResource("SpinnerArenaMat")
+size = Vector3(10, 0.5, 18)
+
+[sub_resource type="BoxShape3D" id="BlockShape"]
+size = Vector3(6.8, 0.32, 0.42)
+
+[sub_resource type="StandardMaterial3D" id="BlockMat"]
+albedo_color = Color(1, 0.38, 0.18, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="BlockMesh"]
+material = SubResource("BlockMat")
+size = Vector3(6.8, 0.32, 0.42)
+
+[sub_resource type="BoxShape3D" id="ShuttleOneShape"]
+size = Vector3(5, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="ShuttleOneMat"]
+albedo_color = Color(0.94, 0.7, 0.2, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="ShuttleOneMesh"]
+material = SubResource("ShuttleOneMat")
+size = Vector3(5, 0.5, 4)
+
+[sub_resource type="BoxShape3D" id="ShuttleTwoShape"]
+size = Vector3(5, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="ShuttleTwoMat"]
+albedo_color = Color(0.98, 0.55, 0.18, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="ShuttleTwoMesh"]
+material = SubResource("ShuttleTwoMat")
+size = Vector3(5, 0.5, 4)
+
+[sub_resource type="BoxShape3D" id="ShuttleExitShape"]
+size = Vector3(10, 0.5, 7)
+
+[sub_resource type="StandardMaterial3D" id="ShuttleExitMat"]
+albedo_color = Color(0.32, 0.8, 0.65, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="ShuttleExitMesh"]
+material = SubResource("ShuttleExitMat")
+size = Vector3(10, 0.5, 7)
+
+[sub_resource type="BoxShape3D" id="FastBeltShape"]
+size = Vector3(5, 0.5, 14)
+
+[sub_resource type="StandardMaterial3D" id="Belt"]
+albedo_color = Color(0.16, 0.21, 0.3, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="FastBeltMat"]
+albedo_color = Color(0.2, 0.42, 0.75, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="FastBeltMesh"]
+material = SubResource("FastBeltMat")
+size = Vector3(5, 0.5, 14)
+
+[sub_resource type="StandardMaterial3D" id="Arrow"]
+albedo_color = Color(0.98, 0.83, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="Stripe"]
+material = SubResource("Arrow")
+size = Vector3(1, 0.025, 0.12)
+
+[sub_resource type="BoxShape3D" id="ReverseBeltShape"]
+size = Vector3(5, 0.5, 14)
+
+[sub_resource type="StandardMaterial3D" id="ReverseBeltMat"]
+albedo_color = Color(0.55, 0.3, 0.78, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="ReverseBeltMesh"]
+material = SubResource("ReverseBeltMat")
+size = Vector3(5, 0.5, 14)
+
+[sub_resource type="StandardMaterial3D" id="RodMaterial"]
+albedo_color = Color(0.22, 0.28, 0.36, 1)
+metallic = 0.5
+
+[sub_resource type="CylinderMesh" id="RodMesh"]
+material = SubResource("RodMaterial")
+top_radius = 0.1
+bottom_radius = 0.1
+height = 3.5
+
+[sub_resource type="CylinderShape3D" id="RodShape"]
+height = 3.5
+radius = 0.1
+
+[sub_resource type="StandardMaterial3D" id="BallMaterial"]
+albedo_color = Color(0.96, 0.24, 0.38, 1)
+roughness = 0.4
+
+[sub_resource type="SphereMesh" id="BallMesh"]
+material = SubResource("BallMaterial")
+radius = 0.8
+height = 1.6
+
+[sub_resource type="SphereShape3D" id="BallShape"]
+radius = 0.8
+
+[sub_resource type="BoxShape3D" id="MidRestShape"]
+size = Vector3(10, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="MidRestMat"]
+albedo_color = Color(0.25, 0.82, 0.7, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="MidRestMesh"]
+material = SubResource("MidRestMat")
+size = Vector3(10, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="PushCorridorShape"]
+size = Vector3(10, 0.5, 18)
+
+[sub_resource type="StandardMaterial3D" id="PushCorridorMat"]
+albedo_color = Color(0.94, 0.49, 0.38, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="PushCorridorMesh"]
+material = SubResource("PushCorridorMat")
+size = Vector3(10, 0.5, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jx5h2"]
+size = Vector3(2.2, 1.8, 1.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fn5um"]
+albedo_color = Color(0.95, 0.27, 0.29, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="BoxMesh_wai38"]
+material = SubResource("StandardMaterial3D_fn5um")
+size = Vector3(2.2, 1.8, 1.6)
+
+[sub_resource type="StandardMaterial3D" id="Lamp"]
+albedo_color = Color(1, 0.94, 0.1, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="Light"]
+material = SubResource("Lamp")
+size = Vector3(1.8, 0.15, 1.3)
+
+[sub_resource type="StandardMaterial3D" id="Steel"]
+albedo_color = Color(0.15, 0.23, 0.35, 1)
+roughness = 0.72
+
+[sub_resource type="CylinderMesh" id="Barrel"]
+material = SubResource("Steel")
+top_radius = 0.42
+bottom_radius = 0.52
+height = 1.2
+
+[sub_resource type="BoxShape3D" id="BalanceRouteShape"]
+size = Vector3(4.6, 0.5, 10)
+
+[sub_resource type="StandardMaterial3D" id="BalanceRouteMat"]
+albedo_color = Color(0.64, 0.38, 0.84, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="BalanceRouteMesh"]
+material = SubResource("BalanceRouteMat")
+size = Vector3(4.6, 0.5, 10)
+
+[sub_resource type="StandardMaterial3D" id="AxleMaterial"]
+albedo_color = Color(0.95, 0.83, 0.25, 1)
+metallic = 0.4
+
+[sub_resource type="CylinderMesh" id="Axle"]
+material = SubResource("AxleMaterial")
+top_radius = 0.3
+bottom_radius = 0.3
+height = 5.3
+
+[sub_resource type="BoxShape3D" id="IceRouteShape"]
+size = Vector3(4.6, 0.5, 10)
+
+[sub_resource type="StandardMaterial3D" id="Ice"]
+albedo_color = Color(0.43, 0.86, 0.98, 1)
+roughness = 0.14
+
+[sub_resource type="StandardMaterial3D" id="IceRouteMat"]
+albedo_color = Color(0.5, 0.88, 0.98, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="IceRouteMesh"]
+material = SubResource("IceRouteMat")
+size = Vector3(4.6, 0.5, 10)
+
+[sub_resource type="BoxShape3D" id="FinalRestShape"]
+size = Vector3(10, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="FinalRestMat"]
+albedo_color = Color(0.28, 0.83, 0.66, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="FinalRestMesh"]
+material = SubResource("FinalRestMat")
+size = Vector3(10, 0.5, 4)
+
+[sub_resource type="BoxShape3D" id="LaunchLeftShape"]
+size = Vector3(5, 0.5, 2)
+
+[sub_resource type="StandardMaterial3D" id="Color"]
+albedo_color = Color(0.28, 0.98, 0.47, 1)
+roughness = 0.72
+
+[sub_resource type="StandardMaterial3D" id="LaunchLeftMat"]
+albedo_color = Color(0.4, 0.96, 0.35, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="LaunchLeftMesh"]
+material = SubResource("LaunchLeftMat")
+size = Vector3(5, 0.5, 2)
+
+[sub_resource type="Resource" id="Launch"]
+script = ExtResource("21_5fc0w")
+direction = Vector3(0, 0.9, -0.44)
+speed = 18.0
+
+[sub_resource type="BoxShape3D" id="LaunchRightShape"]
+size = Vector3(5, 0.5, 2)
+
+[sub_resource type="StandardMaterial3D" id="LaunchRightMat"]
+albedo_color = Color(0.4, 0.96, 0.35, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="LaunchRightMesh"]
+material = SubResource("LaunchRightMat")
+size = Vector3(5, 0.5, 2)
+
+[sub_resource type="BoxShape3D" id="FinishDeckShape"]
+size = Vector3(10, 0.5, 10)
+
+[sub_resource type="StandardMaterial3D" id="FinishDeckMat"]
+albedo_color = Color(0.96, 0.7, 0.2, 1)
+roughness = 0.68
+
+[sub_resource type="BoxMesh" id="FinishDeckMesh"]
+material = SubResource("FinishDeckMat")
+size = Vector3(10, 0.5, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ukhej"]
+size = Vector3(23.6, 3, 115)
+
+[sub_resource type="SystemFont" id="Font"]
+font_names = PackedStringArray("Microsoft YaHei", "Segoe UI")
+
+[node name="SectionLayout" type="Node3D" unique_id=1744647038]
+
+[node name="StartDeck" parent="." instance=ExtResource("1_ya82d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -1)
+
+[node name="Collision" parent="StartDeck"]
+shape = SubResource("StartDeckShape")
+
+[node name="Visual" parent="StartDeck"]
+mesh = SubResource("StartDeckMesh")
+
+[node name="SpinnerArena" parent="." instance=ExtResource("1_ya82d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -16)
+
+[node name="Collision" parent="SpinnerArena"]
+shape = SubResource("SpinnerArenaShape")
+
+[node name="Visual" parent="SpinnerArena"]
+mesh = SubResource("SpinnerArenaMesh")
+
+[node name="LeftSpinner" parent="." instance=ExtResource("2_6i0e1")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1, 0.52, -12.8)
+script = ExtResource("3_1iv4n")
+degrees_per_second = 75.0
+
+[node name="Collision" parent="LeftSpinner"]
+shape = SubResource("BlockShape")
+
+[node name="Visual" parent="LeftSpinner"]
+mesh = SubResource("BlockMesh")
+
+[node name="RightSpinner" parent="." instance=ExtResource("2_6i0e1")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 0.52, -18.5)
+script = ExtResource("3_1iv4n")
+degrees_per_second = -85.0
+initial_degrees = 45.0
+
+[node name="Collision" parent="RightSpinner"]
+shape = SubResource("BlockShape")
+
+[node name="Visual" parent="RightSpinner"]
+mesh = SubResource("BlockMesh")
+
+[node name="ShuttleOne" parent="." instance=ExtResource("4_djrcm")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.25, -28)
+script = ExtResource("5_vgjiv")
+travel = Vector3(2, 0, 0)
+speed = 1.3
+phase = 0.2
+
+[node name="Collision" parent="ShuttleOne"]
+shape = SubResource("ShuttleOneShape")
+
+[node name="Visual" parent="ShuttleOne"]
+mesh = SubResource("ShuttleOneMesh")
+
+[node name="ShuttleTwo" parent="." instance=ExtResource("4_djrcm")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.25, -33)
+script = ExtResource("5_vgjiv")
+travel = Vector3(-2, 0, 0)
+speed = 1.5
+phase = 0.7
+
+[node name="Collision" parent="ShuttleTwo"]
+shape = SubResource("ShuttleTwoShape")
+
+[node name="Visual" parent="ShuttleTwo"]
+mesh = SubResource("ShuttleTwoMesh")
+
+[node name="ShuttleExit" parent="." instance=ExtResource("1_ya82d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -38.5)
+
+[node name="Collision" parent="ShuttleExit"]
+shape = SubResource("ShuttleExitShape")
+
+[node name="Visual" parent="ShuttleExit"]
+mesh = SubResource("ShuttleExitMesh")
+
+[node name="FastBelt" parent="." instance=ExtResource("6_5clxy")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, -0.25, -49)
+script = ExtResource("7_osjcj")
+belt_speed = 1.4
+
+[node name="Collision" parent="FastBelt"]
+shape = SubResource("FastBeltShape")
+
+[node name="Visual" parent="FastBelt"]
+material_override = SubResource("Belt")
+mesh = SubResource("FastBeltMesh")
+
+[node name="Direction" parent="FastBelt"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.26, 0)
+
+[node name="Left" parent="FastBelt/Direction"]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, -0.35, 0, 0)
+mesh = SubResource("Stripe")
+
+[node name="Right" parent="FastBelt/Direction"]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 0.35, 0, 0)
+mesh = SubResource("Stripe")
+
+[node name="ReverseBelt" parent="." instance=ExtResource("6_5clxy")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, -0.25, -49)
+script = ExtResource("7_osjcj")
+belt_speed = -1.5
+
+[node name="Collision" parent="ReverseBelt"]
+shape = SubResource("ReverseBeltShape")
+
+[node name="Visual" parent="ReverseBelt"]
+material_override = SubResource("Belt")
+mesh = SubResource("ReverseBeltMesh")
+
+[node name="Direction" parent="ReverseBelt"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.26, 0)
+
+[node name="Left" parent="ReverseBelt/Direction"]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, -0.35, 0, 0)
+mesh = SubResource("Stripe")
+
+[node name="Right" parent="ReverseBelt/Direction"]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 0.35, 0, 0)
+mesh = SubResource("Stripe")
+
+[node name="PendulumOne" parent="." instance=ExtResource("8_nojoq")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 4.4, -46)
+script = ExtResource("9_4jlyi")
+period = 3.2
+initial_phase = 0.15
+
+[node name="Rod" parent="PendulumOne"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.75, 0)
+mesh = SubResource("RodMesh")
+
+[node name="RodCollision" parent="PendulumOne"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.75, 0)
+shape = SubResource("RodShape")
+
+[node name="Ball" parent="PendulumOne"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
+mesh = SubResource("BallMesh")
+
+[node name="BallCollision" parent="PendulumOne"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
+shape = SubResource("BallShape")
+
+[node name="PendulumTwo" parent="." instance=ExtResource("8_nojoq")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 4.4, -52)
+script = ExtResource("9_4jlyi")
+period = 2.8
+initial_phase = 0.65
+
+[node name="Rod" parent="PendulumTwo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.75, 0)
+mesh = SubResource("RodMesh")
+
+[node name="RodCollision" parent="PendulumTwo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.75, 0)
+shape = SubResource("RodShape")
+
+[node name="Ball" parent="PendulumTwo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
+mesh = SubResource("BallMesh")
+
+[node name="BallCollision" parent="PendulumTwo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
+shape = SubResource("BallShape")
+
+[node name="MidRest" parent="." instance=ExtResource("1_ya82d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -59)
+
+[node name="Collision" parent="MidRest"]
+shape = SubResource("MidRestShape")
+
+[node name="Visual" parent="MidRest"]
+mesh = SubResource("MidRestMesh")
+
+[node name="PushCorridor" parent="." instance=ExtResource("1_ya82d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -71)
+
+[node name="Collision" parent="PushCorridor"]
+shape = SubResource("PushCorridorShape")
+
+[node name="Visual" parent="PushCorridor"]
+mesh = SubResource("PushCorridorMesh")
+
+[node name="PressLeft" parent="." instance=ExtResource("10_gcs7u")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8, 0.9, -65)
+script = ExtResource("11_snrbu")
+travel = Vector3(6.5, 0, 0)
+phase = 0.1
+
+[node name="Collision" parent="PressLeft"]
+shape = SubResource("BoxShape3D_jx5h2")
+
+[node name="Visual" parent="PressLeft"]
+mesh = SubResource("BoxMesh_wai38")
+
+[node name="Warning" parent="PressLeft"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("Light")
+
+[node name="PressRight" parent="." instance=ExtResource("10_gcs7u")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8, 0.9, -69)
+script = ExtResource("11_snrbu")
+travel = Vector3(-6.5, 0, 0)
+phase = 0.55
+
+[node name="Collision" parent="PressRight"]
+shape = SubResource("BoxShape3D_jx5h2")
+
+[node name="Visual" parent="PressRight"]
+mesh = SubResource("BoxMesh_wai38")
+
+[node name="Warning" parent="PressRight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("Light")
+
+[node name="CrossfireLeft" parent="." instance=ExtResource("12_qoc25")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -5.4, 0.85, -74)
+script = ExtResource("13_45i3n")
+projectile = ExtResource("14_2m2v5")
+interval = 2.1
+
+[node name="Barrel" parent="CrossfireLeft"]
+transform = Transform3D(1, 0, 0, 0, 3.1391647e-07, 1, 0, -1, 3.1391647e-07, 0, 0, 0)
+mesh = SubResource("Barrel")
+
+[node name="Muzzle" parent="CrossfireLeft"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.95)
+
+[node name="CrossfireRight" parent="." instance=ExtResource("12_qoc25")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5.4, 0.85, -77)
+script = ExtResource("13_45i3n")
+projectile = ExtResource("14_2m2v5")
+interval = 2.4
+initial_delay = 1.6
+
+[node name="Barrel" parent="CrossfireRight"]
+transform = Transform3D(1, 0, 0, 0, 3.1391647e-07, 1, 0, -1, 3.1391647e-07, 0, 0, 0)
+mesh = SubResource("Barrel")
+
+[node name="Muzzle" parent="CrossfireRight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.95)
+
+[node name="BalanceRoute" parent="." instance=ExtResource("15_ju438")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, -0.25, -85)
+script = ExtResource("16_if5op")
+max_tilt = 10.0
+tilt_speed = 14.0
+
+[node name="Collision" parent="BalanceRoute"]
+shape = SubResource("BalanceRouteShape")
+
+[node name="Visual" parent="BalanceRoute"]
+mesh = SubResource("BalanceRouteMesh")
+
+[node name="Axle" parent="BalanceRoute"]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, -0.25, 0)
+mesh = SubResource("Axle")
+
+[node name="IceRoute" parent="." instance=ExtResource("17_aathx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, -0.25, -85)
+script = ExtResource("18_3beim")
+friction = 0.1
+
+[node name="Collision" parent="IceRoute"]
+shape = SubResource("IceRouteShape")
+
+[node name="Visual" parent="IceRoute"]
+material_override = SubResource("Ice")
+mesh = SubResource("IceRouteMesh")
+
+[node name="FinalRest" parent="." instance=ExtResource("1_ya82d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -92)
+
+[node name="Collision" parent="FinalRest"]
+shape = SubResource("FinalRestShape")
+
+[node name="Visual" parent="FinalRest"]
+mesh = SubResource("FinalRestMesh")
+
+[node name="LaunchLeft" parent="." instance=ExtResource("19_sd363")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, -0.25, -95)
+
+[node name="Collision" parent="LaunchLeft"]
+shape = SubResource("LaunchLeftShape")
+
+[node name="Visual" parent="LaunchLeft"]
+material_override = SubResource("Color")
+mesh = SubResource("LaunchLeftMesh")
+
+[node name="SurfaceEffect" parent="LaunchLeft"]
+script = ExtResource("20_dy0ov")
+effect = SubResource("Launch")
+top_only = true
+
+[node name="LaunchRight" parent="." instance=ExtResource("19_sd363")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, -0.25, -95)
+
+[node name="Collision" parent="LaunchRight"]
+shape = SubResource("LaunchRightShape")
+
+[node name="Visual" parent="LaunchRight"]
+material_override = SubResource("Color")
+mesh = SubResource("LaunchRightMesh")
+
+[node name="SurfaceEffect" parent="LaunchRight"]
+script = ExtResource("20_dy0ov")
+effect = SubResource("Launch")
+top_only = true
+
+[node name="FinishDeck" parent="." instance=ExtResource("1_ya82d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -104)
+
+[node name="Collision" parent="FinishDeck"]
+shape = SubResource("FinishDeckShape")
+
+[node name="Visual" parent="FinishDeck"]
+mesh = SubResource("FinishDeckMesh")
+
+[node name="FallVolume" parent="." instance=ExtResource("22_o5jxd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, -52.5)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("23_rr1y3")
+effect = ExtResource("24_212ql")
+
+[node name="Collision" parent="FallVolume"]
+shape = SubResource("BoxShape3D_ukhej")
+
+[node name="Stage1" type="Label3D" parent="." unique_id=1537719510]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -8)
+pixel_size = 0.006
+billboard = 1
+text = "缤纷闯关
+旋转广场"
+font = SubResource("Font")
+font_size = 56
+
+[node name="Stage2" type="Label3D" parent="." unique_id=1167938264]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -25)
+pixel_size = 0.006
+billboard = 1
+text = "摆渡跳台
+跳上移动平台"
+font = SubResource("Font")
+font_size = 56
+
+[node name="Stage3" type="Label3D" parent="." unique_id=548356063]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -42)
+pixel_size = 0.006
+billboard = 1
+text = "双带摆锤
+左侧顺向 · 右侧逆向"
+font = SubResource("Font")
+font_size = 56
+
+[node name="Stage4" type="Label3D" parent="." unique_id=1084734294]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -63)
+pixel_size = 0.006
+billboard = 1
+text = "推墙炮阵
+观察节奏再通过"
+font = SubResource("Font")
+font_size = 56
+
+[node name="Stage5" type="Label3D" parent="." unique_id=984182942]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -81)
+pixel_size = 0.006
+billboard = 1
+text = "平衡与冰面
+左侧跷跷板 · 右侧冰面"
+font = SubResource("Font")
+font_size = 56
+
+[node name="Stage6" type="Label3D" parent="." unique_id=1981269332]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -94)
+pixel_size = 0.006
+billboard = 1
+text = "弹跳冲线
+踩上绿色跳板"
+font = SubResource("Font")
+font_size = 56
+
+[node name="FinishSign" type="Label3D" parent="." unique_id=275227536]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.3, -106)
+pixel_size = 0.006
+billboard = 1
+text = "本段出口"
+font = SubResource("Font")
+font_size = 56
+
+[editable path="StartDeck"]
+[editable path="SpinnerArena"]
+[editable path="ShuttleOne"]
+[editable path="ShuttleTwo"]
+[editable path="ShuttleExit"]
+[editable path="FastBelt"]
+[editable path="ReverseBelt"]
+[editable path="MidRest"]
+[editable path="PushCorridor"]
+[editable path="BalanceRoute"]
+[editable path="IceRoute"]
+[editable path="FinalRest"]
+[editable path="LaunchLeft"]
+[editable path="LaunchRight"]
+[editable path="FinishDeck"]
+[editable path="FallVolume"]

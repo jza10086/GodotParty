@@ -1,0 +1,406 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="1_k8yiu"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/effects/kill_zone.tscn" id="2_uuleu"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/effect_zone.gd" id="3_3cw3p"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/lethal.tres" id="4_jd8m7"]
+
+[sub_resource type="BoxShape3D" id="StartDeckShape"]
+size = Vector3(9, 0.5, 8)
+
+[sub_resource type="StandardMaterial3D" id="StartDeckMat"]
+albedo_color = Color(0.62, 0.72, 0.78, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="StartDeckMesh"]
+material = SubResource("StartDeckMat")
+size = Vector3(9, 0.5, 8)
+
+[sub_resource type="BoxShape3D" id="RingStep0Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep0Mat"]
+albedo_color = Color(0.22, 0.55, 0.68, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep0Mesh"]
+material = SubResource("RingStep0Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="BoxShape3D" id="RingStep1Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep1Mat"]
+albedo_color = Color(0.83, 0.88, 0.9, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep1Mesh"]
+material = SubResource("RingStep1Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="SystemFont" id="Font"]
+font_names = PackedStringArray("Microsoft YaHei", "Segoe UI")
+
+[sub_resource type="BoxShape3D" id="RingStep2Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep2Mat"]
+albedo_color = Color(0.22, 0.55, 0.68, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep2Mesh"]
+material = SubResource("RingStep2Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="BoxShape3D" id="RingStep3Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep3Mat"]
+albedo_color = Color(0.83, 0.88, 0.9, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep3Mesh"]
+material = SubResource("RingStep3Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="BoxShape3D" id="RingStep4Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep4Mat"]
+albedo_color = Color(0.22, 0.55, 0.68, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep4Mesh"]
+material = SubResource("RingStep4Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="BoxShape3D" id="RingStep5Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep5Mat"]
+albedo_color = Color(0.83, 0.88, 0.9, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep5Mesh"]
+material = SubResource("RingStep5Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="BoxShape3D" id="RingStep6Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep6Mat"]
+albedo_color = Color(0.22, 0.55, 0.68, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep6Mesh"]
+material = SubResource("RingStep6Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="BoxShape3D" id="RingStep7Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep7Mat"]
+albedo_color = Color(0.83, 0.88, 0.9, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep7Mesh"]
+material = SubResource("RingStep7Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="BoxShape3D" id="RingStep8Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep8Mat"]
+albedo_color = Color(0.22, 0.55, 0.68, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep8Mesh"]
+material = SubResource("RingStep8Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="BoxShape3D" id="RingStep9Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep9Mat"]
+albedo_color = Color(0.83, 0.88, 0.9, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep9Mesh"]
+material = SubResource("RingStep9Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="BoxShape3D" id="RingStep10Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep10Mat"]
+albedo_color = Color(0.22, 0.55, 0.68, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep10Mesh"]
+material = SubResource("RingStep10Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="BoxShape3D" id="RingStep11Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep11Mat"]
+albedo_color = Color(0.83, 0.88, 0.9, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep11Mesh"]
+material = SubResource("RingStep11Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="BoxShape3D" id="RingStep12Shape"]
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="RingStep12Mat"]
+albedo_color = Color(0.22, 0.55, 0.68, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RingStep12Mesh"]
+material = SubResource("RingStep12Mat")
+size = Vector3(4.2, 0.5, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="TowerPaint"]
+albedo_color = Color(0.92, 0.88, 0.72, 1)
+
+[sub_resource type="CylinderMesh" id="TowerMesh"]
+material = SubResource("TowerPaint")
+top_radius = 2.8
+bottom_radius = 3.4
+height = 13.0
+
+[sub_resource type="CylinderMesh" id="LanternMesh"]
+material = SubResource("RingStep1Mat")
+top_radius = 3.4
+bottom_radius = 3.4
+height = 1.2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bikos"]
+size = Vector3(30, 3, 37)
+
+[node name="SectionLayout" type="Node3D" unique_id=296327912]
+
+[node name="StartDeck" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+
+[node name="Collision" parent="StartDeck"]
+shape = SubResource("StartDeckShape")
+
+[node name="Visual" parent="StartDeck"]
+material_override = SubResource("StartDeckMat")
+mesh = SubResource("StartDeckMesh")
+
+[node name="RingStep0" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -7)
+
+[node name="Collision" parent="RingStep0"]
+shape = SubResource("RingStep0Shape")
+
+[node name="Visual" parent="RingStep0"]
+material_override = SubResource("RingStep0Mat")
+mesh = SubResource("RingStep0Mesh")
+
+[node name="RingStep1" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.4, -8.206)
+
+[node name="Collision" parent="RingStep1"]
+shape = SubResource("RingStep1Shape")
+
+[node name="Visual" parent="RingStep1"]
+material_override = SubResource("RingStep1Mat")
+mesh = SubResource("RingStep1Mesh")
+
+[node name="Arrow1" type="Label3D" parent="." unique_id=1165325060]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.65, -8.206)
+pixel_size = 0.006
+billboard = 1
+text = "↑ 环塔上行"
+font = SubResource("Font")
+font_size = 50
+
+[node name="RingStep2" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.794, 1.05, -11.5)
+
+[node name="Collision" parent="RingStep2"]
+shape = SubResource("RingStep2Shape")
+
+[node name="Visual" parent="RingStep2"]
+material_override = SubResource("RingStep2Mat")
+mesh = SubResource("RingStep2Mesh")
+
+[node name="RingStep3" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 1.7, -16)
+
+[node name="Collision" parent="RingStep3"]
+shape = SubResource("RingStep3Shape")
+
+[node name="Visual" parent="RingStep3"]
+material_override = SubResource("RingStep3Mat")
+mesh = SubResource("RingStep3Mesh")
+
+[node name="RingStep4" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.794, 2.35, -20.5)
+
+[node name="Collision" parent="RingStep4"]
+shape = SubResource("RingStep4Shape")
+
+[node name="Visual" parent="RingStep4"]
+material_override = SubResource("RingStep4Mat")
+mesh = SubResource("RingStep4Mesh")
+
+[node name="Arrow4" type="Label3D" parent="." unique_id=294359745]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.794, 5.6, -20.5)
+pixel_size = 0.006
+billboard = 1
+text = "↑ 环塔上行"
+font = SubResource("Font")
+font_size = 50
+
+[node name="RingStep5" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3, -23.794)
+
+[node name="Collision" parent="RingStep5"]
+shape = SubResource("RingStep5Shape")
+
+[node name="Visual" parent="RingStep5"]
+material_override = SubResource("RingStep5Mat")
+mesh = SubResource("RingStep5Mesh")
+
+[node name="RingStep6" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.65, -25)
+
+[node name="Collision" parent="RingStep6"]
+shape = SubResource("RingStep6Shape")
+
+[node name="Visual" parent="RingStep6"]
+material_override = SubResource("RingStep6Mat")
+mesh = SubResource("RingStep6Mesh")
+
+[node name="RingStep7" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 4.3, -23.794)
+
+[node name="Collision" parent="RingStep7"]
+shape = SubResource("RingStep7Shape")
+
+[node name="Visual" parent="RingStep7"]
+material_override = SubResource("RingStep7Mat")
+mesh = SubResource("RingStep7Mesh")
+
+[node name="Arrow7" type="Label3D" parent="." unique_id=448752004]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 7.55, -23.794)
+pixel_size = 0.006
+billboard = 1
+text = "↑ 环塔上行"
+font = SubResource("Font")
+font_size = 50
+
+[node name="RingStep8" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.794, 4.95, -20.5)
+
+[node name="Collision" parent="RingStep8"]
+shape = SubResource("RingStep8Shape")
+
+[node name="Visual" parent="RingStep8"]
+material_override = SubResource("RingStep8Mat")
+mesh = SubResource("RingStep8Mesh")
+
+[node name="RingStep9" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 5.6, -16)
+
+[node name="Collision" parent="RingStep9"]
+shape = SubResource("RingStep9Shape")
+
+[node name="Visual" parent="RingStep9"]
+material_override = SubResource("RingStep9Mat")
+mesh = SubResource("RingStep9Mesh")
+
+[node name="RingStep10" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.794, 6.25, -11.5)
+
+[node name="Collision" parent="RingStep10"]
+shape = SubResource("RingStep10Shape")
+
+[node name="Visual" parent="RingStep10"]
+material_override = SubResource("RingStep10Mat")
+mesh = SubResource("RingStep10Mesh")
+
+[node name="Arrow10" type="Label3D" parent="." unique_id=882229824]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.794, 9.5, -11.5)
+pixel_size = 0.006
+billboard = 1
+text = "↑ 环塔上行"
+font = SubResource("Font")
+font_size = 50
+
+[node name="RingStep11" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 6.9, -8.206)
+
+[node name="Collision" parent="RingStep11"]
+shape = SubResource("RingStep11Shape")
+
+[node name="Visual" parent="RingStep11"]
+material_override = SubResource("RingStep11Mat")
+mesh = SubResource("RingStep11Mesh")
+
+[node name="RingStep12" parent="." instance=ExtResource("1_k8yiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.55, -7)
+
+[node name="Collision" parent="RingStep12"]
+shape = SubResource("RingStep12Shape")
+
+[node name="Visual" parent="RingStep12"]
+material_override = SubResource("RingStep12Mat")
+mesh = SubResource("RingStep12Mesh")
+
+[node name="Tower" type="MeshInstance3D" parent="." unique_id=442149512]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -16)
+mesh = SubResource("TowerMesh")
+
+[node name="Lantern" type="MeshInstance3D" parent="." unique_id=1557031799]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.6, -16)
+mesh = SubResource("LanternMesh")
+
+[node name="FinishSign" type="Label3D" parent="." unique_id=691035544]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, -7)
+pixel_size = 0.006
+billboard = 1
+text = "本段出口"
+font = SubResource("Font")
+font_size = 50
+
+[node name="FallVolume" parent="." instance=ExtResource("2_uuleu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, -12.5)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("3_3cw3p")
+effect = ExtResource("4_jd8m7")
+
+[node name="Collision" parent="FallVolume"]
+shape = SubResource("BoxShape3D_bikos")
+
+[node name="StartSign" type="Label3D" parent="." unique_id=1522668214]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -3)
+pixel_size = 0.006
+billboard = 1
+text = "灯塔环廊
+向右绕塔 · 每层起跳"
+font = SubResource("Font")
+font_size = 50
+
+[editable path="StartDeck"]
+[editable path="RingStep0"]
+[editable path="RingStep1"]
+[editable path="RingStep2"]
+[editable path="RingStep3"]
+[editable path="RingStep4"]
+[editable path="RingStep5"]
+[editable path="RingStep6"]
+[editable path="RingStep7"]
+[editable path="RingStep8"]
+[editable path="RingStep9"]
+[editable path="RingStep10"]
+[editable path="RingStep11"]
+[editable path="RingStep12"]
+[editable path="FallVolume"]

@@ -1,0 +1,7 @@
+[gd_resource type="Resource" format=3]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/contact_effect.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+direction = Vector3(0, 0.2, -1)
+speed = 9.0

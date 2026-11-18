@@ -1,0 +1,25 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/projectile.gd" id="script"]
+
+[sub_resource type="StandardMaterial3D" id="M"]
+albedo_color = Color(0.95, 0.62, 0.12, 1)
+roughness = 0.72
+
+[sub_resource type="SphereMesh" id="Ball"]
+radius = 0.25
+height = 0.5
+material = SubResource("M")
+
+[sub_resource type="SphereShape3D" id="Shape"]
+radius = 0.25
+
+[node name="Projectile" type="CharacterBody3D"]
+collision_layer = 0
+collision_mask = 3
+script = ExtResource("script")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("Shape")
+
+[node name="Visual" type="MeshInstance3D" parent="."]
+mesh = SubResource("Ball")

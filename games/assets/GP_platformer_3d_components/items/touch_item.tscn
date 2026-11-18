@@ -1,0 +1,5 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/items/item.tscn" id="base"]
+
+[node name="touch_item" instance=ExtResource("base")]
+activation = 0

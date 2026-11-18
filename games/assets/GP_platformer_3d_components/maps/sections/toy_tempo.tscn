@@ -1,0 +1,482 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="1_th47c"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/pusher.tscn" id="2_y3p66"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/pusher.gd" id="3_tl70n"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/moving_platform.tscn" id="4_yphal"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/moving_platform.gd" id="5_j3rov"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/effects/kill_zone.tscn" id="6_o5cv4"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/effect_zone.gd" id="7_deo2q"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/lethal.tres" id="8_vmqcp"]
+
+[sub_resource type="BoxShape3D" id="StartDeckShape"]
+size = Vector3(10, 0.5, 12)
+
+[sub_resource type="StandardMaterial3D" id="StartDeckMat"]
+albedo_color = Color(0.93, 0.69, 0.22, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="StartDeckMesh"]
+material = SubResource("StartDeckMat")
+size = Vector3(10, 0.5, 12)
+
+[sub_resource type="BoxShape3D" id="GateRunwayShape"]
+size = Vector3(9, 0.5, 32)
+
+[sub_resource type="StandardMaterial3D" id="GateRunwayMat"]
+albedo_color = Color(0.22, 0.56, 0.85, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="GateRunwayMesh"]
+material = SubResource("GateRunwayMat")
+size = Vector3(9, 0.5, 32)
+
+[sub_resource type="BoxShape3D" id="BeatGate0Shape"]
+size = Vector3(8.8, 6, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="BeatGate0Mat"]
+albedo_color = Color(0.91, 0.68, 0.18, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BeatGate0Mesh"]
+material = SubResource("BeatGate0Mat")
+size = Vector3(8.8, 6, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="Lamp"]
+albedo_color = Color(1, 0.94, 0.1, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="Light"]
+material = SubResource("Lamp")
+size = Vector3(1.8, 0.15, 1.3)
+
+[sub_resource type="StandardMaterial3D" id="FrameLeft0Mat"]
+albedo_color = Color(0.83, 0.27, 0.39, 1)
+
+[sub_resource type="BoxMesh" id="FrameLeft0Mesh"]
+material = SubResource("FrameLeft0Mat")
+size = Vector3(0.5, 8, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="FrameRight0Mat"]
+albedo_color = Color(0.83, 0.27, 0.39, 1)
+
+[sub_resource type="BoxMesh" id="FrameRight0Mesh"]
+material = SubResource("FrameRight0Mat")
+size = Vector3(0.5, 8, 0.8)
+
+[sub_resource type="SystemFont" id="Font"]
+font_names = PackedStringArray("Microsoft YaHei", "Segoe UI")
+
+[sub_resource type="BoxShape3D" id="BeatGate1Shape"]
+size = Vector3(8.8, 6, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="BeatGate1Mat"]
+albedo_color = Color(0.94, 0.4, 0.55, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BeatGate1Mesh"]
+material = SubResource("BeatGate1Mat")
+size = Vector3(8.8, 6, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="FrameLeft1Mat"]
+albedo_color = Color(0.83, 0.27, 0.39, 1)
+
+[sub_resource type="BoxMesh" id="FrameLeft1Mesh"]
+material = SubResource("FrameLeft1Mat")
+size = Vector3(0.5, 8, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="FrameRight1Mat"]
+albedo_color = Color(0.83, 0.27, 0.39, 1)
+
+[sub_resource type="BoxMesh" id="FrameRight1Mesh"]
+material = SubResource("FrameRight1Mat")
+size = Vector3(0.5, 8, 0.8)
+
+[sub_resource type="BoxShape3D" id="BeatGate2Shape"]
+size = Vector3(8.8, 6, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="BeatGate2Mat"]
+albedo_color = Color(0.91, 0.68, 0.18, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BeatGate2Mesh"]
+material = SubResource("BeatGate2Mat")
+size = Vector3(8.8, 6, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="FrameLeft2Mat"]
+albedo_color = Color(0.83, 0.27, 0.39, 1)
+
+[sub_resource type="BoxMesh" id="FrameLeft2Mesh"]
+material = SubResource("FrameLeft2Mat")
+size = Vector3(0.5, 8, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="FrameRight2Mat"]
+albedo_color = Color(0.83, 0.27, 0.39, 1)
+
+[sub_resource type="BoxMesh" id="FrameRight2Mesh"]
+material = SubResource("FrameRight2Mat")
+size = Vector3(0.5, 8, 0.8)
+
+[sub_resource type="BoxShape3D" id="RestDeckShape"]
+size = Vector3(9, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="RestDeckMat"]
+albedo_color = Color(0.94, 0.69, 0.22, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RestDeckMesh"]
+material = SubResource("RestDeckMat")
+size = Vector3(9, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="BeatStep0Shape"]
+size = Vector3(5, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="BeatStep0Mat"]
+albedo_color = Color(0.3, 0.77, 0.52, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BeatStep0Mesh"]
+material = SubResource("BeatStep0Mat")
+size = Vector3(5, 0.5, 4)
+
+[sub_resource type="BoxShape3D" id="BeatStep1Shape"]
+size = Vector3(5, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="BeatStep1Mat"]
+albedo_color = Color(0.9, 0.33, 0.5, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BeatStep1Mesh"]
+material = SubResource("BeatStep1Mat")
+size = Vector3(5, 0.5, 4)
+
+[sub_resource type="BoxShape3D" id="BeatStep2Shape"]
+size = Vector3(5, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="BeatStep2Mat"]
+albedo_color = Color(0.3, 0.77, 0.52, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BeatStep2Mesh"]
+material = SubResource("BeatStep2Mat")
+size = Vector3(5, 0.5, 4)
+
+[sub_resource type="BoxShape3D" id="FinishDeckShape"]
+size = Vector3(9, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="FinishDeckMat"]
+albedo_color = Color(0.94, 0.69, 0.22, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="FinishDeckMesh"]
+material = SubResource("FinishDeckMat")
+size = Vector3(9, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nrqmr"]
+size = Vector3(12, 3, 75)
+
+[sub_resource type="StandardMaterial3D" id="ToyBlock0Mat"]
+albedo_color = Color(0.3, 0.75, 0.52, 1)
+
+[sub_resource type="BoxMesh" id="ToyBlock0Mesh"]
+material = SubResource("ToyBlock0Mat")
+size = Vector3(3, 3, 3)
+
+[sub_resource type="StandardMaterial3D" id="ToyBlock1Mat"]
+albedo_color = Color(0.88, 0.35, 0.52, 1)
+
+[sub_resource type="BoxMesh" id="ToyBlock1Mesh"]
+material = SubResource("ToyBlock1Mat")
+size = Vector3(3, 4, 3)
+
+[sub_resource type="StandardMaterial3D" id="ToyBlock2Mat"]
+albedo_color = Color(0.3, 0.75, 0.52, 1)
+
+[sub_resource type="BoxMesh" id="ToyBlock2Mesh"]
+material = SubResource("ToyBlock2Mat")
+size = Vector3(3, 5, 3)
+
+[sub_resource type="StandardMaterial3D" id="ToyBlock3Mat"]
+albedo_color = Color(0.88, 0.35, 0.52, 1)
+
+[sub_resource type="BoxMesh" id="ToyBlock3Mesh"]
+material = SubResource("ToyBlock3Mat")
+size = Vector3(3, 3, 3)
+
+[sub_resource type="StandardMaterial3D" id="ToyBlock4Mat"]
+albedo_color = Color(0.3, 0.75, 0.52, 1)
+
+[sub_resource type="BoxMesh" id="ToyBlock4Mesh"]
+material = SubResource("ToyBlock4Mat")
+size = Vector3(3, 4, 3)
+
+[sub_resource type="StandardMaterial3D" id="ToyBlock5Mat"]
+albedo_color = Color(0.88, 0.35, 0.52, 1)
+
+[sub_resource type="BoxMesh" id="ToyBlock5Mesh"]
+material = SubResource("ToyBlock5Mat")
+size = Vector3(3, 5, 3)
+
+[node name="SectionLayout" type="Node3D" unique_id=1158805617]
+
+[node name="StartDeck" parent="." instance=ExtResource("1_th47c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+
+[node name="Collision" parent="StartDeck"]
+shape = SubResource("StartDeckShape")
+
+[node name="Visual" parent="StartDeck"]
+material_override = SubResource("StartDeckMat")
+mesh = SubResource("StartDeckMesh")
+
+[node name="GateRunway" parent="." instance=ExtResource("1_th47c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -22)
+
+[node name="Collision" parent="GateRunway"]
+shape = SubResource("GateRunwayShape")
+
+[node name="Visual" parent="GateRunway"]
+material_override = SubResource("GateRunwayMat")
+mesh = SubResource("GateRunwayMesh")
+
+[node name="BeatGate0" parent="." instance=ExtResource("2_y3p66")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -11)
+script = ExtResource("3_tl70n")
+travel = Vector3(0, 6, 0)
+warning_seconds = 1.0
+extend_seconds = 0.4
+hold_seconds = 1.6
+retract_seconds = 0.4
+
+[node name="Collision" parent="BeatGate0"]
+shape = SubResource("BeatGate0Shape")
+
+[node name="Visual" parent="BeatGate0"]
+material_override = SubResource("BeatGate0Mat")
+mesh = SubResource("BeatGate0Mesh")
+
+[node name="Warning" parent="BeatGate0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("Light")
+
+[node name="FrameLeft0" type="MeshInstance3D" parent="." unique_id=244384968]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.7, 4, -11)
+mesh = SubResource("FrameLeft0Mesh")
+
+[node name="FrameRight0" type="MeshInstance3D" parent="." unique_id=1514997101]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.7, 4, -11)
+mesh = SubResource("FrameRight0Mesh")
+
+[node name="GateSign0" type="Label3D" parent="." unique_id=90671190]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, -11)
+pixel_size = 0.006
+billboard = 1
+text = "门 1
+升起后通过"
+font = SubResource("Font")
+font_size = 50
+
+[node name="BeatGate1" parent="." instance=ExtResource("2_y3p66")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -21)
+script = ExtResource("3_tl70n")
+travel = Vector3(0, 6, 0)
+warning_seconds = 1.0
+extend_seconds = 0.4
+hold_seconds = 1.6
+retract_seconds = 0.4
+phase = 0.3333
+
+[node name="Collision" parent="BeatGate1"]
+shape = SubResource("BeatGate1Shape")
+
+[node name="Visual" parent="BeatGate1"]
+material_override = SubResource("BeatGate1Mat")
+mesh = SubResource("BeatGate1Mesh")
+
+[node name="Warning" parent="BeatGate1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("Light")
+
+[node name="FrameLeft1" type="MeshInstance3D" parent="." unique_id=1462337622]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.7, 4, -21)
+mesh = SubResource("FrameLeft1Mesh")
+
+[node name="FrameRight1" type="MeshInstance3D" parent="." unique_id=388825182]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.7, 4, -21)
+mesh = SubResource("FrameRight1Mesh")
+
+[node name="GateSign1" type="Label3D" parent="." unique_id=1191867732]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, -21)
+pixel_size = 0.006
+billboard = 1
+text = "门 2
+升起后通过"
+font = SubResource("Font")
+font_size = 50
+
+[node name="BeatGate2" parent="." instance=ExtResource("2_y3p66")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -31)
+script = ExtResource("3_tl70n")
+travel = Vector3(0, 6, 0)
+warning_seconds = 1.0
+extend_seconds = 0.4
+hold_seconds = 1.6
+retract_seconds = 0.4
+phase = 0.6667
+
+[node name="Collision" parent="BeatGate2"]
+shape = SubResource("BeatGate2Shape")
+
+[node name="Visual" parent="BeatGate2"]
+material_override = SubResource("BeatGate2Mat")
+mesh = SubResource("BeatGate2Mesh")
+
+[node name="Warning" parent="BeatGate2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("Light")
+
+[node name="FrameLeft2" type="MeshInstance3D" parent="." unique_id=505758881]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.7, 4, -31)
+mesh = SubResource("FrameLeft2Mesh")
+
+[node name="FrameRight2" type="MeshInstance3D" parent="." unique_id=555833319]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.7, 4, -31)
+mesh = SubResource("FrameRight2Mesh")
+
+[node name="GateSign2" type="Label3D" parent="." unique_id=785540181]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, -31)
+pixel_size = 0.006
+billboard = 1
+text = "门 3
+升起后通过"
+font = SubResource("Font")
+font_size = 50
+
+[node name="RestDeck" parent="." instance=ExtResource("1_th47c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -41)
+
+[node name="Collision" parent="RestDeck"]
+shape = SubResource("RestDeckShape")
+
+[node name="Visual" parent="RestDeck"]
+material_override = SubResource("RestDeckMat")
+mesh = SubResource("RestDeckMesh")
+
+[node name="BeatStep0" parent="." instance=ExtResource("4_yphal")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -47)
+script = ExtResource("5_j3rov")
+travel = Vector3(0, 1.2, 0)
+speed = 1.2
+
+[node name="Collision" parent="BeatStep0"]
+shape = SubResource("BeatStep0Shape")
+
+[node name="Visual" parent="BeatStep0"]
+material_override = SubResource("BeatStep0Mat")
+mesh = SubResource("BeatStep0Mesh")
+
+[node name="BeatStep1" parent="." instance=ExtResource("4_yphal")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -52)
+script = ExtResource("5_j3rov")
+travel = Vector3(0, 1.2, 0)
+speed = 1.2
+phase = 0.5
+
+[node name="Collision" parent="BeatStep1"]
+shape = SubResource("BeatStep1Shape")
+
+[node name="Visual" parent="BeatStep1"]
+material_override = SubResource("BeatStep1Mat")
+mesh = SubResource("BeatStep1Mesh")
+
+[node name="BeatStep2" parent="." instance=ExtResource("4_yphal")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -57)
+script = ExtResource("5_j3rov")
+travel = Vector3(0, 1.2, 0)
+speed = 1.2
+
+[node name="Collision" parent="BeatStep2"]
+shape = SubResource("BeatStep2Shape")
+
+[node name="Visual" parent="BeatStep2"]
+material_override = SubResource("BeatStep2Mat")
+mesh = SubResource("BeatStep2Mesh")
+
+[node name="FinishDeck" parent="." instance=ExtResource("1_th47c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -63)
+
+[node name="Collision" parent="FinishDeck"]
+shape = SubResource("FinishDeckShape")
+
+[node name="Visual" parent="FinishDeck"]
+material_override = SubResource("FinishDeckMat")
+mesh = SubResource("FinishDeckMesh")
+
+[node name="FinishSign" type="Label3D" parent="." unique_id=1633557907]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -64)
+pixel_size = 0.006
+billboard = 1
+text = "本段出口"
+font = SubResource("Font")
+font_size = 50
+
+[node name="FallVolume" parent="." instance=ExtResource("6_o5cv4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, -31.5)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("7_deo2q")
+effect = ExtResource("8_vmqcp")
+
+[node name="Collision" parent="FallVolume"]
+shape = SubResource("BoxShape3D_nrqmr")
+
+[node name="StartSign" type="Label3D" parent="." unique_id=173445841]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)
+pixel_size = 0.006
+billboard = 1
+text = "积木节拍
+黄色预警 · 等门升起再冲刺"
+font = SubResource("Font")
+font_size = 50
+
+[node name="ToyBlock0" type="MeshInstance3D" parent="." unique_id=1756781923]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1, -5)
+mesh = SubResource("ToyBlock0Mesh")
+
+[node name="ToyBlock1" type="MeshInstance3D" parent="." unique_id=1035093922]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1, -15)
+mesh = SubResource("ToyBlock1Mesh")
+
+[node name="ToyBlock2" type="MeshInstance3D" parent="." unique_id=1174227250]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1, -25)
+mesh = SubResource("ToyBlock2Mesh")
+
+[node name="ToyBlock3" type="MeshInstance3D" parent="." unique_id=1397400456]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1, -35)
+mesh = SubResource("ToyBlock3Mesh")
+
+[node name="ToyBlock4" type="MeshInstance3D" parent="." unique_id=1121581383]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1, -45)
+mesh = SubResource("ToyBlock4Mesh")
+
+[node name="ToyBlock5" type="MeshInstance3D" parent="." unique_id=1043972219]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1, -55)
+mesh = SubResource("ToyBlock5Mesh")
+
+[editable path="StartDeck"]
+[editable path="GateRunway"]
+[editable path="BeatGate0"]
+[editable path="BeatGate1"]
+[editable path="BeatGate2"]
+[editable path="RestDeck"]
+[editable path="BeatStep0"]
+[editable path="BeatStep1"]
+[editable path="BeatStep2"]
+[editable path="FinishDeck"]
+[editable path="FallVolume"]

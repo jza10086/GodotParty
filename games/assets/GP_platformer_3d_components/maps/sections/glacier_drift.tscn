@@ -1,0 +1,360 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="1_h35nk"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/ice_platform.tscn" id="2_t1y8j"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/ice_platform.gd" id="3_scxph"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/seesaw_platform.tscn" id="4_bj2oh"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/seesaw_platform.gd" id="5_lo21x"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/swing_obstacle.tscn" id="6_lm586"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/swing_obstacle.gd" id="7_6dk46"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/effects/kill_zone.tscn" id="8_udx2f"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/effect_zone.gd" id="9_jp4ga"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/lethal.tres" id="10_4mogj"]
+
+[sub_resource type="BoxShape3D" id="StartDeckShape"]
+size = Vector3(9, 0.5, 12)
+
+[sub_resource type="StandardMaterial3D" id="StartDeckMat"]
+albedo_color = Color(0.85, 0.94, 0.98, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="StartDeckMesh"]
+material = SubResource("StartDeckMat")
+size = Vector3(9, 0.5, 12)
+
+[sub_resource type="BoxShape3D" id="EastIceShape"]
+size = Vector3(8, 0.5, 10)
+
+[sub_resource type="StandardMaterial3D" id="EastIceMat"]
+albedo_color = Color(0.27, 0.72, 0.88, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="EastIceMesh"]
+material = SubResource("EastIceMat")
+size = Vector3(8, 0.5, 10)
+
+[sub_resource type="BoxShape3D" id="WestIceShape"]
+size = Vector3(8, 0.5, 10)
+
+[sub_resource type="StandardMaterial3D" id="WestIceMat"]
+albedo_color = Color(0.37, 0.8, 0.94, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="WestIceMesh"]
+material = SubResource("WestIceMat")
+size = Vector3(8, 0.5, 10)
+
+[sub_resource type="BoxShape3D" id="GripIslandShape"]
+size = Vector3(8, 0.5, 5)
+
+[sub_resource type="StandardMaterial3D" id="GripIslandMat"]
+albedo_color = Color(0.9, 0.93, 0.98, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="GripIslandMesh"]
+material = SubResource("GripIslandMat")
+size = Vector3(8, 0.5, 5)
+
+[sub_resource type="BoxShape3D" id="BalanceBridgeShape"]
+size = Vector3(4.8, 0.5, 8)
+
+[sub_resource type="StandardMaterial3D" id="BalanceBridgeMat"]
+albedo_color = Color(0.45, 0.63, 0.83, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BalanceBridgeMesh"]
+material = SubResource("BalanceBridgeMat")
+size = Vector3(4.8, 0.5, 8)
+
+[sub_resource type="StandardMaterial3D" id="AxleMaterial"]
+albedo_color = Color(0.95, 0.83, 0.25, 1)
+metallic = 0.4
+
+[sub_resource type="CylinderMesh" id="Axle"]
+material = SubResource("AxleMaterial")
+top_radius = 0.3
+bottom_radius = 0.3
+height = 5.3
+
+[sub_resource type="BoxShape3D" id="FinalIceShape"]
+size = Vector3(8, 0.5, 8)
+
+[sub_resource type="StandardMaterial3D" id="FinalIceMat"]
+albedo_color = Color(0.27, 0.72, 0.88, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="FinalIceMesh"]
+material = SubResource("FinalIceMat")
+size = Vector3(8, 0.5, 8)
+
+[sub_resource type="StandardMaterial3D" id="RodMaterial"]
+albedo_color = Color(0.22, 0.28, 0.36, 1)
+metallic = 0.5
+
+[sub_resource type="CylinderMesh" id="RodMesh"]
+material = SubResource("RodMaterial")
+top_radius = 0.1
+bottom_radius = 0.1
+height = 3.5
+
+[sub_resource type="CylinderShape3D" id="RodShape"]
+height = 3.5
+radius = 0.1
+
+[sub_resource type="StandardMaterial3D" id="BallMaterial"]
+albedo_color = Color(0.96, 0.24, 0.38, 1)
+roughness = 0.4
+
+[sub_resource type="SphereMesh" id="BallMesh"]
+material = SubResource("BallMaterial")
+radius = 0.8
+height = 1.6
+
+[sub_resource type="SphereShape3D" id="BallShape"]
+radius = 0.8
+
+[sub_resource type="BoxShape3D" id="FinishDeckShape"]
+size = Vector3(9, 0.5, 8)
+
+[sub_resource type="StandardMaterial3D" id="FinishDeckMat"]
+albedo_color = Color(0.85, 0.94, 0.98, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="FinishDeckMesh"]
+material = SubResource("FinishDeckMat")
+size = Vector3(9, 0.5, 8)
+
+[sub_resource type="SystemFont" id="Font"]
+font_names = PackedStringArray("Microsoft YaHei", "Segoe UI")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5744f"]
+size = Vector3(18, 3, 64)
+
+[sub_resource type="StandardMaterial3D" id="IcePillar0Mat"]
+albedo_color = Color(0.58, 0.83, 0.93, 1)
+
+[sub_resource type="BoxMesh" id="IcePillar0Mesh"]
+material = SubResource("IcePillar0Mat")
+size = Vector3(2, 6, 3)
+
+[sub_resource type="StandardMaterial3D" id="IcePillar1Mat"]
+albedo_color = Color(0.58, 0.83, 0.93, 1)
+
+[sub_resource type="BoxMesh" id="IcePillar1Mesh"]
+material = SubResource("IcePillar1Mat")
+size = Vector3(2, 9, 3)
+
+[sub_resource type="StandardMaterial3D" id="IcePillar2Mat"]
+albedo_color = Color(0.58, 0.83, 0.93, 1)
+
+[sub_resource type="BoxMesh" id="IcePillar2Mesh"]
+material = SubResource("IcePillar2Mat")
+size = Vector3(2, 12, 3)
+
+[sub_resource type="StandardMaterial3D" id="IcePillar3Mat"]
+albedo_color = Color(0.58, 0.83, 0.93, 1)
+
+[sub_resource type="BoxMesh" id="IcePillar3Mesh"]
+material = SubResource("IcePillar3Mat")
+size = Vector3(2, 6, 3)
+
+[sub_resource type="StandardMaterial3D" id="IcePillar4Mat"]
+albedo_color = Color(0.58, 0.83, 0.93, 1)
+
+[sub_resource type="BoxMesh" id="IcePillar4Mesh"]
+material = SubResource("IcePillar4Mat")
+size = Vector3(2, 9, 3)
+
+[sub_resource type="StandardMaterial3D" id="IcePillar5Mat"]
+albedo_color = Color(0.58, 0.83, 0.93, 1)
+
+[sub_resource type="BoxMesh" id="IcePillar5Mesh"]
+material = SubResource("IcePillar5Mat")
+size = Vector3(2, 12, 3)
+
+[sub_resource type="StandardMaterial3D" id="IcePillar6Mat"]
+albedo_color = Color(0.58, 0.83, 0.93, 1)
+
+[sub_resource type="BoxMesh" id="IcePillar6Mesh"]
+material = SubResource("IcePillar6Mat")
+size = Vector3(2, 6, 3)
+
+[node name="SectionLayout" type="Node3D" unique_id=1771730942]
+
+[node name="StartDeck" parent="." instance=ExtResource("1_h35nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+
+[node name="Collision" parent="StartDeck"]
+shape = SubResource("StartDeckShape")
+
+[node name="Visual" parent="StartDeck"]
+material_override = SubResource("StartDeckMat")
+mesh = SubResource("StartDeckMesh")
+
+[node name="EastIce" parent="." instance=ExtResource("2_t1y8j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.25, -11)
+script = ExtResource("3_scxph")
+friction = 0.16
+
+[node name="Collision" parent="EastIce"]
+shape = SubResource("EastIceShape")
+
+[node name="Visual" parent="EastIce"]
+material_override = SubResource("EastIceMat")
+mesh = SubResource("EastIceMesh")
+
+[node name="WestIce" parent="." instance=ExtResource("2_t1y8j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.25, -21)
+script = ExtResource("3_scxph")
+
+[node name="Collision" parent="WestIce"]
+shape = SubResource("WestIceShape")
+
+[node name="Visual" parent="WestIce"]
+material_override = SubResource("WestIceMat")
+mesh = SubResource("WestIceMesh")
+
+[node name="GripIsland" parent="." instance=ExtResource("1_h35nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -28.5)
+
+[node name="Collision" parent="GripIsland"]
+shape = SubResource("GripIslandShape")
+
+[node name="Visual" parent="GripIsland"]
+material_override = SubResource("GripIslandMat")
+mesh = SubResource("GripIslandMesh")
+
+[node name="BalanceBridge" parent="." instance=ExtResource("4_bj2oh")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -36)
+script = ExtResource("5_lo21x")
+max_tilt = 10.0
+tilt_speed = 12.0
+
+[node name="Collision" parent="BalanceBridge"]
+shape = SubResource("BalanceBridgeShape")
+
+[node name="Visual" parent="BalanceBridge"]
+material_override = SubResource("BalanceBridgeMat")
+mesh = SubResource("BalanceBridgeMesh")
+
+[node name="Axle" parent="BalanceBridge"]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, -0.25, 0)
+mesh = SubResource("Axle")
+
+[node name="FinalIce" parent="." instance=ExtResource("2_t1y8j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -44)
+script = ExtResource("3_scxph")
+friction = 0.1
+
+[node name="Collision" parent="FinalIce"]
+shape = SubResource("FinalIceShape")
+
+[node name="Visual" parent="FinalIce"]
+material_override = SubResource("FinalIceMat")
+mesh = SubResource("FinalIceMesh")
+
+[node name="FrozenPendulum" parent="." instance=ExtResource("6_lm586")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.4, -44)
+script = ExtResource("7_6dk46")
+swing_angle = 40.0
+period = 3.6
+
+[node name="Rod" parent="FrozenPendulum"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.75, 0)
+mesh = SubResource("RodMesh")
+
+[node name="RodCollision" parent="FrozenPendulum"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.75, 0)
+shape = SubResource("RodShape")
+
+[node name="Ball" parent="FrozenPendulum"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
+mesh = SubResource("BallMesh")
+
+[node name="BallCollision" parent="FrozenPendulum"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
+shape = SubResource("BallShape")
+
+[node name="FinishDeck" parent="." instance=ExtResource("1_h35nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -52)
+
+[node name="Collision" parent="FinishDeck"]
+shape = SubResource("FinishDeckShape")
+
+[node name="Visual" parent="FinishDeck"]
+material_override = SubResource("FinishDeckMat")
+mesh = SubResource("FinishDeckMesh")
+
+[node name="FinishSign" type="Label3D" parent="." unique_id=79468924]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -54)
+pixel_size = 0.006
+billboard = 1
+text = "本段出口"
+font = SubResource("Font")
+font_size = 50
+
+[node name="FallVolume" parent="." instance=ExtResource("8_udx2f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, -26)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("9_jp4ga")
+effect = ExtResource("10_4mogj")
+
+[node name="Collision" parent="FallVolume"]
+shape = SubResource("BoxShape3D_5744f")
+
+[node name="Title" type="Label3D" parent="." unique_id=440441935]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)
+pixel_size = 0.006
+billboard = 1
+text = "观察前方机关"
+font = SubResource("Font")
+font_size = 50
+
+[node name="BridgeHint" type="Label3D" parent="." unique_id=1716104902]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -32)
+pixel_size = 0.006
+billboard = 1
+text = "平衡冰桥
+桥尾起跳"
+font = SubResource("Font")
+font_size = 50
+
+[node name="IcePillar0" type="MeshInstance3D" parent="." unique_id=1631135636]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -5)
+mesh = SubResource("IcePillar0Mesh")
+
+[node name="IcePillar1" type="MeshInstance3D" parent="." unique_id=223445693]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -12)
+mesh = SubResource("IcePillar1Mesh")
+
+[node name="IcePillar2" type="MeshInstance3D" parent="." unique_id=815441815]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -19)
+mesh = SubResource("IcePillar2Mesh")
+
+[node name="IcePillar3" type="MeshInstance3D" parent="." unique_id=1688103842]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -26)
+mesh = SubResource("IcePillar3Mesh")
+
+[node name="IcePillar4" type="MeshInstance3D" parent="." unique_id=755784833]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -33)
+mesh = SubResource("IcePillar4Mesh")
+
+[node name="IcePillar5" type="MeshInstance3D" parent="." unique_id=850282522]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -40)
+mesh = SubResource("IcePillar5Mesh")
+
+[node name="IcePillar6" type="MeshInstance3D" parent="." unique_id=1935498127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -47)
+mesh = SubResource("IcePillar6Mesh")
+
+[editable path="StartDeck"]
+[editable path="EastIce"]
+[editable path="WestIce"]
+[editable path="GripIsland"]
+[editable path="BalanceBridge"]
+[editable path="FinalIce"]
+[editable path="FinishDeck"]
+[editable path="FallVolume"]

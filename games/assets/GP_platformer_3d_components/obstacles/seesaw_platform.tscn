@@ -1,0 +1,37 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/seesaw_platform.gd" id="script"]
+
+[sub_resource type="StandardMaterial3D" id="DeckMaterial"]
+albedo_color = Color(0.6, 0.32, 0.85, 1)
+
+[sub_resource type="StandardMaterial3D" id="AxleMaterial"]
+albedo_color = Color(0.95, 0.83, 0.25, 1)
+metallic = 0.4
+
+[sub_resource type="BoxShape3D" id="DeckShape"]
+size = Vector3(5, 0.4, 8)
+
+[sub_resource type="BoxMesh" id="DeckMesh"]
+size = Vector3(5, 0.4, 8)
+material = SubResource("DeckMaterial")
+
+[sub_resource type="CylinderMesh" id="Axle"]
+top_radius = 0.3
+bottom_radius = 0.3
+height = 5.3
+material = SubResource("AxleMaterial")
+
+[node name="SeesawPlatform" type="AnimatableBody3D"]
+script = ExtResource("script")
+process_physics_priority = -50
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("DeckShape")
+
+[node name="Visual" type="MeshInstance3D" parent="."]
+mesh = SubResource("DeckMesh")
+
+[node name="Axle" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.25, 0)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Axle")

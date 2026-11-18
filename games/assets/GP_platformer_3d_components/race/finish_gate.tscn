@@ -1,0 +1,29 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/race/race_gate.gd" id="script"]
+
+[sub_resource type="StandardMaterial3D" id="Paint"]
+albedo_color = Color(1, 0.77, 0.12, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="Post"]
+size = Vector3(0.16, 3.7, 0.16)
+material = SubResource("Paint")
+
+[sub_resource type="BoxMesh" id="Ribbon"]
+size = Vector3(7, 0.14, 0.18)
+material = SubResource("Paint")
+
+[node name="finish_gate" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Left" type="MeshInstance3D" parent="."]
+position = Vector3(-3.5, 1.85, 0)
+mesh = SubResource("Post")
+
+[node name="Right" type="MeshInstance3D" parent="."]
+position = Vector3(3.5, 1.85, 0)
+mesh = SubResource("Post")
+
+[node name="Banner" type="MeshInstance3D" parent="."]
+position = Vector3(0, 3.7, 0)
+mesh = SubResource("Ribbon")

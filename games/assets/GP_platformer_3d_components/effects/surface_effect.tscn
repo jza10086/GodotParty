@@ -1,0 +1,7 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/surface_effect.gd" id="script"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/bounce.tres" id="ef"]
+
+[node name="SurfaceEffect" type="Node"]
+script = ExtResource("script")
+effect = ExtResource("ef")

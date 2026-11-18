@@ -1,0 +1,24 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/launcher.gd" id="script"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/projectile.tscn" id="shot"]
+
+[sub_resource type="StandardMaterial3D" id="Steel"]
+albedo_color = Color(0.15, 0.23, 0.35, 1)
+roughness = 0.72
+
+[sub_resource type="CylinderMesh" id="Barrel"]
+top_radius = 0.42
+bottom_radius = 0.52
+height = 1.2
+material = SubResource("Steel")
+
+[node name="Launcher" type="Node3D"]
+script = ExtResource("script")
+projectile = ExtResource("shot")
+
+[node name="Barrel" type="MeshInstance3D" parent="."]
+rotation = Vector3(-1.570796,0,0)
+mesh = SubResource("Barrel")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+position = Vector3(0, 0, -0.95)

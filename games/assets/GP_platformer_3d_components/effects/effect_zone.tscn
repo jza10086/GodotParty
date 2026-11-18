@@ -1,0 +1,15 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/effect_zone.gd" id="script"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/damage.tres" id="ef"]
+
+[sub_resource type="BoxShape3D" id="Zone"]
+size = Vector3(6, 2, 4)
+
+[node name="EffectZone" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("script")
+effect = ExtResource("ef")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("Zone")

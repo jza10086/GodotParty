@@ -1,0 +1,34 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="base"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/conveyor_platform.gd" id="script"]
+
+[sub_resource type="StandardMaterial3D" id="Belt"]
+albedo_color = Color(0.16, 0.21, 0.3, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Arrow"]
+albedo_color = Color(0.98, 0.83, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="Stripe"]
+size = Vector3(1.0, 0.025, 0.12)
+material = SubResource("Arrow")
+
+[node name="ConveyorPlatform" instance=ExtResource("base")]
+script = ExtResource("script")
+process_physics_priority = -50
+
+[node name="Visual" parent="."]
+material_override = SubResource("Belt")
+
+[node name="Direction" type="Node3D" parent="."]
+position = Vector3(0, 0.26, 0)
+
+[node name="Left" type="MeshInstance3D" parent="Direction"]
+position = Vector3(-0.35, 0, 0)
+rotation_degrees = Vector3(0, 45, 0)
+mesh = SubResource("Stripe")
+
+[node name="Right" type="MeshInstance3D" parent="Direction"]
+position = Vector3(0.35, 0, 0)
+rotation_degrees = Vector3(0, -45, 0)
+mesh = SubResource("Stripe")

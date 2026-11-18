@@ -1,0 +1,527 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="1_o2d1i"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/effects/kill_zone.tscn" id="2_wkq35"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/effect_zone.gd" id="3_lgdeh"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/lethal.tres" id="4_7neci"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/items/platform_score.gd" id="5_yr8vd"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/one_shot_platform.tscn" id="6_uuccy"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/one_shot_platform.gd" id="7_6cn2f"]
+
+[sub_resource type="BoxShape3D" id="StartShape"]
+size = Vector3(9, 0.5, 7.8)
+
+[sub_resource type="StandardMaterial3D" id="DeckMaterial"]
+albedo_color = Color(0.09, 0.18, 0.24, 1)
+roughness = 0.65
+
+[sub_resource type="BoxMesh" id="StartMesh"]
+material = SubResource("DeckMaterial")
+size = Vector3(9, 0.5, 7.8)
+
+[sub_resource type="BoxShape3D" id="FinishShape"]
+size = Vector3(9, 0.5, 6)
+
+[sub_resource type="BoxMesh" id="FinishMesh"]
+material = SubResource("DeckMaterial")
+size = Vector3(9, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ljoc1"]
+size = Vector3(16.4, 3, 63.9)
+
+[sub_resource type="SystemFont" id="Font"]
+font_names = PackedStringArray("Microsoft YaHei", "Segoe UI")
+
+[sub_resource type="BoxShape3D" id="TileShape"]
+size = Vector3(3.4, 0.3, 3.4)
+
+[sub_resource type="StandardMaterial3D" id="Glass"]
+transparency = 1
+albedo_color = Color(0.28, 0.72, 0.78, 0.78)
+metallic = 0.25
+roughness = 0.18
+
+[sub_resource type="BoxMesh" id="TileMesh"]
+material = SubResource("Glass")
+size = Vector3(3.4, 0.3, 3.4)
+
+[sub_resource type="StandardMaterial3D" id="Warning"]
+albedo_color = Color(0.98, 0.21, 0.12, 1)
+
+[node name="SectionLayout" type="Node3D" unique_id=1780738249]
+
+[node name="StartDeck" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 1)
+
+[node name="Collision" parent="StartDeck"]
+shape = SubResource("StartShape")
+
+[node name="Visual" parent="StartDeck"]
+mesh = SubResource("StartMesh")
+
+[node name="FinishDeck" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -50.9)
+
+[node name="Collision" parent="FinishDeck"]
+shape = SubResource("FinishShape")
+
+[node name="Visual" parent="FinishDeck"]
+mesh = SubResource("FinishMesh")
+
+[node name="FallVolume" parent="." instance=ExtResource("2_wkq35")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, -24.95)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("3_lgdeh")
+effect = ExtResource("4_7neci")
+
+[node name="Collision" parent="FallVolume"]
+shape = SubResource("BoxShape3D_ljoc1")
+
+[node name="StartSign" type="Label3D" parent="." unique_id=2058202660]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -1.5)
+pixel_size = 0.004
+text = "鱿鱼游戏 · 玻璃桥
+跳过空隙 · 每人每块 +1 · 坠落回起点"
+font = SubResource("Font")
+font_size = 58
+
+[node name="FinishSign" type="Label3D" parent="." unique_id=691563336]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -50.9)
+text = "本段出口"
+font = SubResource("Font")
+font_size = 80
+
+[node name="Row01Left" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, -0.15, -5.6)
+
+[node name="Collision" parent="Row01Left"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row01Left"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Score" type="Node" parent="Row01Left" unique_id=1683265103]
+script = ExtResource("5_yr8vd")
+
+[node name="Row01Right" parent="." instance=ExtResource("6_uuccy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, -0.15, -5.6)
+script = ExtResource("7_6cn2f")
+stand_duration = 0.0
+respawn_enabled = false
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="Row01Right"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row01Right"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Timer" parent="Row01Right"]
+process_callback = 0
+one_shot = true
+
+[node name="Score" type="Node" parent="Row01Right" unique_id=1109271948]
+script = ExtResource("5_yr8vd")
+
+[node name="RowLabel1" type="Label3D" parent="." unique_id=1325113708]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0.45, -5.6)
+pixel_size = 0.006
+billboard = 1
+text = "01"
+font_size = 42
+
+[node name="Row02Left" parent="." instance=ExtResource("6_uuccy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, -0.15, -10)
+script = ExtResource("7_6cn2f")
+stand_duration = 0.0
+respawn_enabled = false
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="Row02Left"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row02Left"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Timer" parent="Row02Left"]
+process_callback = 0
+one_shot = true
+
+[node name="Score" type="Node" parent="Row02Left" unique_id=1487786454]
+script = ExtResource("5_yr8vd")
+
+[node name="Row02Right" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, -0.15, -10)
+
+[node name="Collision" parent="Row02Right"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row02Right"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Score" type="Node" parent="Row02Right" unique_id=57581620]
+script = ExtResource("5_yr8vd")
+
+[node name="RowLabel2" type="Label3D" parent="." unique_id=1723805962]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0.45, -10)
+pixel_size = 0.006
+billboard = 1
+text = "02"
+font_size = 42
+
+[node name="Row03Left" parent="." instance=ExtResource("6_uuccy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, -0.15, -14.4)
+script = ExtResource("7_6cn2f")
+stand_duration = 0.0
+respawn_enabled = false
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="Row03Left"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row03Left"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Timer" parent="Row03Left"]
+process_callback = 0
+one_shot = true
+
+[node name="Score" type="Node" parent="Row03Left" unique_id=347248557]
+script = ExtResource("5_yr8vd")
+
+[node name="Row03Right" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, -0.15, -14.4)
+
+[node name="Collision" parent="Row03Right"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row03Right"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Score" type="Node" parent="Row03Right" unique_id=730053347]
+script = ExtResource("5_yr8vd")
+
+[node name="RowLabel3" type="Label3D" parent="." unique_id=155343010]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0.45, -14.4)
+pixel_size = 0.006
+billboard = 1
+text = "03"
+font_size = 42
+
+[node name="Row04Left" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, -0.15, -18.8)
+
+[node name="Collision" parent="Row04Left"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row04Left"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Score" type="Node" parent="Row04Left" unique_id=1130114031]
+script = ExtResource("5_yr8vd")
+
+[node name="Row04Right" parent="." instance=ExtResource("6_uuccy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, -0.15, -18.8)
+script = ExtResource("7_6cn2f")
+stand_duration = 0.0
+respawn_enabled = false
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="Row04Right"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row04Right"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Timer" parent="Row04Right"]
+process_callback = 0
+one_shot = true
+
+[node name="Score" type="Node" parent="Row04Right" unique_id=1018025851]
+script = ExtResource("5_yr8vd")
+
+[node name="RowLabel4" type="Label3D" parent="." unique_id=1258521532]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0.45, -18.8)
+pixel_size = 0.006
+billboard = 1
+text = "04"
+font_size = 42
+
+[node name="Row05Left" parent="." instance=ExtResource("6_uuccy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, -0.15, -23.2)
+script = ExtResource("7_6cn2f")
+stand_duration = 0.0
+respawn_enabled = false
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="Row05Left"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row05Left"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Timer" parent="Row05Left"]
+process_callback = 0
+one_shot = true
+
+[node name="Score" type="Node" parent="Row05Left" unique_id=1837054659]
+script = ExtResource("5_yr8vd")
+
+[node name="Row05Right" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, -0.15, -23.2)
+
+[node name="Collision" parent="Row05Right"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row05Right"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Score" type="Node" parent="Row05Right" unique_id=525723170]
+script = ExtResource("5_yr8vd")
+
+[node name="RowLabel5" type="Label3D" parent="." unique_id=1178126879]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0.45, -23.2)
+pixel_size = 0.006
+billboard = 1
+text = "05"
+font_size = 42
+
+[node name="Row06Left" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, -0.15, -27.6)
+
+[node name="Collision" parent="Row06Left"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row06Left"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Score" type="Node" parent="Row06Left" unique_id=283353404]
+script = ExtResource("5_yr8vd")
+
+[node name="Row06Right" parent="." instance=ExtResource("6_uuccy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, -0.15, -27.6)
+script = ExtResource("7_6cn2f")
+stand_duration = 0.0
+respawn_enabled = false
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="Row06Right"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row06Right"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Timer" parent="Row06Right"]
+process_callback = 0
+one_shot = true
+
+[node name="Score" type="Node" parent="Row06Right" unique_id=249918382]
+script = ExtResource("5_yr8vd")
+
+[node name="RowLabel6" type="Label3D" parent="." unique_id=810288821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0.45, -27.6)
+pixel_size = 0.006
+billboard = 1
+text = "06"
+font_size = 42
+
+[node name="Row07Left" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, -0.15, -32)
+
+[node name="Collision" parent="Row07Left"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row07Left"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Score" type="Node" parent="Row07Left" unique_id=275400211]
+script = ExtResource("5_yr8vd")
+
+[node name="Row07Right" parent="." instance=ExtResource("6_uuccy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, -0.15, -32)
+script = ExtResource("7_6cn2f")
+stand_duration = 0.0
+respawn_enabled = false
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="Row07Right"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row07Right"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Timer" parent="Row07Right"]
+process_callback = 0
+one_shot = true
+
+[node name="Score" type="Node" parent="Row07Right" unique_id=263555115]
+script = ExtResource("5_yr8vd")
+
+[node name="RowLabel7" type="Label3D" parent="." unique_id=2049549520]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0.45, -32)
+pixel_size = 0.006
+billboard = 1
+text = "07"
+font_size = 42
+
+[node name="Row08Left" parent="." instance=ExtResource("6_uuccy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, -0.15, -36.4)
+script = ExtResource("7_6cn2f")
+stand_duration = 0.0
+respawn_enabled = false
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="Row08Left"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row08Left"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Timer" parent="Row08Left"]
+process_callback = 0
+one_shot = true
+
+[node name="Score" type="Node" parent="Row08Left" unique_id=1427893799]
+script = ExtResource("5_yr8vd")
+
+[node name="Row08Right" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, -0.15, -36.4)
+
+[node name="Collision" parent="Row08Right"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row08Right"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Score" type="Node" parent="Row08Right" unique_id=1806606932]
+script = ExtResource("5_yr8vd")
+
+[node name="RowLabel8" type="Label3D" parent="." unique_id=243417139]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0.45, -36.4)
+pixel_size = 0.006
+billboard = 1
+text = "08"
+font_size = 42
+
+[node name="Row09Left" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, -0.15, -40.8)
+
+[node name="Collision" parent="Row09Left"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row09Left"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Score" type="Node" parent="Row09Left" unique_id=1505074]
+script = ExtResource("5_yr8vd")
+
+[node name="Row09Right" parent="." instance=ExtResource("6_uuccy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, -0.15, -40.8)
+script = ExtResource("7_6cn2f")
+stand_duration = 0.0
+respawn_enabled = false
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="Row09Right"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row09Right"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Timer" parent="Row09Right"]
+process_callback = 0
+one_shot = true
+
+[node name="Score" type="Node" parent="Row09Right" unique_id=889593819]
+script = ExtResource("5_yr8vd")
+
+[node name="RowLabel9" type="Label3D" parent="." unique_id=90414516]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0.45, -40.8)
+pixel_size = 0.006
+billboard = 1
+text = "09"
+font_size = 42
+
+[node name="Row10Left" parent="." instance=ExtResource("6_uuccy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, -0.15, -45.2)
+script = ExtResource("7_6cn2f")
+stand_duration = 0.0
+respawn_enabled = false
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="Row10Left"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row10Left"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Timer" parent="Row10Left"]
+process_callback = 0
+one_shot = true
+
+[node name="Score" type="Node" parent="Row10Left" unique_id=1098883776]
+script = ExtResource("5_yr8vd")
+
+[node name="Row10Right" parent="." instance=ExtResource("1_o2d1i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, -0.15, -45.2)
+
+[node name="Collision" parent="Row10Right"]
+shape = SubResource("TileShape")
+
+[node name="Visual" parent="Row10Right"]
+material_override = SubResource("Glass")
+mesh = SubResource("TileMesh")
+
+[node name="Score" type="Node" parent="Row10Right" unique_id=692980765]
+script = ExtResource("5_yr8vd")
+
+[node name="RowLabel10" type="Label3D" parent="." unique_id=249345169]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0.45, -45.2)
+pixel_size = 0.006
+billboard = 1
+text = "10"
+font_size = 42
+
+[editable path="StartDeck"]
+[editable path="FinishDeck"]
+[editable path="FallVolume"]
+[editable path="Row01Left"]
+[editable path="Row01Right"]
+[editable path="Row02Left"]
+[editable path="Row02Right"]
+[editable path="Row03Left"]
+[editable path="Row03Right"]
+[editable path="Row04Left"]
+[editable path="Row04Right"]
+[editable path="Row05Left"]
+[editable path="Row05Right"]
+[editable path="Row06Left"]
+[editable path="Row06Right"]
+[editable path="Row07Left"]
+[editable path="Row07Right"]
+[editable path="Row08Left"]
+[editable path="Row08Right"]
+[editable path="Row09Left"]
+[editable path="Row09Right"]
+[editable path="Row10Left"]
+[editable path="Row10Right"]

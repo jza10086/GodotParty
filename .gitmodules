@@ -98,3 +98,11 @@
 	path = games/minigame/GP_merge_ssibal
 	url = git@github.com:jza10086/MergeBigSsibal.git
 	branch = main
+[submodule "games/minigame/GP_glass_bridge"]
+	path = games/minigame/GP_glass_bridge
+	url = git@github.com:jza10086/GlassBridge.git
+	branch = main
+[submodule "games/minigame/GP_test_3d_platformer"]
+	path = games/minigame/GP_test_3d_platformer
+	url = git@github.com:jza10086/Test3DPlatformer.git
+	branch = main

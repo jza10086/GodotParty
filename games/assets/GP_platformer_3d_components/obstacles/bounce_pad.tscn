@@ -1,0 +1,19 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="base"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/surface_effect.gd" id="script"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/bounce.tres" id="effect"]
+
+[sub_resource type="StandardMaterial3D" id="Color"]
+albedo_color = Color(0.28, 0.98, 0.47, 1)
+roughness = 0.72
+
+[node name="bounce_pad" instance=ExtResource("base")]
+
+
+[node name="Visual" parent="."]
+material_override = SubResource("Color")
+
+[node name="SurfaceEffect" type="Node" parent="."]
+script = ExtResource("script")
+effect = ExtResource("effect")
+top_only = true

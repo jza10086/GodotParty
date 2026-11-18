@@ -1,0 +1,35 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/pusher.gd" id="script"]
+
+[sub_resource type="StandardMaterial3D" id="BlockMat"]
+albedo_color = Color(0.95, 0.27, 0.29, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="BlockMesh"]
+size = Vector3(2.2, 1.8, 1.6)
+material = SubResource("BlockMat")
+
+[sub_resource type="BoxShape3D" id="BlockShape"]
+size = Vector3(2.2, 1.8, 1.6)
+
+[sub_resource type="StandardMaterial3D" id="Lamp"]
+albedo_color = Color(1, 0.94, 0.1, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="Light"]
+size = Vector3(1.8, 0.15, 1.3)
+material = SubResource("Lamp")
+
+[node name="pusher" type="AnimatableBody3D"]
+script = ExtResource("script")
+process_physics_priority = -50
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("BlockShape")
+
+[node name="Visual" type="MeshInstance3D" parent="."]
+mesh = SubResource("BlockMesh")
+
+[node name="Warning" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1, 0)
+mesh = SubResource("Light")

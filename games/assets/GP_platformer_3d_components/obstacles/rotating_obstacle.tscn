@@ -1,0 +1,23 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/rotating_obstacle.gd" id="script"]
+
+[sub_resource type="StandardMaterial3D" id="BlockMat"]
+albedo_color = Color(1, 0.38, 0.18, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="BlockMesh"]
+size = Vector3(6.8, 0.32, 0.42)
+material = SubResource("BlockMat")
+
+[sub_resource type="BoxShape3D" id="BlockShape"]
+size = Vector3(6.8, 0.32, 0.42)
+
+[node name="rotating_obstacle" type="AnimatableBody3D"]
+script = ExtResource("script")
+process_physics_priority = -50
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("BlockShape")
+
+[node name="Visual" type="MeshInstance3D" parent="."]
+mesh = SubResource("BlockMesh")

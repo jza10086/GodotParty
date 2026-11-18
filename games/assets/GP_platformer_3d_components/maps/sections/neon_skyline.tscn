@@ -1,0 +1,581 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="1_a85gh"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/one_shot_platform.tscn" id="2_fw87q"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/one_shot_platform.gd" id="3_5lhry"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/rotating_obstacle.tscn" id="4_ullh6"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/rotating_obstacle.gd" id="5_gkdis"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/effects/kill_zone.tscn" id="6_4aoqt"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/effect_zone.gd" id="7_f2sng"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/lethal.tres" id="8_33phy"]
+
+[sub_resource type="BoxShape3D" id="StartDeckShape"]
+size = Vector3(9, 0.5, 8)
+
+[sub_resource type="StandardMaterial3D" id="StartDeckMat"]
+albedo_color = Color(0.18, 0.12, 0.35, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="StartDeckMesh"]
+material = SubResource("StartDeckMat")
+size = Vector3(9, 0.5, 8)
+
+[sub_resource type="StandardMaterial3D" id="Warning"]
+albedo_color = Color(0.98, 0.21, 0.12, 1)
+
+[sub_resource type="BoxShape3D" id="PulseTile0Shape"]
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="StandardMaterial3D" id="PulseTile0Mat"]
+albedo_color = Color(0.9, 0.25, 0.67, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="PulseTile0Mesh"]
+material = SubResource("PulseTile0Mat")
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="BoxShape3D" id="PulseTile1Shape"]
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="StandardMaterial3D" id="PulseTile1Mat"]
+albedo_color = Color(0.24, 0.85, 0.95, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="PulseTile1Mesh"]
+material = SubResource("PulseTile1Mat")
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="BoxShape3D" id="PulseTile2Shape"]
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="StandardMaterial3D" id="PulseTile2Mat"]
+albedo_color = Color(0.9, 0.25, 0.67, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="PulseTile2Mesh"]
+material = SubResource("PulseTile2Mat")
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="BoxShape3D" id="RestIsland0Shape"]
+size = Vector3(8, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="RestIsland0Mat"]
+albedo_color = Color(0.3, 0.22, 0.54, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RestIsland0Mesh"]
+material = SubResource("RestIsland0Mat")
+size = Vector3(8, 0.5, 4)
+
+[sub_resource type="SystemFont" id="Font"]
+font_names = PackedStringArray("Microsoft YaHei", "Segoe UI")
+
+[sub_resource type="BoxShape3D" id="PulseTile3Shape"]
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="StandardMaterial3D" id="PulseTile3Mat"]
+albedo_color = Color(0.9, 0.25, 0.67, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="PulseTile3Mesh"]
+material = SubResource("PulseTile3Mat")
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="BoxShape3D" id="PulseTile4Shape"]
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="StandardMaterial3D" id="PulseTile4Mat"]
+albedo_color = Color(0.24, 0.85, 0.95, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="PulseTile4Mesh"]
+material = SubResource("PulseTile4Mat")
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="BoxShape3D" id="PulseTile5Shape"]
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="StandardMaterial3D" id="PulseTile5Mat"]
+albedo_color = Color(0.9, 0.25, 0.67, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="PulseTile5Mesh"]
+material = SubResource("PulseTile5Mat")
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="BoxShape3D" id="RestIsland1Shape"]
+size = Vector3(8, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="RestIsland1Mat"]
+albedo_color = Color(0.3, 0.22, 0.54, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RestIsland1Mesh"]
+material = SubResource("RestIsland1Mat")
+size = Vector3(8, 0.5, 4)
+
+[sub_resource type="BoxShape3D" id="PulseTile6Shape"]
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="StandardMaterial3D" id="PulseTile6Mat"]
+albedo_color = Color(0.9, 0.25, 0.67, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="PulseTile6Mesh"]
+material = SubResource("PulseTile6Mat")
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="BoxShape3D" id="PulseTile7Shape"]
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="StandardMaterial3D" id="PulseTile7Mat"]
+albedo_color = Color(0.24, 0.85, 0.95, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="PulseTile7Mesh"]
+material = SubResource("PulseTile7Mat")
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="BoxShape3D" id="PulseTile8Shape"]
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="StandardMaterial3D" id="PulseTile8Mat"]
+albedo_color = Color(0.9, 0.25, 0.67, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="PulseTile8Mesh"]
+material = SubResource("PulseTile8Mat")
+size = Vector3(3.8, 0.5, 3.4)
+
+[sub_resource type="BoxShape3D" id="RestIsland2Shape"]
+size = Vector3(8, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="RestIsland2Mat"]
+albedo_color = Color(0.3, 0.22, 0.54, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RestIsland2Mesh"]
+material = SubResource("RestIsland2Mat")
+size = Vector3(8, 0.5, 4)
+
+[sub_resource type="BoxShape3D" id="FinalBridgeShape"]
+size = Vector3(5, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="FinalBridgeMat"]
+albedo_color = Color(0.25, 0.45, 0.75, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="FinalBridgeMesh"]
+material = SubResource("FinalBridgeMat")
+size = Vector3(5, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="BlockShape"]
+size = Vector3(6.8, 0.32, 0.42)
+
+[sub_resource type="StandardMaterial3D" id="BlockMat"]
+albedo_color = Color(1, 0.38, 0.18, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="BlockMesh"]
+material = SubResource("BlockMat")
+size = Vector3(6.8, 0.32, 0.42)
+
+[sub_resource type="BoxShape3D" id="FinishDeckShape"]
+size = Vector3(9, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="FinishDeckMat"]
+albedo_color = Color(0.75, 0.2, 0.65, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="FinishDeckMesh"]
+material = SubResource("FinishDeckMat")
+size = Vector3(9, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_iss10"]
+size = Vector3(15, 3, 79)
+
+[sub_resource type="StandardMaterial3D" id="NeonTower0Mat"]
+albedo_color = Color(0.85, 0.2, 0.65, 1)
+
+[sub_resource type="BoxMesh" id="NeonTower0Mesh"]
+material = SubResource("NeonTower0Mat")
+size = Vector3(1.2, 12, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="NeonTower1Mat"]
+albedo_color = Color(0.25, 0.8, 0.95, 1)
+
+[sub_resource type="BoxMesh" id="NeonTower1Mesh"]
+material = SubResource("NeonTower1Mat")
+size = Vector3(1.2, 12, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="NeonTower2Mat"]
+albedo_color = Color(0.85, 0.2, 0.65, 1)
+
+[sub_resource type="BoxMesh" id="NeonTower2Mesh"]
+material = SubResource("NeonTower2Mat")
+size = Vector3(1.2, 12, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="NeonTower3Mat"]
+albedo_color = Color(0.25, 0.8, 0.95, 1)
+
+[sub_resource type="BoxMesh" id="NeonTower3Mesh"]
+material = SubResource("NeonTower3Mat")
+size = Vector3(1.2, 12, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="NeonTower4Mat"]
+albedo_color = Color(0.85, 0.2, 0.65, 1)
+
+[sub_resource type="BoxMesh" id="NeonTower4Mesh"]
+material = SubResource("NeonTower4Mat")
+size = Vector3(1.2, 12, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="NeonTower5Mat"]
+albedo_color = Color(0.25, 0.8, 0.95, 1)
+
+[sub_resource type="BoxMesh" id="NeonTower5Mesh"]
+material = SubResource("NeonTower5Mat")
+size = Vector3(1.2, 12, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="NeonTower6Mat"]
+albedo_color = Color(0.85, 0.2, 0.65, 1)
+
+[sub_resource type="BoxMesh" id="NeonTower6Mesh"]
+material = SubResource("NeonTower6Mat")
+size = Vector3(1.2, 12, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="NeonTower7Mat"]
+albedo_color = Color(0.25, 0.8, 0.95, 1)
+
+[sub_resource type="BoxMesh" id="NeonTower7Mesh"]
+material = SubResource("NeonTower7Mat")
+size = Vector3(1.2, 12, 1.2)
+
+[node name="SectionLayout" type="Node3D" unique_id=67949504]
+
+[node name="StartDeck" parent="." instance=ExtResource("1_a85gh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+
+[node name="Collision" parent="StartDeck"]
+shape = SubResource("StartDeckShape")
+
+[node name="Visual" parent="StartDeck"]
+material_override = SubResource("StartDeckMat")
+mesh = SubResource("StartDeckMesh")
+
+[node name="PulseTile0" parent="." instance=ExtResource("2_fw87q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -0.25, -7.5)
+script = ExtResource("3_5lhry")
+stand_duration = 0.65
+respawn_interval = 3.5
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="PulseTile0"]
+shape = SubResource("PulseTile0Shape")
+
+[node name="Visual" parent="PulseTile0"]
+material_override = SubResource("PulseTile0Mat")
+mesh = SubResource("PulseTile0Mesh")
+
+[node name="Timer" parent="PulseTile0"]
+process_callback = 0
+one_shot = true
+
+[node name="PulseTile1" parent="." instance=ExtResource("2_fw87q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.25, -12)
+script = ExtResource("3_5lhry")
+stand_duration = 0.65
+respawn_interval = 3.5
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="PulseTile1"]
+shape = SubResource("PulseTile1Shape")
+
+[node name="Visual" parent="PulseTile1"]
+material_override = SubResource("PulseTile1Mat")
+mesh = SubResource("PulseTile1Mesh")
+
+[node name="Timer" parent="PulseTile1"]
+process_callback = 0
+one_shot = true
+
+[node name="PulseTile2" parent="." instance=ExtResource("2_fw87q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -16.5)
+script = ExtResource("3_5lhry")
+stand_duration = 0.65
+respawn_interval = 3.5
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="PulseTile2"]
+shape = SubResource("PulseTile2Shape")
+
+[node name="Visual" parent="PulseTile2"]
+material_override = SubResource("PulseTile2Mat")
+mesh = SubResource("PulseTile2Mesh")
+
+[node name="Timer" parent="PulseTile2"]
+process_callback = 0
+one_shot = true
+
+[node name="RestIsland0" parent="." instance=ExtResource("1_a85gh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -21)
+
+[node name="Collision" parent="RestIsland0"]
+shape = SubResource("RestIsland0Shape")
+
+[node name="Visual" parent="RestIsland0"]
+material_override = SubResource("RestIsland0Mat")
+mesh = SubResource("RestIsland0Mesh")
+
+[node name="ChainSign0" type="Label3D" parent="." unique_id=699873195]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -5.5)
+pixel_size = 0.006
+billboard = 1
+text = "连跳 1
+变红后即将消失"
+font = SubResource("Font")
+font_size = 50
+
+[node name="PulseTile3" parent="." instance=ExtResource("2_fw87q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -0.25, -25)
+script = ExtResource("3_5lhry")
+stand_duration = 0.65
+respawn_interval = 3.5
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="PulseTile3"]
+shape = SubResource("PulseTile3Shape")
+
+[node name="Visual" parent="PulseTile3"]
+material_override = SubResource("PulseTile3Mat")
+mesh = SubResource("PulseTile3Mesh")
+
+[node name="Timer" parent="PulseTile3"]
+process_callback = 0
+one_shot = true
+
+[node name="PulseTile4" parent="." instance=ExtResource("2_fw87q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.25, -29.5)
+script = ExtResource("3_5lhry")
+stand_duration = 0.65
+respawn_interval = 3.5
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="PulseTile4"]
+shape = SubResource("PulseTile4Shape")
+
+[node name="Visual" parent="PulseTile4"]
+material_override = SubResource("PulseTile4Mat")
+mesh = SubResource("PulseTile4Mesh")
+
+[node name="Timer" parent="PulseTile4"]
+process_callback = 0
+one_shot = true
+
+[node name="PulseTile5" parent="." instance=ExtResource("2_fw87q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -34)
+script = ExtResource("3_5lhry")
+stand_duration = 0.65
+respawn_interval = 3.5
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="PulseTile5"]
+shape = SubResource("PulseTile5Shape")
+
+[node name="Visual" parent="PulseTile5"]
+material_override = SubResource("PulseTile5Mat")
+mesh = SubResource("PulseTile5Mesh")
+
+[node name="Timer" parent="PulseTile5"]
+process_callback = 0
+one_shot = true
+
+[node name="RestIsland1" parent="." instance=ExtResource("1_a85gh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -38.5)
+
+[node name="Collision" parent="RestIsland1"]
+shape = SubResource("RestIsland1Shape")
+
+[node name="Visual" parent="RestIsland1"]
+material_override = SubResource("RestIsland1Mat")
+mesh = SubResource("RestIsland1Mesh")
+
+[node name="ChainSign1" type="Label3D" parent="." unique_id=6954446]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -23)
+pixel_size = 0.006
+billboard = 1
+text = "连跳 2
+变红后即将消失"
+font = SubResource("Font")
+font_size = 50
+
+[node name="PulseTile6" parent="." instance=ExtResource("2_fw87q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -0.25, -42.5)
+script = ExtResource("3_5lhry")
+stand_duration = 0.65
+respawn_interval = 3.5
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="PulseTile6"]
+shape = SubResource("PulseTile6Shape")
+
+[node name="Visual" parent="PulseTile6"]
+material_override = SubResource("PulseTile6Mat")
+mesh = SubResource("PulseTile6Mesh")
+
+[node name="Timer" parent="PulseTile6"]
+process_callback = 0
+one_shot = true
+
+[node name="PulseTile7" parent="." instance=ExtResource("2_fw87q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.25, -47)
+script = ExtResource("3_5lhry")
+stand_duration = 0.65
+respawn_interval = 3.5
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="PulseTile7"]
+shape = SubResource("PulseTile7Shape")
+
+[node name="Visual" parent="PulseTile7"]
+material_override = SubResource("PulseTile7Mat")
+mesh = SubResource("PulseTile7Mesh")
+
+[node name="Timer" parent="PulseTile7"]
+process_callback = 0
+one_shot = true
+
+[node name="PulseTile8" parent="." instance=ExtResource("2_fw87q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -51.5)
+script = ExtResource("3_5lhry")
+stand_duration = 0.65
+respawn_interval = 3.5
+warning_material = SubResource("Warning")
+
+[node name="Collision" parent="PulseTile8"]
+shape = SubResource("PulseTile8Shape")
+
+[node name="Visual" parent="PulseTile8"]
+material_override = SubResource("PulseTile8Mat")
+mesh = SubResource("PulseTile8Mesh")
+
+[node name="Timer" parent="PulseTile8"]
+process_callback = 0
+one_shot = true
+
+[node name="RestIsland2" parent="." instance=ExtResource("1_a85gh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -56)
+
+[node name="Collision" parent="RestIsland2"]
+shape = SubResource("RestIsland2Shape")
+
+[node name="Visual" parent="RestIsland2"]
+material_override = SubResource("RestIsland2Mat")
+mesh = SubResource("RestIsland2Mesh")
+
+[node name="ChainSign2" type="Label3D" parent="." unique_id=1396083105]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -40.5)
+pixel_size = 0.006
+billboard = 1
+text = "连跳 3
+变红后即将消失"
+font = SubResource("Font")
+font_size = 50
+
+[node name="FinalBridge" parent="." instance=ExtResource("1_a85gh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -61)
+
+[node name="Collision" parent="FinalBridge"]
+shape = SubResource("FinalBridgeShape")
+
+[node name="Visual" parent="FinalBridge"]
+material_override = SubResource("FinalBridgeMat")
+mesh = SubResource("FinalBridgeMesh")
+
+[node name="FinalSpinner" parent="." instance=ExtResource("4_ullh6")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.52, -60.5)
+script = ExtResource("5_gkdis")
+degrees_per_second = -65.0
+
+[node name="Collision" parent="FinalSpinner"]
+shape = SubResource("BlockShape")
+
+[node name="Visual" parent="FinalSpinner"]
+mesh = SubResource("BlockMesh")
+
+[node name="FinishDeck" parent="." instance=ExtResource("1_a85gh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -67)
+
+[node name="Collision" parent="FinishDeck"]
+shape = SubResource("FinishDeckShape")
+
+[node name="Visual" parent="FinishDeck"]
+material_override = SubResource("FinishDeckMat")
+mesh = SubResource("FinishDeckMesh")
+
+[node name="FinishSign" type="Label3D" parent="." unique_id=2129765970]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -68)
+pixel_size = 0.006
+billboard = 1
+text = "本段出口"
+font = SubResource("Font")
+font_size = 50
+
+[node name="FallVolume" parent="." instance=ExtResource("6_4aoqt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, -33.5)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("7_f2sng")
+effect = ExtResource("8_33phy")
+
+[node name="Collision" parent="FallVolume"]
+shape = SubResource("BoxShape3D_iss10")
+
+[node name="NeonTower0" type="MeshInstance3D" parent="." unique_id=158264313]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, -4, -3)
+mesh = SubResource("NeonTower0Mesh")
+
+[node name="NeonTower1" type="MeshInstance3D" parent="." unique_id=401541071]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -4, -12)
+mesh = SubResource("NeonTower1Mesh")
+
+[node name="NeonTower2" type="MeshInstance3D" parent="." unique_id=404678774]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, -4, -21)
+mesh = SubResource("NeonTower2Mesh")
+
+[node name="NeonTower3" type="MeshInstance3D" parent="." unique_id=657377995]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -4, -30)
+mesh = SubResource("NeonTower3Mesh")
+
+[node name="NeonTower4" type="MeshInstance3D" parent="." unique_id=1656744328]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, -4, -39)
+mesh = SubResource("NeonTower4Mesh")
+
+[node name="NeonTower5" type="MeshInstance3D" parent="." unique_id=1112276499]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -4, -48)
+mesh = SubResource("NeonTower5Mesh")
+
+[node name="NeonTower6" type="MeshInstance3D" parent="." unique_id=699518682]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, -4, -57)
+mesh = SubResource("NeonTower6Mesh")
+
+[node name="NeonTower7" type="MeshInstance3D" parent="." unique_id=785570692]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -4, -66)
+mesh = SubResource("NeonTower7Mesh")
+
+[editable path="StartDeck"]
+[editable path="PulseTile0"]
+[editable path="PulseTile1"]
+[editable path="PulseTile2"]
+[editable path="RestIsland0"]
+[editable path="PulseTile3"]
+[editable path="PulseTile4"]
+[editable path="PulseTile5"]
+[editable path="RestIsland1"]
+[editable path="PulseTile6"]
+[editable path="PulseTile7"]
+[editable path="PulseTile8"]
+[editable path="RestIsland2"]
+[editable path="FinalBridge"]
+[editable path="FinishDeck"]
+[editable path="FallVolume"]

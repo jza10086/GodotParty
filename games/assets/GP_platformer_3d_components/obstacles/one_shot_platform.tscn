@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="base"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/one_shot_platform.gd" id="platform"]
+
+[sub_resource type="StandardMaterial3D" id="Ready"]
+albedo_color = Color(0.94, 0.63, 0.22, 1)
+
+[sub_resource type="StandardMaterial3D" id="Warning"]
+albedo_color = Color(0.98, 0.21, 0.12, 1)
+
+[node name="OneShotPlatform" instance=ExtResource("base")]
+script = ExtResource("platform")
+warning_material = SubResource("Warning")
+
+[node name="Visual" parent="."]
+material_override = SubResource("Ready")
+
+[node name="Timer" type="Timer" parent="."]
+process_callback = 0
+one_shot = true

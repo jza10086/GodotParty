@@ -1,0 +1,497 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/static_platform.tscn" id="1_auonc"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/moving_platform.tscn" id="2_yhxqk"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/moving_platform.gd" id="3_db0gw"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/conveyor_platform.tscn" id="4_giqv4"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/conveyor_platform.gd" id="5_3w5b2"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/obstacles/pusher.tscn" id="6_tr6mg"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/obstacles/pusher.gd" id="7_uu85m"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/effects/kill_zone.tscn" id="8_yfqps"]
+[ext_resource type="Script" path="res://games/assets/GP_platformer_3d_components/effects/effect_zone.gd" id="9_j8j75"]
+[ext_resource type="Resource" path="res://games/assets/GP_platformer_3d_components/effects/lethal.tres" id="10_ldvbg"]
+
+[sub_resource type="BoxShape3D" id="StartDeckShape"]
+size = Vector3(9, 0.5, 12)
+
+[sub_resource type="StandardMaterial3D" id="StartDeckMat"]
+albedo_color = Color(0.35, 0.34, 0.32, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="StartDeckMesh"]
+material = SubResource("StartDeckMat")
+size = Vector3(9, 0.5, 12)
+
+[sub_resource type="BoxShape3D" id="StepOneShape"]
+size = Vector3(6, 0.5, 3)
+
+[sub_resource type="StandardMaterial3D" id="StepOneMat"]
+albedo_color = Color(0.77, 0.46, 0.14, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="StepOneMesh"]
+material = SubResource("StepOneMat")
+size = Vector3(6, 0.5, 3)
+
+[sub_resource type="BoxShape3D" id="StepTwoShape"]
+size = Vector3(6, 0.5, 3)
+
+[sub_resource type="StandardMaterial3D" id="StepTwoMat"]
+albedo_color = Color(0.86, 0.57, 0.2, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="StepTwoMesh"]
+material = SubResource("StepTwoMat")
+size = Vector3(6, 0.5, 3)
+
+[sub_resource type="BoxShape3D" id="LowerLandingShape"]
+size = Vector3(8, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="LowerLandingMat"]
+albedo_color = Color(0.4, 0.41, 0.43, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="LowerLandingMesh"]
+material = SubResource("LowerLandingMat")
+size = Vector3(8, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="FreightLiftShape"]
+size = Vector3(6, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="FreightLiftMat"]
+albedo_color = Color(0.95, 0.64, 0.12, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="FreightLiftMesh"]
+material = SubResource("FreightLiftMat")
+size = Vector3(6, 0.5, 4)
+
+[sub_resource type="BoxShape3D" id="UpperLandingShape"]
+size = Vector3(8, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="UpperLandingMat"]
+albedo_color = Color(0.4, 0.41, 0.43, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="UpperLandingMesh"]
+material = SubResource("UpperLandingMat")
+size = Vector3(8, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="AssemblyBeltShape"]
+size = Vector3(8, 0.5, 12)
+
+[sub_resource type="StandardMaterial3D" id="AssemblyBeltMat"]
+albedo_color = Color(0.28, 0.3, 0.33, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="AssemblyBeltMesh"]
+material = SubResource("AssemblyBeltMat")
+size = Vector3(8, 0.5, 12)
+
+[sub_resource type="StandardMaterial3D" id="Arrow"]
+albedo_color = Color(0.98, 0.83, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="Stripe"]
+material = SubResource("Arrow")
+size = Vector3(1, 0.025, 0.12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jx5h2"]
+size = Vector3(2.2, 1.8, 1.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fn5um"]
+albedo_color = Color(0.95, 0.27, 0.29, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="BoxMesh_wai38"]
+material = SubResource("StandardMaterial3D_fn5um")
+size = Vector3(2.2, 1.8, 1.6)
+
+[sub_resource type="StandardMaterial3D" id="Lamp"]
+albedo_color = Color(1, 0.94, 0.1, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="Light"]
+material = SubResource("Lamp")
+size = Vector3(1.8, 0.15, 1.3)
+
+[sub_resource type="BoxShape3D" id="TopLandingShape"]
+size = Vector3(8, 0.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="TopLandingMat"]
+albedo_color = Color(0.75, 0.48, 0.16, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="TopLandingMesh"]
+material = SubResource("TopLandingMat")
+size = Vector3(8, 0.5, 6)
+
+[sub_resource type="BoxShape3D" id="HighStepShape"]
+size = Vector3(6, 0.5, 3)
+
+[sub_resource type="StandardMaterial3D" id="HighStepMat"]
+albedo_color = Color(0.9, 0.62, 0.18, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="HighStepMesh"]
+material = SubResource("HighStepMat")
+size = Vector3(6, 0.5, 3)
+
+[sub_resource type="BoxShape3D" id="RoofShape"]
+size = Vector3(9, 0.5, 5)
+
+[sub_resource type="StandardMaterial3D" id="RoofMat"]
+albedo_color = Color(0.4, 0.41, 0.43, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="RoofMesh"]
+material = SubResource("RoofMat")
+size = Vector3(9, 0.5, 5)
+
+[sub_resource type="SystemFont" id="Font"]
+font_names = PackedStringArray("Microsoft YaHei", "Segoe UI")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3ri6u"]
+size = Vector3(21.6, 3, 67)
+
+[sub_resource type="StandardMaterial3D" id="Girder0LMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder0LMesh"]
+material = SubResource("Girder0LMat")
+size = Vector3(0.5, 15, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Girder0RMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder0RMesh"]
+material = SubResource("Girder0RMat")
+size = Vector3(0.5, 15, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Girder1LMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder1LMesh"]
+material = SubResource("Girder1LMat")
+size = Vector3(0.5, 15, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Girder1RMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder1RMesh"]
+material = SubResource("Girder1RMat")
+size = Vector3(0.5, 15, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Girder2LMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder2LMesh"]
+material = SubResource("Girder2LMat")
+size = Vector3(0.5, 15, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Girder2RMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder2RMesh"]
+material = SubResource("Girder2RMat")
+size = Vector3(0.5, 15, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Girder3LMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder3LMesh"]
+material = SubResource("Girder3LMat")
+size = Vector3(0.5, 15, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Girder3RMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder3RMesh"]
+material = SubResource("Girder3RMat")
+size = Vector3(0.5, 15, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Girder4LMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder4LMesh"]
+material = SubResource("Girder4LMat")
+size = Vector3(0.5, 15, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Girder4RMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder4RMesh"]
+material = SubResource("Girder4RMat")
+size = Vector3(0.5, 15, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Girder5LMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder5LMesh"]
+material = SubResource("Girder5LMat")
+size = Vector3(0.5, 15, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Girder5RMat"]
+albedo_color = Color(0.23, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="Girder5RMesh"]
+material = SubResource("Girder5RMat")
+size = Vector3(0.5, 15, 0.5)
+
+[node name="SectionLayout" type="Node3D" unique_id=1590188258]
+
+[node name="StartDeck" parent="." instance=ExtResource("1_auonc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+
+[node name="Collision" parent="StartDeck"]
+shape = SubResource("StartDeckShape")
+
+[node name="Visual" parent="StartDeck"]
+material_override = SubResource("StartDeckMat")
+mesh = SubResource("StartDeckMesh")
+
+[node name="StepOne" parent="." instance=ExtResource("1_auonc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, -8)
+
+[node name="Collision" parent="StepOne"]
+shape = SubResource("StepOneShape")
+
+[node name="Visual" parent="StepOne"]
+material_override = SubResource("StepOneMat")
+mesh = SubResource("StepOneMesh")
+
+[node name="StepTwo" parent="." instance=ExtResource("1_auonc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -12)
+
+[node name="Collision" parent="StepTwo"]
+shape = SubResource("StepTwoShape")
+
+[node name="Visual" parent="StepTwo"]
+material_override = SubResource("StepTwoMat")
+mesh = SubResource("StepTwoMesh")
+
+[node name="LowerLanding" parent="." instance=ExtResource("1_auonc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.15, -17)
+
+[node name="Collision" parent="LowerLanding"]
+shape = SubResource("LowerLandingShape")
+
+[node name="Visual" parent="LowerLanding"]
+material_override = SubResource("LowerLandingMat")
+mesh = SubResource("LowerLandingMesh")
+
+[node name="FreightLift" parent="." instance=ExtResource("2_yhxqk")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.15, -22)
+script = ExtResource("3_db0gw")
+travel = Vector3(0, 4, 0)
+speed = 1.6
+dwell = 1.0
+
+[node name="Collision" parent="FreightLift"]
+shape = SubResource("FreightLiftShape")
+
+[node name="Visual" parent="FreightLift"]
+material_override = SubResource("FreightLiftMat")
+mesh = SubResource("FreightLiftMesh")
+
+[node name="UpperLanding" parent="." instance=ExtResource("1_auonc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.95, -27)
+
+[node name="Collision" parent="UpperLanding"]
+shape = SubResource("UpperLandingShape")
+
+[node name="Visual" parent="UpperLanding"]
+material_override = SubResource("UpperLandingMat")
+mesh = SubResource("UpperLandingMesh")
+
+[node name="AssemblyBelt" parent="." instance=ExtResource("4_giqv4")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.95, -36)
+script = ExtResource("5_3w5b2")
+belt_speed = -1.1
+
+[node name="Collision" parent="AssemblyBelt"]
+shape = SubResource("AssemblyBeltShape")
+
+[node name="Visual" parent="AssemblyBelt"]
+material_override = SubResource("AssemblyBeltMat")
+mesh = SubResource("AssemblyBeltMesh")
+
+[node name="Direction" parent="AssemblyBelt"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.26, 0)
+
+[node name="Left" parent="AssemblyBelt/Direction"]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, -0.35, 0, 0)
+mesh = SubResource("Stripe")
+
+[node name="Right" parent="AssemblyBelt/Direction"]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 0.35, 0, 0)
+mesh = SubResource("Stripe")
+
+[node name="PressA" parent="." instance=ExtResource("6_tr6mg")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 8.1, -32)
+script = ExtResource("7_uu85m")
+travel = Vector3(5, 0, 0)
+phase = 0.2
+
+[node name="Collision" parent="PressA"]
+shape = SubResource("BoxShape3D_jx5h2")
+
+[node name="Visual" parent="PressA"]
+mesh = SubResource("BoxMesh_wai38")
+
+[node name="Warning" parent="PressA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("Light")
+
+[node name="PressB" parent="." instance=ExtResource("6_tr6mg")]
+process_physics_priority = -50
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8, 8.1, -37)
+script = ExtResource("7_uu85m")
+travel = Vector3(-5, 0, 0)
+phase = 0.7
+
+[node name="Collision" parent="PressB"]
+shape = SubResource("BoxShape3D_jx5h2")
+
+[node name="Visual" parent="PressB"]
+mesh = SubResource("BoxMesh_wai38")
+
+[node name="Warning" parent="PressB"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("Light")
+
+[node name="TopLanding" parent="." instance=ExtResource("1_auonc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.95, -45)
+
+[node name="Collision" parent="TopLanding"]
+shape = SubResource("TopLandingShape")
+
+[node name="Visual" parent="TopLanding"]
+material_override = SubResource("TopLandingMat")
+mesh = SubResource("TopLandingMesh")
+
+[node name="HighStep" parent="." instance=ExtResource("1_auonc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.75, -50)
+
+[node name="Collision" parent="HighStep"]
+shape = SubResource("HighStepShape")
+
+[node name="Visual" parent="HighStep"]
+material_override = SubResource("HighStepMat")
+mesh = SubResource("HighStepMesh")
+
+[node name="Roof" parent="." instance=ExtResource("1_auonc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.55, -55)
+
+[node name="Collision" parent="Roof"]
+shape = SubResource("RoofShape")
+
+[node name="Visual" parent="Roof"]
+material_override = SubResource("RoofMat")
+mesh = SubResource("RoofMesh")
+
+[node name="FinishSign" type="Label3D" parent="." unique_id=2049159142]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13, -56)
+pixel_size = 0.006
+billboard = 1
+text = "本段出口"
+font = SubResource("Font")
+font_size = 50
+
+[node name="FallVolume" parent="." instance=ExtResource("8_yfqps")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, -27.5)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("9_j8j75")
+effect = ExtResource("10_ldvbg")
+
+[node name="Collision" parent="FallVolume"]
+shape = SubResource("BoxShape3D_3ri6u")
+
+[node name="Title" type="Label3D" parent="." unique_id=567679059]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -3)
+pixel_size = 0.006
+billboard = 1
+text = "观察前方机关"
+font = SubResource("Font")
+font_size = 50
+
+[node name="LiftHint" type="Label3D" parent="." unique_id=1368547472]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -22)
+pixel_size = 0.006
+billboard = 1
+text = "搭乘升降台
+升高后跳向上层"
+font = SubResource("Font")
+font_size = 50
+
+[node name="BeltHint" type="Label3D" parent="." unique_id=1185934083]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.6, -31)
+pixel_size = 0.006
+billboard = 1
+text = "逆向装配线
+避开两侧冲压机"
+font = SubResource("Font")
+font_size = 50
+
+[node name="Girder0L" type="MeshInstance3D" parent="." unique_id=1162039127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3, -4)
+mesh = SubResource("Girder0LMesh")
+
+[node name="Girder0R" type="MeshInstance3D" parent="." unique_id=1531512487]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, -4)
+mesh = SubResource("Girder0RMesh")
+
+[node name="Girder1L" type="MeshInstance3D" parent="." unique_id=314408055]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3, -14)
+mesh = SubResource("Girder1LMesh")
+
+[node name="Girder1R" type="MeshInstance3D" parent="." unique_id=730684757]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, -14)
+mesh = SubResource("Girder1RMesh")
+
+[node name="Girder2L" type="MeshInstance3D" parent="." unique_id=1091597104]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3, -24)
+mesh = SubResource("Girder2LMesh")
+
+[node name="Girder2R" type="MeshInstance3D" parent="." unique_id=1444218612]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, -24)
+mesh = SubResource("Girder2RMesh")
+
+[node name="Girder3L" type="MeshInstance3D" parent="." unique_id=1963324703]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3, -34)
+mesh = SubResource("Girder3LMesh")
+
+[node name="Girder3R" type="MeshInstance3D" parent="." unique_id=1674065103]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, -34)
+mesh = SubResource("Girder3RMesh")
+
+[node name="Girder4L" type="MeshInstance3D" parent="." unique_id=17147650]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3, -44)
+mesh = SubResource("Girder4LMesh")
+
+[node name="Girder4R" type="MeshInstance3D" parent="." unique_id=27733529]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, -44)
+mesh = SubResource("Girder4RMesh")
+
+[node name="Girder5L" type="MeshInstance3D" parent="." unique_id=1092649322]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3, -54)
+mesh = SubResource("Girder5LMesh")
+
+[node name="Girder5R" type="MeshInstance3D" parent="." unique_id=1889045365]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, -54)
+mesh = SubResource("Girder5RMesh")
+
+[editable path="StartDeck"]
+[editable path="StepOne"]
+[editable path="StepTwo"]
+[editable path="LowerLanding"]
+[editable path="FreightLift"]
+[editable path="UpperLanding"]
+[editable path="AssemblyBelt"]
+[editable path="TopLanding"]
+[editable path="HighStep"]
+[editable path="Roof"]
+[editable path="FallVolume"]
