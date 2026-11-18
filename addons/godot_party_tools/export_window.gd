@@ -40,6 +40,13 @@ func _ready() -> void:
 	_tree = Tree.new()
 	_tree.name = "导出内容"
 	_tree.hide_root = true
+	_tree.columns = 3
+	_tree.column_titles_visible = true
+	_tree.set_column_title(0, "id")
+	_tree.set_column_title(1, "版本")
+	_tree.set_column_title(2, "中文名")
+	_tree.set_column_expand(1, false)
+	_tree.set_column_custom_minimum_width(1, 90)
 	tabs.add_child(_tree)
 	_tree.item_edited.connect(_item_edited)
 	_dependencies = Tree.new()
@@ -108,7 +115,8 @@ func open() -> void:
 	var root: TreeItem = _tree.create_item()
 	_core = _tree.create_item(root)
 	_core.set_cell_mode(0, TreeItem.CELL_MODE_CHECK)
-	_core.set_text(0, {"Windows": "核心框架 · Windows x64", "Android": "核心框架 · Android APK", "iOS": "核心框架 · iOS IPA（SideStore）"}[platform] + " " + preload("res://core/framework_version.gd").VERSION)
+	_core.set_text(0, {"Windows": "核心框架 · Windows x64", "Android": "核心框架 · Android APK", "iOS": "核心框架 · iOS IPA（SideStore）"}[platform])
+	_core.set_text(1, preload("res://core/framework_version.gd").VERSION)
 	_core.set_metadata(0, "@core")
 	_core.set_editable(0, true)
 	_core.set_checked(0, true)
@@ -133,14 +141,25 @@ func _add_package(parent: TreeItem, id: String) -> TreeItem:
 	var item: TreeItem = _tree.create_item(parent)
 	item.set_cell_mode(0, TreeItem.CELL_MODE_CHECK)
 	item.set_metadata(0, id)
-	item.set_text(0, _package_label(manifest))
+	item.set_text(0, id)
+	item.set_text(1, manifest.package_version)
+	item.set_text(2, _chinese_name(manifest))
+	item.set_tooltip_text(2, item.get_text(2))
 	item.set_tooltip_text(0, id + "\n" + manifest._root)
 	item.set_editable(0, manifest.get("playable", true))
 	_items[id] = item
 	return item
 
-func _package_label(manifest: Dictionary) -> String:
-	return "%s %s" % [manifest.id, manifest.package_version]
+func _chinese_name(manifest: Dictionary) -> String:
+	var path: String = manifest._root.path_join("i18n/zh_Hans.po")
+	if not FileAccess.file_exists(path):
+		return manifest.id
+	var translation: Translation = load(path)
+	if translation == null or translation.locale != "zh_Hans":
+		_catalog.errors.append("无效的中文翻译资源：" + path)
+		return manifest.id
+	var display_name: String = translation.get_message("package.name").strip_edges()
+	return manifest.id if display_name.is_empty() else display_name
 
 func _item_edited() -> void:
 	var item: TreeItem = _tree.get_edited()
@@ -170,7 +189,6 @@ func _refresh_selection() -> void:
 		var item: TreeItem = _items[id]
 		item.set_checked(0, _requested.has(id))
 		item.set_editable(0, _catalog.packages[id].get("playable", true))
-		item.set_text(0, _package_label(_catalog.packages[id]))
 	for group: TreeItem in _tree.get_root().get_children():
 		if group == _core:
 			continue
