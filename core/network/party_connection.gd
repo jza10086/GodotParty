@@ -331,7 +331,24 @@ func _connected() -> void:
 	_send(1, {"kind": "hello", "payload": profiles.identity()})
 
 func _make_player(identity: Dictionary, peer: int) -> Dictionary:
-	return {"player_id": identity["player_id"], "name": identity["name"], "peer_id": peer, "connected": true, "ready": peer == 1, "profile": {}, "appearance": {}, "system": identity["system"]}
+	var player: Dictionary = {"player_id": identity["player_id"], "name": identity["name"], "peer_id": peer, "connected": true, "ready": peer == 1, "profile": {}, "appearance": {}, "system": identity["system"]}
+	if using_steam:
+		var transport: MultiplayerPeer = _scene.multiplayer_peer
+		player["steam_id"] = str(steam.api.getSteamID() if peer == 1 else transport.call("get_steam_id_for_peer_id", peer))
+	return player
+
+## Steam account identity comes from the host transport, never a client hello field.
+func steam_profile(player_id: String = "") -> Dictionary:
+	if player_id.is_empty():
+		return steam.profile()
+	var player: Dictionary = Data.player(players, player_id)
+	if player.is_empty():
+		return {}
+	if player.peer_id == local_peer():
+		return steam.profile()
+	if not using_steam or not player.has("steam_id"):
+		return {}
+	return steam.profile(player.steam_id.to_int())
 
 func _packet(sender: int, bytes: PackedByteArray) -> void:
 	if bytes.size() > MAX_PACKET_BYTES:
@@ -1103,6 +1120,10 @@ func _valid_room_snapshot(payload: Dictionary) -> bool:
 			return false
 		if not player.get("peer_id") is int or player["peer_id"] < 1 or not player.get("connected") is bool or not player.get("ready") is bool:
 			return false
+		if player.has("steam_id"):
+			var uid: Variant = player.steam_id
+			if not uid is String or not uid.is_valid_int() or uid.to_int() <= 0 or str(uid.to_int()) != uid:
+				return false
 		if not Data.valid_system(player.get("system")):
 			return false
 		if not player.get("profile") is Dictionary or not player.get("appearance") is Dictionary:

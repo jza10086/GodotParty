@@ -314,6 +314,9 @@ func _panel(package_id: String, value: Dictionary, editable: bool, profile: bool
 	var scene: String = definition.get("player_config_panel" if profile else "config_panel", "")
 	var panel: Control = catalog.resource(package_id, scene).instantiate() if not scene.is_empty() else preload("res://core/ui/party_config_form.tscn").instantiate()
 	var context: Dictionary = {"schema": catalog.localized_schema(package_id), "audience": "room", "pools": connection.room.get("pools", {}).duplicate(true), "fields": definition.get("player_fields", []) if profile else catalog.fields(package_id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)}
+	if profile and editable:
+		context["steam_profile"] = connection.steam_profile
+		context["steam_profile_changed"] = connection.steam.profile_changed
 	if profile and connection.host and connection.room.get("phase") == "lobby" and connection.recovery.is_empty():
 		context["room_players"] = func() -> Array: return connection.players.duplicate(true)
 		context["assign_room_profile"] = connection.assign_player_profile
@@ -330,6 +333,9 @@ func _choose_offline_profile() -> void:
 	_dialog.confirmed.connect(func() -> void: _profile_dialog(picker.get_item_metadata(picker.selected)))
 
 func _local_profile_settings() -> void:
+	if not _frontend.selected_protocol.is_empty() and not connection.online:
+		_profile_dialog(_frontend.selected_protocol)
+		return
 	var body: VBoxContainer = preload("res://core/ui/dialogs/profile.tscn").instantiate()
 	var name_input: LineEdit = body.get_node("PlayerName")
 	name_input.text = local_display_name()
@@ -366,6 +372,12 @@ func _profile_dialog(selected_protocol: String = "") -> void:
 	var box: VBoxContainer = preload("res://core/ui/dialogs/profile.tscn").instantiate()
 	_profile_name = box.get_node("PlayerName")
 	_profile_name.text = player["name"]
+	if connection.steam.initialized and not connection.room.get("recovery", false):
+		var use_name: Button = Button.new()
+		use_name.text = "使用 Steam 昵称"
+		use_name.pressed.connect(func() -> void: _profile_name.text = connection.steam_profile().persona_name)
+		box.add_child(use_name)
+		box.move_child(use_name, _profile_name.get_index() + 1)
 	_profile_panel = _panel(protocol_id, player["profile"], not connection.room.get("recovery", false), true)
 	box.get_node("ProfileSlot").add_child(_profile_panel)
 	var editor: Control = _configuration_editor("个人资料", box, not connection.room.get("recovery", false), "编辑昵称、形象和协议提供的个人资料，应用后保存。")

@@ -3,6 +3,7 @@ class_name PartyAPI
 extends RefCounted
 
 signal players_changed()
+signal steam_profile_changed(steam_id: String)
 ## Transport departure, delivered once after the roster marks the player disconnected.
 signal player_disconnected(player_id: String, peer_id: int)
 signal state_committed(revision: int)
@@ -74,6 +75,10 @@ func get_spectators() -> Array[Dictionary]:
 ## The protocol defines all fields. Unknown identities return an empty dictionary.
 func get_appearance(player_id: String) -> Dictionary:
 	return Data.copy(_read("appearances", {}).get(player_id, {}))
+
+## Empty ID queries the local Steam account. Avatar is a nullable, independent 32px RGBA8 Image.
+func get_steam_profile(player_id: String = "") -> Dictionary:
+	return _query.call(scope_id, "steam_profile", {"player_id": player_id}) if is_open() else {}
 
 func get_settings() -> Dictionary:
 	return _context.get("settings", {}).duplicate(true)

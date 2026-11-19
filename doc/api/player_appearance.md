@@ -6,8 +6,7 @@ get_appearance 返回当前协议生成的数据，游戏按协议读取，不�
 GodotPartyDefaultProtocol 1.0 定义 color、avatar_2d、character_3d。具体约定见 [原版协议](../../games/protocols/GP_default_protocol/doc/GP_default_protocol_guide.md)。这些字段属于原版协议，不是 core 对所有协议的共同要求。
 
 原版形象使用 games/assets/ 下的独立 assets 包。special_type 为 GP_default_avatar_2d 或 GP_default_character_3d，appearance_resources 将包内 .tscn 相对路径映射到选项显示名。个人资料页读取已安装包的清单，预览与游戏使用时才加载场景。协议依赖 GP_default_avatars_2d 和 GP_default_avatars。GP_default_extra_avatars_2d 提供测试图片，GP_default_extra_avatars_3d 提供圆柱体；玩家实际选用的扩展包加入房间依赖。
-资料中的资源引用为 {package_id, resource_path}。包可以只提供 2D、3D、头像，
-或者协议需要的其他素材；颜色等纯数据也不要求加载人物模型。
+包资源由 `{package_id, resource_path}` 引用。玩家选择 Steam 头像时，原版协议在 2D 引用中附上 32×32 RGBA8 像素快照。游戏照常加载该引用，使用 ENet 或离线读取资料的设备均可显示已保存的图像。包可以单独提供 2D、3D 或协议需要的其他素材。
 
 load_asset 只解析当前依赖集合，失败返回 null；游戏或协议负责匹配类型并报告实际加载失败。
 修改材质时独立实例化材质，不能污染共享资源。移动、碰撞、authority 和同步都归游戏。
@@ -15,7 +14,7 @@ load_asset 只解析当前依赖集合，失败返回 null；游戏或协议负�
 ## 配置页面
 
 协议提供固定 profile_panel.tscn 场景。
-面板契约与活动配置相同，context 提供已安装资源描述和 preview_asset 回调。
+面板契约与活动配置相同，context 提供已安装资源描述和 preview_asset 回调。编辑协议个人资料时还提供 `steam_profile()` 回调和 `steam_profile_changed` 信号。SteamID 用于查询平台账号，存档及房间内的身份继续使用框架的 `player_id`。
 框架负责草稿、应用/取消和回执；协议决定选择列表、模型视角及配色等界面内容。
 
 已确认的资料按协议保存在当前资料槽 protocols/<协议 ID>/config/profile.json，同协议的多个大游戏共用，

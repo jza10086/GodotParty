@@ -55,12 +55,26 @@ func _reference(value: Variant) -> bool:
 func default_player_config() -> Dictionary:
 	return {"color": COLORS[2], "avatar_2d": {"package_id": "GP_default_avatars_2d", "resource_path": "avatar_silver_lavender.tscn"}, "character_3d": {"package_id": "GP_default_avatars", "resource_path": "character_3d.tscn"}}
 
+## A selected Steam portrait reuses the default portrait scene and its player-color marker.
+func steam_portrait(image: Image) -> Dictionary:
+	var ref: Dictionary = default_player_config().avatar_2d
+	ref["portrait_rgba"] = Marshalls.raw_to_base64(image.get_data())
+	return ref
+
+func _avatar_reference(value: Variant) -> bool:
+	if _reference(value):
+		return true
+	if not value is Dictionary or not _keys(value, ["package_id", "resource_path", "portrait_rgba"]):
+		return false
+	var template: Dictionary = default_player_config().avatar_2d
+	return value.package_id == template.package_id and value.resource_path == template.resource_path and PartyPortrait2D.valid_pixels(value.portrait_rgba)
+
 func validate_player_config(value: Dictionary) -> Dictionary:
 	if not _keys(value, ["color", "avatar_2d", "character_3d"]) or not value.color is String:
 		return _failure("PROFILE_INVALID", "需要玩家颜色、2D 头像及 3D 形象")
 	if value.color not in COLORS:
 		return _failure("COLOR_INVALID", "请从协议十种玩家颜色中选择")
-	if not _reference(value.avatar_2d) or not _reference(value.character_3d):
+	if not _avatar_reference(value.avatar_2d) or not _reference(value.character_3d):
 		return _failure("APPEARANCE_INVALID", "形象必须是公开资源引用")
 	return {"ok": true}
 

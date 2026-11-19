@@ -509,7 +509,8 @@ func asset(ref: Dictionary, active: Dictionary) -> Resource:
 	var relative: String = ref.get("resource_path", "")
 	if not active.has(id) or not Data.relative_path(relative):
 		return null
-	return resource(id, relative)
+	var asset_resource: Resource = resource(id, relative)
+	return PartyPortrait2D.with_pixels(asset_resource, ref.portrait_rgba) if ref.has("portrait_rgba") else asset_resource
 
 func _prepare_schema(id: String) -> String:
 	var manifest: Dictionary = packages[id]
@@ -615,4 +616,5 @@ func asset_async(ref: Dictionary, active: Dictionary) -> Resource:
 	if ResourceLoader.load_threaded_get_status(target) != ResourceLoader.THREAD_LOAD_LOADED:
 		push_error("Cannot load asset: " + target)
 		return null
-	return ResourceLoader.load_threaded_get(target)
+	var loaded: Resource = ResourceLoader.load_threaded_get(target)
+	return PartyPortrait2D.with_pixels(loaded, ref.portrait_rgba) if ref.has("portrait_rgba") else loaded

@@ -55,6 +55,7 @@ func configure(link: Node, content_catalog: RefCounted, local_settings: PartyInp
 	connection.disconnected.connect(_withdraw)
 	connection.changed.connect(_connection_changed)
 	connection.stats_changed.connect(_network_stats_changed)
+	connection.steam.profile_changed.connect(_steam_profile_changed)
 	voice_backend = Voice.new()
 	add_child(voice_backend)
 	voice_backend.initialize(connection, settings)
@@ -200,6 +201,8 @@ func _create_scope(id: String, package_id: String, round: String, participants: 
 	return scope
 
 func _query(scope_id: String, key: String, argument: Dictionary) -> Variant:
+	if key == "steam_profile":
+		return connection.steam_profile(argument.player_id)
 	if key == "peer_stats":
 		return connection.get_peer_stats(argument.peer_id)
 	if key == "host_time":
@@ -916,6 +919,8 @@ func prepare_room() -> PartyAPI:
 
 ## Lobby settings use the same public identity/appearance snapshots as activity scopes.
 func _lobby_query(_scope: String, key: String, argument: Dictionary) -> Variant:
+	if key == "steam_profile":
+		return connection.steam_profile(argument.player_id)
 	if key == "peer_stats":
 		return connection.get_peer_stats(argument.peer_id)
 	if key == "host_time":
@@ -927,6 +932,10 @@ func _lobby_query(_scope: String, key: String, argument: Dictionary) -> Variant:
 		for player: Dictionary in connection.players:
 			appearances[player.player_id] = player.appearance.duplicate(true)
 		return appearances
+	if key == "asset":
+		return catalog.asset(argument, connection.room["closure"])
+	if key == "asset_async":
+		return await catalog.asset_async(argument, connection.room["closure"])
 	if key in ["players", "room_players"]:
 		var players: Array[Dictionary] = []
 		for source: Dictionary in connection.players:
@@ -995,6 +1004,12 @@ func edit_room_rules(revision: int, edits: Array) -> Error:
 	next.room = checked.room
 	next.room.phase = connection.room.phase
 	return _queue_commit({"kind": "rules", "record": next, "previous_phase": phase})
+
+func _steam_profile_changed(steam_id: String) -> void:
+	if _lobby_api != null:
+		_lobby_api.steam_profile_changed.emit(steam_id)
+	for scope: Dictionary in _scopes.values():
+		scope.api.steam_profile_changed.emit(steam_id)
 
 func _network_stats_changed() -> void:
 	if _lobby_api != null:

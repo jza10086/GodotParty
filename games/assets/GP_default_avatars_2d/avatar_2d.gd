@@ -1,7 +1,6 @@
 ## 原版协议二维头像表现：保留原图颜色与宽高比，底部标记表达玩家颜色。
 ## 无移动、输入、碰撞或网络逻辑，原点位于表现底部。
-extends Node2D
-@export var portrait: Texture2D
+extends "res://core/api/party_portrait_2d.gd"
 @export_range(16.0, 256.0) var display_size: float = 76.0
 var _player_color: Color = Color("#478cbf")
 

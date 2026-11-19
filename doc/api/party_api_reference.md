@@ -1,6 +1,6 @@
 # PartyAPI / PartyNet 参考
 
-版本：框架 0.0.2，唯一版本来源为 core/framework_version.gd。实例由 core 注入，不要自行创建“当前游戏”全局单例。
+框架版本见 core/framework_version.gd。PartyAPI 实例由 core 注入。
 
 ## PartyAPI
 
@@ -12,6 +12,8 @@
 | get_room_players() -> Array[Dictionary] | 活跃作用域 | 房间名单快照 |
 | get_spectators() -> Array[Dictionary] | 活跃作用域 | 本局未参赛者 |
 | get_appearance(player_id: String) -> Dictionary | 活跃作用域 | 协议定义的数据，未知玩家为空 |
+| get_steam_profile(player_id: String = "") -> Dictionary | 大厅和活跃作用域 | 省略参数读取本机 Steam 资料；指定房间玩家需能映射到 Steam 账号。返回十进制字符串 `steam_id`、昵称 `persona_name` 和可空的 32×32 RGBA8 `Image` 副本 `avatar`。Steam 未初始化、无对应账号或作用域已关闭时返回空字典。 |
+| steam_profile_changed(steam_id: String) | 信号，大厅和活跃作用域 | 已查询账号的资料有更新时发出，可再次调用 get_steam_profile 读取。 |
 | get_settings() -> Dictionary | 全部 | 本活动锁定配置的副本 |
 | get_pool(name: String) -> Array | 大游戏 | 房主选择的小游戏 ID |
 | get_game_name(id: String) -> String | 活跃作用域 | 当前目录中的游戏显示名称 |

@@ -8,6 +8,9 @@ const PRODUCT: String = "GodotParty"
 
 var connection: Node
 var api: Object
+## Emitted only for profiles requested by this process. IDs are decimal strings for JSON.
+signal profile_changed(steam_id: String)
+var _portraits: Dictionary[int, Dictionary] = {}
 var initialized: bool = false
 var lobby_id: int = 0
 var _creating: bool = false
@@ -38,9 +41,51 @@ func initialize() -> Error:
 	api.lobby_created.connect(_created)
 	api.lobby_joined.connect(_joined)
 	api.join_requested.connect(_invite_received)
+	api.avatar_loaded.connect(_avatar_loaded)
+	api.avatar_image_loaded.connect(_avatar_available)
+	api.persona_state_change.connect(_persona_changed)
 	api.initRelayNetworkAccess()
 	initialized = true
 	return OK
+
+## A null avatar means Steam has no small image available yet. Never initializes Steam.
+func profile(steam_id: int = 0) -> Dictionary:
+	if not initialized:
+		return {}
+	var local_id: int = api.getSteamID()
+	var id: int = local_id if steam_id == 0 else steam_id
+	if not _portraits.has(id):
+		_portraits[id] = {"handle": 0, "avatar": null}
+	var entry: Dictionary = _portraits[id]
+	var handle: int = api.getSmallFriendAvatar(id)
+	if handle != entry.handle:
+		entry.handle = handle
+		entry.avatar = null
+		if handle > 0:
+			api.getPlayerAvatar(1, id) # GodotSteam AVATAR_SMALL, 32 × 32 RGBA8.
+	var name_value: String = api.getPersonaName() if id == local_id else api.getFriendPersonaName(id)
+	var avatar: Image = entry.avatar
+	return {"steam_id": str(id), "persona_name": name_value, "avatar": avatar.duplicate() if avatar != null else null}
+
+func _avatar_loaded(id: int, size: int, pixels: PackedByteArray) -> void:
+	if not _portraits.has(id) or size != PartyPortrait2D.SIZE or _portraits[id].handle <= 0:
+		return
+	if pixels.size() != PartyPortrait2D.BYTE_COUNT:
+		push_error("Invalid Steam small avatar pixel count")
+		return
+	_portraits[id].avatar = Image.create_from_data(size, size, false, Image.FORMAT_RGBA8, pixels)
+	profile_changed.emit(str(id))
+
+func _avatar_available(id: int, _handle: int, _width: int, _height: int) -> void:
+	if _portraits.has(id) and _portraits[id].handle <= 0:
+		profile_changed.emit(str(id))
+
+func _persona_changed(id: int, flags: int) -> void:
+	if _portraits.has(id) and flags & (1 | 64 | 1024): # Name, avatar or first known name.
+		if flags & 64:
+			_portraits[id].handle = 0
+			_portraits[id].avatar = null
+		profile_changed.emit(str(id))
 
 ## Both Steam launch parameters and the running overlay resolve to a lobby ID.
 func boot(arguments: PackedStringArray) -> void:
@@ -151,6 +196,7 @@ func invite() -> void:
 	api.activateGameOverlayInviteDialog(lobby_id)
 
 func leave() -> void:
+	_portraits.clear()
 	_wanted = false
 	if lobby_id != 0:
 		api.leaveLobby(lobby_id)
