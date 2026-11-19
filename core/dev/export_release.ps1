@@ -67,6 +67,7 @@ try {
         Check-Target $target
         if (Test-Path -LiteralPath $target -PathType Container) { throw "File conflicts with directory: $target" }
         $replace = $relative -in 'GodotParty.exe','GodotParty.apk','GodotParty-content-android.zip' -or $payloadPaths.Contains($relative) -or $relative.StartsWith('core\notices\')
+        if ($platform -eq 'Windows' -and $request.core -and $relative -in 'steam_api64.dll','libgodotsteam.windows.template_release.x86_64.dll') { $replace = $true }
         if ((Test-Path -LiteralPath $target) -and !$replace) { continue }
         $backup = Join-Path (Join-Path $buildRoot 'previous') $relative
         $existed = Test-Path -LiteralPath $target

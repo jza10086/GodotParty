@@ -108,7 +108,8 @@ func initialize() -> void:
 	_create.get_node("RefreshAddresses").pressed.connect(func() -> void:
 		_refresh_host_addresses(str(_create.get_node("BindAddress").get_selected_metadata())))
 	_create.get_node("BindAddress").item_selected.connect(func(_index: int) -> void:
-		_create.get_node("BindAddress").tooltip_text = _create.get_node("BindAddress").get_item_text(_index))
+		_create.get_node("BindAddress").tooltip_text = _create.get_node("BindAddress").get_item_text(_index)
+		_create.get_node("Port").editable = _create.get_node("BindAddress").get_selected_metadata() != "steam")
 	_direct.get_node("Address").max_length = 260
 	for label: Label in [_create.get_node("Error"), _direct.get_node("Error"), $Rooms/Info1]:
 		label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -185,6 +186,11 @@ func _refresh_host_addresses(selected_address: String) -> void:
 			picker.set_item_metadata(index, address)
 			picker.get_popup().set_item_tooltip(index, label)
 			addresses.append(address)
+	if app.connection.steam.api != null:
+		_create.get_node("BindAddressLabel").text = "IP / Steam"
+		picker.add_item("Steam")
+		picker.set_item_metadata(picker.item_count - 1, "steam")
+		addresses.append("steam")
 	var chosen: int = 0 if selected_address in ["", "*", "0.0.0.0", "::"] else addresses.find(selected_address)
 	if chosen == -1:
 		picker.add_item(_t("不可用：{address}（请重新选择）", {"address": selected_address}))
@@ -192,6 +198,7 @@ func _refresh_host_addresses(selected_address: String) -> void:
 		picker.set_item_metadata(chosen, selected_address)
 		picker.set_item_disabled(chosen, true)
 	picker.select(chosen)
+	_create.get_node("Port").editable = picker.get_selected_metadata() != "steam"
 	picker.tooltip_text = picker.get_item_text(chosen)
 
 func select_game(id: String) -> void:
@@ -211,6 +218,8 @@ func select_game(id: String) -> void:
 			break
 
 func _create_back() -> void:
+	if app.connection.using_steam and app.connection.host and app.connection.room.is_empty():
+		app.connection.leave()
 	if _create_step == "game":
 		_create_step = "protocol"
 		_create.get_node("Error").text = ""
@@ -300,11 +309,12 @@ func submit_create() -> void:
 	if not app.connection.valid_room_name(title):
 		_create.get_node("Error").text = _t("请输入 1–24 字的房间名称")
 		return
-	var port: int = app.connection.parse_port(_create.get_node("Port").text)
-	if port == 0:
+	var picker: OptionButton = _create.get_node("BindAddress")
+	var use_steam: bool = picker.get_selected_metadata() == "steam"
+	var port: int = 0 if use_steam else app.connection.parse_port(_create.get_node("Port").text)
+	if not use_steam and port == 0:
 		_create.get_node("Error").text = _t("端口请输入 1–65535 的整数")
 		return
-	var picker: OptionButton = _create.get_node("BindAddress")
 	if picker.is_item_disabled(picker.selected):
 		_create.get_node("Error").text = _t("请选择监听网卡 / IP") if picker.selected == 0 else _t("所选监听 IP 已不可用，请刷新并重新选择")
 		return
@@ -342,6 +352,13 @@ func submit_profile() -> void:
 
 func refresh() -> void:
 	_sync_room()
+	if modal_kind == "Create" and _create_step == "game":
+		var waiting: bool = app.connection.using_steam and app.connection.host and app.connection.room.is_empty()
+		_create.get_node("Confirm").disabled = _games.is_empty() or waiting
+		if waiting:
+			_create.get_node("Error").text = _t("正在连接…")
+		elif not app.connection.status.is_empty():
+			_create.get_node("Error").text = app.connection.status
 	if _joining and app.connection.online:
 		var stage: String = {"resolving": "正在解析地址…", "connecting": "正在连接…", "handshaking": "正在检查房间所需内容…", "connected": "已连接"}.get(app.connection.connection_state, "")
 		_direct.get_node("Error").text = stage

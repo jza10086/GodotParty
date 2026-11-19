@@ -1,6 +1,6 @@
 # 内容网络通信指南
 
-适用：框架 0.0.2，唯一版本来源为 core/framework_version.gd。接口签名见 [PartyNet](party_api_reference.md)，生命周期见 [准备与关闭](activity_lifecycle.md)。
+适用于当前框架，版本由 `core/framework_version.gd` 声明。接口签名见 [PartyNet](party_api_reference.md)，生命周期见 [准备与关闭](activity_lifecycle.md)。
 
 ## 首要原则
 
@@ -23,6 +23,14 @@
 - 大厅掉线移除；局内标记退出并通知内容；房主离开结束会话。不提供重连或房主迁移。
 
 框架不决定谁模拟物理、谁判分，也不自动提供预测、回滚、角色插值。不要新建或替换 MultiplayerPeer。小游戏根节点已经位于有效 MultiplayerAPI 下，可以直接写原生 @rpc。
+
+## Windows Steam 好友房
+
+将 [GodotSteam 4.24 GDExtension 发行包](https://codeberg.org/godotsteam/godotsteam/releases/tag/v4.24-gde) 的 `addons/godotsteam/` 解压到工程同名目录，重新打开编辑器。Windows 宿主导出工具会随游戏交付扩展 DLL、`steam_api64.dll` 和上游 MIT 许可。其他开发机可按需安装此本机依赖。
+
+在 `steam/initialization/app_data/app_id` 设置正式 App ID，默认 0 使用 Steam 启动时提供的 `SteamAppId`。开发时可显式填写测试 App ID 480。自动初始化关闭，普通启动可使用 ENet。建房时选择本机 IP 或 Steam，Steam 房间中的好友邀请按钮打开 Overlay。接受邀请和从 Steam 冷启动（`+connect_lobby <id>`）共用连接、握手与内容同步流程。
+
+4.24 的 `steam/multiplayer_peer/max_channels=24` 覆盖框架最高通道 22，该版发送时保留最后一条 lane。SteamNetworkingSockets 消息上限为 512 KiB，GodotSteam 4.24 将 `unreliable_ordered` 映射为可靠发送。
 
 ## 常见功能与通信组合
 

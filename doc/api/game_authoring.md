@@ -23,6 +23,8 @@ Android 在左上角提供常态隐藏的 ESC 虚拟按钮（`core/ui/party_touc
 
 小游戏轮换自动列出目录中所有适配所选协议的小游戏；新增或更新小游戏后重启即可。其他主游戏可声明 `minigames: [包ID...]` 限制可选池，省略时使用全部协议兼容项，显式空数组不开放任何项。房主勾选的项目组成实际轮换池，每个声明的池开局前须至少选一项。
 
+Steam 房间可根据 `get_state().steam_lobby` 显示好友邀请操作，调用 `invite_friends()` 打开 Steam 好友面板。直连房间可继续使用 `format_endpoint()` 分享地址。接入设置见[网络通信指南](networking.md#Windows-Steam-好友房)。
+
 ## 最小玩法入口
 
 ```gdscript

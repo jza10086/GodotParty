@@ -21,6 +21,10 @@ func get_game_name(id: String) -> String:
 func ready_or_start() -> void:
 	_dispatch.call("ready", {})
 
+## Opens the Steam friends overlay in a Steam lobby.
+func invite_friends() -> void:
+	_dispatch.call("invite_friends", {})
+
 func leave() -> void:
 	_dispatch.call("leave", {})
 

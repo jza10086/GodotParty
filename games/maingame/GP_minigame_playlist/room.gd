@@ -16,7 +16,7 @@ func _ready() -> void:
 	_button("Map", room.open_settings.bind("pool"))
 	%Rotation.item_selected.connect(_rotation_selected)
 	_button("Advanced", room.open_settings.bind("main"))
-	_button("CopyAddress", _copy_room_address)
+	_button("CopyAddress", _share_room)
 	for index: int in range(PLAYER_CAPACITY):
 		var slot: Button = get_node("%Slot" + str(index))
 		slot.pressed.connect(func() -> void: room.show_player(slot.get_meta("peer_id")))
@@ -44,15 +44,21 @@ func _process(delta: float) -> void:
 func room_stop() -> void:
 	set_process(false)
 
-## Copy the selected endpoint; never advertise a different local interface.
-func _copy_room_address() -> void:
+## Share the active room through its transport.
+func _share_room() -> void:
+	if connection.steam_lobby:
+		room.invite_friends()
+		return
 	DisplayServer.clipboard_set(room.format_endpoint(connection.connection_address, connection.connection_port))
 	room.show_notice("已复制房间地址")
 
 func room_refresh() -> void:
 	connection = room.get_state()
-	%CopyAddress.disabled = not connection.online or connection.connection_address in ["", "*", "0.0.0.0", "::"]
-	%CopyAddress.tooltip_text = room.format_endpoint(connection.connection_address, connection.connection_port)
+	var caption: String = "邀请 Steam 好友" if connection.steam_lobby else "复制房间地址"
+	%CopyAddress.text = caption
+	%CopyAddress.get_node("Caption").text = caption
+	%CopyAddress.disabled = not connection.online or (not connection.steam_lobby and (connection.connection_port <= 0 or connection.connection_address in ["", "*", "0.0.0.0", "::"]))
+	%CopyAddress.tooltip_text = caption if connection.steam_lobby else room.format_endpoint(connection.connection_address, connection.connection_port)
 	var unready: bool = false
 	for index: int in range(PLAYER_CAPACITY):
 		var player: Dictionary = connection.players[index] if index < connection.players.size() else {}
@@ -92,7 +98,6 @@ func room_refresh() -> void:
 		%Ready.theme_type_variation = &"CancelRed" if connection.local_ready else &"ReadyGreen"
 	%Ready.get_node("Caption").text = %Ready.text
 	%Ready.tooltip_text = ""
-	%CopyAddress.disabled = %CopyAddress.disabled or connection.connection_port <= 0
 	%Map.text = "小游戏池"
 	%Rotation.select(["顺序", "随机"].find(connection.room.settings.rotation))
 	%Rotation.disabled = not connection.host or connection.recovering

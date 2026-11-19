@@ -5,6 +5,9 @@
 /tmp/
 /temp_game/
 
+# Optional native dependency installed from the official GodotSteam release.
+/addons/godotsteam/
+
 # Locally licensed third-party assets and their working copies.
 /private_assets/
 

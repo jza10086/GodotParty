@@ -135,6 +135,10 @@ func _boot() -> void:
 	if not _content_error.is_empty():
 		_notice(_content_error)
 		return
+	var steam_args: PackedStringArray = OS.get_cmdline_args() + OS.get_cmdline_user_args()
+	connection.steam.boot(steam_args)
+	if steam_args.has("+connect_lobby"):
+		return
 	var port: int = Connection.parse_port(str(_arguments.get("port", 7777)))
 	if (_arguments.has("host") or _arguments.has("join")) and port == 0:
 		_notice("端口请输入 1–65535 的整数")
@@ -195,6 +199,8 @@ func host_from_ui(main_id: String, title: String, port: int, bind_address: Strin
 		return ERR_UNCONFIGURED
 	if main_id not in catalog.ids("maingame"):
 		return ERR_INVALID_PARAMETER
+	if bind_address == "steam":
+		return connection.steam.create(title, main_id)
 	if bind_address in ["", "*", "0.0.0.0", "::"] or bind_address not in IP.get_local_addresses():
 		connection.status = "请选择本机有效的监听网卡 / IP"
 		return ERR_INVALID_PARAMETER
@@ -1030,6 +1036,7 @@ func room_query(key: String, argument: Dictionary) -> Variant:
 		"room": connection.room.duplicate(true), "players": connection.players.duplicate(true),
 		"local_peer": connection.local_peer(), "local_ready": own.get("ready", false),
 		"connection_port": connection.connection_port, "connection_address": connection.connection_address,
+		"steam_lobby": connection.steam.lobby_id != 0,
 		"recovering": not connection.recovery.is_empty(),
 		"allowed_counts": connection.allowed_player_counts(),
 		"start_reason": connection.start_reason() if connection.host else connection.player_count_reason(),
@@ -1039,6 +1046,9 @@ func room_action(operation: String, argument: Dictionary) -> void:
 	match operation:
 		"notice":
 			_notice(argument.message)
+		"invite_friends":
+			if connection.steam.lobby_id != 0:
+				connection.steam.invite()
 		"leave":
 			connection.leave()
 		"ready":

@@ -1,4 +1,4 @@
-## One ENet connection for the formal lobby and development entry. No gameplay state.
+## Owns the active room connection for ENet direct play or a Steam friends lobby.
 extends Node
 
 const Data = preload("res://core/runtime/party_data.gd")
@@ -7,6 +7,9 @@ const PlayerCounts = preload("res://core/config/party_player_counts.gd")
 const Profiles = preload("res://core/runtime/party_profiles.gd")
 const Clock = preload("res://core/network/party_network_clock.gd")
 const NetworkLab = preload("res://core/network/party_network_lab.gd")
+const SteamTransport = preload("res://core/network/party_steam.gd")
+var steam: SteamTransport = SteamTransport.new(self)
+var using_steam: bool = false
 var _network_lab: NetworkLab = NetworkLab.new()
 const MAX_PACKET_BYTES: int = 1048576
 const STATS_INTERVAL_MSEC: int = 1000
@@ -114,6 +117,9 @@ static func format_endpoint(address: String, port: int) -> String:
 	return "[%s]:%d" % [address, port] if address.contains(":") else "%s:%d" % [address, port]
 
 func _connection_failed() -> void:
+	if using_steam:
+		leave("Steam 连接房主失败")
+		return
 	leave("连接 %s 失败，请检查地址、UDP 端口和防火墙" % format_endpoint(connection_address, connection_port))
 
 var _acks: Dictionary = {}
@@ -182,6 +188,21 @@ func open_host(port: int = 7777, bind_address: String = "*", room_name: String =
 	# Set both explicitly before accepting peers; two physical channels belong to ENetMultiplayerPeer.
 	peer.host.bandwidth_limit(0, 0)
 	peer.host.channel_limit(PartyNet.CHANNEL_COUNT + 2)
+	return start_host_session(peer, room_name, main_id)
+
+func begin_steam_request(as_host: bool) -> void:
+	status = ""
+	using_steam = true
+	online = true
+	host = as_host
+	_closing = false
+	network_clock.reset(as_host)
+	connection_state = "connecting"
+	_connection_deadline = Time.get_ticks_msec() + 20000
+	changed.emit()
+
+func start_host_session(peer: MultiplayerPeer, room_name: String, main_id: String) -> Error:
+	_connection_deadline = 0
 	_scene.multiplayer_peer = peer
 	online = true
 	host = true
@@ -252,12 +273,17 @@ func _connect_address(address: String) -> Error:
 	if error != OK:
 		leave("无法连接 " + format_endpoint(connection_address, connection_port) + "：" + error_string(error))
 		return error
+	attach_client(peer)
+	return OK
+
+func attach_client(peer: MultiplayerPeer) -> void:
 	_scene.multiplayer_peer = peer
 	connection_state = "connecting"
 	changed.emit()
-	return OK
 
 func leave(reason: String = "") -> void:
+	steam.leave()
+	using_steam = false
 	_network_lab.stop()
 	if _dns_query != -1:
 		IP.erase_resolve_item(_dns_query)
@@ -977,6 +1003,8 @@ func _disconnected(peer: int) -> void:
 	_publish(true, false)
 
 func _process(delta: float) -> void:
+	if steam.initialized:
+		steam.api.run_callbacks()
 	if _closing:
 		return
 	if _network_lab.is_active():
@@ -1001,7 +1029,10 @@ func _process(delta: float) -> void:
 		_next_stats_update = now + STATS_INTERVAL_MSEC
 		_update_network_stats(now)
 	if _connection_deadline > 0 and now > _connection_deadline:
-		leave(status if not status.is_empty() else "连接 %s 或握手超时，请检查 UDP 端口和防火墙" % format_endpoint(connection_address, connection_port))
+		if using_steam:
+			leave("Steam 大厅连接或握手超时")
+		else:
+			leave(status if not status.is_empty() else "连接 %s 或握手超时，请检查 UDP 端口和防火墙" % format_endpoint(connection_address, connection_port))
 	if not _pending_profile.is_empty() and now > _profile_deadline:
 		var id: String = _pending_profile["id"]
 		_pending_profile.clear()
@@ -1019,15 +1050,16 @@ func _process(delta: float) -> void:
 		for peer: int in _hello_peers.keys():
 			if now > _hello_peers[peer]:
 				_hello_peers.erase(peer)
-				if multiplayer.multiplayer_peer is ENetMultiplayerPeer:
-					multiplayer.multiplayer_peer.disconnect_peer(peer)
+				multiplayer.multiplayer_peer.disconnect_peer(peer)
 
 ## Control envelopes are measured before durable writes so local state cannot outgrow transport.
 func control_fits(kind: String, payload: Dictionary) -> bool:
 	return packet_fits({"framework_version": Data.VERSION, "session": session_id, "kind": "control", "payload": {"operation": kind, "data": payload}})
 
 func packet_fits(packet: Dictionary) -> bool:
-	return Data.valid(packet, 0, true) and var_to_bytes(packet).size() <= MAX_PACKET_BYTES
+	# SteamNetworkingSockets allows 512 KiB including the SceneMultiplayer message byte.
+	var limit: int = 512 * 1024 - 1 if using_steam else MAX_PACKET_BYTES
+	return Data.valid(packet, 0, true) and var_to_bytes(packet).size() <= limit
 
 ## Validate installed content before reading its configuration or constructing its room UI.
 func _room_content_issue(payload: Dictionary, full: bool = false) -> String:
@@ -1081,11 +1113,13 @@ func _valid_room_snapshot(payload: Dictionary) -> bool:
 		peers[player["peer_id"]] = true
 	return peers.has(1)
 
-## ENet owns disconnection; application traffic freshness only affects the displayed health.
 func _peer_connected(peer_id: int) -> void:
+	if using_steam and host and not steam.is_member(peer_id):
+		multiplayer.multiplayer_peer.disconnect_peer(peer_id)
+		return
 	if host:
 		_hello_peers[peer_id] = Time.get_ticks_msec() + 10000
-	if host or peer_id == 1:
+	if not using_steam and (host or peer_id == 1):
 		var peer: ENetPacketPeer = (_scene.multiplayer_peer as ENetMultiplayerPeer).get_peer(peer_id)
 		peer.set_timeout(8, 5000, 15000)
 
@@ -1102,7 +1136,7 @@ func get_peer_stats(peer_id: int = 1) -> Dictionary:
 	result["age_msec"] = Time.get_ticks_msec() - int(source.sample_time)
 	if not host and peer_id != 1:
 		result.age_msec = Time.get_ticks_msec() - _last_remote_stats + int(source.get("source_age_msec", 0))
-	result["state"] = "stalled" if result.age_msec > STALE_LINK_MSEC else ("degraded" if result.rtt_msec >= 200 or result.jitter_msec >= 50 else "connected")
+	result["state"] = "stalled" if result.age_msec > STALE_LINK_MSEC else ("degraded" if result.rtt_msec >= 200 or result.get("jitter_msec", 0) >= 50 else "connected")
 	result["peer_id"] = peer_id
 	result["via_host"] = not host and peer_id != 1
 	return result
@@ -1120,6 +1154,12 @@ func _update_network_stats(now: int) -> void:
 	for player: Dictionary in players:
 		var peer_id: int = player.peer_id
 		if player.connected and peer_id != local_peer() and (host or peer_id == 1) and _last_packet_msec.has(peer_id):
+			if using_steam:
+				var ping: int = steam.ping_msec(peer_id)
+				if ping >= 0:
+					_peer_stats[peer_id] = {"rtt_msec": ping, "sample_time": _last_packet_msec[peer_id],
+						"packet_loss_ready": false, "packet_loss_percent": 0.0}
+				continue
 			var peer: ENetPacketPeer = (_scene.multiplayer_peer as ENetMultiplayerPeer).get_peer(peer_id)
 			var loss_epoch: int = int(peer.get_statistic(ENetPacketPeer.PEER_PACKET_LOSS_EPOCH))
 			# Wait for an epoch change: the initial epoch only starts the first window.
@@ -1168,9 +1208,10 @@ func _receive_link_packet(sender: int, kind: String, payload: Variant) -> void:
 		for item: Variant in payload.peers:
 			if not item is Dictionary or not item.get("peer_id") is int or not item.get("sample_time") is int or not item.get("source_age_msec") is int:
 				return
-			if not (item.get("rtt_msec") is float or item.get("rtt_msec") is int) or not (item.get("jitter_msec") is float or item.get("jitter_msec") is int):
+			var jitter: Variant = item.get("jitter_msec", 0 if using_steam else null)
+			if not (item.get("rtt_msec") is float or item.get("rtt_msec") is int) or not (jitter is float or jitter is int):
 				return
-			if item.rtt_msec < 0 or item.jitter_msec < 0 or item.source_age_msec < 0:
+			if item.rtt_msec < 0 or not is_finite(float(jitter)) or jitter < 0 or item.source_age_msec < 0:
 				return
 			if not item.get("packet_loss_ready") is bool or not (item.get("packet_loss_percent") is float or item.get("packet_loss_percent") is int):
 				return
@@ -1186,4 +1227,5 @@ func is_network_lab_active() -> bool:
 	return _network_lab.is_active()
 
 func _exit_tree() -> void:
+	steam.leave()
 	_network_lab.stop()

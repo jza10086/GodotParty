@@ -18,6 +18,16 @@ $utf8 = New-Object Text.UTF8Encoding($false)
 $coreFiles = @(Get-PartyCoreFiles $projectRoot)
 Set-PartyExportStage $ProgressJob 'core_prepare' '复制核心资源'
 Copy-PartyBuildFiles $projectRoot $sourceRoot $coreFiles
+# The Steamworks redistributables come from the optional official GodotSteam download.
+# Stage the native extension for the Windows x64 preset, without its editor updater.
+$steamRoot = Join-Path $projectRoot 'addons/godotsteam'
+$withSteam = Test-Path -LiteralPath $steamRoot -PathType Container
+if ($withSteam) {
+    $steamFiles = @('godotsteam.gdextension', 'win64/libgodotsteam.windows.template_debug.x86_64.dll',
+        'win64/libgodotsteam.windows.template_release.x86_64.dll', 'win64/steam_api64.dll') |
+        ForEach-Object { Get-Item -LiteralPath (Join-Path $steamRoot $_) -ErrorAction Stop }
+    Copy-PartyBuildFiles $projectRoot $sourceRoot $steamFiles
+}
 # Stamp only the staged framework; the editor declaration remains editor.
 $dataFile = Join-Path $sourceRoot 'core/runtime/party_data.gd'
 $dataText = (Get-Content -LiteralPath $dataFile -Raw -Encoding UTF8).Replace('const SYSTEM: String = "editor"', 'const SYSTEM: String = "windows"')
@@ -56,6 +66,9 @@ foreach ($step in @('import','export')) {
 if (!(Test-Path -LiteralPath (Join-Path $OutputDirectory 'GodotParty.exe') -PathType Leaf)) { throw 'Windows export did not produce an EXE' }
 $notices = Join-Path $OutputDirectory 'core/notices'
 New-Item -ItemType Directory $notices -Force | Out-Null
+if ($withSteam) {
+    Copy-Item -LiteralPath (Join-Path $steamRoot 'license.md') -Destination (Join-Path $notices 'GodotSteam-MIT.md')
+}
 Copy-Item -LiteralPath (Join-Path $projectRoot 'doc/assets/project_credits.md') -Destination (Join-Path $notices 'project-credits.md')
 foreach ($file in $coreFiles) {
     if ($file.Extension -notin '.md','.txt' -or $file.Name -notmatch '(?i)license|copyright|copying|ofl|source|attribution') { continue }
