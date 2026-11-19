@@ -58,7 +58,9 @@ Schema 包含 schema_format: 3、settings_version 正整数、fields 字典和 l
 | select | string/int/float/array + values，labels 可选 | 下拉单选，枚举不是独立类型 |
 | text | string；multiline 可选 | 单行或多行文本 |
 | number | int/float；min/max/step 可选 | 数字框；上下界均存在时同时显示滑条 |
-| numbers | 定长数值 array + items；labels 可选 | 复用多个 number 表达分量或区间 |
+| numbers | 定长数值 array + items；labels 可选 | 多个独立数值分量 |
+| range | 长度固定为 2 的数值 array，items 提供 min 和 max | 从左到右为下限输入框、下限滑条、上限滑条、上限输入框；两端允许相等 |
+| keycodes | 定长整数 array，每个槽一个 label，可声明 unique | 录入物理单键，Esc 取消，拒绝修饰键和锁定键 |
 | switches | array，items 为带 values 的 string/int | 多选开关组 |
 | color | 四个 [0,1] float 的 array | RGBA 选择器；alpha:false 固定 A=1 |
 | path | string；path_mode 为 file/directory | 系统文件/目录选择器；filters 为文件过滤列表 |
@@ -66,7 +68,7 @@ Schema 包含 schema_format: 3、settings_version 正整数、fields 字典和 l
 
 bool/int/float/string 省略 control 时分别使用 toggle/number/number/text。object 用于数组项或嵌套数据校验，不提供任意对象编辑器。每个显示字段必须在 layout 中恰好引用一次。
 
-数值支持 min/max 和正数 step，整数类型的限制也必须为整数。step 只控制箭头和滑条增量，不量化手动输入的文件值；小数框保留精度。suffix 仅显示单位；display_scale 将存储值换算成显示值，如 0–1 音量使用 100 显示为百分数。数组使用 items 声明元素类型，min_items/max_items 限定长度；numbers 要求正整数定长，区间额外声明 ordered:true 拒绝倒置，多选拒绝重复或未知候选。不裁剪非法值或交换端点。
+数值支持 min/max 和正数 step，整数类型的限制也必须为整数。step 只控制箭头和滑条增量，不量化手动输入的文件值；小数框保留精度。suffix 仅显示单位；display_scale 将存储值换算成显示值，如 0–1 音量使用 100 显示为百分数。数组使用 items 声明元素类型，min_items/max_items 限定长度；numbers 要求正整数定长，range 自动拒绝倒置，普通数值分量可用 ordered:true 要求升序，多选拒绝重复或未知候选。不裁剪非法值或交换端点。
 
 字符串支持 max_length（默认 4096）和 placeholder。文件路径由原生 FileDialog 选择，是否存在、能否打开及具体资源语义由消费业务处理。
 
@@ -109,7 +111,7 @@ get_settings() 只返回当前游戏锁定的 own/room 规则；小游戏 setup 
 
 ## 保存与编辑
 
-系统设置、原版协议公共偏好、游戏本地覆盖和房主规则均通过 `core/ui/party_config_form.gd` 动态实例化 `core/ui/settings/<control>.tscn`。九种控件场景共用 setting_row.gd；numbers 复用紧凑的 number_component，switches 复用 switch_option，binding 以两行展示主键和备用键；setting_section 将名称、控件、继承开关放在同一行，一级分类和含子项的设置点击本层标题行或聚焦标题按 Enter / 空格展开、收起；Xbox 使用 X，动画期间屏蔽子项输入，重新展开时保留嵌套分组状态。场景可在 Godot 编辑器直接调整。
+系统设置、原版协议公共偏好、游戏本地覆盖和房主规则均通过 `core/ui/party_config_form.gd` 动态实例化 `core/ui/settings/<control>.tscn`。控件场景共用 setting_row.gd；numbers 复用紧凑的 number_component，switches 复用 switch_option，binding 以两行展示主键和备用键；setting_section 将名称、控件、继承开关放在同一行，一级分类和含子项的设置点击本层标题行或聚焦标题按 Enter / 空格展开、收起；Xbox 使用 X，动画期间屏蔽子项输入，重新展开时保留嵌套分组状态。场景可在 Godot 编辑器直接调整。
 
 本地设置页使用框架内置的 Ambient Reveal 主题与全屏 settings_workspace.tscn 布局：顶部为可横向浏览的分类，鼠标停在选项卡区域时滚轮横向滚动，下方显示不可拖动、两端闭合的位置指示条。深色表示当前可见范围，浅色表示未覆盖范围；分类全部可见时整条显示深色。左侧设置行均带边框，内容垂直居中，开关右对齐并复用无方形外框的 switch_option.tscn；右侧随鼠标悬停或键盘焦点显示字段 title/description、当前值与禁用原因。左下角“恢复默认设置”重置本页所有分类的可编辑草稿，并清除协议覆盖；点击应用才写入文件。readonly 不受重置影响。分类切换不销毁控件，返回小游戏池或协议页时保留其原草稿。
 共享行脚本只绑定字段和维护草稿，不读文件、不应用游戏效果。party_schema.gd 校验声明和值；party_json_config.gd 负责分区 JSON 读写；party_config_store.gd 负责版本、继承、revision 和原子保存。业务包的 settings.gd 是声明唯一来源，通用 UI 不硬编码小游戏字段。

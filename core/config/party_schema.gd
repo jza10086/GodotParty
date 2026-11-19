@@ -1,7 +1,7 @@
 ## Business-owned declarations and pure JSON value validation. No UI or file side effects.
 extends RefCounted
 const TYPES: Array[String] = ["bool", "int", "float", "string", "array", "object"]
-const CONTROLS: Array[String] = ["toggle", "select", "text", "number", "numbers", "switches", "color", "path", "binding"]
+const CONTROLS: Array[String] = ["toggle", "select", "text", "number", "numbers", "range", "keycodes", "switches", "color", "path", "binding"]
 static func empty() -> Dictionary:
 	return {"schema_format": 3, "settings_version": 1, "fields": {}, "layout": []}
 
@@ -51,7 +51,7 @@ static func validate_field(field: Dictionary) -> String:
 	if field.has("control"):
 		if field.control not in CONTROLS:
 			return "Unknown control"
-		var allowed: Dictionary = {"toggle": ["bool"], "select": ["string", "int", "float", "array"], "text": ["string"], "number": ["int", "float"], "numbers": ["array"], "switches": ["array"], "color": ["array"], "path": ["string"], "binding": ["array"]}
+		var allowed: Dictionary = {"toggle": ["bool"], "select": ["string", "int", "float", "array"], "text": ["string"], "number": ["int", "float"], "numbers": ["array"], "range": ["array"], "keycodes": ["array"], "switches": ["array"], "color": ["array"], "path": ["string"], "binding": ["array"]}
 		if field.type not in allowed[field.control]:
 			return "Control and value type disagree"
 	if field.type in ["int", "float"]:
@@ -105,6 +105,14 @@ static func validate_field(field: Dictionary) -> String:
 		"select":
 			if not field.has("values"):
 				return "Dropdown requires values"
+		"range":
+			if field.items.type not in ["int", "float"] or not field.items.has("min") or not field.items.has("max") or field.get("min_items") != 2 or field.get("max_items") != 2:
+				return "Range requires two bounded numeric endpoints"
+			if field.has("labels") and field.labels.size() != 2:
+				return "Range requires one label per endpoint"
+		"keycodes":
+			if field.items.type != "int" or field.get("min_items", 0) < 1 or field.get("min_items") != field.get("max_items") or field.get("labels", []).size() != field.min_items:
+				return "Physical keys require a fixed length and one label per slot"
 		"numbers":
 			if field.items.type not in ["int", "float"] or field.get("min_items", 0) < 1 or field.get("min_items") != field.get("max_items"):
 				return "Numeric components require fixed length and numeric items"
@@ -179,7 +187,7 @@ static func normalize(field: Dictionary, value: Variant) -> Dictionary:
 						break
 					output.append(checked.value)
 				value = output
-				if valid and field.get("ordered", false):
+				if valid and (field.get("ordered", false) or field.get("control") == "range"):
 					for index: int in range(1, value.size()):
 						if value[index - 1] > value[index]:
 							valid = false
@@ -198,6 +206,11 @@ static func normalize(field: Dictionary, value: Variant) -> Dictionary:
 						break
 					output[key] = checked.value
 				value = output
+	if valid and field.get("control") == "keycodes":
+		for code: int in value:
+			if code <= 0 or code in [KEY_ESCAPE, KEY_SHIFT, KEY_CTRL, KEY_ALT, KEY_META, KEY_CAPSLOCK, KEY_NUMLOCK, KEY_SCROLLLOCK] or OS.get_keycode_string(code).is_empty():
+				valid = false
+				break
 	if valid and field.has("values"):
 		valid = value in field.values
 	if valid and field.get("control") == "binding":

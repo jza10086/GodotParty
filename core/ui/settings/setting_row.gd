@@ -1,5 +1,6 @@
 ## Reusable controls bind business declarations to draft values, never files or gameplay effects.
 extends VBoxContainer
+signal invalid_input(message: String)
 signal value_changed(value: Variant)
 const Schema = preload("res://core/config/party_schema.gd")
 var _field: Dictionary
@@ -7,6 +8,7 @@ var _control: String
 var _parts: Array[Control] = []
 var _choices: Array[CheckButton] = []
 var _editable: bool = true
+var _keys: Array = []
 var _scale: float = 1.0
 
 func configure(field: Dictionary, value: Variant, editable: bool) -> void:
@@ -19,6 +21,9 @@ func configure(field: Dictionary, value: Variant, editable: bool) -> void:
 			%Value.set_pressed_no_signal(value)
 			%Value.toggled.connect(func(_on: bool) -> void: _notify())
 		"select":
+			%Preview.visible = field.get("preview", false)
+			if %Preview.visible:
+				%Value.get_popup().max_size = Vector2i(1920, 400)
 			for index: int in range(field.values.size()):
 				%Value.add_item(str(field.get("labels", field.values)[index]))
 			%Value.select(field.values.find(value))
@@ -56,6 +61,30 @@ func configure(field: Dictionary, value: Variant, editable: bool) -> void:
 				%Value.value_changed.connect(func(number: float) -> void: spin.value = String.num(number, tick_decimals).to_float())
 				spin.value_changed.connect(func(number: float) -> void: %Value.set_value_no_signal(number))
 			spin.value_changed.connect(func(_number: float) -> void: _notify())
+		"range":
+			for endpoint: Control in [%Lower, %Upper]:
+				var index: int = _parts.size()
+				var declaration: Dictionary = field.items.duplicate(true)
+				declaration.key = str(index)
+				endpoint.configure(declaration, value[index], editable)
+				endpoint.get_node("%Label").hide()
+				endpoint.tooltip_text = field.get("labels", ["下限", "上限"])[index]
+				_parts.append(endpoint)
+			%Lower.get_node("%Value").layout_direction = Control.LAYOUT_DIRECTION_LTR
+			%Lower.get_node("%Number").layout_direction = Control.LAYOUT_DIRECTION_LTR
+			for index: int in range(2):
+				_parts[index].value_changed.connect(_range_changed.bind(index))
+		"keycodes":
+			_keys = value.duplicate()
+			for index: int in range(value.size()):
+				var slot: Control = preload("res://core/ui/settings/physical_key_slot.tscn").instantiate()
+				%Value.add_child(slot)
+				slot.get_node("%Caption").text = field.labels[index]
+				var capture: Button = slot.get_node("%Capture")
+				capture.allow_combinations = false
+				capture.configure({"kind": "key", "physical": true, "code": value[index]})
+				_parts.append(capture)
+				capture.binding_changed.connect(_key_changed.bind(index))
 		"numbers":
 			for index: int in range(value.size()):
 				var part: Control = load("res://core/ui/settings/number_component.tscn").instantiate()
@@ -105,14 +134,22 @@ func configure(field: Dictionary, value: Variant, editable: bool) -> void:
 func set_editable(editable: bool) -> void:
 	_editable = editable and not _field.get("readonly", false)
 	match _control:
-		"toggle", "select", "color": %Value.disabled = not _editable
+		"toggle", "color": %Value.disabled = not _editable
+		"select":
+			%Value.disabled = not _editable
+			%Preview.disabled = not _editable
 		"text":
 			%Value.editable = _editable
 			%Multiline.editable = _editable
 		"number":
 			%Number.editable = _editable
 			%Value.editable = _editable
-		"numbers", "binding":
+		"keycodes":
+			for capture: Control in _parts:
+				capture.disabled = not _editable
+				if not _editable:
+					capture.cancel()
+		"range", "numbers", "binding":
 			for part: Control in _parts:
 				part.set_editable(_editable)
 		"switches":
@@ -125,7 +162,7 @@ func set_editable(editable: bool) -> void:
 func flush() -> void:
 	if _control == "number" and %Number.get_line_edit().has_focus():
 		%Number.apply()
-	elif _control == "numbers":
+	elif _control in ["range", "numbers"]:
 		for part: Control in _parts:
 			part.flush()
 
@@ -135,7 +172,8 @@ func get_value() -> Variant:
 		"select": return _field.values[%Value.selected]
 		"text": return %Multiline.text if _field.get("multiline", false) else %Value.text
 		"number": return int(%Number.value / _scale) if _field.type == "int" else %Number.value / _scale
-		"numbers", "binding":
+		"keycodes": return _keys.duplicate()
+		"range", "numbers", "binding":
 			var values: Array = []
 			for part: Control in _parts:
 				values.append(part.get_value())
@@ -155,6 +193,24 @@ func get_value() -> Variant:
 		"path": return %Value.text
 	push_error("Unknown control: " + _control)
 	return null
+
+func _range_changed(value: Variant, index: int) -> void:
+	var other: Variant = _parts[1 - index].get_value()
+	if (index == 0 and value > other) or (index == 1 and value < other):
+		var spin: SpinBox = _parts[index].get_node("%Number")
+		spin.value = _parts[1 - index].get_node("%Number").value
+		return
+	_notify()
+
+func _key_changed(binding: Dictionary, index: int) -> void:
+	var candidate: Array = _keys.duplicate()
+	candidate[index] = binding.code
+	if not Schema.normalize(_field, candidate).ok:
+		_parts[index].configure({"kind": "key", "physical": true, "code": _keys[index]})
+		invalid_input.emit("请选择可用且未重复的按键。")
+		return
+	_keys = candidate
+	_notify()
 
 func _path_selected(path: String) -> void:
 	%Value.text = path

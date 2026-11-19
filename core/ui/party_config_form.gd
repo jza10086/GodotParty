@@ -62,7 +62,9 @@ func _build(layout: Array, parent: VBoxContainer, values: Dictionary, ancestors:
 			row.get_node("%Label").hide()
 			section.set_field(row, not spec.get("children", []).is_empty())
 			_entries[key] = {"row": row, "section": section, "field": field, "base": base, "spec": spec, "ancestors": ancestors.duplicate(), "category": page_id}
+			row.invalid_input.connect(show_error)
 			row.value_changed.connect(func(next: Variant) -> void:
+				_error.hide()
 				_refresh_conditions()
 				show_help(key)
 				field_changed.emit(key, next))
@@ -162,6 +164,8 @@ func show_help(key: String) -> void:
 		"select": "从下拉列表中选择一个选项。",
 		"text": "输入文本；修改会保留在草稿中。",
 		"number": "直接输入数值，或拖动滑条进行调整。",
+		"range": "调整区间下限和上限。",
+		"keycodes": "点击按键后录入，Esc 取消。",
 		"numbers": "分别调整各个分量的数值。",
 		"switches": "每个开关独立选择，可以同时启用多项。",
 		"color": "选择颜色，并按设置允许的范围调整透明度。",

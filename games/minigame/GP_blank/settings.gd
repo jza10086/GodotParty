@@ -130,7 +130,7 @@ static func schema() -> Dictionary:
 			},
 			"range": {
 				"type": "array",
-				"control": "numbers",
+				"control": "range",
 				"default": [
 					2,
 					8

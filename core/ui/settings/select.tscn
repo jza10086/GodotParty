@@ -1,23 +1,36 @@
-[gd_scene format=3]
-[ext_resource type="Script" path="res://core/ui/settings/setting_row.gd" id="script"]
-[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
+[gd_scene format=3 uid="uid://cmsoa0gfvhf5n"]
 
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="ar_option_button"]
+[ext_resource type="Theme" uid="uid://be5nlcvvcymob" path="res://core/ui/settings/field_theme.tres" id="field_theme"]
+[ext_resource type="Script" uid="uid://bw6rhtbu4bvn6" path="res://core/ui/settings/setting_row.gd" id="script"]
+[ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 
-[ext_resource type="Theme" path="res://core/ui/settings/field_theme.tres" id="field_theme"]
-
-[node name="Setting" type="VBoxContainer"]
-theme = ExtResource("theme")
+[node name="Setting" type="VBoxContainer" unique_id=258092426]
 size_flags_horizontal = 3
+theme = ExtResource("theme")
 theme_override_constants/separation = 8
 script = ExtResource("script")
-[node name="Label" type="Label" parent="."]
+
+[node name="Label" type="Label" parent="." unique_id=1403404246]
 unique_name_in_owner = true
+layout_mode = 2
 text = "设置"
-[node name="Value" parent="." instance=ExtResource("ar_option_button")]
-theme = ExtResource("field_theme")
+
+[node name="Controls" type="HBoxContainer" parent="." unique_id=413173615]
+layout_mode = 2
+
+[node name="Value" parent="Controls" unique_id=559981680 instance=ExtResource("ar_option_button")]
 unique_name_in_owner = true
-size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 56)
-clip_text = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("field_theme")
 text_overrun_behavior = 3
+clip_text = true
+
+[node name="Preview" type="Button" parent="Controls" unique_id=476888671]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(90, 56)
+layout_mode = 2
+text = "试听"
