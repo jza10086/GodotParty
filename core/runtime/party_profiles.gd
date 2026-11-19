@@ -3,6 +3,8 @@ extends RefCounted
 const JsonConfig = preload("res://core/config/party_json_config.gd")
 const Data = preload("res://core/runtime/party_data.gd")
 var settings: PartyInput
+## Set only by the Steam launch entry. The transport can change independently.
+var steam_account: Callable
 var last_error: String = ""
 var _records: Dictionary = {}
 
@@ -27,7 +29,33 @@ func initialize() -> Error:
 
 func identity() -> Dictionary:
 	var id: String = settings.config.get_value("profile", "player_id")
-	return {"player_id": id, "name": "玩家" + id.left(6), "system": Data.SYSTEM}
+	return {"player_id": id, "name": account_name() if steam_account.is_valid() else "玩家" + id.left(6), "system": Data.SYSTEM}
+
+## Keep platform names inside the same display and wire limits as protocol nicknames.
+func account_name() -> String:
+	var account: Dictionary = steam_account.call()
+	var clean: String = ""
+	for character: String in str(account.persona_name):
+		if character.unicode_at(0) >= 32 and character.unicode_at(0) != 127:
+			clean += character
+	return clean.strip_edges().left(16).strip_edges()
+
+## Protocols declare exactly which appearance fields the launch platform supplies.
+func account_fields(protocol: RefCounted) -> Dictionary:
+	if steam_account.is_valid() and protocol.has_method("steam_profile_fields"):
+		return protocol.steam_profile_fields(steam_account.call())
+	return {}
+
+func allows_edit(name_value: String, value: Dictionary, protocol: RefCounted) -> bool:
+	if not steam_account.is_valid():
+		return true
+	if name_value != account_name():
+		return false
+	var fields: Dictionary = account_fields(protocol)
+	for key: String in fields:
+		if value.get(key) != fields[key]:
+			return false
+	return true
 
 ## Read name and appearance together. Only an absent file uses first-use defaults.
 ## Returns {ok, name, profile} or {ok:false, message}; callers must stop on failure.
@@ -40,6 +68,9 @@ func read(protocol_id: String, protocol: RefCounted) -> Dictionary:
 	var report: Dictionary = protocol.validate_player_config(record.profile)
 	if not report.ok:
 		return _failure("协议资料无效：" + _path(protocol_id) + " · " + report.message)
+	if steam_account.is_valid():
+		record.name = account_name()
+		record.profile.merge(account_fields(protocol), true)
 	return record
 
 ## Menu identity is local JSON; displaying a name must not load the protocol implementation.
@@ -51,7 +82,7 @@ func read_record(protocol_id: String) -> Dictionary:
 	var path: String = _path(protocol_id)
 	var error: Error = file.load(path)
 	if error == ERR_FILE_NOT_FOUND:
-		_records[protocol_id] = {"ok": true, "exists": false, "name": identity().name, "profile": {}}
+		_records[protocol_id] = {"ok": true, "exists": false, "name": "玩家" + str(settings.config.get_value("profile", "player_id")).left(6), "profile": {}}
 		return _records[protocol_id].duplicate(true)
 	if error != OK:
 		return _failure("无法读取协议资料：" + path + " · " + error_string(error))
@@ -69,9 +100,24 @@ func _failure(message: String) -> Dictionary:
 	push_error(message)
 	return {"ok": false, "message": message}
 
-func save(name_value: String, protocol_id: String, value: Dictionary) -> Error:
+func save(name_value: String, protocol_id: String, value: Dictionary, protocol: RefCounted = null) -> Error:
 	if not validate_name(name_value) or not preload("res://core/config/party_paths.gd").folder(protocol_id):
 		return ERR_INVALID_PARAMETER
+	if steam_account.is_valid():
+		if protocol == null or not allows_edit(name_value, value, protocol):
+			return ERR_UNAUTHORIZED
+		# Persist editable preferences only. Keep standalone preferences across launches.
+		var local: Dictionary = read_record(protocol_id)
+		if not local.ok:
+			return ERR_INVALID_DATA
+		var original: Dictionary = local.profile if local.exists else protocol.default_player_config()
+		var preferences: Dictionary = value.duplicate(true)
+		for key: String in account_fields(protocol):
+			preferences[key] = original[key]
+		if preferences == original:
+			return OK
+		name_value = local.name
+		value = preferences
 	var path: String = _path(protocol_id)
 	var error: Error = DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
 	if error != OK:

@@ -13,6 +13,8 @@ func configure(value: Dictionary, editable: bool, context: Dictionary = {}) -> v
 		var updates: Signal = context.steam_profile_changed
 		if not updates.is_connected(_steam_changed):
 			updates.connect(_steam_changed, CONNECT_DEFERRED)
+	if context.get("steam_entry", false):
+		%AvatarChoice.disabled = true
 	_refresh_steam_choice()
 
 func _steam_changed(id: String) -> void:
@@ -28,6 +30,12 @@ func _refresh_steam_choice() -> void:
 			picker.remove_item(i)
 	var account: Dictionary = _context.steam_profile.call() if _context.has("steam_profile") else {}
 	_account_id = account.get("steam_id", "")
+	if _context.get("steam_entry", false):
+		var locked: Dictionary = Protocol.new().steam_profile_fields(account).avatar_2d
+		if selected != locked:
+			_value.avatar_2d = locked
+			selected = locked
+			_rebuild_previews()
 	var live: Dictionary = {}
 	if account.get("avatar") != null:
 		live = Protocol.new().steam_portrait(account.avatar)

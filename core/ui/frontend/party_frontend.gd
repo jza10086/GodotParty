@@ -265,6 +265,7 @@ func open_modal(kind: String) -> void:
 			_direct.get_node("Confirm").disabled = false
 			_direct.get_node("Address").grab_focus()
 		"Profile":
+			_profile.get_node("Name").editable = not app.connection.profiles.steam_account.is_valid()
 			_profile.get_node("Name").text = app.local_display_name()
 			_profile.get_node("Error").text = ""
 			_profile.get_node("Name").grab_focus()

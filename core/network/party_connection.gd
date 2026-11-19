@@ -128,6 +128,7 @@ var _pending_profile: Dictionary = {}
 var _profile_deadline: int = 0
 var _connection_deadline: int = 0
 var _profile_protocol: String = ""
+var _persist_profile: bool = true
 var _scene: SceneMultiplayer
 var _hello_peers: Dictionary = {}
 
@@ -149,6 +150,47 @@ func initialize(local_catalog: RefCounted, local_settings: PartyInput) -> Error:
 	add_child(content_sync)
 	profiles = Profiles.new(settings)
 	return profiles.initialize()
+
+## Select identity policy once at startup, before the menu, network or invite handling.
+func start_platform(platform: String) -> Error:
+	if platform == "standalone":
+		return OK
+	if platform != "steam":
+		status = "无效的平台入口，可选值为 standalone 或 steam"
+		return ERR_INVALID_PARAMETER
+	var error: Error = steam.initialize()
+	if error != OK:
+		return error
+	profiles.steam_account = steam.profile
+	if not Profiles.validate_name(profiles.account_name()):
+		status = "Steam 账号未提供可用的玩家名称"
+		return ERR_INVALID_DATA
+	steam.profile_changed.connect(_account_updated, CONNECT_DEFERRED)
+	return OK
+
+func _account_updated(steam_id: String) -> void:
+	if steam_id != str(steam.api.getSteamID()):
+		return
+	changed.emit()
+	_sync_account_profile()
+
+## Only unfrozen lobby profiles follow Steam changes. Preserve room-assigned colors and 3D choices.
+func _sync_account_profile() -> void:
+	if not profiles.steam_account.is_valid() or not online or room.get("phase") != "lobby" or room.get("recovery", false) or not recovery.is_empty() or not _pending_profile.is_empty():
+		return
+	var player: Dictionary = _player_peer(local_peer())
+	if player.is_empty() or player.profile.is_empty() or _profile_protocol != _protocol_id():
+		return
+	var protocol: RefCounted = protocol_instance()
+	var fields: Dictionary = profiles.account_fields(protocol)
+	var effective: Dictionary = player.profile.merged(fields, true)
+	var name_value: String = profiles.account_name()
+	if player.name == name_value and player.profile == effective:
+		return
+	var error: Error = _submit_profile(name_value, effective, false)
+	if error != OK:
+		status = "Steam 玩家资料更新失败：" + error_string(error)
+		changed.emit()
 
 func local_peer() -> int:
 	return multiplayer.get_unique_id() if online else 1
@@ -459,6 +501,8 @@ func _packet(sender: int, bytes: PackedByteArray) -> void:
 		status = ""
 		changed.emit()
 		_auto_profile()
+		if profiles.steam_account.is_valid():
+			_sync_account_profile()
 		return
 	if packet.get("session") != session_id or _player_peer(sender).is_empty():
 		return
@@ -734,13 +778,19 @@ func prepare_restore(record: Dictionary) -> Error:
 	return OK
 
 func submit_profile(name_value: String, value: Dictionary) -> Error:
+	return _submit_profile(name_value, value, true)
+
+func _submit_profile(name_value: String, value: Dictionary, persist: bool) -> Error:
 	if not online or room.get("phase") != "lobby" or room.get("recovery", false):
 		return ERR_UNAVAILABLE
 	if not _pending_profile.is_empty():
 		return ERR_BUSY
 	if not Data.valid(value):
 		return ERR_INVALID_PARAMETER
+	if profiles.steam_account.is_valid() and not profiles.allows_edit(name_value, value, protocol_instance()):
+		return ERR_UNAUTHORIZED
 	_pending_profile = {"id": Data.token(), "name": name_value, "value": value.duplicate(true)}
+	_persist_profile = persist
 	_profile_deadline = Time.get_ticks_msec() + 10000
 	if host:
 		_profile_request(1, _pending_profile)
@@ -838,13 +888,15 @@ func _profile_response(reply: Dictionary) -> void:
 	if reply.get("id") != _pending_profile.get("id") or _pending_profile.is_empty():
 		return
 	var message: String = reply.get("message", "")
-	if reply.get("accepted", false):
-		var error: Error = profiles.save(_pending_profile["name"], _protocol_id(), _pending_profile["value"])
+	if reply.get("accepted", false) and _persist_profile:
+		var error: Error = profiles.save(_pending_profile["name"], _protocol_id(), _pending_profile["value"], protocol_instance())
 		if error != OK:
 			message = "本次房间已生效，本机保存失败：" + error_string(error)
 	var id: String = _pending_profile["id"]
 	_pending_profile.clear()
 	profile_reply.emit(id, reply.get("accepted", false), message)
+	if reply.get("accepted", false) and profiles.steam_account.is_valid():
+		_sync_account_profile.call_deferred()
 
 func _auto_profile() -> void:
 	var id: String = _protocol_id()

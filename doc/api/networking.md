@@ -26,6 +26,15 @@
 
 ## Windows Steam 好友房
 
+平台入口参数控制本次启动使用的玩家资料。可在 Godot 用户参数（`--` 之后）或发行版启动参数中传入。每次启动只接受一个平台值。
+
+| 启动示例 | 资料来源 |
+|---|---|
+| `GodotParty.exe -- --party-platform=standalone` | 使用本地协议昵称和形象，可手动编辑。 |
+| `GodotParty.exe -- --party-platform=steam` | 初始化 Steam 后使用账号昵称和原版协议 2D 头像，两项均只读。Steam 初始化失败时退出并报告原因。 |
+
+省略参数时，有有效 `SteamAppId` 或 `+connect_lobby` 邀请即使用 Steam 入口，其余启动使用 standalone。显式参数优先。两个入口都可以使用 ENet，资料槽和存档沿用同一个本地 `player_id`。Steam 名称沿用房间显示规则，去除控制字符和首尾空白，最多 16 个字符。
+
 将 [GodotSteam 4.24 GDExtension 发行包](https://codeberg.org/godotsteam/godotsteam/releases/tag/v4.24-gde) 的 `addons/godotsteam/` 解压到工程同名目录，重新打开编辑器。Windows 宿主导出工具会随游戏交付扩展 DLL、`steam_api64.dll` 和上游 MIT 许可。其他开发机可按需安装此本机依赖。
 
 在 `steam/initialization/app_data/app_id` 设置正式 App ID，默认 0 使用 Steam 启动时提供的 `SteamAppId`。开发时可显式填写测试 App ID 480。自动初始化关闭，普通启动可使用 ENet。建房时选择本机 IP 或 Steam，Steam 房间中的好友邀请按钮打开 Overlay。接受邀请和从 Steam 冷启动（`+connect_lobby <id>`）共用连接、握手与内容同步流程。

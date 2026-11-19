@@ -13,6 +13,8 @@ load_asset 只解析当前依赖集合，失败返回 null；游戏或协议负�
 
 ## 配置页面
 
+平台入口参数见[网络与启动](networking.md)。Steam 入口由框架提供账号昵称。协议可实现 `steam_profile_fields(account: Dictionary) -> Dictionary`，返回账号接管的资料字段及其值；个人资料读取和提交共用该规则。可编辑面板的 context 通过 `steam_entry` 标识这一入口。原版协议接管 `avatar_2d`，颜色和 3D 角色继续按玩家选择保存。
+
 协议提供固定 profile_panel.tscn 场景。
 面板契约与活动配置相同，context 提供已安装资源描述和 preview_asset 回调。编辑协议个人资料时还提供 `steam_profile()` 回调和 `steam_profile_changed` 信号。SteamID 用于查询平台账号，存档及房间内的身份继续使用框架的 `player_id`。
 框架负责草稿、应用/取消和回执；协议决定选择列表、模型视角及配色等界面内容。

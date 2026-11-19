@@ -61,6 +61,11 @@ func steam_portrait(image: Image) -> Dictionary:
 	ref["portrait_rgba"] = Marshalls.raw_to_base64(image.get_data())
 	return ref
 
+## Use the protocol default until Steam supplies the account image, including accounts without one.
+func steam_profile_fields(account: Dictionary) -> Dictionary:
+	var image: Image = account.avatar
+	return {"avatar_2d": steam_portrait(image) if image != null else default_player_config().avatar_2d}
+
 func _avatar_reference(value: Variant) -> bool:
 	if _reference(value):
 		return true
@@ -297,4 +302,3 @@ func present_result(result: Dictionary, _request: Dictionary) -> Dictionary:
 	for row: Dictionary in result.get("rankings", []):
 		rows.append({"player_id": row.player_id, "rank": int(row.rank), "status": labels[row.status], "metrics": row.get("metrics", {}).duplicate(true)})
 	return {"title": "小游戏结果", "columns": result.get("columns", []).duplicate(true), "rows": rows}
-

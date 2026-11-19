@@ -44,6 +44,7 @@ var _profile_name: LineEdit
 var _profile_panel: Control
 var _profile_error: Label
 var _arguments: Dictionary
+var _launch_args: PackedStringArray
 var _network_panel: NetworkPanel
 var _modal_input_active: bool = false
 var _final_results: Control
@@ -86,6 +87,15 @@ func _ready() -> void:
 	_apply_system_preferences()
 	if connection.initialize(catalog, settings) != OK:
 		return
+	_launch_args = OS.get_cmdline_args() + OS.get_cmdline_user_args()
+	var platform: String = Arguments.platform(_launch_args, OS.get_environment("SteamAppId"))
+	var platform_error: Error = connection.start_platform(platform)
+	if platform_error != OK:
+		push_error(connection.status)
+		get_tree().quit(1)
+		return
+	if platform == "steam":
+		connection.steam.profile_changed.connect(_update_account_name, CONNECT_DEFERRED)
 	connection.content_sync.directory = str(_arguments.get("pack-dir", InputSettings.installation_directory()))
 	_content_sync_panel = preload("res://core/ui/party_content_sync_panel.gd").new()
 	_content_sync_panel.initialize(self)
@@ -135,9 +145,8 @@ func _boot() -> void:
 	if not _content_error.is_empty():
 		_notice(_content_error)
 		return
-	var steam_args: PackedStringArray = OS.get_cmdline_args() + OS.get_cmdline_user_args()
-	connection.steam.boot(steam_args)
-	if steam_args.has("+connect_lobby"):
+	connection.steam.boot(_launch_args)
+	if _launch_args.has("+connect_lobby"):
 		return
 	var port: int = Connection.parse_port(str(_arguments.get("port", 7777)))
 	if (_arguments.has("host") or _arguments.has("join")) and port == 0:
@@ -236,6 +245,8 @@ func _save_connection_settings(values: Dictionary) -> Error:
 	return error
 
 func save_local_name(value: String) -> Error:
+	if connection.profiles.steam_account.is_valid():
+		return ERR_UNAUTHORIZED
 	if connection.online or not connection.profiles.validate_name(value):
 		return ERR_INVALID_PARAMETER
 	var protocol_id: String = str(_frontend.selected_protocol) if is_instance_valid(_frontend) else ""
@@ -251,6 +262,8 @@ func save_local_name(value: String) -> Error:
 	return connection.profiles.save(value, protocol_id, local_profile.profile)
 
 func local_display_name() -> String:
+	if connection.profiles.steam_account.is_valid():
+		return connection.profiles.account_name()
 	var protocol_id: String = str(_frontend.selected_protocol) if is_instance_valid(_frontend) else ""
 	if protocol_id.is_empty():
 		return connection.profiles.identity().name
@@ -315,6 +328,7 @@ func _panel(package_id: String, value: Dictionary, editable: bool, profile: bool
 	var panel: Control = catalog.resource(package_id, scene).instantiate() if not scene.is_empty() else preload("res://core/ui/party_config_form.tscn").instantiate()
 	var context: Dictionary = {"schema": catalog.localized_schema(package_id), "audience": "room", "pools": connection.room.get("pools", {}).duplicate(true), "fields": definition.get("player_fields", []) if profile else catalog.fields(package_id), "resources": catalog.packages.duplicate(true), "preview_asset": func(ref: Dictionary) -> Resource: return catalog.asset(ref, catalog.packages)}
 	if profile and editable:
+		context["steam_entry"] = connection.profiles.steam_account.is_valid()
 		context["steam_profile"] = connection.steam_profile
 		context["steam_profile_changed"] = connection.steam.profile_changed
 	if profile and connection.host and connection.room.get("phase") == "lobby" and connection.recovery.is_empty():
@@ -339,6 +353,7 @@ func _local_profile_settings() -> void:
 	var body: VBoxContainer = preload("res://core/ui/dialogs/profile.tscn").instantiate()
 	var name_input: LineEdit = body.get_node("PlayerName")
 	name_input.text = local_display_name()
+	name_input.editable = not connection.profiles.steam_account.is_valid()
 	var editor: Control = _configuration_editor("玩家资料", body, true, "编辑本机玩家昵称，应用后保存。")
 	editor.apply_requested.connect(func() -> void:
 		var error: Error = save_local_name(name_input.text.strip_edges())
@@ -372,7 +387,10 @@ func _profile_dialog(selected_protocol: String = "") -> void:
 	var box: VBoxContainer = preload("res://core/ui/dialogs/profile.tscn").instantiate()
 	_profile_name = box.get_node("PlayerName")
 	_profile_name.text = player["name"]
-	if connection.steam.initialized and not connection.room.get("recovery", false):
+	if connection.profiles.steam_account.is_valid() and not connection.room.get("recovery", false):
+		_profile_name.text = connection.profiles.account_name()
+	_profile_name.editable = not connection.profiles.steam_account.is_valid() and not connection.room.get("recovery", false)
+	if connection.steam.initialized and _profile_name.editable:
 		var use_name: Button = Button.new()
 		use_name.text = "使用 Steam 昵称"
 		use_name.pressed.connect(func() -> void: _profile_name.text = connection.steam_profile().persona_name)
@@ -395,7 +413,7 @@ func _profile_dialog(selected_protocol: String = "") -> void:
 			if not report.get("ok", false):
 				_profile_error.text = report.get("message", "协议资料无效")
 				return
-			var save_error: Error = connection.profiles.save(_profile_name.text, protocol_id, value)
+			var save_error: Error = connection.profiles.save(_profile_name.text, protocol_id, value, protocol)
 			_profile_error.text = "已保存" if save_error == OK else "本机保存失败：" + error_string(save_error)
 			if save_error == OK:
 				_close_preferences()
@@ -406,6 +424,10 @@ func _profile_dialog(selected_protocol: String = "") -> void:
 			_profile_error.text = error_string(error)
 		else:
 			_profile_apply.disabled = not connection._pending_profile.is_empty())
+
+func _update_account_name(id: String) -> void:
+	if is_instance_valid(_profile_name) and not connection.room.get("recovery", false) and id == str(connection.steam.api.getSteamID()):
+		_profile_name.text = connection.profiles.account_name()
 
 func _profile_reply(_id: String, accepted: bool, message: String) -> void:
 	if not is_instance_valid(_profile_error):
