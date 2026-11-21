@@ -106,3 +106,7 @@
 	path = games/minigame/GP_test_3d_platformer
 	url = git@github.com:jza10086/Test3DPlatformer.git
 	branch = main
+[submodule "games/assets/GP_vrm_character_system"]
+	path = games/assets/GP_vrm_character_system
+	url = https://github.com/jza10086/GodotVrmCharacterSystem.git
+	branch = main

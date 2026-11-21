@@ -2,6 +2,9 @@
 
 以下保留历史引入记录；当前在库范围及已移除素材以资产登记表为准。
 
+人物模型：VRM1 Constraint Twist Sample，© 2022 pixiv Inc. https://github.com/vrm-c/vrm-specification/tree/master/samples/VRM1_Constraint_Twist_Sample
+人物模型：Seed-san，© VirtualCast, Inc. https://github.com/vrm-c/vrm-specification/tree/master/samples/Seed-san
+导入插件与着色器：Godot VRM 与 MToon，V-Sekai 及上游贡献者 https://github.com/V-Sekai/godot-vrm
 界面组件与箭头图标：GodotPartyUI https://github.com/jza10086/GodotPartyUI
 中文字体：Noto Sans CJK SC（许可证：core/ui/components/assets/FONT-LICENSE.txt） https://github.com/notofonts/noto-cjk
 音游界面字体：NotoSansSC-UI.otf（复用原版 UI 资产包 font_sans，许可证：games/minigame/GP_rhythm_game/assets/fonts/NOTO-SANS-LICENSE.txt） https://github.com/notofonts/noto-cjk
