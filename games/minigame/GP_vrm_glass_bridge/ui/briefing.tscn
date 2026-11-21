@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://games/protocols/GP_default_protocol/briefing/briefing_page.tscn" id="1"]
+
+[node name="Briefing" instance=ExtResource("1")]
+
+[node name="Title" parent="View/Layout/Center/Content" index="0"]
+text = "VRM 玻璃桥"
+
+[editable path="View"]

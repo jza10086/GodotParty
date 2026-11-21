@@ -1,0 +1,37 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://games/minigame/GP_vrm_glass_bridge/maps/squid_game_hud.gd" id="script"]
+
+[sub_resource type="SystemFont" id="Font"]
+font_names = PackedStringArray("Microsoft YaHei", "Noto Sans CJK SC", "Segoe UI")
+
+[sub_resource type="Theme" id="Theme"]
+default_font = SubResource("Font")
+default_font_size = 17
+
+[sub_resource type="StyleBoxFlat" id="Panel"]
+bg_color = Color(0.035,0.08,0.13,0.91)
+content_margin_left = 16.0
+content_margin_right = 16.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+corner_radius_bottom_right = 12
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("script")
+
+[node name="Panel" type="PanelContainer" parent="."]
+offset_left = 16
+offset_top = 16
+theme = SubResource("Theme")
+theme_override_styles/panel = SubResource("Panel")
+mouse_filter = 2
+
+[node name="Rows" type="VBoxContainer" parent="Panel"]
+mouse_filter = 2
+
+[node name="Status" type="Label" parent="Panel/Rows"]
+text = "准备出发"
+
+[node name="Controls" type="Label" parent="Panel/Rows"]
+theme_override_colors/font_color = Color(0.59,0.88,0.91,1)
+visible = false

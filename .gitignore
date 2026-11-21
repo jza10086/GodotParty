@@ -16,9 +16,10 @@
 !/data/.gdignore
 
 # Portable installation/configuration; development sources remain under games/.
-# New minigames can be independent checkouts. The blank template belongs to this repo.
+# New minigames can be independent checkouts. The blank template and VRM bridge are maintained in this repo.
 /games/minigame/*/
 !/games/minigame/GP_blank/
+!/games/minigame/GP_vrm_glass_bridge/
 /protocols/*
 !/protocols/.gdignore
 /maingame/*

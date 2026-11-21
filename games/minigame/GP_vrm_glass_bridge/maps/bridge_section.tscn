@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://games/assets/GP_platformer_3d_components/maps/sections/squid_game.tscn" id="section"]
+
+[node name="BridgeSection" instance=ExtResource("section")]
+
+[node name="StartSign" parent="."]
+visible = false

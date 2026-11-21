@@ -1,0 +1,17 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://games/assets/GP_vrm_character_system/vrm_player.tscn" id="base"]
+[ext_resource type="Script" path="res://games/minigame/GP_vrm_glass_bridge/race/race_player.gd" id="script"]
+
+[ext_resource type="Script" path="racer_receiver.gd" id="receiver"]
+
+[node name="Racer" instance=ExtResource("base")]
+script = ExtResource("script")
+
+[node name="Nameplate" type="Label3D" parent="."]
+position = Vector3(0, 2.15, 0)
+billboard = 1
+font_size = 36
+pixel_size = 0.0035
+
+[node name="ParkourReceiver" type="Node3D" parent="."]
+script = ExtResource("receiver")

@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="ui/round_pages.tscn" id="protocol_pages"]
+
+[ext_resource type="Script" path="game.gd" id="1"]
+[ext_resource type="PackedScene" path="maps/squid_game.tscn" id="2"]
+
+[node name="VrmGlassBridge" type="Control"]
+mouse_filter = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+columns = Array[Dictionary]([{"key": "score", "title": "桥面得分", "format": "integer"}, {"key": "gates", "title": "通过进度门", "format": "integer"}, {"key": "finished", "title": "抵达终点", "format": "integer"}, {"key": "time", "title": "本局用时", "format": "time"}])
+
+[node name="Course" parent="." instance=ExtResource("2")]
+
+[node name="ProtocolPages" parent="." instance=ExtResource("protocol_pages")]
+unique_name_in_owner = true

@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="briefing.tscn" id="briefing"]
+[ext_resource type="PackedScene" path="settlement.tscn" id="settlement"]
+
+[ext_resource type="Script" path="res://games/protocols/GP_default_protocol/round_pages.gd" id="pages"]
+
+[node name="ProtocolPages" type="CanvasLayer" node_paths=PackedStringArray("briefing", "settlement")]
+script = ExtResource("pages")
+briefing = NodePath("Briefing")
+settlement = NodePath("Settlement")
+process_mode = 3
+layer = 32
+
+[node name="Briefing" parent="." instance=ExtResource("briefing")]
+visible = false
+
+[node name="Settlement" parent="." instance=ExtResource("settlement")]
+visible = false
