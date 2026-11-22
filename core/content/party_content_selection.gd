@@ -109,8 +109,8 @@ static func _dependency_issue(id: String, packages: Dictionary, visiting: Array[
 	var path: Array[String] = visiting.duplicate()
 	path.append(id)
 	var manifest: Dictionary = packages[id]
-	if manifest.framework_version != Data.VERSION:
-		return "框架版本不匹配：" + manifest.framework_version
+	if not Versions.framework_supports(Data.VERSION, manifest.framework_version):
+		return "框架不兼容（当前 %s，需要与 %s 同系列且达到该版本）" % [Data.VERSION, manifest.framework_version]
 	if manifest.kind == "avatars":
 		if not packages.has(manifest.owner_protocol):
 			return "缺少所属协议：" + manifest.owner_protocol

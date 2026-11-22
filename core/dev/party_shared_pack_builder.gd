@@ -209,7 +209,7 @@ func export_imported_pack(catalog: RefCounted, id: String, output: String) -> Er
 	if error != OK:
 		return error
 	var folder: String = output.get_base_dir()
-	var description: Dictionary = {"framework_version": Data.VERSION, "id": id, "version": manifest.package_version, "kind": manifest.kind, "build_id": Data.token(), "packs": [output.get_file()], "resource_index": "resources.json", "settings": "settings.json"}
+	var description: Dictionary = {"framework_version": manifest.framework_version, "id": id, "version": manifest.package_version, "kind": manifest.kind, "build_id": Data.token(), "packs": [output.get_file()], "resource_index": "resources.json", "settings": "settings.json"}
 	description.declaration = manifest._declaration.duplicate(true)
 	description.declaration.erase("owner_protocol")
 	description.content = manifest.duplicate(true)

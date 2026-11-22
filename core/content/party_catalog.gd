@@ -474,8 +474,8 @@ func _visit(id: String, selected: Dictionary, visiting: Dictionary) -> String:
 		return "缺少内容包：" + id
 	visiting[id] = true
 	var manifest: Dictionary = packages[id]
-	if manifest.framework_version != Data.VERSION:
-		return id + " requires framework " + manifest.framework_version
+	if not Versions.framework_supports(Data.VERSION, manifest.framework_version):
+		return "%s requires framework %s or a later patch in the same series (running %s)" % [id, manifest.framework_version, Data.VERSION]
 	var issue: String = _dependencies(manifest.get("dependencies", {}), selected, visiting)
 	if not issue.is_empty():
 		return issue

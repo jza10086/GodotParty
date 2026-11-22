@@ -32,6 +32,10 @@ static func compare(left: Array[int], right: Array[int]) -> int:
 			return 1
 	return 0
 
+## A content package requires its declared framework series and at least its declared patch.
+static func framework_supports(host_version: String, minimum_version: String) -> bool:
+	return matches(host_version, "~" + minimum_version)
+
 static func matches(version: String, requirement: String) -> bool:
 	var actual: Array[int] = parse(version)
 	if actual.is_empty() or not valid_range(requirement):
