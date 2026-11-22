@@ -85,6 +85,11 @@ func _ready() -> void:
 		return
 	catalog.i18n.set_locale(settings.config.get_value("localization", "locale", "zh_Hans"))
 	_apply_system_preferences()
+	if DisplayServer.get_name() != "headless" and (settings.config.get_value("opening", "mode", InputSettings.DEFAULT_OPENING_MODE) == "repeat" or not settings.config.get_value("profile", "opening_seen", false)):
+		var opening_error: Error = await _play_opening()
+		if opening_error != OK:
+			push_error("无法播放开场动画：" + error_string(opening_error))
+			return
 	if connection.initialize(catalog, settings) != OK:
 		return
 	_launch_args = OS.get_cmdline_args() + OS.get_cmdline_user_args()
@@ -127,6 +132,25 @@ func _ready() -> void:
 	if not catalog.errors.is_empty():
 		_notice("\n".join(catalog.errors))
 	_boot.call_deferred()
+
+func _play_opening() -> Error:
+	var scene: PackedScene = load("res://core/app/opening_logo.tscn")
+	var opening: ColorRect = scene.instantiate()
+	$FrameworkUI.add_child(opening)
+	var video: VideoStreamPlayer = opening.get_node("%Video")
+	video.play()
+	if not video.is_playing():
+		opening.queue_free()
+		return ERR_CANT_OPEN
+	if not settings.config.get_value("profile", "opening_seen", false):
+		settings.config.set_value("profile", "opening_seen", true)
+		var error: Error = settings.save_settings()
+		if error != OK:
+			opening.queue_free()
+			return error
+	await video.finished
+	opening.queue_free()
+	return OK
 
 ## Main-menu selection is explicit and local. Save successfully before refreshing presentation.
 func select_language(language: String) -> Error:
