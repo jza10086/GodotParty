@@ -2,6 +2,7 @@
 extends Control
 const NetworkPanel = preload("res://core/ui/network_panel.gd")
 const NetworkPanelScene: PackedScene = preload("res://core/ui/network_panel.tscn")
+const OpeningLogo = preload("res://core/app/opening_logo.gd")
 const MenuAudio = preload("res://core/ui/ambient_reveal/audio/menu_audio.gd")
 const JsonConfig = preload("res://core/config/party_json_config.gd")
 
@@ -135,9 +136,11 @@ func _ready() -> void:
 
 func _play_opening() -> Error:
 	var scene: PackedScene = load("res://core/app/opening_logo.tscn")
-	var opening: ColorRect = scene.instantiate()
+	var opening: OpeningLogo = scene.instantiate()
 	$FrameworkUI.add_child(opening)
 	var video: VideoStreamPlayer = opening.get_node("%Video")
+	video.volume = float(settings.config.get_value("opening", "volume", InputSettings.DEFAULT_OPENING_VOLUME)) / 100.0
+	video.finished.connect(opening.finished.emit)
 	video.play()
 	if not video.is_playing():
 		opening.queue_free()
@@ -148,7 +151,7 @@ func _play_opening() -> Error:
 		if error != OK:
 			opening.queue_free()
 			return error
-	await video.finished
+	await opening.finished
 	opening.queue_free()
 	return OK
 

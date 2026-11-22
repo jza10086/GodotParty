@@ -10,6 +10,7 @@ const MICROPHONE_MODES: Dictionary = {"open": "自由麦", "push_to_talk": "长�
 const DEFAULT_MICROPHONE_MODE: String = "open"
 const OPENING_MODES: Dictionary = {"first": "首次", "repeat": "重复"}
 const DEFAULT_OPENING_MODE: String = "first"
+const DEFAULT_OPENING_VOLUME: int = 50
 const MAX_FPS_LIMIT: int = 1000
 const Paths = preload("res://core/config/party_paths.gd")
 var settings_path: String = Paths.application_root().path_join("core/config/settings.json")
@@ -72,6 +73,9 @@ func validate_system_settings() -> Error:
 		invalid = "display/vsync"
 	if config.get_value("opening", "mode", DEFAULT_OPENING_MODE) not in OPENING_MODES:
 		invalid = "opening/mode"
+	var opening_volume: Variant = config.get_value("opening", "volume", DEFAULT_OPENING_VOLUME)
+	if not opening_volume is int or opening_volume < 0 or opening_volume > 100:
+		invalid = "opening/volume"
 	if not config.get_value("profile", "opening_seen", false) is bool:
 		invalid = "profile/opening_seen"
 	var volume: Variant = config.get_value("ui", "volume", 1.0)
@@ -318,6 +322,7 @@ func settings_schema(draft: Dictionary = {}) -> Dictionary:
 		resolution_labels.append("%d × %d" % [size.x, size.y])
 	var fields: Dictionary = {
 
+		"opening.volume": {"type": "int", "control": "number", "title": "开场动画音量", "default": DEFAULT_OPENING_VOLUME, "min": 0, "max": 100, "step": 1, "suffix": "%"},
 		"opening.mode": {"type": "string", "control": "select", "title": "开场动画设置", "default": DEFAULT_OPENING_MODE, "values": OPENING_MODES.keys(), "labels": OPENING_MODES.values()},
 		"display.mode": {"type": "string", "control": "select", "title": "显示模式", "description": "选择窗口化、无边框全屏或独占全屏。窗口化时可展开调整分辨率；全屏使用显示器的尺寸。", "default": DISPLAY_DEFAULTS.mode, "values": DISPLAY_MODES.keys(), "labels": DISPLAY_MODES.values()},
 		"display.resolution": {"type": "array", "control": "select", "title": "窗口分辨率", "description": "调整窗口画面的输出尺寸。较高的分辨率提供更清晰的画面，也会增加渲染开销。全屏模式沿用显示器尺寸。", "default": DISPLAY_DEFAULTS.resolution, "items": {"type": "int"}, "min_items": 2, "max_items": 2, "values": resolutions, "labels": resolution_labels},
@@ -354,7 +359,7 @@ func settings_schema(draft: Dictionary = {}) -> Dictionary:
 			{"field": "display.mode", "children": [
 				{"field": "display.resolution", "enabled_when": {"field": "display.mode", "equals": "windowed"}, "disabled_reason": "全屏使用当前屏幕分辨率；窗口尺寸已保留。"}]},
 			{"field": "display.vsync"}, {"field": "display.fps"}]},
-		{"id": "opening", "title": "开场动画设置", "expanded": true, "children": [{"field": "opening.mode"}]},
+		{"id": "opening", "title": "开场动画设置", "expanded": true, "children": [{"field": "opening.mode"}, {"field": "opening.volume"}]},
 		{"id": "audio", "title": "声音与设备", "expanded": true, "children": [
 			{"id": "playback", "title": "播放", "children": [
 				{"field": "system.output_device"}, {"field": "ui.volume"}]},

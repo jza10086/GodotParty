@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="VideoStream" path="res://core/assets/opening/v2_wireframe_cinema.ogv" id="1"]
+[ext_resource type="Script" path="res://core/app/opening_logo.gd" id="2"]
 
 [node name="OpeningLogo" type="ColorRect"]
 process_mode = 3
@@ -11,6 +12,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
+script = ExtResource("2")
 
 [node name="Aspect" type="AspectRatioContainer" parent="."]
 layout_mode = 1
@@ -26,4 +28,3 @@ unique_name_in_owner = true
 layout_mode = 2
 expand = true
 stream = ExtResource("1")
-bus = &"CoreUI"
