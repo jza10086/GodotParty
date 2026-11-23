@@ -32,7 +32,7 @@
 
 GodotParty 使用的框架、工具、代码或资源可能分别依据 Apache-2.0、MIT、CC0 或其他许可授权。所有人均可以依照这些许可证使用相关部分，本协议的专有内容限制不适用于它们。
 
-相关说明请参阅 [LICENSING.md](LICENSING.md)、[ASSET_LICENSES.md](ASSET_LICENSES.md) 与发行时附带的适用版权声明。独立内容包也可采用不同许可证，使用范围以各包的有效授权为准。
+相关说明请参阅 [ASSET_LICENSES.md](ASSET_LICENSES.md)、[ASSET_LICENSES.md](ASSET_LICENSES.md) 与发行时附带的适用版权声明。独立内容包也可采用不同许可证，使用范围以各包的有效授权为准。
 
 本游戏中的第三方素材及商标归相应权利人所有，受其独立许可及适用法律保护。
 
