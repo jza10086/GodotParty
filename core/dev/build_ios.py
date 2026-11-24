@@ -57,7 +57,7 @@ def prepare_host(content_project, host, bundle, root, build_number):
     shutil.copyfile(bundle, host / "core/bundled_content.zip")
     notices = host / "core/notices"
     notices.mkdir(exist_ok=True)
-    for name in ("LICENSE", "LICENSE-CC0.txt", "ASSET_LICENSES.md"):
+    for name in ("LICENSE", "NOTICE", "ASSET_LICENSES.md"):
         shutil.copyfile(root / name, notices / name)
     shutil.copyfile(root / "doc/assets/project_credits.md", notices / "credits.md")
     preset = (root / "core/dev/ios_export_presets.cfg").read_text(encoding="utf-8")
@@ -119,7 +119,7 @@ def compile_ipa(godot, host, output, logs):
     with zipfile.ZipFile(ipa) as archive:
         if f"Payload/{app.name}/Info.plist" not in archive.namelist():
             raise RuntimeError("Invalid IPA structure")
-        for name in ("LICENSE", "LICENSE-CC0.txt", "ASSET_LICENSES.md", "credits.md"):
+        for name in ("LICENSE", "NOTICE", "ASSET_LICENSES.md", "credits.md"):
             if f"Payload/{app.name}/notices/{name}" not in archive.namelist():
                 raise RuntimeError(f"IPA is missing redistribution notice: {name}")
     return {"architecture": arch, "minimum_os": info["MinimumOSVersion"],

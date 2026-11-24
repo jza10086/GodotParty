@@ -1,54 +1,9 @@
-# 项目原创内容许可
+# GodotParty 授权范围与历史记录
 
-声明日期：2026-11-08。项目所有者 jza10086 明确授权本次许可声明。
+- **框架**：自本次许可调整正式合并后，项目方有权授权的 `core/` 框架与通用工具，新版默认按 [Apache-2.0](LICENSE) 分发；第三方组件及有独立许可证的文件仍从其原许可。
+- **内容包**：`games/` 下的协议、主游戏、小游戏、UI、角色及其他资产包分别管理授权；主仓 Apache-2.0 **不会自动覆盖这些包**。未来新开发的自有商业内容拟采取专有授权；目前仍在公开主仓或公开子仓中的内容**并未因本声明成为私有仓库**。
+- **历史 MIT / CC0**：2026-11-08 起的既有记录中，项目方可授权的原创代码曾按 MIT，原创媒体曾按 CC0-1.0 公开。旧版本的有效授权继续存在，不予撤销。原声明和 MIT、CC0 全文可通过 [调整前 Git 提交](https://github.com/jza10086/GodotParty/tree/2400fc21a0547130840c516ca59bc1f4933bad73)及各子仓历史查看；本文件不为无权处分的第三方内容重新授权。
+- **原创来源记录**：项目方自行制作，或使用 Codex、Gemini、GPT 等 AI 工具辅助制作的资源，在内部素材登记中统一标为「原创」；这只是来源/权利管理分类，**不是标准开源许可证，也不能覆盖上游受保护素材**。
+- **第三方内容**：字体、音源、模型、图标、商标与其他外部资源依各自许可证执行；详见 [完整素材登记](doc/assets/project_asset_register.md)、[素材署名](doc/assets/project_credits.md) 和 [受限资源索引](third_party_assets/restricted_assets_index.md)。必要的第三方版权和许可证文本须随实际分发保留。
 
-- **MIT**：本项目原创及 GPT 生成的源代码、着色器、场景／资源定义、配置、工具与文档。完整条款见 [LICENSE](LICENSE)。现有版权声明保留。
-- **CC0-1.0**：本项目原创及 GPT 生成的图像、纹理、模型、几何、材质、动画、合成音效和原创谱面贡献，包括这些程序的原创媒体输出。完整条款见 [LICENSE-CC0.txt](LICENSE-CC0.txt)。以前已授予的 MIT 权利不撤回。
-
-作者继续区分 **GPT（图像生成）**、**GPT（代码生成）** 和 **jza10086／jza（用户原创）**。字体、采样及外部素材经 GPT 处理后仍保留原作者与许可。
-
-声明适用于本工程内项目所有者可授权的原创内容，以及资产总登记 I／G 项和 S11 指定的原创部分；包括保留原型 temp_game/、备份中的对应原创部分及总登记 G07/G13 明确列出的同源原创 Blender 模型。它不授予项目所有者不持有的权利，不将整份混合备份、第三方内容包或带未知输入的派生作品整体改为 MIT／CC0，也不替未纳入本工程的其他上游仓库发布统一许可。
-
-**例外以具体资产的原许可为准**：Godot 图标 CC BY 4.0，JC Sounds CC BY 4.0，各字体 OFL／DejaVu，FluidR3 MIT，Kenney／Quaternius／Poly Haven 等保留各自 CC0 和作者，addons/godot_mcp_toolkit/ 源码保留上游 MIT 与品牌排除条款。Bad Apple!! 音源、Gpop 原谱、未知 MIDI、Huihui 配音、Blackjack 字体和头像参考图等未决事项仍保留；CC0 仅覆盖其中可授权的原创贡献。
-
-详见 [完整资产登记](doc/assets/project_asset_register.md) 和 [受限资产分类登记](third_party_assets/restricted_assets_index.md)。受限目录中的素材不适用本项目 MIT／CC0。
-
-## 独立包许可入口
-
-各内容包附有自己的 MIT、CC0 全文及 ASSET_LICENSES.md，单独导出时仍可查阅。core/ 中也保留许可全文，现有宿主导出流程会将它们复制到 core/notices/。这里说明文件放置与现有导出逻辑，未执行构建验收。
-
-- [core](core/ASSET_LICENSES.md)
-- [GP_minigame_playlist](games/maingame/GP_minigame_playlist/ASSET_LICENSES.md)
-- [GP_direction_code](games/minigame/GP_direction_code/ASSET_LICENSES.md)
-- [GP_3d_chess](games/minigame/GP_3d_chess/ASSET_LICENSES.md)
-- [GP_artillery](games/minigame/GP_artillery/ASSET_LICENSES.md)
-- [GP_auction_master](games/minigame/GP_auction_master/ASSET_LICENSES.md)
-- [GP_battleship](games/minigame/GP_battleship/ASSET_LICENSES.md)
-- [GP_billiards](games/minigame/GP_billiards/ASSET_LICENSES.md)
-- [GP_blank](games/minigame/GP_blank/ASSET_LICENSES.md)
-- [GP_car_racing](games/minigame/GP_car_racing/ASSET_LICENSES.md)
-- [GP_cards](games/minigame/GP_cards/ASSET_LICENSES.md)
-- [GP_flight](games/minigame/GP_flight/ASSET_LICENSES.md)
-- [GP_fruit_samurai](games/minigame/GP_fruit_samurai/ASSET_LICENSES.md)
-- [GP_avalon](games/minigame/GP_avalon/ASSET_LICENSES.md)
-- [GP_jigsaw](games/minigame/GP_jigsaw/ASSET_LICENSES.md)
-- [GP_chase](games/minigame/GP_chase/ASSET_LICENSES.md)
-- [GP_matching](games/minigame/GP_matching/ASSET_LICENSES.md)
-- [GP_merge_ssibal](games/minigame/GP_merge_ssibal/ASSET_LICENSES.md)
-- [GP_snake_battle](games/minigame/GP_snake_battle/ASSET_LICENSES.md)
-- [GP_platformer](games/minigame/GP_platformer/ASSET_LICENSES.md)
-- [GP_psych_party](games/minigame/GP_psych_party/ASSET_LICENSES.md)
-- [GP_tetris](games/minigame/GP_tetris/ASSET_LICENSES.md)
-- [GP_snake](games/minigame/GP_snake/ASSET_LICENSES.md)
-- [GP_star_wave](games/minigame/GP_star_wave/ASSET_LICENSES.md)
-- [GP_tank_battle](games/minigame/GP_tank_battle/ASSET_LICENSES.md)
-- [GP_tank_war](games/minigame/GP_tank_war/ASSET_LICENSES.md)
-- [GP_west_duel](games/minigame/GP_west_duel/ASSET_LICENSES.md)
-- [GP_rhythm_game](games/minigame/GP_rhythm_game/ASSET_LICENSES.md)
-- [GP_default_protocol](games/protocols/GP_default_protocol/ASSET_LICENSES.md)
-- [GP_default_avatars](games/protocols/GP_default_protocol/avatars/GP_default_avatars/ASSET_LICENSES.md)
-- [GP_default_avatars_2d](games/protocols/GP_default_protocol/avatars/GP_default_avatars_2d/ASSET_LICENSES.md)
-
-- [大富翁保留原型（无 manifest）](games/maingame/godot_party_default_main_game_millionaire/ASSET_LICENSES.md)
-
-- [原版 UI 资产包](games/assets/GP_default_ui/ASSET_LICENSES.md)
+内容子仓拥有独立 Git 历史和公开性。准备商业发行时需逐包审查许可证、第三方资源再分发与 P2P 同步权限。游戏用户协议见 [EULA 草案](EULA.md)（尚未生效）。
