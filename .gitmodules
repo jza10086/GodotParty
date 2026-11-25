@@ -114,3 +114,7 @@
 	path = games/maingame/GP_financial_tycoon
 	url = git@github.com:jza10086/FinancialTycoon.git
 	branch = main
+[submodule "games/minigame/GP_gambling_set"]
+	path = games/minigame/GP_gambling_set
+	url = git@github.com:jza10086/GamblingSet.git
+	branch = main
