@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://df0k065cblnk1"]
 
-[ext_resource type="Script" path="res://core/ui/window_crossfade.gd" id="crossfade"]
 [ext_resource type="Script" uid="uid://jhdhih3rcbug" path="res://core/app/party_main.gd" id="1_vg4ib"]
 [ext_resource type="PackedScene" uid="uid://cnixft6n5gdxb" path="res://core/ui/session_menu/session_menu.tscn" id="13_i8x7f"]
 [ext_resource type="Script" uid="uid://bmqhhda608ejf" path="res://core/ui/ambient_reveal/audio/menu_audio.gd" id="audio"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="background"]
 [ext_resource type="Script" uid="uid://2c4ebcbcer4s" path="res://core/network/party_connection.gd" id="connection"]
 [ext_resource type="Script" uid="uid://cp6flvqhplbcc" path="res://core/runtime/party_coordinator.gd" id="coordinator"]
+[ext_resource type="Script" uid="uid://c8yqaw8sh2cmy" path="res://core/ui/window_crossfade.gd" id="crossfade"]
 [ext_resource type="PackedScene" path="res://core/ui/frontend/party_frontend.tscn" id="frontend"]
 [ext_resource type="PackedScene" path="res://core/ui/source/ui/modal_layer.tscn" id="frontend_modal"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/xbox_hints.tscn" id="hints"]
@@ -66,9 +66,12 @@ connection = NodePath("../Connection")
 unique_name_in_owner = true
 layer = 64
 
-[node name="SettingsBackground" parent="FrameworkUI" instance=ExtResource("background")]
+[node name="SettingsBackground" parent="FrameworkUI" unique_id=90727156 instance=ExtResource("background")]
 unique_name_in_owner = true
 visible = false
+layout_mode = 3
+anchor_right = 1.0
+anchor_bottom = 1.0
 
 [node name="Framework" type="VBoxContainer" parent="FrameworkUI" unique_id=1746661127]
 anchors_preset = 15
@@ -150,10 +153,11 @@ unique_name_in_owner = true
 visible = false
 z_index = 8
 
-[node name="WindowCrossfade" type="TextureRect" parent="FrameworkUI"]
+[node name="WindowCrossfade" type="TextureRect" parent="FrameworkUI" unique_id=1730544634]
 unique_name_in_owner = true
 visible = false
 z_index = 1000
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2

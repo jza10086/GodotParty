@@ -1,9 +1,9 @@
 {
   "id": "GP_default_ui",
   "kind": "assets",
-  "package_version": "0.1.7",
+  "package_version": "0.2.0",
   "framework_version": "0.6.0",
-  "remark": "原版共享 UI、数字动画、大厅与大富翁视图、设置组件、光标和字体。",
+  "remark": "原版共享 UI、数字动画、大厅视图、设置组件、光标、通用样式和字体。",
   "supported_languages": [
     "zh-CN"
   ]

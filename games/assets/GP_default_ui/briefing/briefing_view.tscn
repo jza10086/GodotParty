@@ -15,10 +15,10 @@
 
 [sub_resource type="StyleBoxFlat" id="PreviewMask"]
 bg_color = Color(0.08, 0.11, 0.16, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_left = 18
-corner_radius_bottom_right = 18
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_left = 16
+corner_radius_bottom_right = 16
 corner_detail = 16
 
 [node name="BriefingView" type="Control"]

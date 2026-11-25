@@ -32,136 +32,163 @@ theme = ExtResource("theme")
 
 [node name="Dialog" parent="." unique_id=954355529 instance=ExtResource("ar_panel")]
 material = SubResource("ShaderMaterial_v5h00")
-layout_mode = 0
-offset_right = 880.0
-offset_bottom = 726.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
-[node name="Title" type="Label" parent="." unique_id=1538875656]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 32.0
-offset_right = 820.0
-offset_bottom = 96.0
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 56
+theme_override_constants/margin_top = 36
+theme_override_constants/margin_right = 56
+theme_override_constants/margin_bottom = 36
+
+[node name="Content" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Margin/Content" unique_id=1538875656]
+unique_name_in_owner = true
+layout_mode = 2
 theme_override_font_sizes/font_size = 29
 text = "创建房间"
 
-[node name="Note" type="Label" parent="." unique_id=1123546002]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 96.0
-offset_right = 820.0
-offset_bottom = 132.0
+[node name="Note" type="Label" parent="Margin/Content" unique_id=1123546002]
+unique_name_in_owner = true
+layout_mode = 2
 theme_override_font_sizes/font_size = 17
 text = "选择已安装的协议与大游戏，确认后创建联机房间。"
+autowrap_mode = 3
 
-[node name="GameLabel" type="Label" parent="." unique_id=1356838584]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 152.0
-offset_right = 240.0
-offset_bottom = 210.0
+[node name="GameRow" type="HBoxContainer" parent="Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="GameLabel" type="Label" parent="Margin/Content/GameRow" unique_id=1356838584]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
 text = "主游戏"
+vertical_alignment = 1
 
-[node name="Game" parent="." unique_id=1902318569 instance=ExtResource("ar_option_button")]
-layout_mode = 0
-offset_left = 272.0
-offset_top = 152.0
-offset_right = 820.0
-offset_bottom = 210.0
+[node name="Game" parent="Margin/Content/GameRow" unique_id=1902318569 instance=ExtResource("ar_option_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="DropdownNote" type="Label" parent="." unique_id=135199606]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 552.0
-offset_right = 820.0
-offset_bottom = 598.0
+[node name="RoomNameRow" type="HBoxContainer" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="RoomNameLabel" type="Label" parent="Margin/Content/RoomNameRow" unique_id=349557147]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "房间名称"
+vertical_alignment = 1
+
+[node name="RoomName" parent="Margin/Content/RoomNameRow" unique_id=1356381974 instance=ExtResource("ar_line_edit")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "1–24 字"
+max_length = 24
+
+[node name="PortRow" type="HBoxContainer" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="PortLabel" type="Label" parent="Margin/Content/PortRow" unique_id=1736106507]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "监听端口 (UDP)"
+vertical_alignment = 1
+
+[node name="Port" parent="Margin/Content/PortRow" unique_id=597618691 instance=ExtResource("ar_line_edit")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "7777"
+placeholder_text = "1–65535 · 默认 7777"
+
+[node name="BindAddressSection" type="VBoxContainer" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BindHeader" type="HBoxContainer" parent="Margin/Content/BindAddressSection"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BindAddressLabel" type="Label" parent="Margin/Content/BindAddressSection/BindHeader" unique_id=1122833040]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "监听网卡 / IP"
+vertical_alignment = 1
+
+[node name="RefreshAddresses" parent="Margin/Content/BindAddressSection/BindHeader" unique_id=921452050 instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "刷新"
+
+[node name="BindAddress" parent="Margin/Content/BindAddressSection" unique_id=2080793745 instance=ExtResource("ar_option_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+clip_text = true
+fit_to_longest_item = false
+
+[node name="Error" type="Label" parent="Margin/Content" unique_id=1126437486]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.65, 0.62, 1)
+
+[node name="DropdownNote" type="Label" parent="Margin/Content" unique_id=135199606]
+unique_name_in_owner = true
+layout_mode = 2
 theme_override_font_sizes/font_size = 17
 text = "选择本机监听 IP；隧道转发目标需与此匹配。请允许 UDP 端口通过防火墙。"
 autowrap_mode = 3
 
-[node name="Cancel" parent="." unique_id=1385452288 instance=ExtResource("ar_button")]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 612.0
-offset_right = 360.0
-offset_bottom = 684.0
+[node name="Spacer" type="Control" parent="Margin/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Actions" type="HBoxContainer" parent="Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="Cancel" parent="Margin/Content/Actions" unique_id=1385452288 instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 72)
+layout_mode = 2
 theme_override_font_sizes/font_size = 26
 text = "取消"
 
-[node name="Confirm" parent="." unique_id=323820946 instance=ExtResource("ar_button")]
-layout_mode = 0
-offset_left = 400.0
-offset_top = 612.0
-offset_right = 820.0
-offset_bottom = 684.0
+[node name="Confirm" parent="Margin/Content/Actions" unique_id=323820946 instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 26
 text = "创建房间"
-
-[node name="RoomNameLabel" type="Label" parent="." unique_id=349557147]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 234.0
-offset_right = 260.0
-offset_bottom = 292.0
-text = "房间名称"
-
-[node name="RoomName" parent="." unique_id=1356381974 instance=ExtResource("ar_line_edit")]
-layout_mode = 0
-offset_left = 272.0
-offset_top = 234.0
-offset_right = 820.0
-offset_bottom = 292.0
-placeholder_text = "1–24 字"
-max_length = 24
-
-[node name="PortLabel" type="Label" parent="." unique_id=1736106507]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 316.0
-offset_right = 260.0
-offset_bottom = 374.0
-text = "监听端口 (UDP)"
-
-[node name="Port" parent="." unique_id=597618691 instance=ExtResource("ar_line_edit")]
-layout_mode = 0
-offset_left = 272.0
-offset_top = 316.0
-offset_right = 820.0
-offset_bottom = 374.0
-text = "7777"
-placeholder_text = "1–65535 · 默认 7777"
-
-[node name="BindAddressLabel" type="Label" parent="." unique_id=1122833040]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 398.0
-offset_right = 260.0
-offset_bottom = 432.0
-text = "监听网卡 / IP"
-
-[node name="BindAddress" parent="." unique_id=2080793745 instance=ExtResource("ar_option_button")]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 440.0
-offset_right = 820.0
-offset_bottom = 498.0
-clip_text = true
-fit_to_longest_item = false
-
-[node name="Error" type="Label" parent="." unique_id=1126437486]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 510.0
-offset_right = 820.0
-offset_bottom = 544.0
-theme_override_colors/font_color = Color(1, 0.65, 0.62, 1)
-
-[node name="RefreshAddresses" parent="." unique_id=921452050 instance=ExtResource("ar_button")]
-layout_mode = 0
-offset_left = 720.0
-offset_top = 390.0
-offset_right = 820.0
-offset_bottom = 432.0
-theme_override_font_sizes/font_size = 22
-text = "刷新"

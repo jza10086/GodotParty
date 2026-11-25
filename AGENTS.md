@@ -100,6 +100,8 @@
 
 ## UI and resolution
 
+- 未经用户明确要求，不要在 UI 上添加任何说明文字。
+
 - Use Memory Jigsaw as the standard in-game composition: full-viewport gameplay with a minimal edge-mounted overlay HUD. Do not shrink the playfield into a dashboard with permanent wide sidebars or title panels. Keep essential actions visible; reveal detailed rules, rankings, catalogs and settings on demand. Preserve each game's visual theme. The blank minigame game.tscn is the reference scene; see doc/api/game_authoring.md for the public menu and input contract.
 - Design UI at 1920x1080. All visual testing, previews used for acceptance, screenshots, and manual or automated layout checks use only 1920x1080. Do not add other resolutions, ultrawide checks, or a resolution test matrix.
 - Use `canvas_items` stretch mode, `expand` aspect, and fractional scaling for non-pixel-art UI.

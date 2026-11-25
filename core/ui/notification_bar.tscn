@@ -21,7 +21,8 @@ theme = ExtResource("2_i0m8c")
 
 [node name="Card" type="PanelContainer" parent="Motion" unique_id=1538664262]
 custom_minimum_size = Vector2(0, 64)
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -360.0

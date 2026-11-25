@@ -79,7 +79,7 @@
 | --- | --- | --- | --- |
 | **I01 · 森系手帖主菜单角色（已移除）** | GPT（图像生成 / OpenAI ImageGen）；参考图由用户提供 | 已随 sage 主题从当前工程移除；[2026-10-23 生成记录](project_credits.md)。 | 项目所有者可授权的原创输出采用 CC0-1.0；[许可声明](../../ASSET_LICENSES.md)。参考图权利链仍见 U03。 |
 | **I02 · Bot 头像套装 V2 正面摆正版（6 张）<br>当前目录 6 文件** | GPT（图像生成）；用户提供角色参考与成品 | [生成方式与逐图名单](../../games/assets/GP_default_avatars_2d/doc/default_2d_avatar_sources.md)；原始 6 张 PNG 位于该形象包的 `avatar_sources/bot_avatars_upright/`。 | 项目所有者可授权的原创输出采用 CC0-1.0；[许可声明](../../ASSET_LICENSES.md)。参考图权利链仍见 U03。 |
-| **I03 · 竞拍大师写实物资图（100 张透明 PNG）<br>当前目录 100 文件** | GPT（图像生成 / 内置 ImageGen）；Pillow 后处理为代码加工 | [生成说明](../../games/minigame/GP_auction_master/doc/GP_auction_master_source.md)；[逐图提示词与文件名](../../games/minigame/GP_auction_master/assets/items/realistic/generation_prompts.json)；同目录 PNG。 | 项目所有者可授权的原创输出采用 CC0-1.0；[许可声明](../../ASSET_LICENSES.md)。生成／后处理代码为 MIT。 |
+| **I03 · 竞拍大师写实物资图（100 张透明 PNG）<br>当前目录 100 文件** | GPT（图像生成 / 内置 ImageGen）；Pillow 后处理为代码加工 | [生成说明](../../games/minigame/GP_auction_master/doc/GP_auction_master_source.md)；[逐图提示词与文件名](../../games/minigame/GP_auction_master/authoring/references/generation_prompts.json)；同目录 PNG。 | 项目所有者可授权的原创输出采用 CC0-1.0；[许可声明](../../ASSET_LICENSES.md)。生成／后处理代码为 MIT。 |
 
 ## GPT 代码生成的程序美术、模型与合成音效
 

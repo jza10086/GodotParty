@@ -16,10 +16,10 @@ border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 border_color = Color(0.28, 0.36, 0.46, 0.75)
-corner_radius_top_left = 24
-corner_radius_top_right = 24
-corner_radius_bottom_right = 24
-corner_radius_bottom_left = 24
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 shadow_color = Color(0, 0, 0, 0.3)
 shadow_size = 28
 
@@ -39,15 +39,21 @@ copy_mode = 2
 
 [node name="Overlay" type="ColorRect" parent="." unique_id=1237543615]
 material = SubResource("BlurMaterial")
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 color = Color(0.025, 0.04, 0.065, 0.72)
 
 [node name="Center" type="CenterContainer" parent="." unique_id=861276044]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Card" type="PanelContainer" parent="Center" unique_id=1748135480]
 custom_minimum_size = Vector2(480, 0)

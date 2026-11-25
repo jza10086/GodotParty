@@ -44,7 +44,16 @@ func _ready() -> void:
 
 func _activate() -> void:
 	show()
-	view.configure(_presentation, api.get_room_players())
+	var presentation: Dictionary = _presentation.duplicate(true)
+	var rows: Variant = presentation.get("rows")
+	if rows is Array:
+		for row: Variant in rows:
+			if row is Dictionary and not row.has("color"):
+				var id: String = str(row.get("player_id", ""))
+				var hex: Variant = api.get_appearance(id).get("color")
+				if hex is String and not hex.is_empty():
+					row["color"] = Color(hex)
+	view.configure(presentation, api.get_room_players())
 	view.set_countdown(-1.0)
 	await get_tree().process_frame
 	if _closed or not api.is_open():

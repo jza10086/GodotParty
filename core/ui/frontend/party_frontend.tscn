@@ -18,25 +18,41 @@ theme = ExtResource("theme")
 script = ExtResource("1")
 
 [node name="Home" parent="." unique_id=1287724236 instance=ExtResource("scene_home")]
-anchors_preset = 0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Rooms" parent="." unique_id=1488218460 instance=ExtResource("scene_rooms")]
 visible = false
-anchors_preset = 0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Lobby" type="Control" parent="." unique_id=981358819]
 visible = false
-anchors_preset = 0
-offset_right = 1920.0
-offset_bottom = 1080.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="Guide" type="Control" parent="." unique_id=1240779585]
 visible = false
 z_index = 5
-anchors_preset = 0
-offset_right = 1920.0
-offset_bottom = 1080.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="X96" type="ColorRect" parent="Guide" unique_id=771956903]

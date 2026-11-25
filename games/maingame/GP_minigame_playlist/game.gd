@@ -133,7 +133,11 @@ func _presentation() -> Dictionary:
 		for other: Dictionary in api.get_players():
 			if other.connected and int(scores.get(other.player_id, 0)) > points:
 				rank_value += 1
-		rows.append({"player_id": player.player_id, "rank": rank_value if player.connected else 0, "status": "完成" if player.connected else "已退出", "metrics": {"points": points}})
+		var row: Dictionary = {"player_id": player.player_id, "rank": rank_value if player.connected else 0, "status": "完成" if player.connected else "已退出", "metrics": {"points": points}}
+		var hex: Variant = api.get_appearance(player.player_id).get("color")
+		if hex is String and not hex.is_empty():
+			row["color"] = Color(hex)
+		rows.append(row)
 	rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return (a.rank if a.rank > 0 else 999) < (b.rank if b.rank > 0 else 999))
 	return {"title": "小游戏轮换 · 完成 %d / %d 局" % [state.get("completed", 0), state.get("queue", []).size()], "columns": [{"key": "points", "title": "派对积分", "format": "integer"}], "rows": rows}

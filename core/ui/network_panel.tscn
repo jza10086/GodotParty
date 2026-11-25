@@ -2,27 +2,38 @@
 
 [ext_resource type="Script" uid="uid://byl2268xh04li" path="res://core/ui/network_panel.gd" id="1_ciipq"]
 [ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="2_mtn0c"]
+[ext_resource type="Texture2D" path="res://core/ui/icons/packet_loss.svg" id="3_loss"]
+[ext_resource type="Texture2D" path="res://core/ui/icons/disconnected.svg" id="4_disc"]
+[ext_resource type="Texture2D" path="res://core/ui/icons/host.svg" id="5_host"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ngmkl"]
 content_margin_left = 24.0
-content_margin_top = 24.0
+content_margin_top = 20.0
 content_margin_right = 24.0
-content_margin_bottom = 24.0
-bg_color = Color(0.045, 0.065, 0.095, 0.97)
+content_margin_bottom = 20.0
+bg_color = Color(0.045, 0.068, 0.1, 0.92)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.3, 0.46, 0.58, 0.9)
+border_color = Color(0.36, 0.52, 0.65, 0.55)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 
+[sub_resource type="StyleBoxFlat" id="DividerStyle"]
+bg_color = Color(0.55, 0.76, 0.94, 0.2)
+content_margin_top = 1.0
+content_margin_bottom = 0.0
+
 [node name="NetworkPanel" type="CanvasLayer" unique_id=409968925]
 layer = 100
 visible = false
 script = ExtResource("1_ciipq")
+packet_loss_icon = ExtResource("3_loss")
+disconnected_icon = ExtResource("4_disc")
+host_icon = ExtResource("5_host")
 
 [node name="Center" type="CenterContainer" parent="." unique_id=1413437950]
 anchors_preset = 15
@@ -42,82 +53,63 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_ngmkl")
 [node name="Content" type="VBoxContainer" parent="Center/Card" unique_id=1053252656]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="Center/Card/Content" unique_id=1393883285]
+[node name="HeadingInset" type="MarginContainer" parent="Center/Card/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_right = 14
+
+[node name="Heading" type="HBoxContainer" parent="Center/Card/Content/HeadingInset"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 30
-text = "玩家与延迟"
+mouse_filter = 2
+theme_override_constants/separation = 20
 
-[node name="Hint" type="Label" parent="Center/Card/Content" unique_id=2099590806]
+[node name="RankHeading" type="Label" parent="Center/Card/Content/HeadingInset/Heading"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(68, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 20
+text = "名次"
+horizontal_alignment = 1
+
+[node name="PlayerHeading" type="Label" parent="Center/Card/Content/HeadingInset/Heading" unique_id=61466071]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 20
+text = "玩家"
+
+[node name="MetricHeadings" type="HBoxContainer" parent="Center/Card/Content/HeadingInset/Heading"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "松开 Tab 关闭 · F3 查看总积分"
+mouse_filter = 2
+theme_override_constants/separation = 20
+
+[node name="PingHeading" type="Label" parent="Center/Card/Content/HeadingInset/Heading" unique_id=914076018]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(136, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 20
+text = "Ping"
+horizontal_alignment = 2
 
 [node name="Separator" type="HSeparator" parent="Center/Card/Content" unique_id=387648035]
 layout_mode = 2
 mouse_filter = 2
+theme_override_styles/separator = SubResource("DividerStyle")
 
-[node name="Players" type="GridContainer" parent="Center/Card/Content" unique_id=428486803]
+[node name="Rows" type="VBoxContainer" parent="Center/Card/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/h_separation = 24
-theme_override_constants/v_separation = 8
-columns = 6
-
-[node name="RankHeading" type="Label" parent="Center/Card/Content/Players"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(80, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "名次"
-horizontal_alignment = 2
-
-[node name="PlayerHeading" type="Label" parent="Center/Card/Content/Players" unique_id=61466071]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 22
-text = "玩家"
-
-[node name="ScoreHeading" type="Label" parent="Center/Card/Content/Players"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "派对积分"
-horizontal_alignment = 2
-
-[node name="LatencyHeading" type="Label" parent="Center/Card/Content/Players" unique_id=914076018]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(140, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "至房主 RTT"
-horizontal_alignment = 2
-
-[node name="StateHeading" type="Label" parent="Center/Card/Content/Players" unique_id=1051642979]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(160, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "连接状态"
-
-[node name="LossHeading" type="Label" parent="Center/Card/Content/Players" unique_id=1600065768]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(140, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "丢包率"
-horizontal_alignment = 2
-
-[node name="Note" type="Label" parent="Center/Card/Content" unique_id=380791953]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "延迟为玩家与房主之间的往返时间；其他玩家的数据由房主提供。"
-autowrap_mode = 3
+theme_override_constants/separation = 6

@@ -1,6 +1,24 @@
-## Passive Tab surface: the main game owns standings; core only adds existing link statistics.
+## Passive Tab scoreboard and connection overview.
+## The main game owns standings; core overlays Ping and high packet-loss warnings.
 extends CanvasLayer
-const PlayerCounts: Script = preload("res://core/config/party_player_counts.gd")
+
+const COLOR_GOOD: Color = Color("#99d9bf")
+const COLOR_WARN: Color = Color("#f3c779")
+const COLOR_CRITICAL: Color = Color("#f28c8c")
+const COLOR_MUTED: Color = Color("#95a0ad")
+const COLOR_TEXT: Color = Color("#edf2f7")
+const COLOR_GOLD: Color = Color("#f4d06f")
+const COLOR_SILVER: Color = Color("#d5dde8")
+const COLOR_BRONZE: Color = Color("#dfa578")
+const METRIC_COLUMN_WIDTH: float = 144.0
+
+@export var packet_loss_icon: Texture2D
+@export var disconnected_icon: Texture2D
+@export var host_icon: Texture2D
+@export_range(0.0, 100.0, 0.5) var loss_warn_percent: float = 1.0
+@export_range(0.0, 100.0, 0.5) var loss_critical_percent: float = 5.0
+@export_range(10.0, 500.0, 5.0) var ping_warn_msec: float = 80.0
+@export_range(20.0, 1000.0, 5.0) var ping_critical_msec: float = 150.0
 
 var _connection: Node
 var _i18n: RefCounted
@@ -8,13 +26,16 @@ var _can_open: Callable
 var _standings: Callable
 var _format_metric: Callable
 var _refresh_in: float = 0.0
-var _rows: Array[Array] = []
-@onready var _title: Label = %Title
-@onready var _hint: Label = %Hint
-@onready var _note: Label = %Note
-@onready var _table: GridContainer = %Players
+var _row_normal_style: StyleBoxFlat
+var _row_self_style: StyleBoxFlat
 
-## The formal shell injects the existing connection and its current input context.
+@onready var _rank_heading: Label = %RankHeading
+@onready var _player_heading: Label = %PlayerHeading
+@onready var _metric_headings: HBoxContainer = %MetricHeadings
+@onready var _ping_heading: Label = %PingHeading
+@onready var _rows: VBoxContainer = %Rows
+
+## Inject the active room connection and shell context before entering the tree.
 func configure(connection: Node, i18n: RefCounted, can_open: Callable, standings: Callable, format_metric: Callable) -> void:
 	_connection = connection
 	_i18n = i18n
@@ -24,38 +45,34 @@ func configure(connection: Node, i18n: RefCounted, can_open: Callable, standings
 
 func _ready() -> void:
 	assert(_connection != null and _i18n != null and _can_open.is_valid() and _standings.is_valid() and _format_metric.is_valid(), "Network panel requires the application context")
-	for index: int in range(PlayerCounts.MAX_PLAYERS):
-		var row: Array[Label] = []
-		for column: int in range(6):
-			var label: Label = Label.new()
-			label.custom_minimum_size = Vector2([80.0, 320.0, 180.0, 140.0, 160.0, 140.0][column], 40.0)
-			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL if column == 1 else Control.SIZE_FILL
-			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if column in [0, 2, 3, 5] else HORIZONTAL_ALIGNMENT_LEFT
-			label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-			label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			label.add_theme_font_size_override("font_size", 22)
-			_table.add_child(label)
-			row.append(label)
-		_rows.append(row)
+	assert(packet_loss_icon != null and disconnected_icon != null and host_icon != null, "Network panel requires status icons")
+	_row_normal_style = _make_row_style(Color(0.09, 0.13, 0.18, 0.55), Color(0.35, 0.48, 0.6, 0.12), 0)
+	_row_self_style = _make_row_style(Color(0.14, 0.26, 0.38, 0.86), Color(0.56, 0.84, 1.0, 0.68), 1)
 	_connection.changed.connect(_connection_changed)
 	_i18n.changed.connect(_localize)
 	get_window().focus_exited.connect(close)
 	_localize()
 	close()
 
+func _make_row_style(bg: Color, border: Color, border_width: int) -> StyleBoxFlat:
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	style.bg_color = bg
+	style.border_color = border
+	style.set_border_width_all(border_width)
+	style.set_corner_radius_all(16)
+	style.content_margin_left = 14.0
+	style.content_margin_right = 14.0
+	style.content_margin_top = 8.0
+	style.content_margin_bottom = 8.0
+	return style
+
 func _text(key: String) -> String:
 	return _i18n.text("core", StringName(key))
 
 func _localize() -> void:
-	_title.text = _text("玩家与延迟")
-	_hint.text = _text("松开 Tab 关闭 · F3 查看总积分")
-	_note.text = _text("延迟为玩家与房主之间的往返时间；其他玩家的数据由房主提供。")
-	%RankHeading.text = _text("名次")
-	%PlayerHeading.text = _text("玩家")
-	%LatencyHeading.text = _text("至房主 RTT")
-	%StateHeading.text = _text("连接状态")
-	%LossHeading.text = _text("丢包率")
-	_note.text += "\n" + _text("丢包率为可靠包估计，约每 10 秒更新并平滑；自己的行显示上行，其他玩家显示房主下行。")
+	_rank_heading.text = _text("名次")
+	_player_heading.text = _text("玩家")
+	_ping_heading.text = "Ping"
 	if visible:
 		_refresh()
 
@@ -105,57 +122,199 @@ func _refresh() -> void:
 	var columns: Array = presentation.get("columns", [])
 	var players: Array = _ordered_players(result_rows)
 	var results: Dictionary = {}
-	for entry: Dictionary in result_rows:
-		for id: String in entry.get("members", [entry.get("player_id", "")]):
-			results[id] = entry
-	_title.text = presentation.get("title", _text("玩家与延迟"))
-	_table.columns = 6 if ranked else 4
-	%RankHeading.visible = ranked
-	%ScoreHeading.visible = ranked
-	%ScoreHeading.text = columns[0].get("title", columns[0].key) if columns.size() == 1 else _text("主游戏成绩")
-	var local_peer: int = _connection.local_peer()
-	for index: int in _rows.size():
-		var row: Array = _rows[index]
-		var occupied: bool = index < players.size()
-		for label: Label in row:
-			label.visible = occupied
-		if not occupied:
+	for entry: Variant in result_rows:
+		if not entry is Dictionary:
 			continue
-		var player: Dictionary = players[index]
-		row[0].visible = ranked
-		row[2].visible = ranked
-		var entry: Dictionary = results.get(player.player_id, {})
-		var rank_value: int = entry.get("rank", 0)
-		row[0].text = str(rank_value) if rank_value > 0 else "—"
-		var metrics: PackedStringArray = []
-		for column: Dictionary in columns:
-			var value: String = _format_metric.call(entry.get("metrics", {}).get(column.key, "—"), column.get("format", "text"))
-			metrics.append(value if columns.size() == 1 else column.get("title", column.key) + "：" + value)
-		row[2].text = "\n".join(metrics) if not metrics.is_empty() else "—"
-		row[1].text = player.name
-		if player.peer_id == local_peer:
-			row[1].text += " · " + _text("你")
-		if player.peer_id == 1:
-			row[1].text += " · " + _text("房主")
-		row[1].modulate = Color.WHITE if player.connected else Color("#95a0ad")
-		var sample: Dictionary = _connection.get_peer_stats(1 if player.peer_id == local_peer and not _connection.host else player.peer_id)
-		var state: String = "host" if player.connected and player.peer_id == 1 else sample.state
-		var captions: Dictionary[String, String] = {"host": "房主", "offline": "已掉线", "measuring": "测量中", "connected": "正常", "degraded": "波动较大", "stalled": "无响应"}
-		var color: Color = Color("#99d9bf")
-		if state in ["offline", "stalled"]:
-			color = Color("#f28c8c")
-		elif state == "degraded":
-			color = Color("#f3c779")
-		elif state == "measuring":
-			color = Color("#b0bbc9")
-		row[3].text = "%d ms" % roundi(sample.rtt_msec) if state in ["connected", "degraded"] else "—"
-		row[4].text = _text(captions[state])
-		row[3].modulate = color
-		row[4].modulate = color
-		row[5].text = "—"
-		row[5].modulate = color
-		if state in ["connected", "degraded"]:
-			row[5].text = "%.1f%%" % sample.packet_loss_percent if sample.packet_loss_ready else _text("测量中")
+		for id: Variant in entry.get("members", [entry.get("player_id", "")]):
+			if id is String:
+				results[id] = entry
+	_rank_heading.visible = ranked
+	_metric_headings.visible = ranked and not columns.is_empty()
+	_rebuild_metric_headings(columns)
+	_clear_children(_rows)
+	var local_peer: int = _connection.local_peer()
+	for player: Variant in players:
+		if not player is Dictionary:
+			continue
+		var entry: Dictionary = results.get(str(player.get("player_id", "")), {})
+		_rows.add_child(_build_row(player, entry, columns, ranked, local_peer))
+
+func _rebuild_metric_headings(columns: Array) -> void:
+	_clear_children(_metric_headings)
+	for column: Variant in columns:
+		if not column is Dictionary:
+			continue
+		var col_width: float = float(column.get("width", METRIC_COLUMN_WIDTH))
+		var cell: HBoxContainer = HBoxContainer.new()
+		cell.custom_minimum_size = Vector2(col_width, 0.0)
+		cell.alignment = BoxContainer.ALIGNMENT_END
+		cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cell.add_theme_constant_override("separation", 6)
+		var icon: Variant = column.get("icon")
+		if icon is Texture2D:
+			var icon_rect: TextureRect = TextureRect.new()
+			icon_rect.texture = icon
+			icon_rect.custom_minimum_size = Vector2(18.0, 18.0)
+			icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			cell.add_child(icon_rect)
+		var label: Label = Label.new()
+		label.text = str(column.get("title", column.get("key", "")))
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		label.theme_type_variation = &"MutedLabel"
+		label.add_theme_font_size_override("font_size", 20)
+		cell.add_child(label)
+		_metric_headings.add_child(cell)
+
+func _build_row(player: Dictionary, entry: Dictionary, columns: Array, ranked: bool, local_peer: int) -> PanelContainer:
+	var is_self: bool = int(player.get("peer_id", -1)) == local_peer
+	var connected: bool = bool(player.get("connected", true))
+	var panel: PanelContainer = PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_theme_stylebox_override("panel", _row_self_style if is_self else _row_normal_style)
+	var line: HBoxContainer = HBoxContainer.new()
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line.add_theme_constant_override("separation", 20)
+	panel.add_child(line)
+	if ranked:
+		var rank_value: int = int(entry.get("rank", 0))
+		var rank_label: Label = Label.new()
+		rank_label.custom_minimum_size = Vector2(68.0, 32.0)
+		rank_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		rank_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		rank_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		rank_label.add_theme_font_size_override("font_size", 22)
+		rank_label.text = str(rank_value) if rank_value > 0 else "—"
+		rank_label.modulate = _rank_color(rank_value) if connected else COLOR_MUTED
+		line.add_child(rank_label)
+	var name_label: Label = Label.new()
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_label.custom_minimum_size = Vector2(280.0, 32.0)
+	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	name_label.add_theme_font_size_override("font_size", 22)
+	name_label.text = str(player.get("name", ""))
+	var raw_color: Variant = entry.get("color")
+	var player_color: Variant = raw_color if raw_color is Color else (Color.from_string(raw_color, COLOR_TEXT) if raw_color is String and Color.html_is_valid(raw_color) else null)
+	if player_color is Color:
+		var tinted: Color = player_color
+		name_label.modulate = tinted if connected else Color(tinted.r, tinted.g, tinted.b, 0.45)
+	else:
+		name_label.modulate = COLOR_TEXT if connected else COLOR_MUTED
+	line.add_child(name_label)
+	if ranked and not columns.is_empty():
+		var metrics_row: HBoxContainer = HBoxContainer.new()
+		metrics_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		metrics_row.add_theme_constant_override("separation", 20)
+		var metrics_data: Dictionary = entry.get("metrics", {}) if entry.get("metrics") is Dictionary else {}
+		for column: Variant in columns:
+			if not column is Dictionary:
+				continue
+			metrics_row.add_child(_build_metric_cell(column, metrics_data.get(column.get("key", "")), connected))
+		line.add_child(metrics_row)
+	line.add_child(_build_ping_cell(player, local_peer))
+	return panel
+
+func _build_metric_cell(column: Dictionary, raw_value: Variant, connected: bool) -> HBoxContainer:
+	var col_width: float = float(column.get("width", METRIC_COLUMN_WIDTH))
+	var cell: HBoxContainer = HBoxContainer.new()
+	cell.custom_minimum_size = Vector2(col_width, 32.0)
+	cell.alignment = BoxContainer.ALIGNMENT_END
+	cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cell.add_theme_constant_override("separation", 6)
+	var icon: Variant = column.get("icon")
+	if icon is Texture2D:
+		var icon_rect: TextureRect = TextureRect.new()
+		icon_rect.texture = icon
+		icon_rect.custom_minimum_size = Vector2(20.0, 20.0)
+		icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cell.add_child(icon_rect)
+	var label: Label = Label.new()
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_size_override("font_size", 22)
+	label.text = "—" if raw_value == null else str(_format_metric.call(raw_value, str(column.get("format", "text"))))
+	label.modulate = COLOR_TEXT if connected else COLOR_MUTED
+	cell.add_child(label)
+	return cell
+
+func _build_ping_cell(player: Dictionary, local_peer: int) -> HBoxContainer:
+	var cell: HBoxContainer = HBoxContainer.new()
+	cell.custom_minimum_size = Vector2(136.0, 32.0)
+	cell.alignment = BoxContainer.ALIGNMENT_END
+	cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cell.add_theme_constant_override("separation", 8)
+	var peer_id: int = int(player.get("peer_id", -1))
+	var connected: bool = bool(player.get("connected", true))
+	var sample: Dictionary = _connection.get_peer_stats(1 if peer_id == local_peer and not _connection.host else peer_id)
+	var state: String = "host" if connected and peer_id == 1 else str(sample.get("state", "offline"))
+	var ping_text: String = "—"
+	var ping_color: Color = COLOR_MUTED
+	var warn_texture: Texture2D = null
+	var warn_color: Color = Color.WHITE
+	if state == "host":
+		ping_text = "0 ms"
+		ping_color = COLOR_GOOD
+		warn_texture = host_icon
+		warn_color = COLOR_GOLD
+	elif state in ["connected", "degraded"]:
+		var rtt: float = float(sample.get("rtt_msec", 0.0))
+		ping_text = "%d ms" % roundi(rtt)
+		ping_color = _ping_color(rtt)
+		var loss_ready: bool = bool(sample.get("packet_loss_ready", false))
+		var loss_percent: float = float(sample.get("packet_loss_percent", 0.0))
+		if loss_ready and loss_percent >= loss_warn_percent:
+			warn_texture = packet_loss_icon
+			warn_color = COLOR_CRITICAL if loss_percent >= loss_critical_percent else COLOR_WARN
+	elif state in ["offline", "stalled"]:
+		ping_color = COLOR_CRITICAL
+		warn_texture = disconnected_icon
+		warn_color = COLOR_CRITICAL
+	if warn_texture != null:
+		var icon_rect: TextureRect = TextureRect.new()
+		icon_rect.texture = warn_texture
+		icon_rect.custom_minimum_size = Vector2(20.0, 20.0)
+		icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon_rect.modulate = warn_color
+		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cell.add_child(icon_rect)
+	var ping_label: Label = Label.new()
+	ping_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	ping_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	ping_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ping_label.add_theme_font_size_override("font_size", 22)
+	ping_label.text = ping_text
+	ping_label.modulate = ping_color
+	cell.add_child(ping_label)
+	return cell
+
+func _ping_color(rtt_msec: float) -> Color:
+	if rtt_msec >= ping_critical_msec:
+		return COLOR_CRITICAL
+	if rtt_msec >= ping_warn_msec:
+		return COLOR_WARN
+	return COLOR_GOOD
+
+func _rank_color(rank_value: int) -> Color:
+	match rank_value:
+		1: return COLOR_GOLD
+		2: return COLOR_SILVER
+		3: return COLOR_BRONZE
+	return COLOR_TEXT
+
+func _clear_children(container: Node) -> void:
+	for child: Node in container.get_children():
+		container.remove_child(child)
+		child.queue_free()
 
 ## Keep author ranks and tie order. Team members share their author's row; omitted players follow.
 func _ordered_players(rows: Array) -> Array:
@@ -163,20 +322,23 @@ func _ordered_players(rows: Array) -> Array:
 	for index: int in rows.size():
 		indices.append(index)
 	indices.sort_custom(func(a: int, b: int) -> bool:
-		var rank_a: int = rows[a].get("rank", 0)
-		var rank_b: int = rows[b].get("rank", 0)
+		var rank_a: int = int(rows[a].get("rank", 0))
+		var rank_b: int = int(rows[b].get("rank", 0))
 		if rank_a == rank_b:
 			return a < b
 		return rank_b == 0 or (rank_a > 0 and rank_a < rank_b))
 	var ordered: Array = []
 	var included: Array[String] = []
 	for index: int in indices:
-		for id: String in rows[index].get("members", [rows[index].get("player_id", "")]):
+		for id: Variant in rows[index].get("members", [rows[index].get("player_id", "")]):
+			if not id is String:
+				continue
 			for player: Dictionary in _connection.players:
-				if player.player_id == id:
+				if str(player.get("player_id", "")) == id:
 					ordered.append(player)
 					included.append(id)
 	for player: Dictionary in _connection.players:
-		if player.player_id not in included:
+		var id: String = str(player.get("player_id", ""))
+		if id not in included:
 			ordered.append(player)
 	return ordered

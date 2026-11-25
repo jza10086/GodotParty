@@ -1,4 +1,4 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" format=3 uid="uid://be5nlcvvcymob"]
 
 [sub_resource type="StyleBoxFlat" id="FieldAvailable"]
 content_margin_left = 12.0
@@ -6,12 +6,11 @@ content_margin_top = 6.0
 content_margin_right = 12.0
 content_margin_bottom = 6.0
 bg_color = Color(0.205, 0.275, 0.35, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 corner_detail = 16
-anti_aliasing = true
 anti_aliasing_size = 1.25
 
 [sub_resource type="StyleBoxFlat" id="FieldFocused"]
@@ -25,40 +24,11 @@ border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 border_color = Color(0.46, 0.61, 0.74, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 corner_detail = 16
-anti_aliasing = true
-anti_aliasing_size = 1.25
-
-[sub_resource type="StyleBoxFlat" id="Group"]
-content_margin_left = 10.0
-content_margin_top = 6.0
-content_margin_right = 10.0
-content_margin_bottom = 6.0
-bg_color = Color(0.09, 0.135, 0.19, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-corner_detail = 16
-anti_aliasing = true
-anti_aliasing_size = 1.25
-
-[sub_resource type="StyleBoxFlat" id="Row"]
-content_margin_left = 8.0
-content_margin_top = 4.0
-content_margin_right = 8.0
-content_margin_bottom = 4.0
-bg_color = Color(0.145, 0.20, 0.27, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-corner_detail = 16
-anti_aliasing = true
 anti_aliasing_size = 1.25
 
 [sub_resource type="StyleBoxFlat" id="Body"]
@@ -67,56 +37,81 @@ content_margin_top = 6.0
 content_margin_right = 6.0
 content_margin_bottom = 6.0
 bg_color = Color(0.11, 0.16, 0.22, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 corner_detail = 16
-anti_aliasing = true
+anti_aliasing_size = 1.25
+
+[sub_resource type="StyleBoxFlat" id="Group"]
+content_margin_left = 10.0
+content_margin_top = 6.0
+content_margin_right = 10.0
+content_margin_bottom = 6.0
+bg_color = Color(0.09, 0.135, 0.19, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 16
+anti_aliasing_size = 1.25
+
+[sub_resource type="StyleBoxFlat" id="Row"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.145, 0.2, 0.27, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 16
 anti_aliasing_size = 1.25
 
 [resource]
+Button/font_sizes/font_size = 26
+Button/styles/disabled = SubResource("FieldAvailable")
+Button/styles/focus = SubResource("FieldFocused")
+Button/styles/hover = SubResource("FieldFocused")
+Button/styles/normal = SubResource("FieldAvailable")
+Button/styles/pressed = SubResource("FieldFocused")
+CheckButton/font_sizes/font_size = 26
+ColorPickerButton/font_sizes/font_size = 26
+ColorPickerButton/styles/disabled = SubResource("FieldAvailable")
+ColorPickerButton/styles/focus = SubResource("FieldFocused")
+ColorPickerButton/styles/hover = SubResource("FieldFocused")
+ColorPickerButton/styles/normal = SubResource("FieldAvailable")
+ColorPickerButton/styles/pressed = SubResource("FieldFocused")
 FrameAvailable/base_type = &"Panel"
 FrameAvailable/styles/panel = SubResource("FieldAvailable")
 FrameDisabled/base_type = &"Panel"
 FrameDisabled/styles/panel = SubResource("FieldAvailable")
 FrameFocused/base_type = &"Panel"
 FrameFocused/styles/panel = SubResource("FieldFocused")
+LineEdit/font_sizes/font_size = 26
+LineEdit/styles/focus = SubResource("FieldFocused")
+LineEdit/styles/normal = SubResource("FieldAvailable")
+LineEdit/styles/read_only = SubResource("FieldAvailable")
+OptionButton/font_sizes/font_size = 26
+OptionButton/styles/disabled = SubResource("FieldAvailable")
+OptionButton/styles/focus = SubResource("FieldFocused")
+OptionButton/styles/hover = SubResource("FieldFocused")
+OptionButton/styles/hover_pressed = SubResource("FieldFocused")
+OptionButton/styles/normal = SubResource("FieldAvailable")
+OptionButton/styles/pressed = SubResource("FieldFocused")
+PopupMenu/font_sizes/font_size = 26
+PopupMenu/styles/hover = SubResource("FieldFocused")
+PopupMenu/styles/panel = SubResource("FieldAvailable")
+SettingsBody/base_type = &"PanelContainer"
+SettingsBody/styles/panel = SubResource("Body")
 SettingsGroup/base_type = &"PanelContainer"
 SettingsGroup/styles/panel = SubResource("Group")
 SettingsRow/base_type = &"PanelContainer"
 SettingsRow/styles/panel = SubResource("Row")
-SettingsBody/base_type = &"PanelContainer"
-SettingsBody/styles/panel = SubResource("Body")
-Button/styles/normal = SubResource("FieldAvailable")
-Button/styles/disabled = SubResource("FieldAvailable")
-Button/styles/hover = SubResource("FieldFocused")
-Button/styles/pressed = SubResource("FieldFocused")
-Button/styles/focus = SubResource("FieldFocused")
-LineEdit/styles/normal = SubResource("FieldAvailable")
-LineEdit/styles/read_only = SubResource("FieldAvailable")
-LineEdit/styles/focus = SubResource("FieldFocused")
-TextEdit/styles/normal = SubResource("FieldAvailable")
-TextEdit/styles/read_only = SubResource("FieldAvailable")
-TextEdit/styles/focus = SubResource("FieldFocused")
-OptionButton/styles/normal = SubResource("FieldAvailable")
-OptionButton/styles/disabled = SubResource("FieldAvailable")
-OptionButton/styles/hover = SubResource("FieldFocused")
-OptionButton/styles/pressed = SubResource("FieldFocused")
-OptionButton/styles/hover_pressed = SubResource("FieldFocused")
-OptionButton/styles/focus = SubResource("FieldFocused")
-ColorPickerButton/styles/normal = SubResource("FieldAvailable")
-ColorPickerButton/styles/disabled = SubResource("FieldAvailable")
-ColorPickerButton/styles/hover = SubResource("FieldFocused")
-ColorPickerButton/styles/pressed = SubResource("FieldFocused")
-ColorPickerButton/styles/focus = SubResource("FieldFocused")
-PopupMenu/styles/panel = SubResource("FieldAvailable")
-PopupMenu/styles/hover = SubResource("FieldFocused")
-Button/font_sizes/font_size = 26
-CheckButton/font_sizes/font_size = 26
-ColorPickerButton/font_sizes/font_size = 26
-LineEdit/font_sizes/font_size = 26
-OptionButton/font_sizes/font_size = 26
-PopupMenu/font_sizes/font_size = 26
 SpinBox/font_sizes/font_size = 26
 TextEdit/font_sizes/font_size = 26
+TextEdit/styles/focus = SubResource("FieldFocused")
+TextEdit/styles/normal = SubResource("FieldAvailable")
+TextEdit/styles/read_only = SubResource("FieldAvailable")

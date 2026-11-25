@@ -10,7 +10,10 @@ const MICROPHONE_MODES: Dictionary = {"open": "自由麦", "push_to_talk": "长�
 const DEFAULT_MICROPHONE_MODE: String = "open"
 const OPENING_MODES: Dictionary = {"first": "首次", "repeat": "重复"}
 const DEFAULT_OPENING_MODE: String = "first"
-const DEFAULT_OPENING_VOLUME: int = 50
+const DEFAULT_OPENING_VOLUME: int = 30
+const OPENING_FPS_VALUES: Array = [30, 60, 120, 180, 0]
+const OPENING_FPS_LABELS: Array = ["30 FPS", "60 FPS", "120 FPS", "180 FPS", "无限制"]
+const DEFAULT_OPENING_FPS: int = 60
 const MAX_FPS_LIMIT: int = 1000
 const Paths = preload("res://core/config/party_paths.gd")
 var settings_path: String = Paths.application_root().path_join("core/config/settings.json")
@@ -76,6 +79,9 @@ func validate_system_settings() -> Error:
 	var opening_volume: Variant = config.get_value("opening", "volume", DEFAULT_OPENING_VOLUME)
 	if not opening_volume is int or opening_volume < 0 or opening_volume > 100:
 		invalid = "opening/volume"
+	var opening_fps: Variant = config.get_value("opening", "fps", DEFAULT_OPENING_FPS)
+	if not opening_fps is int or opening_fps not in OPENING_FPS_VALUES:
+		invalid = "opening/fps"
 	if not config.get_value("profile", "opening_seen", false) is bool:
 		invalid = "profile/opening_seen"
 	var volume: Variant = config.get_value("ui", "volume", 1.0)
@@ -324,6 +330,7 @@ func settings_schema(draft: Dictionary = {}) -> Dictionary:
 
 		"opening.volume": {"type": "int", "control": "number", "title": "开场动画音量", "default": DEFAULT_OPENING_VOLUME, "min": 0, "max": 100, "step": 1, "suffix": "%"},
 		"opening.mode": {"type": "string", "control": "select", "title": "开场动画设置", "default": DEFAULT_OPENING_MODE, "values": OPENING_MODES.keys(), "labels": OPENING_MODES.values()},
+		"opening.fps": {"type": "int", "control": "select", "title": "开场动画帧率", "description": "控制开场动画实时渲染时的帧率上限；播放结束后自动恢复游戏帧率上限设置。", "default": DEFAULT_OPENING_FPS, "values": OPENING_FPS_VALUES.duplicate(), "labels": OPENING_FPS_LABELS.duplicate()},
 		"display.mode": {"type": "string", "control": "select", "title": "显示模式", "description": "选择窗口化、无边框全屏或独占全屏。窗口化时可展开调整分辨率；全屏使用显示器的尺寸。", "default": DISPLAY_DEFAULTS.mode, "values": DISPLAY_MODES.keys(), "labels": DISPLAY_MODES.values()},
 		"display.resolution": {"type": "array", "control": "select", "title": "窗口分辨率", "description": "调整窗口画面的输出尺寸。较高的分辨率提供更清晰的画面，也会增加渲染开销。全屏模式沿用显示器尺寸。", "default": DISPLAY_DEFAULTS.resolution, "items": {"type": "int"}, "min_items": 2, "max_items": 2, "values": resolutions, "labels": resolution_labels},
 		"display.vsync": {"type": "bool", "control": "toggle", "title": "垂直同步", "default": DISPLAY_DEFAULTS.vsync},
@@ -359,7 +366,7 @@ func settings_schema(draft: Dictionary = {}) -> Dictionary:
 			{"field": "display.mode", "children": [
 				{"field": "display.resolution", "enabled_when": {"field": "display.mode", "equals": "windowed"}, "disabled_reason": "全屏使用当前屏幕分辨率；窗口尺寸已保留。"}]},
 			{"field": "display.vsync"}, {"field": "display.fps"}]},
-		{"id": "opening", "title": "开场动画设置", "expanded": true, "children": [{"field": "opening.mode"}, {"field": "opening.volume"}]},
+		{"id": "opening", "title": "开场动画设置", "expanded": true, "children": [{"field": "opening.mode"}, {"field": "opening.volume"}, {"field": "opening.fps"}]},
 		{"id": "audio", "title": "声音与设备", "expanded": true, "children": [
 			{"id": "playback", "title": "播放", "children": [
 				{"field": "system.output_device"}, {"field": "ui.volume"}]},

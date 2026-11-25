@@ -38,19 +38,23 @@ func configure(presentation: Dictionary, players: Array[Dictionary], format_metr
 		style.content_margin_right = 24
 		style.content_margin_top = 6
 		style.content_margin_bottom = 6
-		style.set_corner_radius_all(8)
+		style.set_corner_radius_all(16)
 		panel.add_theme_stylebox_override("panel", style)
 		%Rows.add_child(panel)
 		var line: HBoxContainer = HBoxContainer.new()
 		line.custom_minimum_size.y = 34
 		panel.add_child(line)
-		_add_line(line, str(rank_value) if rank_value > 0 else "—", row.get("name", " / ".join(member_names)), row.get("status", ""), metrics, rank_value == 1)
+		var row_color: Variant = row.get("color")
+		var name_color: Variant = row_color if row_color is Color else (Color.from_string(row_color, Color.WHITE) if row_color is String and Color.html_is_valid(row_color) else null)
+		_add_line(line, str(rank_value) if rank_value > 0 else "—", row.get("name", " / ".join(member_names)), row.get("status", ""), metrics, rank_value == 1, name_color)
 	%Return.grab_focus()
 
-func _add_line(line: HBoxContainer, rank_text: String, player_name: String, status: String, metrics: Array, winner: bool) -> void:
+func _add_line(line: HBoxContainer, rank_text: String, player_name: String, status: String, metrics: Array, winner: bool, name_color: Variant = null) -> void:
 	line.add_theme_constant_override("separation", 28)
 	_cell(line, rank_text, 100, false, winner)
-	_cell(line, player_name, 0, true, winner)
+	var name_cell: Label = _cell(line, player_name, 0, true, winner)
+	if name_color is Color:
+		name_cell.add_theme_color_override("font_color", name_color)
 	_cell(line, status, 140, false, false)
 	for value: String in metrics:
 		var metric: Label = _cell(line, value, 180, false, winner)

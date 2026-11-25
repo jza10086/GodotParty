@@ -10,13 +10,8 @@ func _ready() -> void:
 	_refresh()
 
 func _refresh() -> void:
-	visible = connection.online and connection.room.get("phase") != "lobby"
+	visible = connection.online and not connection.host and connection.room.get("phase") != "lobby"
 	if not visible:
-		return
-	if connection.host:
-		text = "HOST · 实验" if connection.is_network_lab_active() else "HOST"
-		tooltip_text = "房主 · 按住 Tab 查看玩家与延迟"
-		modulate = Color.WHITE
 		return
 	var sample: Dictionary = connection.get_peer_stats(1)
 	var state: String = sample.state

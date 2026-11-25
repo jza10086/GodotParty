@@ -1,20 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
-
-
-
-
-
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
-
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/line_edit.tscn" id="ar_line_edit"]
-
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
 
 [node name="Profile" type="Control"]
-theme = ExtResource("theme")
-mouse_filter = 2
+layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -24,90 +16,126 @@ offset_left = -420.0
 offset_top = -270.0
 offset_right = 420.0
 offset_bottom = 270.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("theme")
 
 [node name="Dialog" parent="." instance=ExtResource("ar_panel")]
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 840.0
-offset_bottom = 540.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
-[node name="Title" type="Label" parent="."]
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 56
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 56
+theme_override_constants/margin_bottom = 38
+
+[node name="Content" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
 theme_override_font_sizes/font_size = 29
-offset_left = 60.0
-offset_top = 40.0
-offset_right = 780.0
-offset_bottom = 104.0
 text = "玩家资料"
 
-[node name="Note" type="Label" parent="."]
-offset_left = 60.0
-offset_top = 116.0
-offset_right = 780.0
-offset_bottom = 156.0
+[node name="Note" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
 text = "修改仅在当前会话中保留"
+autowrap_mode = 3
 
-[node name="Error" type="Label" parent="."]
-theme_override_colors/font_color = Color(1, 0.65, 0.62, 1)
-offset_left = 60.0
-offset_top = 372.0
-offset_right = 780.0
-offset_bottom = 408.0
-text = ""
+[node name="NameRow" type="HBoxContainer" parent="Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 24
 
-[node name="Cancel" parent="." instance=ExtResource("ar_button")]
-theme_override_font_sizes/font_size = 26
-offset_left = 60.0
-offset_top = 430.0
-offset_right = 360.0
-offset_bottom = 502.0
-text = "取消"
-
-[node name="Confirm" parent="." instance=ExtResource("ar_button")]
-theme_override_font_sizes/font_size = 26
-offset_left = 396.0
-offset_top = 430.0
-offset_right = 780.0
-offset_bottom = 502.0
-text = "保存"
-
-[node name="NameLabel" type="Label" parent="."]
-offset_left = 60.0
-offset_top = 182.0
-offset_right = 210.0
-offset_bottom = 240.0
+[node name="NameLabel" type="Label" parent="Margin/Content/NameRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
 text = "玩家名称"
+vertical_alignment = 1
 
-[node name="Name" parent="." instance=ExtResource("ar_line_edit")]
-offset_left = 252.0
-offset_top = 182.0
-offset_right = 780.0
-offset_bottom = 240.0
+[node name="Name" parent="Margin/Content/NameRow" instance=ExtResource("ar_line_edit")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+size_flags_horizontal = 3
 max_length = 12
 placeholder_text = "1–12 字"
 
-[node name="Avatar" parent="." instance=ExtResource("ar_panel")]
+[node name="AvatarRow" type="HBoxContainer" parent="Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Avatar" parent="Margin/Content/AvatarRow" instance=ExtResource("ar_panel")]
+unique_name_in_owner = true
 visible = false
-offset_left = 60.0
-offset_top = 280.0
-offset_right = 132.0
-offset_bottom = 352.0
+custom_minimum_size = Vector2(72, 72)
+layout_mode = 2
 mouse_filter = 2
 
-[node name="Placeholder" type="Label" parent="Avatar"]
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 72.0
-offset_bottom = 72.0
+[node name="Placeholder" type="Label" parent="Margin/Content/AvatarRow/Avatar"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "头像"
 horizontal_alignment = 1
 vertical_alignment = 1
 mouse_filter = 2
 
-[node name="AvatarNote" type="Label" parent="."]
-offset_left = 156.0
-offset_top = 280.0
-offset_right = 780.0
-offset_bottom = 352.0
+[node name="AvatarNote" type="Label" parent="Margin/Content/AvatarRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 text = "头像占位 · 暂不支持上传"
 vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Error" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.65, 0.62, 1)
+text = ""
+
+[node name="Spacer" type="Control" parent="Margin/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Actions" type="HBoxContainer" parent="Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 36
+
+[node name="Cancel" parent="Margin/Content/Actions" instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "取消"
+
+[node name="Confirm" parent="Margin/Content/Actions" instance=ExtResource("ar_button")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+text = "保存"

@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://dpu1roi1cir65"]
+
+[ext_resource type="Script" uid="uid://dwlydr108rmov" path="res://games/assets/GP_default_ui/authoring/leaderboard_preview.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="2_theme"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_default_ui/settlement/settlement_view.tscn" id="3_settlement"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_default_ui/leaderboard/mini_leaderboard.tscn" id="4_mini"]
+
+[node name="LeaderboardPreview" type="Control" unique_id=1606781490]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="SettlementView" parent="." unique_id=1334189145 instance=ExtResource("3_settlement")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="MiniLeaderboard" parent="." unique_id=1473532763 instance=ExtResource("4_mini")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="Toolbar" type="HBoxContainer" parent="." unique_id=1493582729]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -64.0
+offset_right = 560.0
+offset_bottom = -20.0
+grow_vertical = 0
+theme_override_constants/separation = 10
+
+[node name="ModeSettlement" type="Button" parent="Toolbar" unique_id=1141142004]
+unique_name_in_owner = true
+layout_mode = 2
+text = "结算页"
+
+[node name="ModeMini" type="Button" parent="Toolbar" unique_id=398018930]
+unique_name_in_owner = true
+layout_mode = 2
+text = "小型榜"
+
+[node name="Count4" type="Button" parent="Toolbar" unique_id=1637105222]
+unique_name_in_owner = true
+layout_mode = 2
+text = "4人"
+
+[node name="Count8" type="Button" parent="Toolbar" unique_id=2058734625]
+unique_name_in_owner = true
+layout_mode = 2
+text = "8人"
+
+[node name="Count12" type="Button" parent="Toolbar" unique_id=2008118794]
+unique_name_in_owner = true
+layout_mode = 2
+text = "12人"

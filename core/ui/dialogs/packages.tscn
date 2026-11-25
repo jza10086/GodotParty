@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="r3"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="r4"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_f6ek2"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k68qd"]
 resource_local_to_scene = true
 shader = ExtResource("2_k68qd")
 shader_parameter/use_backdrop = false
@@ -16,16 +16,11 @@ shader_parameter/backdrop_extent = Vector2(1100, 760)
 [node name="Packages" unique_id=296717293 instance=ExtResource("r1")]
 layout_mode = 3
 anchors_preset = 15
-
-[node name="Scrim" parent="." index="0"]
-layout_mode = 0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Panel" parent="." index="1"]
-material = SubResource("ShaderMaterial_f6ek2")
-layout_mode = 0
-
-[node name="Layout" parent="Panel" index="0"]
-layout_mode = 0
+material = SubResource("ShaderMaterial_k68qd")
 
 [node name="Title" parent="Panel/Layout" index="0"]
 layout_mode = 2

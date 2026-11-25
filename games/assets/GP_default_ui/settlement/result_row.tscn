@@ -1,32 +1,58 @@
 [gd_scene format=3]
 
-[node name="ResultRow" type="HBoxContainer"]
-custom_minimum_size = Vector2(0, 48)
+[sub_resource type="StyleBoxFlat" id="RowStyle"]
+content_margin_left = 26.0
+content_margin_top = 14.0
+content_margin_right = 26.0
+content_margin_bottom = 14.0
+bg_color = Color(0.06, 0.1, 0.16, 0.42)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.55, 0.76, 0.94, 0.14)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="ResultRow" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 74)
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("RowStyle")
+
+[node name="Line" type="HBoxContainer" parent="."]
+layout_mode = 2
 theme_override_constants/separation = 28
 
-[node name="Rank" type="Label" parent="."]
-custom_minimum_size = Vector2(96, 0)
+[node name="Rank" type="Label" parent="Line"]
+custom_minimum_size = Vector2(92, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 29
+theme_override_font_sizes/font_size = 32
 text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PlayerName" type="Label" parent="."]
+[node name="PlayerBox" type="HBoxContainer" parent="Line"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 29
+theme_override_constants/separation = 14
+
+[node name="PlayerName" type="Label" parent="Line/PlayerBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 32
 text = "小林"
+vertical_alignment = 1
 text_overrun_behavior = 3
+
+[node name="Status" type="Label" parent="Line/PlayerBox"]
+visible = false
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 21
 vertical_alignment = 1
 
-[node name="Metric" type="Label" parent="."]
-custom_minimum_size = Vector2(0, 0)
-size_flags_horizontal = 3
+[node name="Metrics" type="HBoxContainer" parent="Line"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 29
-text = "1,250"
-horizontal_alignment = 2
-vertical_alignment = 1
-text_overrun_behavior = 3
+theme_override_constants/separation = 32

@@ -17,6 +17,7 @@ const PreferencesPanel: PackedScene = preload("res://core/ui/party_preferences_p
 const SystemSettings: PackedScene = preload("res://core/ui/party_system_settings.tscn")
 const ProtocolPage: PackedScene = preload("res://core/ui/party_protocol_page.tscn")
 const BindingButton = preload("res://core/ui/party_binding_button.gd")
+const DEFAULT_AVATAR_ICON: Texture2D = preload("res://core/ui/icons/player_avatar.svg")
 @onready var _background: Control = %Background
 @onready var _ui_audio: MenuAudio = %MenuAudio
 var _system_preferences_revision: int = 0
@@ -52,6 +53,8 @@ var _modal_input_active: bool = false
 var _final_results: Control
 var _overview: GPPartyDialog
 var _minigame_browser: Control
+var _badge_avatar_key: String = ""
+var _badge_avatar_texture: Texture2D
 
 func _ready() -> void:
 	# Child scenes are already present. Enable their input and processing after services initialize.
@@ -140,13 +143,12 @@ func _play_opening() -> Error:
 	var scene: PackedScene = load("res://core/app/opening_logo.tscn")
 	var opening: OpeningLogo = scene.instantiate()
 	$FrameworkUI.add_child(opening)
-	var video: VideoStreamPlayer = opening.get_node("%Video")
-	video.volume = float(settings.config.get_value("opening", "volume", InputSettings.DEFAULT_OPENING_VOLUME)) / 100.0
-	video.finished.connect(opening.finished.emit)
-	video.play()
-	if not video.is_playing():
+	var volume: float = float(settings.config.get_value("opening", "volume", InputSettings.DEFAULT_OPENING_VOLUME)) / 100.0
+	var opening_fps: int = int(settings.config.get_value("opening", "fps", InputSettings.DEFAULT_OPENING_FPS))
+	var play_error: Error = opening.play(volume, opening_fps)
+	if play_error != OK:
 		opening.queue_free()
-		return ERR_CANT_OPEN
+		return play_error
 	if not settings.config.get_value("profile", "opening_seen", false):
 		settings.config.set_value("profile", "opening_seen", true)
 		var error: Error = settings.save_settings()
@@ -302,6 +304,69 @@ func local_display_name() -> String:
 		return "资料读取失败"
 	return local_profile.name
 
+## Resolve the main-menu profile badge without mounting unactivated release PCKs.
+func local_profile_badge() -> Dictionary:
+	var display_name: String = local_display_name()
+	var profile_data: Dictionary = {}
+	var protocol_id: String = str(_frontend.selected_protocol) if is_instance_valid(_frontend) else ""
+	if not protocol_id.is_empty():
+		var local_profile: Dictionary = connection.profiles.read_record(protocol_id)
+		if local_profile.ok and local_profile.get("profile") is Dictionary:
+			profile_data = local_profile.profile
+	var avatar_result: Dictionary = _resolve_badge_avatar(profile_data)
+	var accent_color: Variant = null
+	var raw_color: Variant = profile_data.get("color")
+	if raw_color is String and not raw_color.is_empty() and Color.html_is_valid(raw_color):
+		accent_color = Color.from_string(raw_color, Color.WHITE)
+	var steam_id: String = ""
+	if connection.steam.initialized:
+		steam_id = str(connection.steam_profile().get("steam_id", ""))
+	return {
+		"name": display_name,
+		"steam_id": steam_id,
+		"avatar": avatar_result["texture"],
+		"is_default_avatar": avatar_result["is_default"],
+		"color": accent_color,
+	}
+
+func _resolve_badge_avatar(profile_data: Dictionary) -> Dictionary:
+	if connection.profiles.steam_account.is_valid():
+		var account: Dictionary = connection.steam_profile()
+		var steam_image: Variant = account.get("avatar")
+		if steam_image is Image:
+			var key: String = "steam:" + str(account.get("steam_id", "")) + ":" + Marshalls.raw_to_base64(steam_image.get_data())
+			if key != _badge_avatar_key or _badge_avatar_texture == null:
+				_badge_avatar_key = key
+				_badge_avatar_texture = ImageTexture.create_from_image(steam_image)
+			return {"texture": _badge_avatar_texture, "is_default": false}
+	var avatar_ref: Variant = profile_data.get("avatar_2d")
+	if avatar_ref is Dictionary:
+		if avatar_ref.has("portrait_rgba") and PartyPortrait2D.valid_pixels(avatar_ref.portrait_rgba):
+			var rgba_key: String = "rgba:" + str(avatar_ref.portrait_rgba)
+			if rgba_key != _badge_avatar_key or _badge_avatar_texture == null:
+				var image: Image = Image.create_from_data(PartyPortrait2D.SIZE, PartyPortrait2D.SIZE, false, Image.FORMAT_RGBA8, Marshalls.base64_to_raw(avatar_ref.portrait_rgba))
+				_badge_avatar_key = rgba_key
+				_badge_avatar_texture = ImageTexture.create_from_image(image)
+			return {"texture": _badge_avatar_texture, "is_default": false}
+		var pkg_id: Variant = avatar_ref.get("package_id")
+		var rel_path: Variant = avatar_ref.get("resource_path")
+		if pkg_id is String and rel_path is String and catalog.packages.has(pkg_id):
+			var package_ready: bool = catalog.source_mode or (catalog.package_store != null and catalog.package_store.mounted.has(pkg_id))
+			if package_ready:
+				var asset_key: String = "asset:" + pkg_id + ":" + rel_path
+				if asset_key != _badge_avatar_key or _badge_avatar_texture == null:
+					var packed: Resource = catalog.asset({"package_id": pkg_id, "resource_path": rel_path}, catalog.packages)
+					if packed is PackedScene:
+						var visual: Node = packed.instantiate()
+						var extracted: Texture2D = visual.portrait if visual is PartyPortrait2D and visual.portrait is Texture2D else null
+						visual.free()
+						if extracted != null:
+							_badge_avatar_key = asset_key
+							_badge_avatar_texture = extracted
+				if _badge_avatar_key == asset_key and _badge_avatar_texture != null:
+					return {"texture": _badge_avatar_texture, "is_default": false}
+	return {"texture": DEFAULT_AVATAR_ICON, "is_default": true}
+
 func _localize_session_menu() -> void:
 	_session_menu.localize(catalog.i18n)
 
@@ -383,22 +448,27 @@ func _choose_offline_profile() -> void:
 	_dialog.get_ok_button().disabled = picker.item_count == 0
 	_dialog.confirmed.connect(func() -> void: _profile_dialog(picker.get_item_metadata(picker.selected)))
 
-func _local_profile_settings() -> void:
-	if not _frontend.selected_protocol.is_empty() and not connection.online:
-		_profile_dialog(_frontend.selected_protocol)
-		return
-	var body: VBoxContainer = preload("res://core/ui/dialogs/profile.tscn").instantiate()
-	var name_input: LineEdit = body.get_node("PlayerName")
-	name_input.text = local_display_name()
-	name_input.editable = not connection.profiles.steam_account.is_valid()
-	var editor: Control = _configuration_editor("玩家资料", body, true, "编辑本机玩家昵称，应用后保存。")
-	editor.apply_requested.connect(func() -> void:
-		var error: Error = save_local_name(name_input.text.strip_edges())
-		if error != OK:
-			editor.page.status.text = "昵称需为 1–16 字，且不能包含控制字符" if error == ERR_INVALID_PARAMETER else "保存失败：" + error_string(error)
-			return
-		_close_preferences()
-		_frontend.refresh())
+func _show_local_player_info() -> void:
+	if is_instance_valid(_dialog):
+		_dialog.hide()
+		_dialog.queue_free()
+	_dialog = preload("res://core/ui/dialogs/player_info.tscn").instantiate()
+	_dialog.title = ""
+	_dialog.scroll_content = false
+	_dialog.cancel_enabled = true
+	_dialog.cancel_button_text = "关闭"
+	%DialogHost.add_child(_dialog)
+	_dialog.get_ok_button().hide()
+	_populate_player_info_dialog(_dialog)
+	_dialog.popup_centered(Vector2i(580, 260))
+
+func _populate_player_info_dialog(dialog: GPPartyDialog) -> void:
+	var badge: Dictionary = local_profile_badge()
+	var avatar_rect: TextureRect = dialog.get_node("%AvatarTexture") as TextureRect
+	avatar_rect.texture = badge.get("avatar") as Texture2D
+	(dialog.get_node("%PlayerName") as Label).text = str(badge.get("name", ""))
+	var steam_id: String = str(badge.get("steam_id", ""))
+	(dialog.get_node("%SteamId") as Label).text = steam_id if not steam_id.is_empty() else "—"
 
 func _profile_dialog(selected_protocol: String = "") -> void:
 	var player: Dictionary = connection._player_peer(connection.local_peer())
@@ -463,8 +533,14 @@ func _profile_dialog(selected_protocol: String = "") -> void:
 			_profile_apply.disabled = not connection._pending_profile.is_empty())
 
 func _update_account_name(id: String) -> void:
-	if is_instance_valid(_profile_name) and not connection.room.get("recovery", false) and id == str(connection.steam.api.getSteamID()):
+	if connection.steam.api == null or id != str(connection.steam.api.getSteamID()):
+		return
+	if is_instance_valid(_profile_name) and not connection.room.get("recovery", false):
 		_profile_name.text = connection.profiles.account_name()
+	if is_instance_valid(_dialog) and _dialog.visible and _dialog.has_node("%SteamId"):
+		_populate_player_info_dialog(_dialog)
+	if is_instance_valid(_frontend) and _page == "menu":
+		_frontend.refresh()
 
 func _profile_reply(_id: String, accepted: bool, message: String) -> void:
 	if not is_instance_valid(_profile_error):

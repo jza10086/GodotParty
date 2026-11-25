@@ -1,0 +1,124 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/party_dialog.tscn" id="r1"]
+[ext_resource type="Texture2D" path="res://core/ui/icons/player_avatar.svg" id="r2"]
+
+[sub_resource type="StyleBoxFlat" id="SquareAvatarStyle"]
+bg_color = Color(0.08, 0.13, 0.2, 0.78)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.75, 0.84, 0.92, 0.22)
+
+[sub_resource type="StyleBoxFlat" id="CloseNormalStyle"]
+bg_color = Color(0.11, 0.17, 0.24, 0.48)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.72, 0.82, 0.92, 0.34)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="CloseHoverStyle"]
+bg_color = Color(0.16, 0.24, 0.34, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.78, 0.89, 0.98, 0.65)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="ClosePressedStyle"]
+bg_color = Color(0.09, 0.14, 0.2, 0.8)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.78, 0.89, 0.98, 0.5)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="PlayerInfo" instance=ExtResource("r1")]
+
+[node name="Layout" parent="Panel" index="0"]
+offset_left = 28.0
+offset_top = 28.0
+offset_right = -28.0
+offset_bottom = -24.0
+theme_override_constants/separation = 18
+
+[node name="Body" type="HBoxContainer" parent="Panel/Layout/Scroll/Content" index="1"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/separation = 26
+
+[node name="AvatarFrame" type="PanelContainer" parent="Panel/Layout/Scroll/Content/Body"]
+unique_name_in_owner = true
+clip_children = 2
+custom_minimum_size = Vector2(136, 136)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SquareAvatarStyle")
+
+[node name="AvatarTexture" type="TextureRect" parent="Panel/Layout/Scroll/Content/Body/AvatarFrame"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("r2")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Details" type="VBoxContainer" parent="Panel/Layout/Scroll/Content/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 14
+
+[node name="PlayerName" type="Label" parent="Panel/Layout/Scroll/Content/Body/Details"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 36
+text = "玩家"
+text_overrun_behavior = 3
+
+[node name="SteamRow" type="HBoxContainer" parent="Panel/Layout/Scroll/Content/Body/Details"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="SteamLabel" type="Label" parent="Panel/Layout/Scroll/Content/Body/Details/SteamRow"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 22
+text = "Steam ID"
+
+[node name="SteamId" type="Label" parent="Panel/Layout/Scroll/Content/Body/Details/SteamRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+text = "—"
+text_overrun_behavior = 3
+
+[node name="Cancel" parent="Panel/Layout/Actions" index="0"]
+custom_minimum_size = Vector2(180, 52)
+theme_override_styles/normal = SubResource("CloseNormalStyle")
+theme_override_styles/hover = SubResource("CloseHoverStyle")
+theme_override_styles/pressed = SubResource("ClosePressedStyle")
+theme_override_styles/focus = SubResource("CloseHoverStyle")

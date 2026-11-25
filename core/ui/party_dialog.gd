@@ -49,6 +49,7 @@ func get_ok_button() -> Button:
 func popup_centered(requested: Vector2i = Vector2i(1200, 860)) -> void:
 	_requested_size = Vector2(requested)
 	_title.text = title
+	_title.visible = not title.is_empty()
 	_cancel.text = cancel_button_text
 	_cancel.visible = cancel_enabled
 	%Message.visible = not dialog_text.is_empty()

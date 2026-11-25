@@ -1,0 +1,49 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://games/assets/GP_default_ui/leaderboard/mini_leaderboard.gd" id="1_script"]
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="2_theme"]
+[ext_resource type="StyleBoxFlat" path="res://games/assets/GP_default_ui/theme/glass_panel.tres" id="3_glass"]
+[ext_resource type="PackedScene" path="res://games/assets/GP_default_ui/leaderboard/mini_leaderboard_row.tscn" id="4_row"]
+
+[node name="MiniLeaderboard" type="PanelContainer"]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -324.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 172.0
+grow_horizontal = 0
+custom_minimum_size = Vector2(300, 0)
+mouse_filter = 2
+theme = ExtResource("2_theme")
+theme_override_styles/panel = ExtResource("3_glass")
+script = ExtResource("1_script")
+row_scene = ExtResource("4_row")
+
+[node name="Padding" type="MarginContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Rows" type="VBoxContainer" parent="Padding"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Example1" parent="Padding/Rows" instance=ExtResource("4_row")]
+layout_mode = 2
+
+[node name="Example2" parent="Padding/Rows" instance=ExtResource("4_row")]
+layout_mode = 2
+
+[node name="Example3" parent="Padding/Rows" instance=ExtResource("4_row")]
+layout_mode = 2
+
+[node name="Example4" parent="Padding/Rows" instance=ExtResource("4_row")]
+layout_mode = 2

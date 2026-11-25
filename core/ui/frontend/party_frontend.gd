@@ -28,44 +28,42 @@ const MENU_TEXT: Dictionary = {
 	"Home/Menu/ListenTest:text": "监听测试",
 	"Home/Menu/ConnectTest:text": "连接测试",
 	"Home/Menu/NetworkLab:text": "网络实验",
-	"Home/Profile:tooltip_text": "编辑玩家资料",
-	"Home/Profile/Hint:text": "编辑玩家资料",
-	"Home/Profile/Avatar/Placeholder:text": "头像",
-	"Rooms/RoomsTitle:text": "加入房间",
-	"Rooms/Back:text": "←  返回主菜单",
-	"Rooms/Direct:text": "地址直连",
-	"@Profile/Title:text": "玩家资料",
-	"@Profile/NameLabel:text": "玩家名称",
-	"@Profile/Cancel:text": "取消",
-	"@Profile/Confirm:text": "保存",
-	"@Confirm/Title:text": "要离开派对吗？",
-	"@Confirm/Body:text": "关闭当前原型窗口。",
-	"@Confirm/Cancel:text": "继续留下",
-	"@Confirm/Quit:text": "确认退出",
-	"@Direct/Cancel:text": "取消",
-	"@Direct/AddressLabel:text": "连接地址",
-	"@Create/RoomNameLabel:text": "房间名称",
-	"@Create/RoomName:placeholder_text": "1–24 字",
-	"@Create/PortLabel:text": "监听端口 (UDP)",
-	"@Create/Port:placeholder_text": "1–65535 · 默认 7777",
-	"@Create/BindAddressLabel:text": "监听网卡 / IP",
-	"@Create/RefreshAddresses:text": "刷新",
-	"@Create/DropdownNote:text": "选择本机监听 IP；隧道转发目标需与此匹配。请允许 UDP 端口通过防火墙。",
-	"Rooms/RoomsSubtitle:text": "通过 IP 或域名加入房主 · 房间发现服务暂未开放",
-	"Rooms/Name0:text": "房间发现暂未开放",
-	"Rooms/Info0:text": "当前没有公共房间列表；请向房主获取地址和端口。",
-	"Rooms/Join0:text": "暂不可用",
-	"Rooms/Name1:text": "上次使用的连接地址",
-	"Rooms/Join1:text": "填写 / 连接",
-	"@Create/Note:text": "选择已安装的大游戏，确认后创建真实联机房间。",
-	"@Direct/Title:text": "地址直连",
-	"@Direct/Confirm:text": "连接房间",
-	"@Direct/Note:text": "支持 IP / 域名；省略端口使用 7777，IPv6 带端口需加 []",
-	"@Direct/Address:placeholder_text": "example.com:7777",
-	"@Profile/Note:text": "昵称保存在本机；协议形象由所选协议提供。",
-	"@Profile/Name:placeholder_text": "1–16 字",
-	"@Profile/Avatar/Placeholder:text": "形象",
-	"@Profile/AvatarNote:text": "头像与形象请在加入房间后，点击大厅中的本人资料设置。"
+	"Home/Profile:tooltip_text": "玩家资料",
+	"Rooms/%RoomsTitle:text": "加入房间",
+	"Rooms/%Back:text": "←  返回主菜单",
+	"Rooms/%Direct:text": "地址直连",
+	"@Profile/%Title:text": "玩家资料",
+	"@Profile/%NameLabel:text": "玩家名称",
+	"@Profile/%Cancel:text": "取消",
+	"@Profile/%Confirm:text": "保存",
+	"@Confirm/%Title:text": "要离开派对吗？",
+	"@Confirm/%Body:text": "关闭当前原型窗口。",
+	"@Confirm/%Cancel:text": "继续留下",
+	"@Confirm/%Quit:text": "确认退出",
+	"@Direct/%Cancel:text": "取消",
+	"@Direct/%AddressLabel:text": "连接地址",
+	"@Create/%RoomNameLabel:text": "房间名称",
+	"@Create/%RoomName:placeholder_text": "1–24 字",
+	"@Create/%PortLabel:text": "监听端口 (UDP)",
+	"@Create/%Port:placeholder_text": "1–65535 · 默认 7777",
+	"@Create/%BindAddressLabel:text": "监听网卡 / IP",
+	"@Create/%RefreshAddresses:text": "刷新",
+	"@Create/%DropdownNote:text": "选择本机监听 IP；隧道转发目标需与此匹配。请允许 UDP 端口通过防火墙。",
+	"Rooms/%RoomsSubtitle:text": "通过 IP 或域名加入房主 · 房间发现服务暂未开放",
+	"Rooms/%Name0:text": "房间发现暂未开放",
+	"Rooms/%Info0:text": "当前没有公共房间列表；请向房主获取地址和端口。",
+	"Rooms/%Join0:text": "暂不可用",
+	"Rooms/%Name1:text": "上次使用的连接地址",
+	"Rooms/%Join1:text": "填写 / 连接",
+	"@Create/%Note:text": "选择已安装的大游戏，确认后创建真实联机房间。",
+	"@Direct/%Title:text": "地址直连",
+	"@Direct/%Confirm:text": "连接房间",
+	"@Direct/%Note:text": "支持 IP / 域名；省略端口使用 7777，IPv6 带端口需加 []",
+	"@Direct/%Address:placeholder_text": "example.com:7777",
+	"@Profile/%Note:text": "昵称保存在本机；协议形象由所选协议提供。",
+	"@Profile/%Name:placeholder_text": "1–16 字",
+	"@Profile/%Placeholder:text": "形象",
+	"@Profile/%AvatarNote:text": "头像与形象请在加入房间后，点击大厅中的本人资料设置。"
 }
 ## Bind the authored pages once the application has loaded its catalog and session.
 func initialize() -> void:
@@ -86,36 +84,35 @@ func initialize() -> void:
 	_button("Home/Menu/ConnectTest", app._connectivity_dialog.bind(true))
 	_button("Home/Menu/NetworkLab", app._network_lab_dialog)
 	_button("Home/Menu/Exit", func() -> void: open_modal("Confirm"))
-	_button("Home/Profile", app._local_profile_settings)
-	_button("Rooms/Back", func() -> void: show_page("Home"))
-	_button("Rooms/Direct", func() -> void: open_modal("Direct"))
-	_button("Rooms/Join1", func() -> void: open_modal("Direct"))
-	_create.get_node("Game").item_selected.connect(func(index: int) -> void: select_game(_create.get_node("Game").get_item_metadata(index)))
-	_create.get_node("Cancel").pressed.connect(_create_back)
-	_create.get_node("Confirm").pressed.connect(submit_create)
-	_profile.get_node("Cancel").pressed.connect(close_modal)
-	_profile.get_node("Confirm").pressed.connect(submit_profile)
-	_direct.get_node("Cancel").pressed.connect(close_modal)
-	_direct.get_node("Confirm").pressed.connect(submit_direct)
-	_confirm.get_node("Cancel").pressed.connect(close_modal)
-	_confirm.get_node("Quit").pressed.connect(func() -> void: get_tree().quit())
-	_profile.get_node("Name").text_submitted.connect(func(_text: String) -> void: submit_profile())
-	_direct.get_node("Address").text_submitted.connect(func(_text: String) -> void: submit_direct())
-	$Rooms/Join0.disabled = true
-	for key: String in ["Room2", "Name2", "Info2", "Join2"]:
-		get_node("Rooms/" + key).hide()
-	_create.get_node("Port").text_submitted.connect(func(_text: String) -> void: submit_create())
-	_create.get_node("RefreshAddresses").pressed.connect(func() -> void:
-		_refresh_host_addresses(str(_create.get_node("BindAddress").get_selected_metadata())))
-	_create.get_node("BindAddress").item_selected.connect(func(_index: int) -> void:
-		_create.get_node("BindAddress").tooltip_text = _create.get_node("BindAddress").get_item_text(_index)
-		_create.get_node("Port").editable = _create.get_node("BindAddress").get_selected_metadata() != "steam")
-	_direct.get_node("Address").max_length = 260
-	for label: Label in [_create.get_node("Error"), _direct.get_node("Error"), $Rooms/Info1]:
+	_button("Home/Profile", app._show_local_player_info)
+	_button("Rooms/%Back", func() -> void: show_page("Home"))
+	_button("Rooms/%Direct", func() -> void: open_modal("Direct"))
+	_button("Rooms/%Join1", func() -> void: open_modal("Direct"))
+	_create.get_node("%Game").item_selected.connect(func(index: int) -> void: select_game(_create.get_node("%Game").get_item_metadata(index)))
+	_create.get_node("%Cancel").pressed.connect(_create_back)
+	_create.get_node("%Confirm").pressed.connect(submit_create)
+	_profile.get_node("%Cancel").pressed.connect(close_modal)
+	_profile.get_node("%Confirm").pressed.connect(submit_profile)
+	_direct.get_node("%Cancel").pressed.connect(close_modal)
+	_direct.get_node("%Confirm").pressed.connect(submit_direct)
+	_confirm.get_node("%Cancel").pressed.connect(close_modal)
+	_confirm.get_node("%Quit").pressed.connect(func() -> void: get_tree().quit())
+	_profile.get_node("%Name").text_submitted.connect(func(_text: String) -> void: submit_profile())
+	_direct.get_node("%Address").text_submitted.connect(func(_text: String) -> void: submit_direct())
+	$Rooms.get_node("%Join0").disabled = true
+	$Rooms.get_node("%Room2").hide()
+	_create.get_node("%Port").text_submitted.connect(func(_text: String) -> void: submit_create())
+	_create.get_node("%RefreshAddresses").pressed.connect(func() -> void:
+		_refresh_host_addresses(str(_create.get_node("%BindAddress").get_selected_metadata())))
+	_create.get_node("%BindAddress").item_selected.connect(func(_index: int) -> void:
+		_create.get_node("%BindAddress").tooltip_text = _create.get_node("%BindAddress").get_item_text(_index)
+		_create.get_node("%Port").editable = _create.get_node("%BindAddress").get_selected_metadata() != "steam")
+	_direct.get_node("%Address").max_length = 260
+	for label: Label in [_create.get_node("%Error"), _direct.get_node("%Error"), $Rooms.get_node("%Info1")]:
 		label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		label.mouse_filter = Control.MOUSE_FILTER_PASS
 		label.mouse_entered.connect(func() -> void: label.tooltip_text = label.text)
-	_profile.get_node("Name").max_length = 16
+	_profile.get_node("%Name").max_length = 16
 	set_anchors_preset(Control.PRESET_TOP_LEFT)
 	get_parent().resized.connect(_fit)
 	_fit()
@@ -142,23 +139,23 @@ func _build_games() -> void:
 		if binding.get("id") == selected_protocol and app.catalog.protocol_matches(binding):
 			_games.append(id)
 	var options: Array[String] = app.catalog.ids("protocols") if _create_step == "protocol" else _games
-	var picker: OptionButton = _create.get_node("Game")
+	var picker: OptionButton = _create.get_node("%Game")
 	picker.clear()
 	for id: String in options:
 		picker.add_item(app.catalog.get_package(id).get("name", id))
 		picker.set_item_metadata(picker.item_count - 1, id)
-	_create.get_node("Title").text = _t("创建房间 · 选择协议") if _create_step == "protocol" else _t("创建房间 · 选择大游戏")
-	_create.get_node("GameLabel").text = _t("协议") if _create_step == "protocol" else _t("大游戏")
-	_create.get_node("Confirm").text = _t("下一步") if _create_step == "protocol" else _t("创建房间")
-	_create.get_node("Cancel").text = _t("取消") if _create_step == "protocol" else _t("上一步")
-	_create.get_node("Note").text = _t("协议决定房间规则、形象与公共体验。") if _create_step == "protocol" else _t("仅显示兼容大游戏；具体配置在创建后的大厅设置。")
-	for key: String in ["RoomNameLabel", "RoomName", "PortLabel", "Port", "BindAddressLabel", "BindAddress", "RefreshAddresses"]:
+	_create.get_node("%Title").text = _t("创建房间 · 选择协议") if _create_step == "protocol" else _t("创建房间 · 选择大游戏")
+	_create.get_node("%GameLabel").text = _t("协议") if _create_step == "protocol" else _t("大游戏")
+	_create.get_node("%Confirm").text = _t("下一步") if _create_step == "protocol" else _t("创建房间")
+	_create.get_node("%Cancel").text = _t("取消") if _create_step == "protocol" else _t("上一步")
+	_create.get_node("%Note").text = _t("协议决定房间规则、形象与公共体验。") if _create_step == "protocol" else _t("仅显示兼容大游戏；具体配置在创建后的大厅设置。")
+	for key: String in ["%RoomNameRow", "%PortRow", "%BindAddressSection", "%DropdownNote"]:
 		_create.get_node(key).visible = _create_step == "game"
-	_create.get_node("Game").disabled = options.is_empty()
-	_create.get_node("Confirm").disabled = options.is_empty()
+	_create.get_node("%Game").disabled = options.is_empty()
+	_create.get_node("%Confirm").disabled = options.is_empty()
 	if options.is_empty():
 		selected_game = ""
-		_create.get_node("Game").text = _t("没有已安装的协议") if _create_step == "protocol" else _t("没有兼容的大游戏")
+		_create.get_node("%Game").text = _t("没有已安装的协议") if _create_step == "protocol" else _t("没有兼容的大游戏")
 	else:
 		var current: String = selected_protocol if _create_step == "protocol" else selected_game
 		select_game(current if current in options else options[0])
@@ -166,7 +163,7 @@ func _build_games() -> void:
 ## Enumerate local bind IPs. Keep a disappeared selection visible as invalid instead of
 ## silently broadening a previously restricted listener to every interface.
 func _refresh_host_addresses(selected_address: String) -> void:
-	var picker: OptionButton = _create.get_node("BindAddress")
+	var picker: OptionButton = _create.get_node("%BindAddress")
 	picker.clear()
 	picker.add_item(_t("请选择监听网卡 / IP"))
 	picker.set_item_metadata(0, "")
@@ -187,7 +184,7 @@ func _refresh_host_addresses(selected_address: String) -> void:
 			picker.get_popup().set_item_tooltip(index, label)
 			addresses.append(address)
 	if app.connection.steam.api != null:
-		_create.get_node("BindAddressLabel").text = "IP / Steam"
+		_create.get_node("%BindAddressLabel").text = "IP / Steam"
 		picker.add_item("Steam")
 		picker.set_item_metadata(picker.item_count - 1, "steam")
 		addresses.append("steam")
@@ -198,7 +195,7 @@ func _refresh_host_addresses(selected_address: String) -> void:
 		picker.set_item_metadata(chosen, selected_address)
 		picker.set_item_disabled(chosen, true)
 	picker.select(chosen)
-	_create.get_node("Port").editable = picker.get_selected_metadata() != "steam"
+	_create.get_node("%Port").editable = picker.get_selected_metadata() != "steam"
 	picker.tooltip_text = picker.get_item_text(chosen)
 
 func select_game(id: String) -> void:
@@ -211,7 +208,7 @@ func select_game(id: String) -> void:
 		if id not in _games:
 			return
 		selected_game = id
-	var picker: OptionButton = _create.get_node("Game")
+	var picker: OptionButton = _create.get_node("%Game")
 	for index: int in picker.item_count:
 		if picker.get_item_metadata(index) == id:
 			picker.select(index)
@@ -222,7 +219,7 @@ func _create_back() -> void:
 		app.connection.leave()
 	if _create_step == "game":
 		_create_step = "protocol"
-		_create.get_node("Error").text = ""
+		_create.get_node("%Error").text = ""
 		_build_games()
 	else:
 		close_modal()
@@ -240,7 +237,7 @@ func show_page(next: String) -> void:
 	if page == "Lobby":
 		_room_view.room_focus()
 	else:
-		get_node("Home/Menu/Start" if page == "Home" else "Rooms/Direct").grab_focus()
+		get_node("Home/Menu/Start" if page == "Home" else "Rooms/%Direct").grab_focus()
 
 func open_modal(kind: String) -> void:
 	close_modal()
@@ -254,22 +251,22 @@ func open_modal(kind: String) -> void:
 		"Create":
 			_create_step = "protocol"
 			_build_games()
-			_create.get_node("RoomName").text = _t("我的派对")
-			_create.get_node("Error").text = ""
-			_create.get_node("Port").text = str(app.settings.config.get_value("connection", "host_port", 7777))
+			_create.get_node("%RoomName").text = _t("我的派对")
+			_create.get_node("%Error").text = ""
+			_create.get_node("%Port").text = str(app.settings.config.get_value("connection", "host_port", 7777))
 			_refresh_host_addresses(str(app.settings.config.get_value("connection", "host_bind_address", "")))
-			_create.get_node("Game").grab_focus()
+			_create.get_node("%Game").grab_focus()
 		"Direct":
-			_direct.get_node("Address").text = app.connection.format_endpoint(str(app.settings.config.get_value("connection", "address", "127.0.0.1")), int(app.settings.config.get_value("connection", "port", 7777)))
-			_direct.get_node("Error").text = ""
-			_direct.get_node("Confirm").disabled = false
-			_direct.get_node("Address").grab_focus()
+			_direct.get_node("%Address").text = app.connection.format_endpoint(str(app.settings.config.get_value("connection", "address", "127.0.0.1")), int(app.settings.config.get_value("connection", "port", 7777)))
+			_direct.get_node("%Error").text = ""
+			_direct.get_node("%Confirm").disabled = false
+			_direct.get_node("%Address").grab_focus()
 		"Profile":
-			_profile.get_node("Name").editable = not app.connection.profiles.steam_account.is_valid()
-			_profile.get_node("Name").text = app.local_display_name()
-			_profile.get_node("Error").text = ""
-			_profile.get_node("Name").grab_focus()
-		_: _confirm.get_node("Cancel").grab_focus()
+			_profile.get_node("%Name").editable = not app.connection.profiles.steam_account.is_valid()
+			_profile.get_node("%Name").text = app.local_display_name()
+			_profile.get_node("%Error").text = ""
+			_profile.get_node("%Name").grab_focus()
+		_: _confirm.get_node("%Cancel").grab_focus()
 
 func close_modal() -> void:
 	if _joining and app.connection.room.is_empty():
@@ -304,49 +301,49 @@ func submit_create() -> void:
 		_build_games()
 		return
 	if selected_game not in _games or app.catalog.get_package(selected_game).get("protocol", {}).get("id") != selected_protocol:
-		_create.get_node("Error").text = _t("请选择兼容的大游戏")
+		_create.get_node("%Error").text = _t("请选择兼容的大游戏")
 		return
-	var title: String = _create.get_node("RoomName").text.strip_edges()
+	var title: String = _create.get_node("%RoomName").text.strip_edges()
 	if not app.connection.valid_room_name(title):
-		_create.get_node("Error").text = _t("请输入 1–24 字的房间名称")
+		_create.get_node("%Error").text = _t("请输入 1–24 字的房间名称")
 		return
-	var picker: OptionButton = _create.get_node("BindAddress")
+	var picker: OptionButton = _create.get_node("%BindAddress")
 	var use_steam: bool = picker.get_selected_metadata() == "steam"
-	var port: int = 0 if use_steam else app.connection.parse_port(_create.get_node("Port").text)
+	var port: int = 0 if use_steam else app.connection.parse_port(_create.get_node("%Port").text)
 	if not use_steam and port == 0:
-		_create.get_node("Error").text = _t("端口请输入 1–65535 的整数")
+		_create.get_node("%Error").text = _t("端口请输入 1–65535 的整数")
 		return
 	if picker.is_item_disabled(picker.selected):
-		_create.get_node("Error").text = _t("请选择监听网卡 / IP") if picker.selected == 0 else _t("所选监听 IP 已不可用，请刷新并重新选择")
+		_create.get_node("%Error").text = _t("请选择监听网卡 / IP") if picker.selected == 0 else _t("所选监听 IP 已不可用，请刷新并重新选择")
 		return
 	var error: Error = app.host_from_ui(selected_game, title, port, str(picker.get_selected_metadata()))
 	if error != OK:
-		_create.get_node("Error").text = app.connection.status if not app.connection.status.is_empty() else error_string(error)
+		_create.get_node("%Error").text = app.connection.status if not app.connection.status.is_empty() else error_string(error)
 
 func submit_direct() -> void:
 	if modal_kind != "Direct" or _joining:
 		return
-	var endpoint: Dictionary = app.connection.parse_endpoint(_direct.get_node("Address").text)
+	var endpoint: Dictionary = app.connection.parse_endpoint(_direct.get_node("%Address").text)
 	if endpoint.is_empty():
-		_direct.get_node("Error").text = _t("格式：IP:端口 / 域名:端口 / [IPv6]:端口；端口 1–65535")
+		_direct.get_node("%Error").text = _t("格式：IP:端口 / 域名:端口 / [IPv6]:端口；端口 1–65535")
 		return
 	var address: String = endpoint.address
 	var port: int = endpoint.port
 	var error: Error = app.join_from_ui(address, port)
 	if error != OK:
-		_direct.get_node("Error").text = app.connection.status if not app.connection.status.is_empty() else error_string(error)
+		_direct.get_node("%Error").text = app.connection.status if not app.connection.status.is_empty() else error_string(error)
 		return
 	_joining = true
-	_direct.get_node("Confirm").disabled = true
-	_direct.get_node("Error").text = _t("正在连接 {endpoint}…", {"endpoint": app.connection.format_endpoint(address, port)})
+	_direct.get_node("%Confirm").disabled = true
+	_direct.get_node("%Error").text = _t("正在连接 {endpoint}…", {"endpoint": app.connection.format_endpoint(address, port)})
 
 func submit_profile() -> void:
 	if modal_kind != "Profile" or app.connection.online:
 		return
-	var name_value: String = _profile.get_node("Name").text.strip_edges()
+	var name_value: String = _profile.get_node("%Name").text.strip_edges()
 	var error: Error = app.save_local_name(name_value)
 	if error != OK:
-		_profile.get_node("Error").text = _t("昵称需为 1–16 字，且不能包含控制字符") if error == ERR_INVALID_PARAMETER else _t("保存失败：{error}", {"error": error_string(error)})
+		_profile.get_node("%Error").text = _t("昵称需为 1–16 字，且不能包含控制字符") if error == ERR_INVALID_PARAMETER else _t("保存失败：{error}", {"error": error_string(error)})
 		return
 	close_modal()
 	refresh()
@@ -355,26 +352,27 @@ func refresh() -> void:
 	_sync_room()
 	if modal_kind == "Create" and _create_step == "game":
 		var waiting: bool = app.connection.using_steam and app.connection.host and app.connection.room.is_empty()
-		_create.get_node("Confirm").disabled = _games.is_empty() or waiting
+		_create.get_node("%Confirm").disabled = _games.is_empty() or waiting
 		if waiting:
-			_create.get_node("Error").text = _t("正在连接…")
+			_create.get_node("%Error").text = _t("正在连接…")
 		elif not app.connection.status.is_empty():
-			_create.get_node("Error").text = app.connection.status
+			_create.get_node("%Error").text = app.connection.status
 	if _joining and app.connection.online:
 		var stage: String = {"resolving": "正在解析地址…", "connecting": "正在连接…", "handshaking": "正在检查房间所需内容…", "connected": "已连接"}.get(app.connection.connection_state, "")
-		_direct.get_node("Error").text = stage
+		_direct.get_node("%Error").text = stage
 	if _joining and not app.connection.online:
 		_joining = false
-		_direct.get_node("Confirm").disabled = false
-		_direct.get_node("Error").text = app.connection.status
+		_direct.get_node("%Confirm").disabled = false
+		_direct.get_node("%Error").text = app.connection.status
 	if app._page == "lobby" and _room_view != null and page != "Lobby":
 		_joining = false
 		show_page("Lobby")
 	elif app._page == "menu" and page == "Lobby":
 		show_page("Home")
-	$Home/Profile/Name.text = app.local_display_name()
-	$Rooms/Info1.text = app.connection.format_endpoint(str(app.settings.config.get_value("connection", "address", "127.0.0.1")), int(app.settings.config.get_value("connection", "port", 7777)))
-	$Rooms/Info1.tooltip_text = $Rooms/Info1.text
+	_refresh_profile_badge()
+	var info1: Label = $Rooms.get_node("%Info1")
+	info1.text = app.connection.format_endpoint(str(app.settings.config.get_value("connection", "address", "127.0.0.1")), int(app.settings.config.get_value("connection", "port", 7777)))
+	info1.tooltip_text = info1.text
 	if app._page == "lobby" and _room_view != null:
 		_room_view.room_refresh()
 	if app.connection.status != _connection_notice:
@@ -383,6 +381,13 @@ func refresh() -> void:
 			app.show_notice(_connection_notice)
 			if _connection_notice.contains("\n"):
 				app.show_connection_issue(_connection_notice)
+
+func _refresh_profile_badge() -> void:
+	var badge: Dictionary = app.local_profile_badge()
+	var name_label: Label = $Home/Profile/Content/Row/Name
+	name_label.text = str(badge.get("name", ""))
+	var avatar_rect: TextureRect = $Home/Profile/Content/Row/AvatarFrame/AvatarTexture
+	avatar_rect.texture = badge.get("avatar") as Texture2D
 
 ## Replace the room scene when its lobby activation changes, including rule edits and recovery.
 func _sync_room() -> void:
@@ -448,7 +453,7 @@ func _apply_language() -> void:
 		target.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 		target.set(parts[1], _t(MENU_TEXT[binding]))
 	if modal_kind == "Create":
-		_refresh_host_addresses(str(_create.get_node("BindAddress").get_selected_metadata()))
+		_refresh_host_addresses(str(_create.get_node("%BindAddress").get_selected_metadata()))
 	$Home/Language.select(0 if app.catalog.i18n.locale == "zh_Hans" else 1)
 	if modal_kind == "Create":
 		_build_games()

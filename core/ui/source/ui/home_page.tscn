@@ -1,33 +1,37 @@
 [gd_scene format=3 uid="uid://dcuksgj2i2a0b"]
 
-[ext_resource type="Shader" uid="uid://bbmv2flgi2w7i" path="res://core/ui/ambient_reveal/surface.gdshader" id="4_0wu0s"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
-[ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/panel.tscn" id="ar_panel"]
+[ext_resource type="Texture2D" path="res://core/ui/icons/player_avatar.svg" id="default_avatar"]
 [ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_0wu0s"]
-resource_local_to_scene = true
-shader = ExtResource("4_0wu0s")
-shader_parameter/use_backdrop = false
-shader_parameter/backdrop_origin = Vector2(0, 0)
-shader_parameter/backdrop_extent = Vector2(1100, 760)
+[sub_resource type="StyleBoxFlat" id="AvatarFrameStyle"]
+bg_color = Color(0.08, 0.13, 0.2, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.75, 0.84, 0.92, 0.22)
 
 [node name="Home" type="Control" unique_id=1994389843]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 1920.0
-offset_bottom = 1080.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 theme = ExtResource("theme")
 
 [node name="Menu" type="VBoxContainer" parent="." unique_id=934233317]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
 offset_left = 84.0
 offset_top = -350.0
 offset_right = 516.0
 offset_bottom = 350.0
+grow_vertical = 2
 theme_override_constants/separation = 12
 alignment = 1
 
@@ -106,61 +110,73 @@ text = "网络实验"
 alignment = 0
 
 [node name="Profile" parent="." unique_id=785593560 instance=ExtResource("ar_button")]
-layout_mode = 0
-offset_left = 1400.0
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -440.0
 offset_top = 56.0
-offset_right = 1824.0
-offset_bottom = 152.0
-tooltip_text = "编辑玩家资料"
+offset_right = -96.0
+offset_bottom = 144.0
+grow_horizontal = 0
+tooltip_text = "玩家资料"
 
-[node name="Name" type="Label" parent="Profile" unique_id=517971196]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 15.0
-offset_right = 302.0
-offset_bottom = 53.0
-text = "你"
-horizontal_alignment = 2
-text_overrun_behavior = 3
-
-[node name="Hint" type="Label" parent="Profile" unique_id=1224331206]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 54.0
-offset_right = 302.0
-offset_bottom = 80.0
-theme_override_font_sizes/font_size = 17
-text = "编辑玩家资料"
-horizontal_alignment = 2
-
-[node name="Avatar" parent="Profile" unique_id=1325470173 instance=ExtResource("ar_panel")]
-visible = false
-material = SubResource("ShaderMaterial_0wu0s")
-layout_mode = 0
-offset_left = 328.0
-offset_top = 16.0
-offset_right = 392.0
-offset_bottom = 80.0
+[node name="Content" type="MarginContainer" parent="Profile"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 10
 
-[node name="Placeholder" type="Label" parent="Profile/Avatar" unique_id=41237922]
-layout_mode = 0
-offset_right = 64.0
-offset_bottom = 64.0
-theme_override_font_sizes/font_size = 17
-text = "头像"
-horizontal_alignment = 1
+[node name="Row" type="HBoxContainer" parent="Profile/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="AvatarFrame" type="PanelContainer" parent="Profile/Content/Row"]
+unique_name_in_owner = true
+clip_children = 2
+custom_minimum_size = Vector2(68, 68)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("AvatarFrameStyle")
+
+[node name="AvatarTexture" type="TextureRect" parent="Profile/Content/Row/AvatarFrame"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("default_avatar")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Name" type="Label" parent="Profile/Content/Row" unique_id=517971196]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
+text = "玩家"
 vertical_alignment = 1
+text_overrun_behavior = 3
 
 [node name="Language" type="OptionButton" parent="." unique_id=288340834]
 auto_translate_mode = 2
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -288.0
-offset_top = 172.0
+offset_left = -296.0
+offset_top = 184.0
 offset_right = -96.0
-offset_bottom = 220.0
+offset_bottom = 232.0
+grow_horizontal = 0
 tooltip_text = "语言 / Language"
 selected = 0
 item_count = 2
