@@ -110,7 +110,7 @@
 	path = games/assets/GP_vrm_character_system
 	url = https://github.com/jza10086/GodotVrmCharacterSystem.git
 	branch = main
-[submodule "games/maingame/GP_finance_tycoon"]
-	path = games/maingame/GP_finance_tycoon
-	url = git@github.com:jza10086/FinanceTycoon.git
+[submodule "games/maingame/GP_financial_tycoon"]
+	path = games/maingame/GP_financial_tycoon
+	url = git@github.com:jza10086/FinancialTycoon.git
 	branch = main
