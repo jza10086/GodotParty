@@ -84,6 +84,11 @@ layout_mode = 2
 theme = ExtResource("1_mvge5")
 text = "返回游戏"
 
+[node name="MainPanels" type="VBoxContainer" parent="Center/Card/Content/Actions"]
+unique_name_in_owner = true
+visible = false
+theme_override_constants/separation = 12
+
 [node name="FrameworkSettings" type="Button" parent="Center/Card/Content/Actions" unique_id=1943214649 instance=ExtResource("2_787yw")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(408, 60)

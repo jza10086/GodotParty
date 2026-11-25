@@ -2,5 +2,13 @@
 
 [ext_resource type="Script" uid="uid://2uu5gtndu61r" path="res://games/maingame/GP_minigame_playlist/game.gd" id="1_r1yca"]
 
+[ext_resource type="PackedScene" path="res://games/maingame/GP_minigame_playlist/communications.tscn" id="chat"]
+
 [node name="MinigamePlaylist" type="Node" unique_id=640059021]
 script = ExtResource("1_r1yca")
+
+[node name="SessionPanels" type="CanvasLayer" parent="."]
+layer = 63
+
+[node name="Communications" parent="SessionPanels" groups=["party_main_menu_panel"] instance=ExtResource("chat")]
+unique_name_in_owner = true

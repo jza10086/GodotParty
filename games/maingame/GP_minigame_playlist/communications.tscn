@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/party_dialog.tscn" id="dialog"]
+[ext_resource type="Script" path="res://games/maingame/GP_minigame_playlist/communications.gd" id="script"]
+
+[node name="Communications" instance=ExtResource("dialog")]
+script = ExtResource("script")
+
+[node name="Recipients" type="OptionButton" parent="Panel/Layout/Scroll/Content"]
+unique_name_in_owner = true
+tooltip_text = "选择私聊对象"
+
+[node name="History" type="RichTextLabel" parent="Panel/Layout/Scroll/Content"]
+unique_name_in_owner = true
+size_flags_vertical = 3
+scroll_following = true
+selection_enabled = true
+
+[node name="Draft" type="LineEdit" parent="Panel/Layout/Scroll/Content"]
+unique_name_in_owner = true
+placeholder_text = "输入私聊消息"
+
+[node name="SendStatus" type="Label" parent="Panel/Layout/Scroll/Content"]
+unique_name_in_owner = true

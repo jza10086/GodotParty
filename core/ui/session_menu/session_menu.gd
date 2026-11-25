@@ -6,6 +6,7 @@ signal framework_settings_requested()
 signal protocol_settings_requested()
 signal minigame_settings_requested()
 signal lobby_requested()
+signal main_panel_requested(panel: GPPartyDialog)
 
 const TEXT: Dictionary[String, String] = {
 	"Title": "游戏菜单",
@@ -31,6 +32,20 @@ func localize(i18n: RefCounted) -> void:
 
 func set_game_available(available: bool) -> void:
 	%MinigameSettings.disabled = not available
+
+## Rebuild only on menu open. The main controller owns the actual dialog across rounds.
+func set_main_panels(controller: Node) -> void:
+	for button: Node in %MainPanels.get_children():
+		%MainPanels.remove_child(button)
+		button.queue_free()
+	for panel: GPPartyDialog in get_tree().get_nodes_in_group(&"party_main_menu_panel"):
+		if controller.is_ancestor_of(panel):
+			var button: Button = preload("res://core/ui/ambient_reveal/components/button.tscn").instantiate()
+			button.custom_minimum_size.y = %Resume.custom_minimum_size.y
+			button.text = panel.title
+			button.pressed.connect(main_panel_requested.emit.bind(panel))
+			%MainPanels.add_child(button)
+	%MainPanels.visible = %MainPanels.get_child_count() > 0
 
 func set_status(message: String) -> void:
 	%Status.text = message

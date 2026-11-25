@@ -39,6 +39,7 @@ var _session_focus: Control
 var _session_mouse_mode: Input.MouseMode = Input.MOUSE_MODE_VISIBLE
 var _page: String = ""
 var _session_controls_open: bool = false
+var _main_menu_panel: GPPartyDialog
 var _dialog: GPPartyDialog
 var _profile_apply: Button
 var _profile_name: LineEdit
@@ -114,6 +115,7 @@ func _ready() -> void:
 	_frontend.show()
 	_frontend.initialize()
 	_session_menu.resume_requested.connect(_resume_game)
+	_session_menu.main_panel_requested.connect(_open_main_menu_panel)
 	_session_menu.framework_settings_requested.connect(_settings_dialog)
 	_session_menu.protocol_settings_requested.connect(_protocol_dialog)
 	_session_menu.minigame_settings_requested.connect(_minigame_settings_dialog)
@@ -315,10 +317,18 @@ func _toggle_session_menu() -> void:
 	if _session_controls_open:
 		_resume_game()
 	else:
+		if not runner._scopes.has(runner._main_id):
+			return
+		_session_menu.set_main_panels(runner._scopes[runner._main_id].root)
 		_session_focus = get_viewport().gui_get_focus_owner()
 		_session_mouse_mode = Input.mouse_mode
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		_session_controls_open = true
+
+func _open_main_menu_panel(panel: GPPartyDialog) -> void:
+	_main_menu_panel = panel
+	_session_menu.hide()
+	panel.popup_centered()
 
 ## Settings target the foreground child, including when this peer is spectating it.
 func _minigame_settings_dialog() -> void:
@@ -953,6 +963,10 @@ func _sync_loading_page() -> void:
 	%ResourceLoading.visible = _is_loading()
 	if %ResourceLoading.visible:
 		%ResourceLoading.set_progress(float(runner.loading.get("progress", -1.0)))
+		if is_instance_valid(_main_menu_panel) and _main_menu_panel.visible:
+			_main_menu_panel.hide()
+		if _session_controls_open:
+			_resume_game()
 		_session_controls_open = false
 
 func _process(_delta: float) -> void:
@@ -961,7 +975,8 @@ func _process(_delta: float) -> void:
 	var settings_open: bool = is_instance_valid(_settings_page) or is_instance_valid(_preferences_page)
 	%SettingsBackground.visible = settings_open
 	_session_menu.set_game_available(runner._scopes.has(runner._child_id))
-	_session_menu.visible = _page == "game" and not settings_open and _session_controls_open
+	var main_panel_open: bool = is_instance_valid(_main_menu_panel) and _main_menu_panel.visible
+	_session_menu.visible = _page == "game" and not settings_open and _session_controls_open and not main_panel_open
 	_background.visible = _page not in ["game", "results"]
 	var focus: Control = get_viewport().gui_get_focus_owner()
 	var framework_modal: bool = get_tree().get_nodes_in_group("framework_modal").any(func(node: Node) -> bool: return node is Control and node.is_visible_in_tree())

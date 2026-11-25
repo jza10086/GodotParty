@@ -37,6 +37,7 @@ func _ready() -> void:
 	if api == null:
 		push_error("请从 GodotParty 大厅启动小游戏轮换。")
 		return
+	%Communications.configure(api)
 	var error: Error = api.mark_ready()
 	if error != OK:
 		api.fail("ready_failed", error_string(error))

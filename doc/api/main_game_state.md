@@ -19,6 +19,12 @@ create_view 返回尚未挂树的视图，由框架全尺寸内容容器承载�
 权威状态只取显式提交记录；主游戏入口不再要求 get_state。PartyRoomAPI.get_state 仍供房间界面读取快照。
 非持久的 UI 动画、相机和临时对象不应放进可保存状态。
 
+## 跨轮常驻面板
+
+需要在小游戏运行期间收信、保留草稿或查看资料的面板，可以挂在主游戏 `game.tscn` 的控制器下。将继承 `res://core/ui/party_dialog.tscn` 的面板放在 CanvasLayer 63，加入 `party_main_menu_panel` 组，并在就绪时设置非空 `title`。打开共享 Esc 菜单时，框架按标题列出当前主游戏控制器下的面板。选中后沿用模态输入和鼠标管理，关闭返回菜单，加载切换时收起。普通游戏 HUD 应位于面板下方。
+
+面板在主游戏的准备阶段连接其 PartyAPI，随控制器销毁。放在 `create_view()` 中的节点进入小游戏时会释放。每个玩家的临时界面数据放在本地节点上，定向消息使用 `api.net.send_to_player()`，从接收信号的 `sender.player_ids` 取得发送者身份。轮换包的 `communications.tscn` 是可运行的例子。
+
 ## 提交
 
 普通回合先计算 next_state，再调用 commit_state；保存成功后 core 调用 restore_state 并广播。
