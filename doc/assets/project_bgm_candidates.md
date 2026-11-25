@@ -34,7 +34,7 @@
 | [极速追逐](../../games/minigame/GP_chase/manifest.json) | 明快电子与竞速节奏 | B04 Hot Roadway；B28 Happier Tune |
 | [连连看](../../games/minigame/GP_matching/manifest.json) | 轻盈、规律的休闲电子 | B17 Sherwood；B01 Puzzling |
 | [合成大西八](../../games/minigame/GP_merge_ssibal/manifest.json) | 轻松短循环；突出落球与合成音效 | B19 Menu Chill Music；B17 Sherwood |
-| [蛇蛇大作战](../../games/minigame/GP_snake_battle/manifest.json) | 持续推进的街机电子；高潮版适合后半局 | B24 Technological Messup；B05 Hot Roadway (Climax) |
+| [吃豆蛇](../../games/minigame/GP_snake_battle/manifest.json) | 持续推进的街机电子；高潮版适合后半局 | B24 Technological Messup；B05 Hot Roadway (Climax) |
 | [云间跃行](../../games/minigame/GP_platformer/manifest.json) | 明亮冒险、轻快 Chiptune | B14 A New Day；B15 Happy Adventure (Loop) |
 | [心理博弈](../../games/minigame/GP_psych_party/manifest.json) | 安静悬念或电子氛围；讨论阶段降低音量 | B21 Insistent: background loop；B20 MindStream |
 | [圆角俄罗斯方块](../../games/minigame/GP_tetris/manifest.json) | 稳定电子律动、轻快 Synthpop | B02 Sci-fi Puzzle In-Game 1；B28 Happier Tune |

@@ -25,7 +25,7 @@
 | M12 3D 桌球 | [GP_billiards](../../games/minigame/GP_billiards/doc/GP_billiards_development.md) | 0 |
 | M13 连连看 | [GP_matching](../../games/minigame/GP_matching/doc/GP_matching_development.md) | 0 |
 | M14 合成大西八 | [GP_merge_ssibal](../../games/minigame/GP_merge_ssibal/doc/GP_merge_ssibal_development.md) | 1 |
-| M15 蛇蛇大作战 | [GP_snake_battle](../../games/minigame/GP_snake_battle/doc/GP_snake_battle_development.md) | 0 |
+| M15 吃豆蛇 | [GP_snake_battle](../../games/minigame/GP_snake_battle/doc/GP_snake_battle_development.md) | 0 |
 | M16 3D 国际象棋 | [GP_3d_chess](../../games/minigame/GP_3d_chess/doc/GP_3d_chess_development.md) | 4 |
 | M17 海战棋 | [GP_battleship](../../games/minigame/GP_battleship/doc/GP_battleship_development.md) | 0 |
 | M18 记忆拼图 | [GP_jigsaw](../../games/minigame/GP_jigsaw/doc/GP_jigsaw_development.md) | 0 |

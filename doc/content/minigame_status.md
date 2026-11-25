@@ -31,7 +31,7 @@
 | 14   | [极速追逐](../../games/minigame/GP_chase/manifest.json)    | `GP_chase`    | 1        | 不可玩   | 需要完整重构                                         |
 | 15   | [连连看](../../games/minigame/GP_matching/manifest.json)         | `GP_matching`       | 1–8     | 尚未可玩 |                                                      |
 | 16   | [合成大西八](../../games/minigame/GP_merge_ssibal/manifest.json)  | `GP_merge_ssibal`    | 1–8     | 尚未可玩 |                                                      |
-| 17   | [蛇蛇大作战](../../games/minigame/GP_snake_battle/manifest.json)  | `GP_snake_battle`    | 1–8     | 初步可玩 | 优化帧数、网络同步、尾巴                             |
+| 17   | [吃豆蛇](../../games/minigame/GP_snake_battle/manifest.json)  | `GP_snake_battle`    | 1–8     | 初步可玩 | 优化帧数、网络同步、尾巴                             |
 | 18   | [云间跃行](../../games/minigame/GP_platformer/manifest.json)          | `GP_platformer`          | 2–8     | 不可玩   | 已有重构方案，需要改名                               |
 | 19   | [心理博弈](../../games/minigame/GP_psych_party/manifest.json) | `GP_psych_party` | 2–8     | 不可玩   | 没有接入实体系统，仅逻辑，需要改名                   |
 | 20   | [圆角俄罗斯方块](../../games/minigame/GP_tetris/manifest.json) | `GP_tetris`       | 1        | 尚未可玩 | 需要改名                                             |
