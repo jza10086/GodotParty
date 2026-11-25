@@ -106,6 +106,8 @@ func _ready() -> void:
 		return
 	if platform == "steam":
 		connection.steam.profile_changed.connect(_update_account_name, CONNECT_DEFERRED)
+		if connection.steam.workshop.refresh_catalog(catalog, directory) != OK:
+			connection.status = connection.steam.workshop.last_error
 	connection.content_sync.directory = str(_arguments.get("pack-dir", InputSettings.installation_directory()))
 	_content_sync_panel = preload("res://core/ui/party_content_sync_panel.gd").new()
 	_content_sync_panel.initialize(self)

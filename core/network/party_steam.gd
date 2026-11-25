@@ -8,6 +8,7 @@ const PRODUCT: String = "GodotParty"
 
 var connection: Node
 var api: Object
+var workshop: RefCounted = preload("res://core/network/party_workshop.gd").new()
 ## Emitted only for profiles requested by this process. IDs are decimal strings for JSON.
 signal profile_changed(steam_id: String)
 var _portraits: Dictionary[int, Dictionary] = {}
@@ -38,6 +39,7 @@ func initialize() -> Error:
 	if result.status != 0:
 		connection.status = "Steam 初始化失败：" + str(result.verbal)
 		return ERR_CANT_CONNECT
+	workshop.api = api
 	api.lobby_created.connect(_created)
 	api.lobby_joined.connect(_joined)
 	api.join_requested.connect(_invite_received)
@@ -138,6 +140,17 @@ func _created(result: int, id: int) -> void:
 		connection.leave("Steam 创建大厅失败（%d）" % result)
 		return
 	lobby_id = id
+	var ids: Array = api.getSubscribedItems(true)
+	if ids.size() != api.getNumSubscribedItems(true):
+		connection.leave("Steam 订阅清单在读取期间发生变化，请重新建房")
+		return
+	if not await _prepare_workshop(ids):
+		return
+	if not api.user_subscribed_items_list_changed.is_connected(_subscriptions_changed):
+		api.user_subscribed_items_list_changed.connect(_subscriptions_changed)
+	# Downloads may have taken time; publish the owner's current list for new arrivals.
+	if not _publish_subscriptions(id):
+		return
 	if not api.setLobbyData(id, "game", PRODUCT):
 		connection.leave("无法设置 Steam 大厅标识")
 		return
@@ -148,6 +161,20 @@ func _created(result: int, id: int) -> void:
 		connection.leave("Steam 房主监听失败：" + error_string(error))
 		return
 	connection.start_host_session(peer, _title, _main)
+
+func _subscriptions_changed(app_id: int) -> void:
+	if connection.host and lobby_id != 0 and app_id == api.getAppID():
+		_publish_subscriptions(lobby_id)
+
+func _publish_subscriptions(id: int) -> bool:
+	var ids: Array = api.getSubscribedItems(true)
+	if ids.size() != api.getNumSubscribedItems(true):
+		connection.leave("读取完整工坊订阅清单失败")
+		return false
+	if workshop.publish(id, ids) != OK:
+		connection.leave(workshop.last_error)
+		return false
+	return true
 
 func _joined(id: int, _permissions: int, _locked: bool, result: int) -> void:
 	# Steam also reports entry to our own newly created lobby.
@@ -165,13 +192,45 @@ func _joined(id: int, _permissions: int, _locked: bool, result: int) -> void:
 	if api.getLobbyData(id, "game") != PRODUCT:
 		connection.leave("该 Steam 大厅不属于 GodotParty")
 		return
+	var manifest: Dictionary = workshop.read_manifest(id)
+	if not manifest.ok:
+		connection.leave(manifest.message)
+		return
+	var owner_id: int = api.getLobbyOwner(id)
+	if not await _prepare_workshop(manifest.ids):
+		return
+	if api.getLobbyOwner(id) != owner_id:
+		connection.leave("工坊同步期间房主已离开")
+		return
+	_connect_owner(owner_id)
+
+func _connect_owner(owner_id: int) -> void:
 	var peer: MultiplayerPeer = ClassDB.instantiate("SteamMultiplayerPeer")
 	peer.set("server_relay", true)
-	var error: Error = peer.call("create_client", api.getLobbyOwner(id), 0)
+	var error: Error = peer.call("create_client", owner_id, 0)
 	if error != OK:
 		connection.leave("Steam 连接房主失败：" + error_string(error))
 		return
 	connection.attach_client(peer)
+
+## Finish local subscriptions before opening the peer, so large downloads do not consume handshake time.
+func _prepare_workshop(ids: Array) -> bool:
+	connection._connection_deadline = 0
+	if not ids.is_empty():
+		connection.status = "正在同步房主的 %d 项工坊订阅" % ids.size()
+		connection.changed.emit()
+		var result: Error = await workshop.synchronize(ids, connection.get_tree())
+		if result == ERR_SKIP:
+			return false
+		if result != OK:
+			connection.leave(workshop.last_error)
+			return false
+	if workshop.refresh_catalog(connection.catalog, connection.content_sync.directory) != OK:
+		connection.leave(workshop.last_error)
+		return false
+	connection.status = ""
+	connection._connection_deadline = Time.get_ticks_msec() + 20000
+	return true
 
 func is_member(peer_id: int) -> bool:
 	var peer: MultiplayerPeer = connection.multiplayer.multiplayer_peer
@@ -196,6 +255,7 @@ func invite() -> void:
 	api.activateGameOverlayInviteDialog(lobby_id)
 
 func leave() -> void:
+	workshop.cancel()
 	_portraits.clear()
 	_wanted = false
 	if lobby_id != 0:

@@ -13,6 +13,8 @@ var mounted: Dictionary = {}
 var installed: Dictionary = {}
 var unavailable: Dictionary = {}
 var roots: Dictionary = {}
+## PublishedFileId by package ID for Steam-managed, read-only installations.
+var workshop_ids: Dictionary[String, int] = {}
 var _directory: String = ""
 
 func export_source(catalog: RefCounted, id: String, output: String) -> Error:
@@ -146,17 +148,26 @@ func _validate_index(description: Dictionary) -> String:
 	return ScriptClasses.validate(description.get("script_classes"), root, description.files)
 
 ## Discovery reads small descriptors only. PCKs, resource indices and payload bytes stay untouched.
-func prepare(directory: String, replacements: Dictionary = {}, required: Array = []) -> Error:
+func prepare(directory: String, replacements: Dictionary = {}, required: Array = [], workshop_descriptors: Dictionary[String, int] = {}) -> Error:
 	last_error = ""
 	installed.clear()
 	roots.clear()
 	unavailable.clear()
 	_directory = directory
 	var candidates: Dictionary = {}
-	for descriptor_path: String in descriptors(directory):
+	workshop_ids.clear()
+	var paths: Array[String] = descriptors(directory)
+	paths.append_array(workshop_descriptors.keys())
+	for descriptor_path: String in paths:
 		var description: Dictionary = Data.read_json(descriptor_path)
 		var id: String = str(description.get("id", descriptor_path.get_base_dir().get_file()))
+		if workshop_descriptors.has(descriptor_path):
+			if workshop_ids.has(id):
+				return _error("Multiple Workshop items provide package: " + id)
+			workshop_ids[id] = workshop_descriptors[descriptor_path]
 		if candidates.has(id):
+			if workshop_descriptors.has(descriptor_path) and description == candidates[id].description:
+				continue
 			return _error("Duplicate package ID: " + id)
 		candidates[id] = {"description": description, "root": descriptor_path.get_base_dir()}
 	for id: String in replacements:
@@ -179,6 +190,12 @@ func prepare(directory: String, replacements: Dictionary = {}, required: Array =
 			declaration.owner_protocol = description.owner_protocol
 		declarations[id] = declaration
 	unavailable.merge(Selection.unavailable_packages(declarations))
+	for id: String in workshop_ids:
+		if unavailable.has(id):
+			return _error("Workshop %d (%s): %s" % [workshop_ids[id], id, unavailable[id]])
+		var issue: String = _check_payload(roots[id], installed[id])
+		if not issue.is_empty():
+			return _error(issue)
 	for id: String in required:
 		if unavailable.has(id) or not installed.has(id):
 			return _error("Update rejected: " + id + ": " + str(unavailable.get(id, "Missing package")))

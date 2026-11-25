@@ -190,6 +190,8 @@ func offer(peer: int, requirements: Dictionary, stage: String = "join", token: S
 		var manifest: Dictionary = connection.catalog.packages[id]
 		var files: Array[Dictionary] = connection.catalog.distribution_files(id)
 		offered[id] = {"id": id, "name": manifest.name, "version": required.version, "build_id": required.build_id, "relative": Paths.package_relative(manifest), "kind": manifest.kind, "files": files, "error": "无法读取内容文件" if files.is_empty() else ""}
+		if connection.using_steam and connection.catalog.package_store.workshop_ids.has(id):
+			offered[id]["workshop_id"] = connection.catalog.package_store.workshop_ids[id]
 	_offers[peer] = offered
 	if connection._player_peer(peer).is_empty():
 		connection._hello_peers[peer] = Time.get_ticks_msec() + 600000
@@ -302,6 +304,9 @@ func receive_offer(payload: Dictionary) -> void:
 		var local: Dictionary = connection.catalog.packages.get(row.id, {})
 		if local.get("package_version") == row.version and local.get("build_id") == row.build_id:
 			continue
+		if connection.using_steam and (row.has("workshop_id") or connection.catalog.package_store.workshop_ids.has(row.id)):
+			connection.leave("工坊内容 %s 与房主不一致（需要 %s，构建 %s），请核对启用状态并更新至相同构建后重新加入" % [row.id, row.version, row.build_id])
+			return
 		row["current"] = local.get("package_version", "未安装")
 		row["state"] = "pending"
 		row["received"] = 0
