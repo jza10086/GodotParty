@@ -20,6 +20,7 @@
 /games/minigame/*/
 !/games/minigame/GP_blank/
 !/games/minigame/GP_vrm_glass_bridge/
+!/games/minigame/GP_ac130/
 /protocols/*
 !/protocols/.gdignore
 /maingame/*

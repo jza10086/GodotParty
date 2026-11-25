@@ -157,3 +157,5 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 角色动作：体素角色系统使用用户提供的 VoxelCharacterSystem 迁移包，身体动作源自 Kevin Iglesias Human Basic Motions FREE 2.4，持枪动作源自 Infima Free FPS Template，空手动作源自 EndRig。来源与授权范围见 games/assets/GP_voxel_character_system/ASSET_LICENSES.md。
 
 角色动作：体素角色系统右手交互，Quaternius Universal Animation Library 1（CC0 1.0，镜像烘焙） https://quaternius.itch.io/universal-animation-library
+
+模型：AC130空中炮艇参考模型 Lowpoly AC-130，SIpriv（CC BY 4.0，仅本地测试） https://sketchfab.com/3d-models/lowpoly-ac-130-63238efa8edd4c5ca518cf8fa7f49747

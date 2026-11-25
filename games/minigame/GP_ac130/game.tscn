@@ -1,0 +1,22 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://games/protocols/GP_default_protocol/solo_round.gd" id="1"]
+[ext_resource type="PackedScene" path="res://games/minigame/GP_ac130/sortie.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://games/minigame/GP_ac130/briefing.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://games/protocols/GP_default_protocol/settlement/settlement_page.tscn" id="4"]
+
+[node name="Game" type="Control" node_paths=PackedStringArray("briefing", "settlement")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+gameplay = ExtResource("2")
+columns = Array[Dictionary]([{"key":"score","title":"拦截数","format":"integer"},{"key":"shield","title":"剩余护盾","format":"integer"}])
+briefing = NodePath("Pages/Briefing")
+settlement = NodePath("Pages/Settlement")
+
+[node name="Pages" type="CanvasLayer" parent="."]
+layer = 32
+process_mode = 3
+[node name="Briefing" parent="Pages" instance=ExtResource("3")]
+visible = false
+[node name="Settlement" parent="Pages" instance=ExtResource("4")]
+visible = false
