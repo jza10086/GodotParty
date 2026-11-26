@@ -6,6 +6,9 @@ static func schema() -> Dictionary:
 	var bindings: Dictionary = {
 		"ac130_pulse": {"kind": "mouse", "code": MOUSE_BUTTON_LEFT},
 		"ac130_polarity": {"kind": "key", "code": KEY_V, "physical": true},
+		"ac130_needle": {"kind": "key", "code": KEY_1, "physical": true},
+		"ac130_wave": {"kind": "key", "code": KEY_2, "physical": true},
+		"ac130_reload": {"kind": "key", "code": KEY_R, "physical": true},
 		"ac130_zoom": {"kind": "mouse", "code": MOUSE_BUTTON_RIGHT}
 	}
 	var fields: Dictionary = {}

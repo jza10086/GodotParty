@@ -9,7 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1")
 gameplay = ExtResource("2")
-columns = Array[Dictionary]([{"key":"score","title":"拦截数","format":"integer"},{"key":"shield","title":"剩余护盾","format":"integer"}])
+columns = Array[Dictionary]([{"key":"score","title":"击破靶标","format":"integer"},{"key":"rounds","title":"消耗弹数","format":"integer"}])
 briefing = NodePath("Pages/Briefing")
 settlement = NodePath("Pages/Settlement")
 
