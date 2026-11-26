@@ -159,3 +159,5 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 角色动作：体素角色系统右手交互，Quaternius Universal Animation Library 1（CC0 1.0，镜像烘焙） https://quaternius.itch.io/universal-animation-library
 
 模型：AC130空中炮艇参考模型 Lowpoly AC-130，SIpriv（CC BY 4.0，仅本地测试） https://sketchfab.com/3d-models/lowpoly-ac-130-63238efa8edd4c5ca518cf8fa7f49747
+
+模型：Roulette Casino Table，Joachim Bornemann（CC0，3D 选型预览） https://www.blendkit.com/asset-gallery-detail/a202413a-90fe-4905-afdb-f0c25e3d7520/
