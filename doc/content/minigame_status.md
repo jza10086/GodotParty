@@ -23,7 +23,7 @@
 | 6    | [海战棋](../../games/minigame/GP_battleship/manifest.json)      | `GP_battleship`    | 1–8     | 初步可玩 | 还要有炮击效果，回合间隔                             |
 | 7    | [3d桌球](../../games/minigame/GP_billiards/manifest.json)             | `GP_billiards`           | 2–8     | 尚未可玩 |                                                      |
 | 8    | [山脊竞速](../../games/minigame/GP_car_racing/manifest.json)          | `GP_car_racing`          | 1        | 不可玩   | 需要完整重构并合并                                   |
-| 9    | [纸牌会客厅](../../games/minigame/GP_cards/manifest.json)         | `GP_cards`           | 1–8     | 不可玩   | 需要完整重构                                         |
+| 9    | [纸牌会客厅](../../games/minigame/GP_cards/manifest.json)         | `GP_cards`           | 1–8     | 初步可玩 | Tabletop 风格 8 人 3D 卡牌沙盒首版，待多开实机联机手感验收 |
 | 10   | [COASTLINE · 海岸飞行](../../games/minigame/GP_flight/manifest.json) | `GP_flight`              | 1        | 不可玩   | 需要完整重构                                         |
 | 11   | [水果武士](../../games/minigame/GP_fruit_samurai/manifest.json)       | `GP_fruit_samurai`       | 1–8     | 尚未可玩 |                                                      |
 | 12   | [阿瓦隆](../../games/minigame/GP_avalon/manifest.json)        | `GP_avalon`      | 5–8     | 初步可玩 | 尚未进行多人测试，美术风格有待调整，可以参考王权系列 |
