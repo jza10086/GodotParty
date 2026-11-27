@@ -31,6 +31,18 @@ func party_stop(reason: StringName) -> void:
 
 F6 未调用 `prepare_scope()` 时，组件自动建立临时预览总线，退出时移除。不写用户配置。正式运行由协议 runtime 拥有总线，离开作用域先停止声音，再移除对应总线。主游戏与前台小游戏的总线彼此独立；主游戏隐藏视图时按自身玩法决定暂停或停止。
 
+## 前台小游戏的音乐优先级
+
+父主游戏收到 `api.foreground_child_attached` 后，可用 `PartyDefaultMusicControl.for_game(root)` 取得本次前台活动的本机音乐控制器。读取 `state` 获取初始状态，订阅 `state_changed(state)` 获取后续变化，控制器退出场景树时解除绑定。
+
+| 状态 | 含义 |
+| --- | --- |
+| `SILENT` | 当前没有通过 `PartyGameAudio.play_music()` 播放的普通配乐。 |
+| `BACKGROUND` | 小游戏有普通配乐，即使被主游戏临时静音，其播放进度与完成事件仍继续。 |
+| `GAMEPLAY` | 子游戏根节点属于 `party_gameplay_music` 组，整局由玩法独占音乐，主游戏应暂停自己的播放器。 |
+
+`set_background_muted(true)` 临时屏蔽普通配乐；传入 `false` 后恢复当前用户音量。玩法独占时该请求无效。静音由协议混音器执行，仅作用于前台活动的音乐总线。歌单、洗牌、播放位置和是否请求替换由主游戏持有。
+
 ## 播放、切换与等待
 
 ```gdscript

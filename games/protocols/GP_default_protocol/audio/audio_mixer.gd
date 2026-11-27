@@ -4,6 +4,13 @@ const CHANNELS: Array[String] = ["music", "sfx", "dialogue", "ambience", "ui"]
 const KEYS: PackedStringArray = ["audio.master", "audio.music", "audio.sfx", "audio.dialogue", "audio.ambience", "audio.ui"]
 var buses: Dictionary[String, StringName] = {}
 
+var _music_suppressed: bool = false
+var _music_volume: float = 1.0
+
+func set_music_suppressed(value: bool) -> void:
+	_music_suppressed = value
+	set_volume("music", _music_volume)
+
 func open(scope: String) -> void:
 	assert(buses.is_empty(), "Audio mixer already open.")
 	var root_bus: StringName = StringName("party." + scope + ".GameRoot")
@@ -22,7 +29,9 @@ func _add(channel: String, name: StringName, send: StringName) -> void:
 func set_volume(channel: String, linear: float) -> void:
 	var index: int = AudioServer.get_bus_index(buses[channel])
 	AudioServer.set_bus_volume_linear(index, clampf(linear, 0.0, 1.0))
-	AudioServer.set_bus_mute(index, linear <= 0.0)
+	if channel == "music":
+		_music_volume = linear
+	AudioServer.set_bus_mute(index, linear <= 0.0 or (channel == "music" and _music_suppressed))
 
 func apply(config: PartyConfig) -> void:
 	for key: String in KEYS:

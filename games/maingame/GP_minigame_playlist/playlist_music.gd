@@ -1,6 +1,7 @@
 ## Session-owned music. Only the current track is loaded; the bag holds package-relative paths.
 extends AudioStreamPlayer
 
+const MusicControl = preload("res://games/protocols/GP_default_protocol/audio/music_control.gd")
 const PACK: String = "GP_lofi_music"
 var _api: PartyAPI
 var _tracks: Array[String] = []
@@ -8,11 +9,8 @@ var _bag: Array[String] = []
 var _last: String = ""
 var _started: bool = false
 var _yield_music: bool = false
-var _child_audio: PartyGameAudio
+var _music_control: MusicControl
 var _child_config: PartyConfig
-var _music_bus: StringName
-var _original_send: StringName
-var _silent_bus: StringName
 
 func configure(api: PartyAPI) -> void:
 	_api = api
@@ -55,58 +53,27 @@ func _next() -> void:
 	play()
 	stream_paused = _yield_music
 
-func _attach_child(root: Node, scope_id: String, config: PartyConfig) -> void:
+func _attach_child(root: Node, _scope_id: String, config: PartyConfig) -> void:
 	_child_config = config
 	_child_config.effective_changed.connect(_child_settings_changed)
-	root.tree_exiting.connect(_detach_child, CONNECT_ONE_SHOT)
+	_music_control = MusicControl.for_game(root)
+	_music_control.tree_exiting.connect(_detach_child, CONNECT_ONE_SHOT)
+	_music_control.state_changed.connect(_music_changed)
 	_apply_gain()
-	if root.is_in_group(&"party_gameplay_music"):
-		_set_yield(true)
-		return
-	if not root.has_method("godot_party_audio_target"):
-		return
-	_child_audio = root.godot_party_audio_target()
-	if _child_audio == null:
-		return
-	_music_bus = StringName("party." + scope_id + ".GameRoot.music")
-	_child_audio.playback_started.connect(_music_started)
-	_child_audio.playback_ended.connect(_music_ended)
 	_apply_override()
 
 func _playlist_settings_changed(_common: PackedStringArray, own: PackedStringArray) -> void:
 	_apply_gain()
-	if "override_minigame_bgm" in own and is_instance_valid(_child_audio):
+	if "override_minigame_bgm" in own and _music_control != null:
 		_apply_override()
 
 func _apply_override() -> void:
-	var replace_bgm: bool = _api.config.get_own(&"override_minigame_bgm")
-	if replace_bgm and _silent_bus == &"":
-		# Route only music away. The game's timeline, crossfades and end callbacks keep running.
-		_original_send = AudioServer.get_bus_send(AudioServer.get_bus_index(_music_bus))
-		_silent_bus = StringName("playlist.silent." + _api.scope_id)
-		# A send must point to a bus on its left.
-		AudioServer.add_bus(1)
-		AudioServer.set_bus_name(1, _silent_bus)
-		AudioServer.set_bus_mute(1, true)
-		AudioServer.set_bus_send(AudioServer.get_bus_index(_music_bus), _silent_bus)
-	elif not replace_bgm:
-		_restore_routing()
-	_update_priority()
+	_music_control.set_background_muted(_api.config.get_own(&"override_minigame_bgm"))
+	_music_changed(_music_control.state)
 
-func _music_started(_handle: PartyAudioHandle, _cue: PartyAudioCue, category: PartyGameAudio.Category) -> void:
-	if category == PartyGameAudio.Category.MUSIC:
-		_set_yield(_silent_bus == &"")
-
-func _music_ended(_handle: PartyAudioHandle, _cue: PartyAudioCue, category: PartyGameAudio.Category, _reason: PartyAudioHandle.EndReason) -> void:
-	if category == PartyGameAudio.Category.MUSIC:
-		_update_priority()
-
-func _update_priority() -> void:
-	_set_yield(_silent_bus == &"" and _child_audio.status().playing.music > 0)
-
-func _set_yield(value: bool) -> void:
-	_yield_music = value
-	stream_paused = value
+func _music_changed(state: MusicControl.State) -> void:
+	_yield_music = state == MusicControl.State.GAMEPLAY or (state == MusicControl.State.BACKGROUND and not _api.config.get_own(&"override_minigame_bgm"))
+	stream_paused = _yield_music
 
 func _child_settings_changed(_common: PackedStringArray, _own: PackedStringArray) -> void:
 	_apply_gain()
@@ -116,23 +83,12 @@ func _apply_gain() -> void:
 	volume_linear = float(config.get_common(&"audio.master")) * float(config.get_common(&"audio.music"))
 
 func _detach_child() -> void:
-	if _child_config != null:
-		_child_config.effective_changed.disconnect(_child_settings_changed)
-		_child_config = null
-	if is_instance_valid(_child_audio):
-		_child_audio.playback_started.disconnect(_music_started)
-		_child_audio.playback_ended.disconnect(_music_ended)
-	_child_audio = null
-	_restore_routing()
-	_set_yield(false)
-
-func _restore_routing() -> void:
-	if _silent_bus != &"":
-		var index: int = AudioServer.get_bus_index(_music_bus)
-		if index >= 0:
-			AudioServer.set_bus_send(index, _original_send)
-		AudioServer.remove_bus(AudioServer.get_bus_index(_silent_bus))
-		_silent_bus = &""
+	_child_config.effective_changed.disconnect(_child_settings_changed)
+	_child_config = null
+	_music_control.state_changed.disconnect(_music_changed)
+	_music_control = null
+	_yield_music = false
+	stream_paused = false
 
 func stop_session() -> void:
 	_started = false

@@ -3,6 +3,8 @@ extends "res://games/protocols/GP_default_protocol/graphics_settings.gd"
 ## One settings activation owns the native arrow; leaving restores the engine cursor.
 const Cursor: Script = preload("res://games/assets/GP_default_ui/appearance/player_cursor.gd")
 const AudioMixer = preload("res://games/protocols/GP_default_protocol/audio/audio_mixer.gd")
+const MusicControl = preload("res://games/protocols/GP_default_protocol/audio/music_control.gd")
+var _music_control: MusicControl
 var _audio_mixer: AudioMixer
 var _audio_target: PartyGameAudio
 var _api: PartyAPI
@@ -28,14 +30,24 @@ func enter() -> Dictionary:
 	return report
 
 func attach_view(view_root: Node) -> Dictionary:
-	if is_instance_valid(_audio_target):
-		_audio_target.close_scope()
-	_audio_target = null
+	_release_audio_view()
 	if view_root.has_method("godot_party_audio_target"):
 		_audio_target = view_root.godot_party_audio_target()
 		if _audio_target != null:
 			_audio_target.bind_buses(_audio_mixer.buses)
-	return super.attach_view(view_root)
+	var report: Dictionary = super.attach_view(view_root)
+	if report.ok and not _api.round_id.is_empty():
+		_music_control = MusicControl.new()
+		_music_control.attach(view_root, _audio_mixer, _audio_target)
+	return report
+
+func _release_audio_view() -> void:
+	if is_instance_valid(_music_control):
+		_music_control.free()
+		_music_control = null
+	if is_instance_valid(_audio_target):
+		_audio_target.close_scope()
+	_audio_target = null
 
 func apply(common_keys: PackedStringArray, own_keys: PackedStringArray) -> Dictionary:
 	var report: Dictionary = _apply_cursor(super.apply(common_keys, own_keys))
@@ -70,9 +82,7 @@ func _players_changed() -> void:
 		_api.fail("cursor_failed", report.message)
 
 func leave() -> void:
-	if is_instance_valid(_audio_target):
-		_audio_target.close_scope()
-	_audio_target = null
+	_release_audio_view()
 	if _audio_mixer != null:
 		_audio_mixer.close()
 	if _active:
