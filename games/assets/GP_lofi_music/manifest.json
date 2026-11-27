@@ -1,7 +1,7 @@
 {
   "id": "GP_lofi_music",
   "kind": "assets",
-  "package_version": "0.0.1",
+  "package_version": "0.1.0",
   "framework_version": "0.6.0",
   "remark": "轮换用 LoFi 背景音乐",
   "supported_languages": [
