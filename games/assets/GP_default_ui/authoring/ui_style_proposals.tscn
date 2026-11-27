@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://chqr2bnqrre1q"]
 
-[ext_resource type="Script" path="res://games/assets/GP_default_ui/authoring/ui_style_proposals.gd" id="1_script"]
-[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://xq3qwjp1vr7m" path="res://games/assets/GP_default_ui/authoring/ui_style_proposals.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/background.tscn" id="3_bg"]
 
-[node name="UIStyleProposals" type="Control"]
+[node name="UIStyleProposals" type="Control" unique_id=1174932587]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,36 +14,42 @@ grow_vertical = 2
 theme = ExtResource("2_theme")
 script = ExtResource("1_script")
 
-[node name="Background" parent="." instance=ExtResource("3_bg")]
+[node name="Background" parent="." unique_id=1801156158 instance=ExtResource("3_bg")]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="RootMargin" type="MarginContainer" parent="." unique_id=286503536]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 44
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 44
+theme_override_constants/margin_bottom = 22
 
-[node name="RootMargin" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 48
-theme_override_constants/margin_top = 28
-theme_override_constants/margin_right = 48
-theme_override_constants/margin_bottom = 28
-
-[node name="Layout" type="VBoxContainer" parent="RootMargin"]
-layout_mode = 2
-theme_override_constants/separation = 20
-
-[node name="TopBar" type="HBoxContainer" parent="RootMargin/Layout"]
-unique_name_in_owner = true
+[node name="Layout" type="VBoxContainer" parent="RootMargin" unique_id=92190198]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="Stage" type="Control" parent="RootMargin/Layout"]
+[node name="TopBar" type="HBoxContainer" parent="RootMargin/Layout" unique_id=683165662]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TweakBar" type="PanelContainer" parent="RootMargin/Layout" unique_id=1797632104]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="TweakRow" type="HBoxContainer" parent="RootMargin/Layout/TweakBar" unique_id=1328152044]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Stage" type="Control" parent="RootMargin/Layout" unique_id=463633025]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3

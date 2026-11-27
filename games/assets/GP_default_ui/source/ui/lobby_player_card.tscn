@@ -1,106 +1,127 @@
 [gd_scene format=3]
+
 [ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 [ext_resource type="Script" path="res://games/assets/GP_default_ui/source/ui/lobby_player_card.gd" id="logic"]
 
 [sub_resource type="StyleBoxFlat" id="Normal"]
 resource_local_to_scene = true
-bg_color = Color(0.075, 0.105, 0.15, 1)
+bg_color = Color(0.08, 0.125, 0.185, 0.84)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.30, 0.35, 0.42, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_left = 16
-corner_radius_bottom_right = 16
+border_color = Color(0.58, 0.78, 0.94, 0.35)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
 corner_detail = 16
 anti_aliasing = true
+anti_aliasing_size = 1.25
 
 [sub_resource type="StyleBoxFlat" id="Hover"]
 resource_local_to_scene = true
-bg_color = Color(0.12, 0.17, 0.23, 1)
+bg_color = Color(0.14, 0.22, 0.33, 0.9)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.30, 0.35, 0.42, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_left = 16
-corner_radius_bottom_right = 16
+border_color = Color(0.64, 0.84, 0.98, 0.9)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
 corner_detail = 16
 anti_aliasing = true
+anti_aliasing_size = 1.25
 
 [sub_resource type="StyleBoxFlat" id="Pressed"]
 resource_local_to_scene = true
-bg_color = Color(0.055, 0.08, 0.12, 1)
+bg_color = Color(0.1, 0.18, 0.28, 0.94)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.30, 0.35, 0.42, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_left = 16
-corner_radius_bottom_right = 16
+border_color = Color(0.72, 0.9, 1, 0.95)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
 corner_detail = 16
 anti_aliasing = true
-
-[sub_resource type="StyleBoxFlat" id="Focus"]
-resource_local_to_scene = true
-bg_color = Color(0, 0, 0, 0)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.30, 0.35, 0.42, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_left = 16
-corner_radius_bottom_right = 16
-corner_detail = 16
-anti_aliasing = true
+anti_aliasing_size = 1.25
 
 [sub_resource type="StyleBoxFlat" id="Empty"]
 resource_local_to_scene = true
-bg_color = Color(0.075, 0.105, 0.15, 0.45)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.30, 0.35, 0.42, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_left = 16
-corner_radius_bottom_right = 16
+bg_color = Color(0.055, 0.09, 0.14, 0.45)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.54, 0.64, 0.16)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
 corner_detail = 16
+anti_aliasing = true
+anti_aliasing_size = 1.25
+
+[sub_resource type="StyleBoxFlat" id="LatencyTagStyle"]
+resource_local_to_scene = true
+content_margin_left = 9.0
+content_margin_top = 3.0
+content_margin_right = 9.0
+content_margin_bottom = 3.0
+bg_color = Color(0.14, 0.22, 0.32, 0.9)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+corner_detail = 12
+anti_aliasing = true
+
+[sub_resource type="StyleBoxFlat" id="StatusTagStyle"]
+resource_local_to_scene = true
+content_margin_left = 11.0
+content_margin_top = 4.0
+content_margin_right = 11.0
+content_margin_bottom = 4.0
+bg_color = Color(0.14, 0.2, 0.28, 0.78)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+corner_detail = 12
 anti_aliasing = true
 
 [node name="PlayerCard" type="Button"]
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 theme = ExtResource("theme")
 theme_override_styles/normal = SubResource("Normal")
 theme_override_styles/hover = SubResource("Hover")
 theme_override_styles/pressed = SubResource("Pressed")
 theme_override_styles/hover_pressed = SubResource("Pressed")
-theme_override_styles/focus = SubResource("Focus")
+theme_override_styles/focus = SubResource("Hover")
 theme_override_styles/disabled = SubResource("Empty")
 script = ExtResource("logic")
 
 [node name="Insets" type="MarginContainer" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_right = 18
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
 
 [node name="Row" type="HBoxContainer" parent="Insets"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 10
 
 [node name="PlayerName" type="Label" parent="Insets/Row"]
 unique_name_in_owner = true
@@ -110,11 +131,38 @@ mouse_filter = 2
 text = "空位"
 vertical_alignment = 1
 text_overrun_behavior = 3
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 21
 
-[node name="PlayerStatus" type="Label" parent="Insets/Row"]
+[node name="LatencyBadge" type="PanelContainer" parent="Insets/Row"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("LatencyTagStyle")
+
+[node name="LatencyLabel" type="Label" parent="Insets/Row/LatencyBadge"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
+theme_override_colors/font_color = Color(0.5843, 0.7804, 0.9255, 1)
+theme_override_font_sizes/font_size = 14
+text = "18 ms"
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 20
+
+[node name="StatusBadge" type="PanelContainer" parent="Insets/Row"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StatusTagStyle")
+
+[node name="PlayerStatus" type="Label" parent="Insets/Row/StatusBadge"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.66, 0.74, 0.83, 1)
+theme_override_font_sizes/font_size = 14
+text = "未准备"
+vertical_alignment = 1

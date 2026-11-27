@@ -1,3 +1,3 @@
 ## Framework/content compatibility identity. Independent of the user-owned Godot project version.
 extends RefCounted
-const VERSION: String = "0.6.8"
+const VERSION: String = "0.6.9"

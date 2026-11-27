@@ -46,8 +46,8 @@ func configure(connection: Node, i18n: RefCounted, can_open: Callable, standings
 func _ready() -> void:
 	assert(_connection != null and _i18n != null and _can_open.is_valid() and _standings.is_valid() and _format_metric.is_valid(), "Network panel requires the application context")
 	assert(packet_loss_icon != null and disconnected_icon != null and host_icon != null, "Network panel requires status icons")
-	_row_normal_style = _make_row_style(Color(0.09, 0.13, 0.18, 0.55), Color(0.35, 0.48, 0.6, 0.12), 0)
-	_row_self_style = _make_row_style(Color(0.14, 0.26, 0.38, 0.86), Color(0.56, 0.84, 1.0, 0.68), 1)
+	_row_normal_style = _make_row_style(Color(0.09, 0.135, 0.20, 0.55), Color(0.58, 0.78, 0.94, 0.12), 0)
+	_row_self_style = _make_row_style(Color(0.14, 0.26, 0.38, 0.86), Color(0.64, 0.84, 0.98, 0.75), 2)
 	_connection.changed.connect(_connection_changed)
 	_i18n.changed.connect(_localize)
 	get_window().focus_exited.connect(close)
@@ -59,7 +59,7 @@ func _make_row_style(bg: Color, border: Color, border_width: int) -> StyleBoxFla
 	style.bg_color = bg
 	style.border_color = border
 	style.set_border_width_all(border_width)
-	style.set_corner_radius_all(16)
+	style.set_corner_radius_all(8)
 	style.content_margin_left = 14.0
 	style.content_margin_right = 14.0
 	style.content_margin_top = 8.0
@@ -171,9 +171,18 @@ func _rebuild_metric_headings(columns: Array) -> void:
 func _build_row(player: Dictionary, entry: Dictionary, columns: Array, ranked: bool, local_peer: int) -> PanelContainer:
 	var is_self: bool = int(player.get("peer_id", -1)) == local_peer
 	var connected: bool = bool(player.get("connected", true))
+	var appearance: Variant = player.get("appearance")
+	var fallback_raw: Variant = (appearance as Dictionary).get("color") if appearance is Dictionary else null
+	var raw_color: Variant = entry.get("color", fallback_raw)
+	var player_color: Variant = raw_color if raw_color is Color else (Color.from_string(raw_color, COLOR_TEXT) if raw_color is String and Color.html_is_valid(raw_color) else null)
+	var row_bg: Color = Color(0.11, 0.175, 0.26, 0.90) if is_self else Color(0.08, 0.125, 0.185, 0.84)
+	var border_col: Color = Color(0.64, 0.84, 0.98, 0.82) if is_self else Color(0.58, 0.78, 0.94, 0.32)
+	if player_color is Color:
+		var pc: Color = player_color as Color
+		border_col = Color(pc.r, pc.g, pc.b, 0.92 if connected else 0.42)
 	var panel: PanelContainer = PanelContainer.new()
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_theme_stylebox_override("panel", _row_self_style if is_self else _row_normal_style)
+	panel.add_theme_stylebox_override("panel", _make_row_style(row_bg, border_col, 2))
 	var line: HBoxContainer = HBoxContainer.new()
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	line.add_theme_constant_override("separation", 20)
@@ -197,11 +206,9 @@ func _build_row(player: Dictionary, entry: Dictionary, columns: Array, ranked: b
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	name_label.add_theme_font_size_override("font_size", 22)
 	name_label.text = str(player.get("name", ""))
-	var raw_color: Variant = entry.get("color")
-	var player_color: Variant = raw_color if raw_color is Color else (Color.from_string(raw_color, COLOR_TEXT) if raw_color is String and Color.html_is_valid(raw_color) else null)
 	if player_color is Color:
-		var tinted: Color = player_color
-		name_label.modulate = tinted if connected else Color(tinted.r, tinted.g, tinted.b, 0.45)
+		var tinted: Color = player_color as Color
+		name_label.modulate = tinted if connected else Color(tinted.r, tinted.g, tinted.b, 0.55)
 	else:
 		name_label.modulate = COLOR_TEXT if connected else COLOR_MUTED
 	line.add_child(name_label)
@@ -247,54 +254,77 @@ func _build_metric_cell(column: Dictionary, raw_value: Variant, connected: bool)
 
 func _build_ping_cell(player: Dictionary, local_peer: int) -> HBoxContainer:
 	var cell: HBoxContainer = HBoxContainer.new()
-	cell.custom_minimum_size = Vector2(136.0, 32.0)
+	cell.custom_minimum_size = Vector2(146.0, 32.0)
 	cell.alignment = BoxContainer.ALIGNMENT_END
 	cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	cell.add_theme_constant_override("separation", 8)
 	var peer_id: int = int(player.get("peer_id", -1))
 	var connected: bool = bool(player.get("connected", true))
 	var sample: Dictionary = _connection.get_peer_stats(1 if peer_id == local_peer and not _connection.host else peer_id)
 	var state: String = "host" if connected and peer_id == 1 else str(sample.get("state", "offline"))
 	var ping_text: String = "—"
 	var ping_color: Color = COLOR_MUTED
+	var pill_bg: Color = Color(0.14, 0.22, 0.32, 0.90)
 	var warn_texture: Texture2D = null
 	var warn_color: Color = Color.WHITE
 	if state == "host":
-		ping_text = "0 ms"
-		ping_color = COLOR_GOOD
+		ping_text = "房主"
+		ping_color = Color(0.96, 0.97, 0.99, 1.0)
+		pill_bg = Color(0.18, 0.37, 0.56, 0.92)
 		warn_texture = host_icon
 		warn_color = COLOR_GOLD
 	elif state in ["connected", "degraded"]:
 		var rtt: float = float(sample.get("rtt_msec", 0.0))
 		ping_text = "%d ms" % roundi(rtt)
 		ping_color = _ping_color(rtt)
+		if rtt >= ping_critical_msec:
+			pill_bg = Color(0.42, 0.15, 0.18, 0.90)
+		elif rtt >= ping_warn_msec or state == "degraded":
+			pill_bg = Color(0.32, 0.24, 0.12, 0.90)
 		var loss_ready: bool = bool(sample.get("packet_loss_ready", false))
 		var loss_percent: float = float(sample.get("packet_loss_percent", 0.0))
 		if loss_ready and loss_percent >= loss_warn_percent:
 			warn_texture = packet_loss_icon
 			warn_color = COLOR_CRITICAL if loss_percent >= loss_critical_percent else COLOR_WARN
 	elif state in ["offline", "stalled"]:
-		ping_color = COLOR_CRITICAL
+		ping_text = "掉线" if state == "offline" else "无响应"
+		ping_color = Color(0.98, 0.92, 0.92, 1.0)
+		pill_bg = Color(0.62, 0.18, 0.22, 0.92)
 		warn_texture = disconnected_icon
-		warn_color = COLOR_CRITICAL
+		warn_color = Color(0.98, 0.85, 0.85, 1.0)
+	var pill: PanelContainer = PanelContainer.new()
+	pill.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var pill_style: StyleBoxFlat = StyleBoxFlat.new()
+	pill_style.bg_color = pill_bg
+	pill_style.set_corner_radius_all(6)
+	pill_style.content_margin_left = 10.0
+	pill_style.content_margin_right = 10.0
+	pill_style.content_margin_top = 4.0
+	pill_style.content_margin_bottom = 4.0
+	pill.add_theme_stylebox_override("panel", pill_style)
+	var pill_row: HBoxContainer = HBoxContainer.new()
+	pill_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pill_row.add_theme_constant_override("separation", 6)
+	pill.add_child(pill_row)
 	if warn_texture != null:
 		var icon_rect: TextureRect = TextureRect.new()
 		icon_rect.texture = warn_texture
-		icon_rect.custom_minimum_size = Vector2(20.0, 20.0)
+		icon_rect.custom_minimum_size = Vector2(18.0, 18.0)
 		icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon_rect.modulate = warn_color
 		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		cell.add_child(icon_rect)
+		pill_row.add_child(icon_rect)
 	var ping_label: Label = Label.new()
 	ping_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	ping_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	ping_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ping_label.add_theme_font_size_override("font_size", 22)
+	ping_label.add_theme_font_size_override("font_size", 16)
 	ping_label.text = ping_text
-	ping_label.modulate = ping_color
-	cell.add_child(ping_label)
+	ping_label.add_theme_color_override("font_color", ping_color)
+	pill_row.add_child(ping_label)
+	cell.add_child(pill)
 	return cell
 
 func _ping_color(rtt_msec: float) -> Color:

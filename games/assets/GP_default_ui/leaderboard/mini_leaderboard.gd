@@ -54,11 +54,13 @@ func set_presentation(presentation: Dictionary, players: Array = []) -> void:
 		var player_id: String = str(row.get("player_id", ""))
 		var player_info: Dictionary = lookup.get(player_id, {})
 		var metrics: Dictionary = row.get("metrics", {}) if row.get("metrics") is Dictionary else {}
+		var appearance: Variant = player_info.get("appearance")
+		var fallback_color: Variant = (appearance as Dictionary).get("color") if appearance is Dictionary else null
 		normalized.append({
 			"rank": LeaderboardUtils.parse_rank(row),
 			"name": LeaderboardUtils.resolve_name(row, lookup),
 			"score": metrics.get(metric_key),
-			"color": row.get("color"),
+			"color": row.get("color", fallback_color),
 			"is_self": bool(row.get("is_self", player_info.get("is_local", false))),
 			"connected": bool(row.get("connected", player_info.get("connected", true))),
 		})
@@ -71,9 +73,11 @@ func clear_entries() -> void:
 	if _initialized:
 		_render()
 
-func _make_row_style(bg: Color) -> StyleBoxFlat:
+func _make_row_style(bg: Color, border: Color = Color(0.0, 0.0, 0.0, 0.0), border_width: int = 0) -> StyleBoxFlat:
 	var style: StyleBoxFlat = StyleBoxFlat.new()
 	style.bg_color = bg
+	style.border_color = border
+	style.set_border_width_all(border_width)
 	style.set_corner_radius_all(6)
 	style.content_margin_left = 10.0
 	style.content_margin_right = 10.0
@@ -101,14 +105,20 @@ func _render() -> void:
 		panel.name = "Row%d" % (index + 1)
 		var is_self: bool = bool(entry.get("is_self", false))
 		var connected: bool = bool(entry.get("connected", true))
-		panel.add_theme_stylebox_override("panel", _row_self_style if is_self else _row_normal_style)
+		var player_color: Variant = LeaderboardUtils.parse_color(entry.get("color"))
+		if player_color is Color:
+			var pc: Color = player_color
+			var bg_col: Color = Color(0.11, 0.175, 0.26, 0.80) if is_self else Color(0.08, 0.125, 0.185, 0.62)
+			var border_alpha: float = 0.95 if (is_self and connected) else (0.68 if connected else 0.30)
+			panel.add_theme_stylebox_override("panel", _make_row_style(bg_col, Color(pc.r, pc.g, pc.b, border_alpha), 2))
+		else:
+			panel.add_theme_stylebox_override("panel", _row_self_style if is_self else _row_normal_style)
 		var rank_value: int = LeaderboardUtils.parse_rank(entry)
 		var rank_label: Label = panel.get_node("Line/Rank") as Label
 		rank_label.text = LeaderboardUtils.rank_text(rank_value)
 		rank_label.modulate = LeaderboardUtils.rank_color(rank_value) if connected else LeaderboardUtils.COLOR_MUTED
 		var name_label: Label = panel.get_node("Line/PlayerName") as Label
 		name_label.text = str(entry.get("name", "—"))
-		var player_color: Variant = LeaderboardUtils.parse_color(entry.get("color"))
 		if player_color is Color:
 			var tinted: Color = player_color
 			name_label.modulate = tinted if connected else Color(tinted.r, tinted.g, tinted.b, 0.45)

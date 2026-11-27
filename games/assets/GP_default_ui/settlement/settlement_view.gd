@@ -34,9 +34,9 @@ var _row_self_style: StyleBoxFlat
 func _ready() -> void:
 	_initialized = true
 	assert(result_row_scene != null, "Assign the settlement row scene")
-	_row_normal_style = _make_row_style(Color(0.06, 0.10, 0.16, 0.42), Color(0.55, 0.76, 0.94, 0.14), 1)
-	_row_winner_style = _make_row_style(Color(0.18, 0.16, 0.10, 0.48), Color(0.95, 0.82, 0.44, 0.46), 1)
-	_row_self_style = _make_row_style(Color(0.11, 0.21, 0.32, 0.56), Color(0.56, 0.82, 0.98, 0.52), 1)
+	_row_normal_style = _make_row_style(Color(0.055, 0.09, 0.14, 0.76), Color(0.58, 0.78, 0.94, 0.20), 2)
+	_row_winner_style = _make_row_style(Color(0.18, 0.16, 0.10, 0.80), Color(0.95, 0.82, 0.44, 0.62), 2)
+	_row_self_style = _make_row_style(Color(0.11, 0.21, 0.32, 0.84), Color(0.64, 0.84, 0.98, 0.78), 2)
 	_action_button.pressed.connect(func() -> void: action_requested.emit())
 	if not _presentation.is_empty():
 		_render()
@@ -89,7 +89,7 @@ func _make_row_style(bg: Color, border: Color, border_width: int) -> StyleBoxFla
 	style.bg_color = bg
 	style.border_color = border
 	style.set_border_width_all(border_width)
-	style.set_corner_radius_all(16)
+	style.set_corner_radius_all(8)
 	style.content_margin_left = 26.0
 	style.content_margin_right = 26.0
 	style.content_margin_top = 14.0
@@ -154,12 +154,14 @@ func _add_row(row: Dictionary) -> void:
 	var rank_value: int = LeaderboardUtils.parse_rank(row)
 	var connected: bool = bool(row.get("connected", player_info.get("connected", true)))
 	var is_self: bool = bool(row.get("is_self", player_info.get("is_local", false)))
-	if is_self:
-		panel.add_theme_stylebox_override("panel", _row_self_style)
-	elif rank_value == 1:
-		panel.add_theme_stylebox_override("panel", _row_winner_style)
-	else:
-		panel.add_theme_stylebox_override("panel", _row_normal_style)
+	var raw_color: Variant = row.get("color", player_info.get("appearance", {}).get("color") if player_info.get("appearance") is Dictionary else null)
+	var player_color: Variant = LeaderboardUtils.parse_color(raw_color)
+	var row_bg: Color = Color(0.11, 0.175, 0.26, 0.90) if is_self else (Color(0.14, 0.145, 0.12, 0.86) if rank_value == 1 else Color(0.08, 0.125, 0.185, 0.84))
+	var border_col: Color = Color(0.95, 0.82, 0.44, 0.78) if rank_value == 1 else Color(0.58, 0.78, 0.94, 0.35)
+	if player_color is Color:
+		var pc: Color = player_color as Color
+		border_col = Color(pc.r, pc.g, pc.b, 0.92 if connected else 0.42)
+	panel.add_theme_stylebox_override("panel", _make_row_style(row_bg, border_col, 2))
 	var rank_label: Label = panel.get_node("Line/Rank") as Label
 	rank_label.text = LeaderboardUtils.rank_text(rank_value)
 	rank_label.modulate = LeaderboardUtils.rank_color(rank_value) if connected else LeaderboardUtils.COLOR_MUTED
@@ -167,16 +169,25 @@ func _add_row(row: Dictionary) -> void:
 	var display_name: String = LeaderboardUtils.resolve_name(row, _players)
 	name_label.text = display_name
 	name_label.tooltip_text = display_name
-	var player_color: Variant = LeaderboardUtils.parse_color(row.get("color"))
 	if player_color is Color:
-		var tinted: Color = player_color
-		name_label.modulate = tinted if connected else Color(tinted.r, tinted.g, tinted.b, 0.45)
+		var tinted: Color = player_color as Color
+		name_label.modulate = tinted if connected else Color(tinted.r, tinted.g, tinted.b, 0.55)
 	else:
 		name_label.modulate = LeaderboardUtils.COLOR_TEXT if connected else LeaderboardUtils.COLOR_MUTED
-	var status_label: Label = panel.get_node("Line/PlayerBox/Status") as Label
+	var status_badge: PanelContainer = panel.get_node("%StatusBadge") as PanelContainer
+	var status_label: Label = panel.get_node("%Status") as Label
 	var status_text: String = str(row.get("status", ""))
 	status_label.text = status_text
-	status_label.visible = not status_text.is_empty()
+	status_badge.visible = not status_text.is_empty()
+	if not status_text.is_empty():
+		var badge_style: StyleBoxFlat = (status_badge.get_theme_stylebox(&"panel") as StyleBoxFlat).duplicate() as StyleBoxFlat
+		if status_text == "MVP" or status_text == "冠军":
+			badge_style.bg_color = Color(0.42, 0.32, 0.12, 0.92)
+			status_label.add_theme_color_override(&"font_color", LeaderboardUtils.COLOR_GOLD)
+		elif status_text.contains("掉线") or status_text.contains("离线"):
+			badge_style.bg_color = Color(0.62, 0.18, 0.22, 0.92)
+			status_label.add_theme_color_override(&"font_color", Color(0.98, 0.92, 0.92, 1.0))
+		status_badge.add_theme_stylebox_override(&"panel", badge_style)
 	var metrics_container: HBoxContainer = panel.get_node("Line/Metrics") as HBoxContainer
 	var metrics_map: Dictionary = row.get("metrics", {}) if row.get("metrics") is Dictionary else {}
 	var deltas_map: Dictionary = row.get("deltas", {}) if row.get("deltas") is Dictionary else {}
@@ -234,10 +245,22 @@ func _build_metric_cell(column: Dictionary, raw_value: Variant, raw_delta: Varia
 		cell.add_child(value_label)
 	var delta_text: String = LeaderboardUtils.format_delta(raw_delta, format)
 	if not delta_text.is_empty():
+		var delta_badge: PanelContainer = PanelContainer.new()
+		delta_badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		delta_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var delta_style: StyleBoxFlat = StyleBoxFlat.new()
+		delta_style.bg_color = Color(0.14, 0.58, 0.35, 0.90) if float(raw_delta) > 0.0 else Color(0.68, 0.20, 0.24, 0.90)
+		delta_style.set_corner_radius_all(6)
+		delta_style.content_margin_left = 8.0
+		delta_style.content_margin_right = 8.0
+		delta_style.content_margin_top = 3.0
+		delta_style.content_margin_bottom = 3.0
+		delta_badge.add_theme_stylebox_override("panel", delta_style)
 		var delta_label: Label = Label.new()
 		delta_label.text = delta_text
 		delta_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		delta_label.add_theme_font_size_override("font_size", 21)
-		delta_label.modulate = LeaderboardUtils.COLOR_POSITIVE if float(raw_delta) > 0.0 else LeaderboardUtils.COLOR_NEGATIVE
-		cell.add_child(delta_label)
+		delta_label.add_theme_font_size_override("font_size", 16)
+		delta_label.add_theme_color_override("font_color", Color(0.96, 0.97, 0.99, 1.0))
+		delta_badge.add_child(delta_label)
+		cell.add_child(delta_badge)
 	return cell

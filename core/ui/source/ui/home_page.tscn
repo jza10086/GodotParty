@@ -5,12 +5,12 @@
 [ext_resource type="Theme" uid="uid://uwnrdgk1k5uq" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 
 [sub_resource type="StyleBoxFlat" id="AvatarFrameStyle"]
-bg_color = Color(0.08, 0.13, 0.2, 0.72)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.75, 0.84, 0.92, 0.22)
+bg_color = Color(0.08, 0.13, 0.2, 0.78)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.58, 0.78, 0.94, 0.28)
 
 [node name="Home" type="Control" unique_id=1994389843]
 layout_mode = 3
@@ -51,6 +51,7 @@ PARTY"
 [node name="Start" parent="Menu" unique_id=1599878531 instance=ExtResource("ar_button")]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+theme_type_variation = &"OpenButton"
 theme_override_font_sizes/font_size = 26
 text = "创建房间"
 alignment = 0
@@ -58,6 +59,7 @@ alignment = 0
 [node name="Join" parent="Menu" unique_id=1569948778 instance=ExtResource("ar_button")]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+theme_type_variation = &"OpenButton"
 theme_override_font_sizes/font_size = 26
 text = "加入房间"
 alignment = 0
@@ -65,6 +67,7 @@ alignment = 0
 [node name="Content" parent="Menu" instance=ExtResource("ar_button")]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+theme_type_variation = &"OpenButton"
 theme_override_font_sizes/font_size = 26
 text = "内容包"
 alignment = 0
@@ -72,6 +75,7 @@ alignment = 0
 [node name="Settings" parent="Menu" unique_id=535242123 instance=ExtResource("ar_button")]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+theme_type_variation = &"OpenButton"
 theme_override_font_sizes/font_size = 26
 text = "设置"
 alignment = 0
@@ -79,6 +83,7 @@ alignment = 0
 [node name="Exit" parent="Menu" unique_id=1514364 instance=ExtResource("ar_button")]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+theme_type_variation = &"OpenButton"
 theme_override_font_sizes/font_size = 26
 text = "退出"
 alignment = 0
@@ -91,6 +96,7 @@ mouse_filter = 2
 [node name="ListenTest" parent="Menu" unique_id=1701688604 instance=ExtResource("ar_button")]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+theme_type_variation = &"OpenButton"
 theme_override_font_sizes/font_size = 22
 text = "监听测试"
 alignment = 0
@@ -98,6 +104,7 @@ alignment = 0
 [node name="ConnectTest" parent="Menu" unique_id=424624973 instance=ExtResource("ar_button")]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+theme_type_variation = &"OpenButton"
 theme_override_font_sizes/font_size = 22
 text = "连接测试"
 alignment = 0
@@ -105,6 +112,7 @@ alignment = 0
 [node name="NetworkLab" parent="Menu" unique_id=2104679568 instance=ExtResource("ar_button")]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+theme_type_variation = &"OpenButton"
 theme_override_font_sizes/font_size = 22
 text = "网络实验"
 alignment = 0
@@ -119,6 +127,7 @@ offset_top = 56.0
 offset_right = -96.0
 offset_bottom = 144.0
 grow_horizontal = 0
+theme_type_variation = &"OpenButton"
 tooltip_text = "玩家资料"
 
 [node name="Content" type="MarginContainer" parent="Profile"]

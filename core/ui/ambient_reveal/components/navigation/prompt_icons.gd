@@ -32,6 +32,39 @@ const PAD: Dictionary = {
 	JOY_BUTTON_DPAD_LEFT: "dpad_left", JOY_BUTTON_DPAD_RIGHT: "dpad_right",
 }
 
+static var _crop_cache: Dictionary = {}
+
+
+## Crops transparent margins from square 64x64 Kenney glyphs so wide keys
+## (Space, Shift, Tab, LB, RB) vertically fill the same cap height as single keys.
+static func cropped(texture: Texture2D) -> Dictionary:
+	if texture == null:
+		return {"texture": null, "aspect": 1.0}
+	if _crop_cache.has(texture):
+		return _crop_cache[texture] as Dictionary
+	var result: Dictionary = {
+		"texture": texture,
+		"aspect": float(texture.get_width()) / maxf(float(texture.get_height()), 1.0),
+	}
+	var img: Image = texture.get_image()
+	if img != null:
+		var used: Rect2i = img.get_used_rect()
+		if used.size.x > 0 and used.size.y > 0:
+			var pad: int = 1
+			var x0: int = maxi(used.position.x - pad, 0)
+			var y0: int = maxi(used.position.y - pad, 0)
+			var x1: int = mini(used.end.x + pad, img.get_width())
+			var y1: int = mini(used.end.y + pad, img.get_height())
+			var atlas: AtlasTexture = AtlasTexture.new()
+			atlas.atlas = texture
+			atlas.region = Rect2(float(x0), float(y0), float(x1 - x0), float(y1 - y0))
+			atlas.filter_clip = true
+			result["texture"] = atlas
+			result["aspect"] = float(x1 - x0) / maxf(float(y1 - y0), 1.0)
+	_crop_cache[texture] = result
+	return result
+
+
 static func for_event(event: InputEvent) -> Array[Texture2D]:
 	var icons: Array[Texture2D] = []
 	if event is InputEventKey:
@@ -59,6 +92,7 @@ static func for_event(event: InputEvent) -> Array[Texture2D]:
 				return []
 		icons.append(load(ROOT + "xbox/xbox_" + name + ".svg"))
 	return icons
+
 
 static func _keyboard(code: int) -> Texture2D:
 	var name: String = KEYS.get(code, "any")

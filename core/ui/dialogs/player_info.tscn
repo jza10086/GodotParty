@@ -5,47 +5,11 @@
 
 [sub_resource type="StyleBoxFlat" id="SquareAvatarStyle"]
 bg_color = Color(0.08, 0.13, 0.2, 0.78)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.75, 0.84, 0.92, 0.22)
-
-[sub_resource type="StyleBoxFlat" id="CloseNormalStyle"]
-bg_color = Color(0.11, 0.17, 0.24, 0.48)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.72, 0.82, 0.92, 0.34)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="StyleBoxFlat" id="CloseHoverStyle"]
-bg_color = Color(0.16, 0.24, 0.34, 0.72)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.78, 0.89, 0.98, 0.65)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="StyleBoxFlat" id="ClosePressedStyle"]
-bg_color = Color(0.09, 0.14, 0.2, 0.8)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.78, 0.89, 0.98, 0.5)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.58, 0.78, 0.94, 0.28)
 
 [node name="PlayerInfo" instance=ExtResource("r1")]
 
@@ -118,7 +82,3 @@ text_overrun_behavior = 3
 
 [node name="Cancel" parent="Panel/Layout/Actions" index="0"]
 custom_minimum_size = Vector2(180, 52)
-theme_override_styles/normal = SubResource("CloseNormalStyle")
-theme_override_styles/hover = SubResource("CloseHoverStyle")
-theme_override_styles/pressed = SubResource("ClosePressedStyle")
-theme_override_styles/focus = SubResource("CloseHoverStyle")

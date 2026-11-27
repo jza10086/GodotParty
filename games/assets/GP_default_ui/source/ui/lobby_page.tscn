@@ -1,22 +1,13 @@
 [gd_scene format=3 uid="uid://cqssokj5fk6hn"]
 
 [ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
-
-
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/button.tscn" id="ar_button"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/option_button.tscn" id="ar_option"]
-
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/action_prompt.tscn" id="prompt"]
 [ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/keyboard_escape.svg" id="esc"]
-[ext_resource type="Theme" path="res://games/assets/GP_default_ui/source/ui/lobby_action_theme.tres" id="action_theme"]
-[ext_resource type="Shader" path="res://games/assets/GP_default_ui/source/ui/lobby_cutout_text.gdshader" id="cutout"]
-
+[ext_resource type="Script" path="res://core/ui/ambient_reveal/components/cta_button.gd" id="cta_button"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/card.tscn" id="ar_card"]
 [ext_resource type="PackedScene" path="res://games/assets/GP_default_ui/source/ui/lobby_player_card.tscn" id="player_card"]
-
-
-[sub_resource type="ShaderMaterial" id="CutoutText"]
-shader = ExtResource("cutout")
 
 [node name="Lobby" type="Control"]
 theme = ExtResource("theme")
@@ -40,6 +31,7 @@ theme_override_constants/separation = 12
 [node name="Back" parent="Insets/Layout/Navigation" instance=ExtResource("ar_button")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(270, 56)
+theme_type_variation = &"OpenButton"
 tooltip_text = "返回主界面"
 
 [node name="Prompt" parent="Insets/Layout/Navigation/Back" instance=ExtResource("prompt")]
@@ -63,7 +55,6 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.8
 
 [node name="PlayersCard" parent="Insets/Layout/Cards/PlayersColumn" groups=["lobby_card"] instance=ExtResource("ar_card")]
-
 
 [node name="Content" parent="Insets/Layout/Cards/PlayersColumn/PlayersCard" type="VBoxContainer"]
 theme_override_constants/separation = 6
@@ -218,9 +209,6 @@ theme_type_variation = &"PoolButton"
 theme_override_font_sizes/font_size = 26
 text = "高级设置"
 
-[node name="ActionBackdrop" type="BackBufferCopy" parent="Insets/Layout"]
-copy_mode = 2
-
 [node name="Footer" type="HBoxContainer" parent="Insets/Layout"]
 theme_override_constants/separation = 24
 
@@ -234,37 +222,15 @@ theme_override_font_sizes/font_size = 21
 [node name="CopyAddress" type="Button" parent="Insets/Layout/Footer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 84)
-text = "复制房间地址"
-theme = ExtResource("action_theme")
-theme_type_variation = &"CopyBlue"
-
-[node name="Caption" type="Label" parent="Insets/Layout/Footer/CopyAddress"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-horizontal_alignment = 1
-vertical_alignment = 1
 theme_override_font_sizes/font_size = 30
-theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "复制房间地址"
-material = SubResource("CutoutText")
+script = ExtResource("cta_button")
+semantic_color = "blue"
 
 [node name="Ready" type="Button" parent="Insets/Layout/Footer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 84)
-text = "准备"
-theme = ExtResource("action_theme")
-theme_type_variation = &"ReadyGreen"
-
-[node name="Caption" type="Label" parent="Insets/Layout/Footer/Ready"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-horizontal_alignment = 1
-vertical_alignment = 1
 theme_override_font_sizes/font_size = 30
-theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "准备"
-material = SubResource("CutoutText")
+script = ExtResource("cta_button")
+semantic_color = "green"

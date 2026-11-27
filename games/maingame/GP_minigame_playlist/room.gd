@@ -56,7 +56,8 @@ func room_refresh() -> void:
 	connection = room.get_state()
 	var caption: String = "邀请 Steam 好友" if connection.steam_lobby else "复制房间地址"
 	%CopyAddress.text = caption
-	%CopyAddress.get_node("Caption").text = caption
+	%CopyAddress.semantic_color = "blue"
+	%CopyAddress.enabled_state = false
 	%CopyAddress.disabled = not connection.online or (not connection.steam_lobby and (connection.connection_port <= 0 or connection.connection_address in ["", "*", "0.0.0.0", "::"]))
 	%CopyAddress.tooltip_text = caption if connection.steam_lobby else room.format_endpoint(connection.connection_address, connection.connection_port)
 	var unready: bool = false
@@ -64,10 +65,10 @@ func room_refresh() -> void:
 		var player: Dictionary = connection.players[index] if index < connection.players.size() else {}
 		var slot: Button = get_node("%Slot" + str(index))
 		var name_label: Label = slot.get_node("%PlayerName")
-		slot.player_color = Color(player.appearance.color) if not player.is_empty() else Color(0.30, 0.35, 0.42)
+		var occupied: bool = not player.is_empty()
+		slot.player_color = Color(player.appearance.color) if occupied else Color(0.58, 0.78, 0.94, 0.28)
 		slot.set_meta("peer_id", player.get("peer_id", 0))
-		slot.disabled = player.is_empty()
-		slot.modulate.a = 0.5 if player.is_empty() else 1.0
+		slot.call("set_occupied", occupied)
 		name_label.text = player.get("name", "空位")
 		name_label.tooltip_text = name_label.text
 		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -92,11 +93,12 @@ func room_refresh() -> void:
 			%Ready.text = "非法玩家数"
 		else:
 			%Ready.text = "玩家未准备" if unready else "开始游戏"
-		%Ready.theme_type_variation = &"CancelRed" if no_selection or invalid_player_count or unready else &"StartOrange"
+		%Ready.semantic_color = "red" if no_selection or invalid_player_count or unready else "orange"
+		%Ready.enabled_state = false
 	else:
 		%Ready.text = "取消准备" if connection.local_ready else "准备"
-		%Ready.theme_type_variation = &"CancelRed" if connection.local_ready else &"ReadyGreen"
-	%Ready.get_node("Caption").text = %Ready.text
+		%Ready.semantic_color = "red" if connection.local_ready else "green"
+		%Ready.enabled_state = bool(connection.local_ready)
 	%Ready.tooltip_text = ""
 	%Map.text = "小游戏池"
 	%Rotation.select(["顺序", "随机"].find(connection.room.settings.rotation))
@@ -122,31 +124,32 @@ func _allowed_count_text(values: Array) -> String:
 ## Read cached statistics once a second; never rebuild slots or request a probe here.
 func _refresh_latencies() -> void:
 	for index: int in range(PLAYER_CAPACITY):
-		var label: Label = get_node("%Slot" + str(index)).get_node("%PlayerStatus")
-		label.modulate = Color.WHITE
-		label.tooltip_text = ""
+		var slot: Button = get_node("%Slot" + str(index))
+		slot.tooltip_text = ""
 		if index >= connection.players.size():
-			label.text = ""
+			slot.call("set_badges", "", "wait", "")
 			continue
 		var player: Dictionary = connection.players[index]
 		var ready_text: String = "已准备" if player.ready else "未准备"
+		var ready_kind: String = "ready" if player.ready else "wait"
 		var peer: int = 1 if not connection.host and player.peer_id == connection.local_peer else player.peer_id
 		var sample: Dictionary = room.activity.net.get_peer_stats(peer)
 		var state: String = "host" if player.connected and player.peer_id == 1 else sample.state
-		label.tooltip_text = "玩家与房主之间的往返延迟 RTT；按住 Tab 查看全部玩家"
+		slot.tooltip_text = "玩家与房主之间的往返延迟 RTT；按住 Tab 查看全部玩家"
 		match state:
 			"host":
-				label.text = "host"
+				slot.call("set_badges", "房主", "host", "")
 			"offline":
-				label.text = "已掉线"
-				label.modulate = Color("#f28c8c")
+				slot.call("set_badges", "已掉线", "danger", "")
 			"measuring":
-				label.text = ready_text + " · 测量中"
+				slot.call("set_badges", ready_text, ready_kind, "测量中", Color(0.72, 0.78, 0.86, 1.0))
 			"stalled":
-				label.text = ready_text + " · 无响应"
-				label.modulate = Color("#f28c8c")
-			"connected", "degraded":
-				label.text = ready_text + " · %d ms" % roundi(sample.rtt_msec)
-				if state == "degraded":
-					label.text += " · 波动"
-					label.modulate = Color("#f3c779")
+				slot.call("set_badges", "无响应", "danger", "")
+			"connected":
+				var rtt_ms: int = roundi(sample.rtt_msec)
+				var rtt_color: Color = Color(0.55, 0.88, 0.66, 1.0) if rtt_ms < 80 else (Color(0.95, 0.78, 0.47, 1.0) if rtt_ms < 160 else Color(0.95, 0.55, 0.55, 1.0))
+				slot.call("set_badges", ready_text, ready_kind, "%d ms" % rtt_ms, rtt_color)
+			"degraded":
+				slot.call("set_badges", ready_text, ready_kind, "%d ms 波动" % roundi(sample.rtt_msec), Color(0.95, 0.78, 0.47, 1.0))
+			_:
+				slot.call("set_badges", ready_text, ready_kind, "")

@@ -24,7 +24,7 @@ const IconScene: PackedScene = preload("res://core/ui/ambient_reveal/components/
 	set(value):
 		gamepad = value
 		refresh()
-@export_range(20, 96, 1) var icon_size: int = 40:
+@export_range(16, 96, 1) var icon_size: int = 28:
 	set(value):
 		icon_size = value
 		refresh()
@@ -68,9 +68,12 @@ func refresh() -> void:
 			icon.tooltip_text = caption
 
 func _add_icon(texture: Texture2D) -> TextureRect:
+	var info: Dictionary = Icons.cropped(texture)
+	var cropped_tex: Texture2D = info["texture"] as Texture2D
+	var aspect: float = float(info["aspect"])
 	var icon: TextureRect = IconScene.instantiate()
-	icon.texture = texture
-	icon.custom_minimum_size = Vector2(float(icon_size) * texture.get_width() / texture.get_height(), icon_size)
+	icon.texture = cropped_tex
+	icon.custom_minimum_size = Vector2(roundf(float(icon_size) * aspect), float(icon_size))
 	%Icons.add_child(icon)
 	return icon
 

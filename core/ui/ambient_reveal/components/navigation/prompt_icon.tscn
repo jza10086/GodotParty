@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [node name="Icon" type="TextureRect"]
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(28, 28)
 size_flags_vertical = 4
 mouse_filter = 2
 expand_mode = 1

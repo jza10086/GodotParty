@@ -6,16 +6,17 @@
 
 [resource]
 default_font_size = 18
-Button/styles/hover = ExtResource("frame_available")
+Button/styles/disabled = ExtResource("frame_disabled")
+Button/styles/focus = ExtResource("frame_focused")
+Button/styles/hover = ExtResource("frame_focused")
+Button/styles/hover_pressed = ExtResource("frame_focused")
 Button/styles/normal = ExtResource("frame_available")
 Button/styles/pressed = ExtResource("frame_focused")
 ColorPicker/constants/h_width = 22
 ColorPicker/constants/sv_height = 160
 ColorPicker/constants/sv_width = 240
 HBoxContainer/constants/separation = 6
-LineEdit/styles/normal = ExtResource("frame_available")
-VBoxContainer/constants/separation = 6
-Button/styles/disabled = ExtResource("frame_disabled")
-Button/styles/focus = ExtResource("frame_focused")
-LineEdit/styles/read_only = ExtResource("frame_disabled")
 LineEdit/styles/focus = ExtResource("frame_focused")
+LineEdit/styles/normal = ExtResource("frame_available")
+LineEdit/styles/read_only = ExtResource("frame_disabled")
+VBoxContainer/constants/separation = 6

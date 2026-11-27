@@ -72,6 +72,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(408, 72)
 layout_mode = 2
 size_flags_vertical = 4
+theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 26
 text = "IP 直连"
 
@@ -124,6 +125,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 72)
 layout_mode = 2
 size_flags_vertical = 4
+theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 26
 text = "加入  →"
 
@@ -171,6 +173,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 72)
 layout_mode = 2
 size_flags_vertical = 4
+theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 26
 text = "加入  →"
 

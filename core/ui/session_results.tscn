@@ -54,7 +54,7 @@ horizontal_scroll_mode = 0
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 10
 
 [node name="Actions" type="HBoxContainer" parent="Insets/Content" unique_id=848034700]
 layout_mode = 2
@@ -64,5 +64,6 @@ alignment = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(260, 64)
 layout_mode = 2
+theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 26
 text = "返回大厅"

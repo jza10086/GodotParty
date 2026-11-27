@@ -2,7 +2,7 @@ shader_type canvas_item;
 render_mode unshaded;
 
 uniform bool input_surface = false;
-uniform float radius = 16.0;
+uniform float radius = 8.0;
 uniform float hover_amount = 0.0;
 uniform float focus_amount = 0.0;
 varying vec2 local_position;

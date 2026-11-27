@@ -3,16 +3,19 @@
 [ext_resource type="Script" path="res://core/ui/party_touch_escape.gd" id="1"]
 
 [sub_resource type="StyleBoxFlat" id="EscapeStyle"]
-bg_color = Color(0.06, 0.075, 0.1, 0.86)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.8, 0.86, 0.94, 0.7)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_left = 16
-corner_radius_bottom_right = 16
+bg_color = Color(0.055, 0.09, 0.14, 0.84)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.64, 0.84, 0.98, 0.65)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+corner_detail = 16
+anti_aliasing = true
+anti_aliasing_size = 1.25
 
 [node name="TouchEscape" type="CanvasLayer"]
 layer = 128

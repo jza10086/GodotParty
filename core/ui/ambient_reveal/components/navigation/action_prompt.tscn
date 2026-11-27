@@ -7,16 +7,17 @@
 script = ExtResource("logic")
 theme = ExtResource("theme")
 mouse_filter = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 
 [node name="Icons" type="HBoxContainer" parent="."]
 unique_name_in_owner = true
 mouse_filter = 2
-theme_override_constants/separation = 2
+theme_override_constants/separation = 4
 size_flags_vertical = 4
 
 [node name="Action" type="Label" parent="."]
 unique_name_in_owner = true
 mouse_filter = 2
+theme_override_colors/font_color = Color(0.95, 0.97, 0.99, 1)
 text = "确认"
 vertical_alignment = 1

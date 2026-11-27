@@ -74,6 +74,7 @@ custom_minimum_size = Vector2(180,64)
 
 [node name="Confirm" parent="Panel/Layout/Actions" instance=ExtResource("r3")]
 unique_name_in_owner = true
+theme_type_variation = &"PrimaryButton"
 text = "确定"
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(180,64)

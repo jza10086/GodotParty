@@ -10,18 +10,22 @@ content_margin_left = 36.0
 content_margin_top = 36.0
 content_margin_right = 36.0
 content_margin_bottom = 32.0
-bg_color = Color(0.075, 0.1, 0.14, 0.98)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.28, 0.36, 0.46, 0.75)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-shadow_color = Color(0, 0, 0, 0.3)
-shadow_size = 28
+bg_color = Color(0.055, 0.09, 0.14, 0.84)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.58, 0.78, 0.94, 0.24)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+corner_detail = 16
+shadow_color = Color(0, 0, 0, 0.36)
+shadow_size = 24
+shadow_offset = Vector2(0, 10)
+anti_aliasing = true
+anti_aliasing_size = 1.25
 
 [sub_resource type="ShaderMaterial" id="BlurMaterial"]
 shader = ExtResource("blur")
@@ -88,6 +92,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(408, 60)
 layout_mode = 2
 theme = ExtResource("1_mvge5")
+theme_type_variation = &"PrimaryButton"
 text = "返回游戏"
 
 [node name="MainPanels" type="VBoxContainer" parent="Center/Card/Content/Actions"]

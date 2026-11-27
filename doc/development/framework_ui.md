@@ -4,13 +4,13 @@
 
 Ambient Reveal 是项目主主题，项目设置 `gui/theme/custom` 指向 `ambient_reveal/ambient_theme.tres`，供没有单独指定 Theme 的控件使用；旧版 `source/ui/theme/` 已全部移除。
 
-`GPPartyTheme.create()` 返回共享的 `ambient_theme.tres`。调整外观时可在编辑器直接打开 `ambient_reveal/components/` 内的预制体。需要悬停、焦点和按下反馈的动态控件也实例化这些预制体。按钮使用透明的默认表面，鼠标悬停或键盘聚焦时显出圆角边缘。菜单交互音效使用 CoreUI 音频总线。
+`GPPartyTheme.create()` 返回共享的 `ambient_theme.tres`。调整外观时可在编辑器直接打开 `ambient_reveal/components/` 内的预制体。视觉体系采用星际磨砂玻璃（方案 A）：统一 `8px` 圆角（保留 `0px` Steam 正方形头像框与 `6px` 局内极矮小榜行），所有描边严格为 `0px` 或 `>=2px`；鼠标悬停与手柄/键盘选中共用同一套悬停样式（不再区分独立焦点框）。按钮分为开放背景透明按钮（`OpenButton`）、卡片/弹窗内普通按钮（默认 `Button` / `CardButton`）、卡片/弹窗内主操作按钮（`PrimaryButton`）以及强语义 CTA 组件（`PartyCTAButton`，`components/cta_button.gd` + `cta_diagonal_wipe.gdshader`：常态语义色镂空描边，未启用悬停斜向高饱和填充并在右下角保留镂空角，已启用与已启用悬停保持 100% 充满，无外辉光）。菜单交互音效使用 CoreUI 音频总线。
 
-框架控件的禁用、可用、聚焦边框由主题直接引用 theme/frames/ 中的三份 StyleBoxFlat 资源。可用和禁用框均为无描边的同色背景，禁用只将文字设为灰色并退出焦点导航；聚焦、悬停使用柔和的细边框。输入框使用原生 normal、read_only 和 focus 样式，单行、多行和数字输入光标以 0.53 秒间隔持续闪烁；无常态背景的按钮在悬停或聚焦时逐渐显出聚焦框。面板的屏幕采样只参与底色混合，轮廓由主题绘制。小游戏列表行的选中样式和设置页内边距在 ambient_theme.tres 中，设置输入及其原生弹出菜单的字号在 settings/field_theme.tres 中。开关的静止状态使用主题图标，过渡时由 Tween 驱动滑块材质。
+框架控件的可用、悬停/选中、禁用边框由主题直接引用 `theme/frames/` 中的三份 StyleBoxFlat 资源（`8px` 圆角、`2px` 描边）。输入框使用原生 `normal`、`read_only` 和 `focus` 样式，悬停时与输入态保持一致的冰蓝 `2px` 描边；单行、多行和数字输入光标以 0.53 秒间隔持续闪烁。面板与卡片采用 84% 磨砂透底加 `2px` 冰蓝描边和柔影。小游戏列表行与设置页内边距在 `ambient_theme.tres` 中，设置输入及其原生弹出菜单的字号与样式在 `settings/field_theme.tres` 中。开关的静止状态使用主题图标，过渡时由 Tween 驱动滑块材质。
 
 主菜单与大厅的排版位于 `core/ui/source/ui/`。配置业务声明生成 `core/ui/settings/` 内的设置行，由行预制体组合原生输入控件。系统设置、协议设置、本机偏好、连接诊断、小游戏浏览器和弹窗均有同名 .tscn。弹窗的固定内容在 core/ui/dialogs/，原版协议的资料预览及普通局布局分别在协议目录的 profile_panel.tscn 和 ranked_round.tscn。小游戏浏览器每页有 12 个卡位，超出时可翻页。框架统一提供外观，具体设置的可编辑性、继承和保存由配置模块管理。
 
-小游戏轮换大厅仅保留成员、游戏与规则两张卡片，不再启用大厅语音。左上角为带 Esc 图标的返回主界面按钮；房间标题、副标题及右上角网络状态在大厅中不显示。底部键鼠提示省略设备名称。蓝色“复制房间地址”位于准备按钮左侧，复制实际连接的地址与端口（IPv6 使用方括号）。右下角共用准备／开始按钮：准备绿色、取消准备红色、开始游戏橙黄色；房主等待其他玩家准备时显示禁用的红色“玩家未准备”。其他开始限制显示在底部。纯色按钮由 `source/ui/lobby_action_theme.tres` 定义，文字使用 `lobby_cutout_text.gdshader` 和背景捕获形成镂空效果。主菜单标题与入口直接显示在背景上。
+小游戏轮换大厅仅保留成员、游戏与规则两张卡片，不再启用大厅语音。左上角为带 Esc 图标的返回主界面按钮（`OpenButton`）；房间标题、副标题及右上角网络状态在大厅中不显示。底部键鼠提示省略设备名称。蓝色“复制房间地址”位于准备按钮左侧，复制实际连接的地址与端口（IPv6 使用方括号）。右下角共用准备／开始按钮：准备绿色、取消准备红色（已启用全满态）、开始游戏橙黄色；房主等待其他玩家准备时显示禁用的红色“玩家未准备”。其他开始限制显示在底部。强语义按钮由 `core/ui/ambient_reveal/components/cta_button.gd`（`PartyCTAButton`）与 `cta_diagonal_wipe.gdshader` 统一驱动。主菜单标题与入口直接显示在背景上（`OpenButton`）。
 
 框架玩家/延迟面板为 `core/ui/network_panel.tscn`，由正式 app 注入现有连接和翻译服务。大厅与游戏中按住 Tab 查看、松开关闭；使用居中半透明卡片呈现当前玩家（本机行高亮，名称使用玩家颜色）、主游戏实时排名与多列分数，以及到房主的 Ping 值（房主在 Ping 左侧显示皇冠图标与 `0 ms`，掉线显示断开图标，仅当可靠包丢包率估计 `>= 1%` 显示黄色警告图标、`>= 5%` 显示红色警告图标，不再常驻顶部标题、连接状态文字或说明段落）。它不获取焦点、不拦截鼠标、不暂停玩法；设置、文本输入和模态页保留 Tab 焦点导航。隐藏时不轮询，显示时每 0.5 秒读缓存，不产生网络请求。小游戏轮换大厅每秒仅刷新状态文字，名单变化才重建对应列表内容。总积分快捷键为 F3。
 
@@ -75,7 +75,7 @@ Schema 由业务 settings.gd 的 schema() 声明，通过 fields 的 type/contro
 
 ## 图标按键提示
 
-单行预制体为 core/ui/ambient_reveal/components/navigation/action_prompt.tscn，采用 Kenney 图标组加操作说明。action 读取当前 InputMap 绑定，组合键用 + 分隔、备用绑定用 / 分隔。keyboard_icons、gamepad_icons 可直接指定 Texture2D 数组，优先于 action，适合 WASD、摇杆等组合手势。description 设置说明，icon_size 设置图标高度。set_gamepad(bool) 切换键鼠／Xbox；修改映射后调用 refresh()。素材没有对应图案的罕见键使用通用键图标，绑定名称保留在提示信息中。
+单行预制体为 `core/ui/ambient_reveal/components/navigation/action_prompt.tscn`，采用按键提示风格 2（实色扁平无边框底条 `PromptBar` + 实心高对比 Kenney 键帽），自动裁切透明边距使 `Space` / `Shift` / `Tab` / `LB` / `RB` 等宽键与单键等高垂直填满（默认 `icon_size = 28`）。`action` 读取当前 InputMap 绑定，组合键用 `+` 分隔、备用绑定用 `/` 分隔。`keyboard_icons`、`gamepad_icons` 可直接指定 Texture2D 数组，优先于 `action`，适合 WASD、摇杆等组合手势。`description` 设置说明，`icon_size` 设置图标高度。`set_gamepad(bool)` 切换键鼠／Xbox；修改映射后调用 `refresh()`。素材没有对应图案的罕见键使用通用键图标，绑定名称保留在提示信息中。
 
 纵向预制体为 games/assets/GP_default_ui/ambient_reveal/components/navigation/vertical_hints.tscn。在全屏 HUD Control 或 CanvasLayer 下实例化，默认使用 24 像素边距贴左下角；Inspector 的 Side 选择 Right 后贴右下角，每行仍保持图标在说明前。Prompts 下预置移动、交互和菜单三行，开启可编辑子节点后可以修改或复制这些 ActionPrompt。示例的 WASD、鼠标左键、Esc 和 Xbox 图标是显示配置，需按游戏实际绑定调整。
 

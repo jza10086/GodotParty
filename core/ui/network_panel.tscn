@@ -11,16 +11,22 @@ content_margin_left = 24.0
 content_margin_top = 20.0
 content_margin_right = 24.0
 content_margin_bottom = 20.0
-bg_color = Color(0.045, 0.068, 0.1, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.36, 0.52, 0.65, 0.55)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+bg_color = Color(0.055, 0.09, 0.14, 0.88)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.58, 0.78, 0.94, 0.24)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+corner_detail = 16
+shadow_color = Color(0, 0, 0, 0.36)
+shadow_size = 24
+shadow_offset = Vector2(0, 10)
+anti_aliasing = true
+anti_aliasing_size = 1.25
 
 [sub_resource type="StyleBoxFlat" id="DividerStyle"]
 bg_color = Color(0.55, 0.76, 0.94, 0.2)
@@ -95,7 +101,7 @@ theme_override_constants/separation = 20
 
 [node name="PingHeading" type="Label" parent="Center/Card/Content/HeadingInset/Heading" unique_id=914076018]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(136, 0)
+custom_minimum_size = Vector2(146, 0)
 layout_mode = 2
 mouse_filter = 2
 theme_type_variation = &"MutedLabel"
@@ -112,4 +118,4 @@ theme_override_styles/separator = SubResource("DividerStyle")
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8

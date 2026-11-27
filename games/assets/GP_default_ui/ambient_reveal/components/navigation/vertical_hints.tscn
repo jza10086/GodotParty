@@ -1,5 +1,6 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://core/ui/ambient_reveal/ambient_theme.tres" id="theme"]
 [ext_resource type="Script" path="res://games/assets/GP_default_ui/ambient_reveal/components/navigation/vertical_hints.gd" id="logic"]
 [ext_resource type="PackedScene" path="res://core/ui/ambient_reveal/components/navigation/action_prompt.tscn" id="prompt"]
 [ext_resource type="Texture2D" path="res://core/ui/ambient_reveal/icons/kenney_input/keyboard_mouse/keyboard_w.svg" id="w"]
@@ -19,10 +20,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_bottom = 24
+theme = ExtResource("theme")
+theme_override_constants/margin_left = 42
+theme_override_constants/margin_right = 42
+theme_override_constants/margin_top = 34
+theme_override_constants/margin_bottom = 34
 script = ExtResource("logic")
 
 [node name="Prompts" type="VBoxContainer" parent="."]

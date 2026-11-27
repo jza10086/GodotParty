@@ -6,7 +6,6 @@ const DURATION: float = 0.24
 static var _last_pointer: bool = true
 var _pointer: bool
 var _enabled: bool
-var _reveal_tween: Tween
 var _press_tween: Tween
 var _hovered: bool = false
 var _enabled_focus_mode: Control.FocusMode
@@ -36,17 +35,17 @@ func _ready() -> void:
 			control.pressed.connect(audio.click)
 		elif control is Slider:
 			control.drag_ended.connect(func(changed: bool) -> void:
-				if changed: audio.click())
+				if changed:
+					audio.click())
 	if control is Button:
-		# Framed buttons draw their own native state. Only transparent buttons need the reveal layer.
-		visible = control.get_theme_stylebox(&"normal") != get_theme_stylebox(&"panel", &"FrameAvailable")
+		# Scheme A buttons draw their unified hover/focus/pressed StyleBoxes natively through ambient_theme.tres.
+		hide()
 		control.button_down.connect(_hover.bind(true, true))
 		control.button_up.connect(func() -> void: _hover(control.is_hovered()))
 	_update_frame()
 
 
 func _input(event: InputEvent) -> void:
-	# Standalone controls also support switching between pointer and focus navigation.
 	if not is_visible_in_tree():
 		return
 	if (event is InputEventMouseMotion and not event.relative.is_zero_approx()) or (event is InputEventMouseButton and event.pressed):
@@ -73,10 +72,12 @@ func _on_visibility_changed() -> void:
 	if is_visible_in_tree():
 		set_pointer_mode(_last_pointer)
 
+
 func _accepts_input() -> bool:
 	if control is Button:
 		return not control.disabled
 	return control.editable
+
 
 func _check_enabled() -> void:
 	var enabled: bool = _accepts_input()
@@ -89,22 +90,20 @@ func _check_enabled() -> void:
 		_enabled = enabled
 		refresh()
 
+
 func _update_frame() -> void:
 	if control is LineEdit or control is TextEdit:
-		var frame: StringName = &"FrameFocused" if _enabled and _hovered and not control.has_focus() else &"FrameAvailable"
-		control.add_theme_stylebox_override(&"normal", get_theme_stylebox(&"panel", frame))
+		# Unify pointer hover with focus border on text fields.
+		if _enabled and _hovered and not control.has_focus():
+			control.add_theme_stylebox_override(&"normal", control.get_theme_stylebox(&"focus"))
+		elif control.has_theme_stylebox_override(&"normal"):
+			control.remove_theme_stylebox_override(&"normal")
 		return
 	if not visible:
 		return
-	var focus_active: bool = control.has_focus() and (control is Slider or not _pointer)
-	var highlight: bool = _enabled and (focus_active or (_pointer and _hovered))
 	if control is Slider:
+		var highlight: bool = _enabled and (control.has_focus() or _hovered)
 		theme_type_variation = &"FrameDisabled" if not _enabled else (&"FrameFocused" if highlight else &"FrameAvailable")
-		return
-	if _reveal_tween:
-		_reveal_tween.kill()
-	_reveal_tween = create_tween()
-	_reveal_tween.tween_property(self, "self_modulate:a", float(highlight), DURATION).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
 
 
 func _hover(over: bool, pressing: bool = false) -> void:

@@ -4,16 +4,14 @@
 [ext_resource type="StyleBox" path="res://core/ui/ambient_reveal/theme/frames/available.tres" id="frame_available"]
 [ext_resource type="StyleBox" path="res://core/ui/ambient_reveal/theme/frames/focused.tres" id="frame_focused"]
 
-[sub_resource type="StyleBoxEmpty" id="NoRing"]
-
 [resource]
 KeyboardKey/base_type = &"Button"
-KeyboardKey/styles/focus = SubResource("NoRing")
-KeyboardKey/styles/hover = ExtResource("frame_available")
+KeyboardKey/styles/disabled = ExtResource("frame_disabled")
+KeyboardKey/styles/focus = ExtResource("frame_focused")
+KeyboardKey/styles/hover = ExtResource("frame_focused")
 KeyboardKey/styles/hover_pressed = ExtResource("frame_focused")
 KeyboardKey/styles/normal = ExtResource("frame_available")
 KeyboardKey/styles/pressed = ExtResource("frame_focused")
 KeyboardKeyActive/base_type = &"KeyboardKey"
 KeyboardKeyActive/styles/hover = ExtResource("frame_focused")
 KeyboardKeyActive/styles/normal = ExtResource("frame_focused")
-KeyboardKey/styles/disabled = ExtResource("frame_disabled")

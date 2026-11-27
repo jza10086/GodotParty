@@ -93,4 +93,5 @@ alignment = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 72)
 layout_mode = 2
+theme_type_variation = &"PrimaryButton"
 text = "完成"
