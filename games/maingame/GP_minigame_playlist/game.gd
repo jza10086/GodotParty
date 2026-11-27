@@ -38,6 +38,7 @@ func _ready() -> void:
 		push_error("请从 GodotParty 大厅启动小游戏轮换。")
 		return
 	%Communications.configure(api)
+	%PlaylistMusic.configure(api)
 	var error: Error = api.mark_ready()
 	if error != OK:
 		api.fail("ready_failed", error_string(error))
@@ -143,6 +144,7 @@ func _presentation() -> Dictionary:
 	return {"title": "小游戏轮换 · 完成 %d / %d 局" % [state.get("completed", 0), state.get("queue", []).size()], "columns": [{"key": "points", "title": "派对积分", "format": "integer"}], "rows": rows}
 
 func party_start() -> void:
+	%PlaylistMusic.start_session()
 	active = true
 	_busy = false
 	_wait = float(state.get("interval", 0))
@@ -157,6 +159,7 @@ func party_suspend() -> void:
 	active = false
 
 func party_stop(_reason: StringName) -> void:
+	%PlaylistMusic.stop_session()
 	active = false
 	_queued = false
 

@@ -93,7 +93,8 @@ func close() -> void:
 		_store.changed.disconnect(_changed)
 
 func _changed(owner: String) -> void:
-	if _active and (owner == _store.owner(_protocol) or (not _game.is_empty() and owner == _store.owner(_game))):
+	# Suspended controllers may still present local music or UI. Their effects runtime is detached.
+	if (_active or effective_changed.has_connections()) and (owner == _store.owner(_protocol) or (not _game.is_empty() and owner == _store.owner(_game))):
 		if refresh() != OK:
 			_active = false
 			effects["configuration"] = {"status": "error", "message": last_error}

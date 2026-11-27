@@ -6,6 +6,7 @@ static func schema() -> Dictionary:
 		"schema_format": 3,
 		"settings_version": 2,
 		"fields": {
+			"override_minigame_bgm": {"type": "bool", "default": false, "title": "用轮换音乐替换小游戏背景音乐", "audience": "local", "apply": "immediate", "control": "toggle"},
 			"rounds": {
 				"type": "int",
 				"default": 0,
@@ -52,6 +53,7 @@ static func schema() -> Dictionary:
 			}
 		},
 		"layout": [
+			{"id": "music", "title": "轮换音乐", "expanded": true, "children": [{"field": "override_minigame_bgm"}]},
 			{
 				"id": "room",
 				"title": "游戏规则",

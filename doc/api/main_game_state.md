@@ -65,3 +65,5 @@ publish_standings 同时控制游戏内 Tab 面板的玩家顺序、名次和成
 协议可实现同步 `present_result(result, request) -> Dictionary`。core 校验展示结构并随状态保存。
 大游戏在 round_committed 后可调用 `api.show_results(api.get_round_presentation())`。
 这只打开本端公共成绩页；其他客户端何时展示由大游戏通知，框架不会自动阻断子游戏返回流程。
+
+父主游戏可以订阅本机 `api.foreground_child_attached(root, scope_id, config)`。该信号在子场景和协议效果挂载后、技术准备屏障前发出。以子根节点的 `tree_exiting` 结束本次绑定。谱面等玩法必需的音乐可在子游戏根节点加 `party_gameplay_music` 组，轮换会在整局让出音乐。

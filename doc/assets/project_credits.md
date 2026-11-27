@@ -161,3 +161,5 @@ UI：MadFireOn Hyper Casual UI（原型自带素材及许可） https://swapnilr
 模型：AC130空中炮艇参考模型 Lowpoly AC-130，SIpriv（CC BY 4.0，仅本地测试） https://sketchfab.com/3d-models/lowpoly-ac-130-63238efa8edd4c5ca518cf8fa7f49747
 
 模型：Roulette Casino Table，Joachim Bornemann（CC0，3D 选型预览） https://www.blendkit.com/asset-gallery-detail/a202413a-90fe-4905-afdb-f0c25e3d7520/
+
+背景音乐：LoFi 音乐包（五首），Google AI Lyria 生成，来自项目方 Serpent 素材库 GameAssets / GPMusicPack。[曲目与来源](../../games/assets/GP_lofi_music/ASSET_LICENSES.md)

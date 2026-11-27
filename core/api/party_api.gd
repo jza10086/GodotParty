@@ -9,6 +9,8 @@ signal player_disconnected(player_id: String, peer_id: int)
 signal state_committed(revision: int)
 signal commit_failed(code: String, message: String)
 signal round_committed(round_id: String, result: Dictionary)
+## Parent-only local notification after child scene and protocol effects attach, before the ready barrier.
+signal foreground_child_attached(root: Node, scope_id: String, config: PartyConfig)
 signal round_cancelled(round_id: String, reason: String)
 
 const Data = preload("res://core/runtime/party_data.gd")

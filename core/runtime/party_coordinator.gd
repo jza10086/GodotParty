@@ -560,6 +560,7 @@ func _enter_child(payload: Dictionary) -> void:
 	scope["original_request"] = payload["request"].duplicate(true)
 	scope["api"]._context["seed"] = payload["seed"]
 	scope["adapter"] = _adapter_instance(payload["id"], catalog.adapter(payload["id"], scope["api"].protocol_id))
+	main.api.foreground_child_attached.emit(scope.root, scope.id, scope.api.config)
 	_begin_barrier(scope)
 
 func _begin_barrier(scope: Dictionary) -> void:

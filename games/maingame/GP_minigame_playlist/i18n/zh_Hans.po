@@ -42,3 +42,9 @@ msgstr "高级设置"
 
 msgid "package.name"
 msgstr "GodotPartyDefault · 小游戏轮换"
+
+msgid "轮换音乐"
+msgstr "轮换音乐"
+
+msgid "用轮换音乐替换小游戏背景音乐"
+msgstr "用轮换音乐替换小游戏背景音乐"

@@ -4,8 +4,14 @@
 
 [ext_resource type="PackedScene" path="res://games/maingame/GP_minigame_playlist/communications.tscn" id="chat"]
 
+[ext_resource type="Script" path="res://games/maingame/GP_minigame_playlist/playlist_music.gd" id="music"]
+
 [node name="MinigamePlaylist" type="Node" unique_id=640059021]
 script = ExtResource("1_r1yca")
+
+[node name="PlaylistMusic" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+script = ExtResource("music")
 
 [node name="SessionPanels" type="CanvasLayer" parent="."]
 layer = 63
