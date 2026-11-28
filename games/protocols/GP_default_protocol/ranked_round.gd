@@ -20,8 +20,8 @@ var view: Dictionary = {}
 @onready var sidebar: VBoxContainer = %Sidebar
 @onready var heading: Label = %Heading
 @onready var status: Label = %Status
-const StandingRow: PackedScene = preload("res://games/assets/GP_default_ui/standing_row.tscn")
-var _rows: Dictionary[String, Label] = {}
+const MiniRowScene: PackedScene = preload("res://games/assets/GP_default_ui/leaderboard/mini_leaderboard_row.tscn")
+var _rows: Dictionary[String, PanelContainer] = {}
 @onready var standings: VBoxContainer = %Standings
 @onready var footer: Label = %Footer
 
@@ -52,12 +52,45 @@ func _ready() -> void:
 
 ## Entries keep the round roster order, including withdrawn players.
 func update_standing(player_id: String, caption: String) -> void:
+	var connected: bool = not disconnected.has(player_id)
+	var is_self: bool = player_id == local_id
+	var pcol: Color = player_color(player_id)
 	if not _rows.has(player_id):
-		var row: Label = StandingRow.instantiate()
+		var row: PanelContainer = MiniRowScene.instantiate() as PanelContainer
+		row.get_node("Line/Rank").visible = false
+		var score_lbl: Label = row.get_node("Line/Score") as Label
+		score_lbl.custom_minimum_size = Vector2.ZERO
+		score_lbl.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 		standings.add_child(row)
 		_rows[player_id] = row
-	if _rows[player_id].text != caption:
-		_rows[player_id].text = caption
+	var card: PanelContainer = _rows[player_id]
+	var bg_col: Color = Color(0.11, 0.175, 0.26, 0.80) if is_self else Color(0.08, 0.125, 0.185, 0.62)
+	var border_alpha: float = 0.95 if (is_self and connected) else (0.68 if connected else 0.30)
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	style.bg_color = bg_col
+	style.border_color = Color(pcol.r, pcol.g, pcol.b, border_alpha)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(6)
+	style.content_margin_left = 10.0
+	style.content_margin_right = 10.0
+	style.content_margin_top = 4.0
+	style.content_margin_bottom = 4.0
+	card.add_theme_stylebox_override("panel", style)
+	var pname: String = player_name(player_id)
+	var name_label: Label = card.get_node("Line/PlayerName") as Label
+	name_label.text = pname
+	name_label.modulate = pcol if connected else Color(pcol.r, pcol.g, pcol.b, 0.45)
+	var detail: String = caption
+	if not pname.is_empty() and detail.begins_with(pname):
+		detail = detail.substr(pname.length()).strip_edges()
+		for prefix: String in ["：", ":", "·", "-", "—"]:
+			if detail.begins_with(prefix):
+				detail = detail.substr(prefix.length()).strip_edges()
+				break
+	var detail_label: Label = card.get_node("Line/Score") as Label
+	if detail_label.text != detail:
+		detail_label.text = detail
+	detail_label.modulate = Color("#edf2f7") if connected else Color("#95a0ad")
 
 func player_name(id: String) -> String:
 	for player: Dictionary in players:
